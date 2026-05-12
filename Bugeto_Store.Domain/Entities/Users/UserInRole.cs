@@ -1,5 +1,9 @@
 ﻿namespace Bugeto_Store.Domain.Entities.Users
 {
+
+    /// <summary>
+    /// نقش ها کاربران
+    /// </summary>
     public class UserInRole
     {
         public long Id { get; set; }

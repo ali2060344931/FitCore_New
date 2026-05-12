@@ -27,6 +27,8 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
         {
             _context = context;
         }
+        
+        
         public ResultDto<ResultRegisterUserDto> Execute(RequestRegisterUserDto request)
         {
             try
@@ -38,6 +40,7 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                         Data = new ResultRegisterUserDto()
                         {
                             UserId = 0,
+
                         },
                         IsSuccess = false,
                         Message = "پست الکترونیک را وارد نمایید"
@@ -56,6 +59,7 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                         Message = "نام را وارد نمایید"
                     };
                 }
+
                 if (string.IsNullOrWhiteSpace(request.Password))
                 {
                     return new ResultDto<ResultRegisterUserDto>()
@@ -68,6 +72,7 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                         Message = "رمز عبور را وارد نمایید"
                     };
                 }
+
                 if (request.Password != request.RePasword)
                 {
                     return new ResultDto<ResultRegisterUserDto>()
@@ -80,6 +85,8 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                         Message = "رمز عبور و تکرار آن برابر نیست"
                     };
                 }
+
+
                 string emailRegex = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
 
                 var match = Regex.Match(request.Email, emailRegex, RegexOptions.IgnoreCase);
@@ -115,6 +122,7 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                     var roles = _context.Roles.Find(item.Id);
                     userInRoles.Add(new UserInRole
                     {
+
                         Role = roles,
                         RoleId = roles.Id,
                         User = user,

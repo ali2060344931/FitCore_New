@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Bugeto_Store.Domain.Entities.Users
 {
+    /// <summary>
+    /// لیست کاربران
+    /// </summary>
     public class User
     {
         public long Id { get; set; }
