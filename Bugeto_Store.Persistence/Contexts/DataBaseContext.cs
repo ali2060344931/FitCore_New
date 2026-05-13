@@ -33,7 +33,7 @@ namespace Bugeto_Store.Persistence.Contexts
             //اعمال عدم تکراری بودن ایمل
             modelBuilder.Entity<User>().HasIndex(p=>p.Email).IsUnique();
             //جهت نمایش کاربران فعال
-            modelBuilder.Entity<User>().HasQueryFilter(p=>p.IsRemoved);
+            modelBuilder.Entity<User>().HasQueryFilter(p=>!p.IsRemoved);
 
 
 
