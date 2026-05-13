@@ -43,6 +43,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         public IActionResult Index(string serchkey, int page = 1)
         {
+
+
+
             return View(_getUsersService.Execute(new RequestGetUserDto
             {
                 Page = page,
