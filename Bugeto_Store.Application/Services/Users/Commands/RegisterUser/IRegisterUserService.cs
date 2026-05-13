@@ -106,7 +106,7 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
 
                  var passwordHasher = new PasswordHasher();
                  var hashedPassword = passwordHasher.HashPassword(request.Password);
-
+                 
                 User user = new User()
                 {
                     Email = request.Email,

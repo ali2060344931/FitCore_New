@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bugeto_Store.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20260510160949_InitDatabase")]
-    partial class InitDatabase
+    [Migration("20260513053533_initdatbase1")]
+    partial class initdatbase1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -189,6 +189,23 @@ namespace Bugeto_Store.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "Operator"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Customer"
+                        });
                 });
 
             modelBuilder.Entity("Bugeto_Store.Domain.Entities.Users.User", b =>
@@ -200,7 +217,7 @@ namespace Bugeto_Store.Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -218,6 +235,10 @@ namespace Bugeto_Store.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Users");
                 });

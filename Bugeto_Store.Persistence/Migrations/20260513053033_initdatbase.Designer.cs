@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bugeto_Store.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20260512060317_Addrols")]
-    partial class Addrols
+    [Migration("20260513053033_initdatbase")]
+    partial class initdatbase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -217,7 +217,7 @@ namespace Bugeto_Store.Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -235,6 +235,10 @@ namespace Bugeto_Store.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Users");
                 });

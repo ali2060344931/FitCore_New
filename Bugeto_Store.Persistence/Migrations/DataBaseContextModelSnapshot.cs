@@ -180,8 +180,20 @@ namespace Bugeto_Store.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<DateTime>("InsertTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RemoveTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -191,16 +203,22 @@ namespace Bugeto_Store.Persistence.Migrations
                         new
                         {
                             Id = 1L,
+                            InsertTime = new DateTime(2026, 5, 13, 11, 30, 24, 768, DateTimeKind.Local).AddTicks(5025),
+                            IsRemoved = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 2L,
+                            InsertTime = new DateTime(2026, 5, 13, 11, 30, 24, 768, DateTimeKind.Local).AddTicks(5062),
+                            IsRemoved = false,
                             Name = "Operator"
                         },
                         new
                         {
                             Id = 3L,
+                            InsertTime = new DateTime(2026, 5, 13, 11, 30, 24, 768, DateTimeKind.Local).AddTicks(5070),
+                            IsRemoved = false,
                             Name = "Customer"
                         });
                 });
@@ -219,6 +237,9 @@ namespace Bugeto_Store.Persistence.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("InsertTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -228,7 +249,10 @@ namespace Bugeto_Store.Persistence.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RemoveTime")
+                    b.Property<DateTime?>("RemoveTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -248,8 +272,20 @@ namespace Bugeto_Store.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<DateTime>("InsertTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("RemoveTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<long>("RoleId")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");

@@ -4,10 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using Bugeto_Store.Application.Services.Users.Commands.RgegisterUser;
 using Bugeto_Store.Application.Services.Users.Commands.UserLogin;
 using Bugeto_Store.Common.Dto;
+
 using EndPoint.Site.Models.ViewModels.AuthenticationViewModel;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -35,10 +38,12 @@ namespace EndPoint.Site.Controllers
         [HttpPost]
         public IActionResult Signup(SignupViewModel request)
         {
+            #region این بخش از کد برای ثبت نام می باشند
+
             if (string.IsNullOrWhiteSpace(request.FullName) ||
-                string.IsNullOrWhiteSpace(request.Email) ||
-                string.IsNullOrWhiteSpace(request.Password) ||
-                string.IsNullOrWhiteSpace(request.RePassword))
+            string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Password) ||
+            string.IsNullOrWhiteSpace(request.RePassword))
             {
                 return Json(new ResultDto { IsSuccess = false, Message = "لطفا تمامی موارد رو ارسال نمایید" });
             }
@@ -63,7 +68,7 @@ namespace EndPoint.Site.Controllers
             {
                 return Json(new ResultDto { IsSuccess = true, Message = "ایمیل خودرا به درستی وارد نمایید" });
             }
-           
+
 
             var signeupResult = _registerUserService.Execute(new RequestRegisterUserDto
             {
@@ -77,30 +82,39 @@ namespace EndPoint.Site.Controllers
                 }
             });
 
+            #endregion
+
+
+            #region این کدها جهت لاگین می باشد
             if (signeupResult.IsSuccess == true)
-            {
-                var claims = new List<Claim>()
+                {
+                    var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier,signeupResult.Data.UserId.ToString()),
                 new Claim(ClaimTypes.Email, request.Email),
                 new Claim(ClaimTypes.Name, request.FullName),
                 new Claim(ClaimTypes.Role, "Customer"),
             };
-           
 
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-                var properties = new AuthenticationProperties()
-                {
-                    IsPersistent = true
-                };
-               HttpContext.SignInAsync(principal, properties);
- 
-            }
+
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+                    var properties = new AuthenticationProperties()
+                    {
+                        IsPersistent = true
+                    };
+                    HttpContext.SignInAsync(principal, properties);
+
+                }
+
+            #endregion
+
             return Json(signeupResult);
         }
 
 
+
+        [HttpGet]
         public IActionResult Signin(string ReturnUrl = "/")
         {
             ViewBag.url = ReturnUrl;
@@ -127,17 +141,19 @@ namespace EndPoint.Site.Controllers
                     IsPersistent = true,
                     ExpiresUtc = DateTime.Now.AddDays(5),
                 };
-               HttpContext.SignInAsync(principal, properties);
-            
+                HttpContext.SignInAsync(principal, properties);
+
             }
             return Json(signupResult);
         }
 
 
+
+
         public IActionResult SignOut()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-         
+
             return RedirectToAction("Index", "Home");
         }
     }

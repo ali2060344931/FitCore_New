@@ -1,12 +1,14 @@
-﻿namespace Bugeto_Store.Domain.Entities.Users
+﻿using Bugeto_Store.Domain.Entities.Commons;
+
+namespace Bugeto_Store.Domain.Entities.Users
 {
 
     /// <summary>
     /// نقش ها کاربران
     /// </summary>
-    public class UserInRole
+    public class UserInRole:BaseEntity
     {
-        public long Id { get; set; }
+        //public long Id { get; set; }
         public virtual User User { get; set; }
         public long UserId { get; set; }
 
