@@ -42,6 +42,7 @@ namespace EndPoint.Site.Controllers
 
             if (string.IsNullOrWhiteSpace(request.FullName) ||
             string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Tel) ||
             string.IsNullOrWhiteSpace(request.Password) ||
             string.IsNullOrWhiteSpace(request.RePassword))
             {
@@ -74,6 +75,7 @@ namespace EndPoint.Site.Controllers
             {
                 Email = request.Email,
                 FullName = request.FullName,
+                Tel=request.Tel,
                 Password = request.Password,
                 RePasword = request.RePassword,
                 roles = new List<RolesInRegisterUserDto>()

@@ -33,6 +33,21 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
         {
             try
             {
+                
+                if (string.IsNullOrWhiteSpace(request.FullName))
+                {
+                    return new ResultDto<ResultRegisterUserDto>()
+                    {
+                        Data = new ResultRegisterUserDto()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "نام را وارد نمایید"
+                    };
+                }
+
+
                 if (string.IsNullOrWhiteSpace(request.Email))
                 {
                     return new ResultDto<ResultRegisterUserDto>()
@@ -47,7 +62,10 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(request.FullName))
+
+
+
+                if (string.IsNullOrWhiteSpace(request.Tel))
                 {
                     return new ResultDto<ResultRegisterUserDto>()
                     {
@@ -56,9 +74,46 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                             UserId = 0,
                         },
                         IsSuccess = false,
-                        Message = "نام را وارد نمایید"
+                        Message = "شماره تلفن را وارد نمایید"
                     };
                 }
+
+                string phoneRegex = @"^0\d{10}$";
+
+                var phoneMatch = Regex.Match(request.Tel, phoneRegex);
+
+                if (!phoneMatch.Success)
+                {
+                    return new ResultDto<ResultRegisterUserDto>()
+                    {
+                        Data = new ResultRegisterUserDto()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "شماره تلفن معتبر نیست"
+                    };
+                }
+
+                string emailRegex = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
+
+                var match = Regex.Match(request.Email, emailRegex, RegexOptions.IgnoreCase);
+                
+                if (!match.Success)
+                {
+                    return new ResultDto<ResultRegisterUserDto>()
+                    {
+                        Data = new ResultRegisterUserDto()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "ایمیل خودرا به درستی وارد نمایید"
+                    };
+                }
+
+                
+
 
                 if (string.IsNullOrWhiteSpace(request.Password))
                 {
@@ -86,24 +141,6 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                     };
                 }
 
-
-                string emailRegex = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
-
-                var match = Regex.Match(request.Email, emailRegex, RegexOptions.IgnoreCase);
-                if (!match.Success)
-                {
-                    return new ResultDto<ResultRegisterUserDto>()
-                    {
-                        Data = new ResultRegisterUserDto()
-                        {
-                            UserId = 0,
-                        },
-                        IsSuccess = false,
-                        Message = "ایمیل خودرا به درستی وارد نمایید"
-                    };
-                }
-
-
                  var passwordHasher = new PasswordHasher();
                  var hashedPassword = passwordHasher.HashPassword(request.Password);
                  
@@ -113,6 +150,7 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
                     FullName = request.FullName,
                     Password = hashedPassword,
                     IsActive = true,
+                    Tel=request.Tel,
                 };
 
                 List<UserInRole> userInRoles = new List<UserInRole>();
@@ -163,6 +201,8 @@ namespace Bugeto_Store.Application.Services.Users.Commands.RgegisterUser
     {
         public string FullName { get; set; }
         public string Email { get; set; }
+        public string Tel { get; set; }
+
         public string Password { get; set; }
         public string RePasword { get; set; }
         public List<RolesInRegisterUserDto> roles { get; set; }

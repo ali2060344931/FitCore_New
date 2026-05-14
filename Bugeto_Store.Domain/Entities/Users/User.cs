@@ -17,6 +17,7 @@ namespace Bugeto_Store.Domain.Entities.Users
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public string Tel { get; set; }
         public bool IsActive { get; set; }
         //public bool IsRemoved { get; set; }
         //public DateTime RemoveTime { get; set; }

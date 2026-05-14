@@ -1,4 +1,5 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@model Bugeto_Store.Application.Services.Users.Commands.RgegisterUser.RequestRegisterUserDto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "ثبت نام کاربر جدید";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
@@ -25,7 +26,7 @@
                         <div class="form">
                             <div class="form-body">
                                 <div class="row">
-                                    
+
                                     <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
                                         <fieldset class="form-group">
                                             <label for="basicInput">نام و نام خانوادگی</label>
@@ -40,17 +41,23 @@
                                             <input type="text" class="form-control" id="email">
                                         </fieldset>
                                     </div>
+                                    <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
+                                        <fieldset class="form-group">
+                                            <label for="helpInputTop">تلفن همراه</label>
+                                            @* <small class="text-muted"><i>info@bugeto.net</i></small> *@
+                                            <input type="text" class="form-control" id="tel">
+                                        </fieldset>
+                                    </div>
 
                                     <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
                                         <fieldset class="form-group">
                                             <label for="basicSelect">نقش</label>
-                                            <select class="form-control" id="RoleId" name="Role"  asp-items="@ViewBag.Roles">
+                                            <select class="form-control" id="RoleId" name="Role" asp-items="@ViewBag.Roles">
                                             </select>
                                             <p><small class="text-muted">سطح دسترسی کاربر مورد نظر را تعیین کنید</small></p>
 
                                         </fieldset>
                                     </div>
-
 
                                     <div class="col-xl-4 col-lg-6 col-md-12 mb-1">
                                         <fieldset class="form-group">
@@ -72,6 +79,8 @@
                                             <a onclick="Registeruser()" class="btn btn-success col-md-4">تکمیل ثبت نام </a>
                                         </fieldset>
                                     </div>
+
+
                                 </div>
                             </div>
                         </div>
@@ -94,6 +103,7 @@
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
+    <partial name="_ValidationScriptsPartial" />
 
     <script>
         function Registeruser() {
@@ -112,6 +122,7 @@
 
                     var fullname = $("#fullname").val();
                     var email = $("#email").val();
+                    var tel = $("#tel").val();
                     var RoleId = $("#RoleId").val();
                     var Password = $("#Password").val();
                     var RePassword = $("#RePassword").val();
@@ -119,6 +130,7 @@
                     var postData = {
                         'fullname': fullname,
                         'email': email,
+                        'tel': tel,
                         'RoleId': RoleId,
                         'Password': Password,
                         'RePassword': RePassword,

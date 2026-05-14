@@ -51,9 +51,16 @@
 
 
                                             <div class="form-account-title">
-                                                <label for="email-phone">ایمیل  </label>
+                                                <label for="email-phone">ایمیل</label>
                                                 <input type="email" class="number-email-input" id="Email">
                                             </div>
+
+                                            <div class="form-account-title">
+                                                <label for="email-phone">تلفن همراه</label>
+                                                <input type="text" class="number-email-input" id="Tel">
+                                            </div>
+
+
                                             <div class="form-account-title">
                                                 <label for="password">رمز عبور</label>
                                                 <input type="password" class="password-input" id="Password">
@@ -115,12 +122,14 @@
  
         var FullName = $("#FullName").val();
         var Email = $("#Email").val();
+        var Tel = $("#Tel").val();
         var Password = $("#Password").val();
         var RePassword = $("#RePassword").val();
 
         var postData = {
             'FullName': FullName,
             'Email': Email,
+            'Tel': Tel,
             'Password': Password,
             'RePassword': RePassword,
         };
@@ -129,7 +138,7 @@
             contentType: 'application/x-www-form-urlencoded',
             dataType: 'json',
             type: "POST",
-            url: "Signup",
+            url: "/Authentication/Signup",
             data: postData,
             success: function (data) {
                 if (data.isSuccess == true) {

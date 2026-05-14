@@ -1,4 +1,5 @@
-﻿@{
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
     Layout = null;
 }
 
@@ -24,12 +25,18 @@
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     @* <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900%7CMontserrat:300,400,500,600,700,800,900" rel="stylesheet"> *@
+
+
     <link rel="stylesheet" type="text/css" href="~/AdminTemplate/app-assets/fonts/feather/style.min.css">
     <link rel="stylesheet" type="text/css" href="~/AdminTemplate/app-assets/fonts/simple-line-icons/style.css">
     <link rel="stylesheet" type="text/css" href="~/AdminTemplate/app-assets/fonts/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="~/AdminTemplate/app-assets/vendors/css/perfect-scrollbar.min.css">
     <link rel="stylesheet" type="text/css" href="~/AdminTemplate/app-assets/vendors/css/prism.min.css">
     <link rel="stylesheet" type="text/css" href="~/AdminTemplate/app-assets/css/app.css">
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
 </head>
 <body data-col="2-columns" class=" 2-columns ">
     <!-- ////////////////////////////////////////////////////////////////////////////-->
@@ -419,6 +426,9 @@
 <script src="~/AdminTemplate/app-assets/js/app-sidebar.js"></script>
 <script src="~/AdminTemplate/app-assets/js/notification-sidebar.js"></script>
 <script src="~/AdminTemplate/app-assets/js/customizer.js"></script>
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
 <!-- END CONVEX JS-->
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->

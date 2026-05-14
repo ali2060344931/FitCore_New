@@ -6,5 +6,8 @@ namespace Bugeto_Store.Application.Services.Users.Queries.GetUsers
     {
         public List<GetUsersDto> Users { get; set; }
         public int Rows { get; set; }
+        public int TotalRows { get; set; }
+
+
     }
 }

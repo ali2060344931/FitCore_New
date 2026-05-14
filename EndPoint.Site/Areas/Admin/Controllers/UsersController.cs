@@ -40,12 +40,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _editUserService = editUserService;
         }
 
-
         public IActionResult Index(string serchkey, int page = 1)
         {
 
+            //ViewBag.SearchKey = serchkey;
 
+            //return View(result);
 
+            ViewBag.SearchKey = serchkey;
             return View(_getUsersService.Execute(new RequestGetUserDto
             {
                 Page = page,
@@ -65,13 +67,36 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
 
+
+        //[HttpPost]
+        //public IActionResult Create(RequestRegisterUserDto request)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var result = _registerUserService.Execute(request);
+        //    return Json(result);
+        //}
+
+
+
+        
         [HttpPost]
-        public IActionResult Create(string Email, string FullName, long RoleId, string Password, string RePassword)
+        public IActionResult Create(string Email, string FullName, long RoleId, string Password, string RePassword,string Tel)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+
             var result = _registerUserService.Execute(new RequestRegisterUserDto
             {
                 Email = Email,
                 FullName = FullName,
+                Tel=Tel,
                 roles = new List<RolesInRegisterUserDto>()
                    {
                         new RolesInRegisterUserDto
@@ -84,6 +109,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             });
             return Json(result);
         }
+       
+
+
 
         [HttpPost]
         public IActionResult Delete(long UserId)
@@ -98,14 +126,24 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(long UserId, string Fullname,string Email)
+        public IActionResult Edit(long UserId, string Fullname,string Email,string Tel)
         {
             return Json(_editUserService.Execute(new RequestEdituserDto
             {
                 Fullname = Fullname,
                 Email= Email,
+                Tel=Tel,
                 UserId = UserId,
             }));
+        }
+
+
+        [HttpGet]
+        public IActionResult UserRoles(string userId)
+        {
+            var result = _getRolesService.Execute();
+
+            return PartialView("_UserRoles", result);
         }
 
     }

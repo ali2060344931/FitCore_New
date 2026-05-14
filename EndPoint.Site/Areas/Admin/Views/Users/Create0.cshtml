@@ -1,0 +1,216 @@
+﻿@model Bugeto_Store.Application.Services.Users.Commands.RgegisterUser.RequestRegisterUserDto
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "ثبت نام کاربر جدید";
+    Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+}
+
+<section class="basic-elements">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 class="content-header">فرم ثبت نام کاربر جدید</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="card-header">
+                    <div class="card-title-wrap bar-success">
+                        <h4 class="card-title mb-0">
+                            اطلاعات کاربر جدید را وارد نمایید
+                        </h4>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="px-3">
+
+                        <form id="registerForm">
+
+                            <div class="form-body">
+                                <div class="row">
+
+                                    <!-- FullName -->
+                                    <div class="col-md-6 mb-2">
+                                        <fieldset class="form-group">
+                                            <label asp-for="FullName"></label>
+
+                                            <input asp-for="FullName"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="FullName"
+                                                  class="text-danger"></span>
+                                        </fieldset>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="col-md-6 mb-2">
+                                        <fieldset class="form-group">
+                                            <label asp-for="Email"></label>
+
+                                            <input asp-for="Email"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="Email"
+                                                  class="text-danger"></span>
+                                        </fieldset>
+                                    </div>
+
+                                    <!-- Tel -->
+                                    <div class="col-md-6 mb-2">
+                                        <fieldset class="form-group">
+                                            <label asp-for="Tel"></label>
+
+                                            <input asp-for="Tel"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="Tel"
+                                                  class="text-danger"></span>
+                                        </fieldset>
+                                    </div>
+
+                                    <!-- Password -->
+                                    <div class="col-md-6 mb-2">
+                                        <fieldset class="form-group">
+                                            <label asp-for="Password"></label>
+
+                                            <input asp-for="Password"
+                                                   type="password"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="Password"
+                                                  class="text-danger"></span>
+                                        </fieldset>
+                                    </div>
+
+                                    <!-- RePassword -->
+                                    <div class="col-md-6 mb-2">
+                                        <fieldset class="form-group">
+                                            <label asp-for="RePasword"></label>
+
+                                            <input asp-for="RePasword"
+                                                   type="password"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="RePasword"
+                                                  class="text-danger"></span>
+                                        </fieldset>
+                                    </div>
+
+                                    <!-- Role -->
+                                    <div class="col-md-6 mb-2">
+                                        <fieldset class="form-group">
+
+                                            <label>نقش</label>
+
+                                            <select id="RoleId"
+                                                    class="form-control"
+                                                    asp-items="@ViewBag.Roles">
+                                            </select>
+
+                                        </fieldset>
+                                    </div>
+
+                                    <!-- Button -->
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+
+                                        <fieldset class="form-group">
+                                            <br />
+
+                                            <button type="button"
+                                                    onclick="Registeruser()"
+                                                    class="btn btn-success col-md-4">
+
+                                                تکمیل ثبت نام
+
+                                            </button>
+                                        </fieldset>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts
+{
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        function Registeruser() {
+
+            var form = $("#registerForm");
+
+            form.validate();
+
+            if (!form.valid()) {
+                return;
+            }
+
+            Swal.fire({
+                title: 'ثبت نام کاربر',
+                text: "آیا میخواهید ثبت نام کاربر را انجام دهید؟",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'بله',
+                cancelButtonText: 'خیر'
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    var postData = {
+
+                        FullName: $("#FullName").val(),
+                        Email: $("#Email").val(),
+                        Tel: $("#Tel").val(),
+                        Password: $("#Password").val(),
+                        RePasword: $("#RePasword").val(),
+
+                        roles: [
+                            {
+                                Id: $("#RoleId").val()
+                            }
+                        ]
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Admin/Users/Create",
+                        data: postData,
+
+                        success: function (data) {
+
+                            if (data.isSuccess) {
+
+                                Swal.fire('موفق', data.message, 'success');
+
+                            } else {
+
+                                Swal.fire('خطا', data.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+    </script>
+}

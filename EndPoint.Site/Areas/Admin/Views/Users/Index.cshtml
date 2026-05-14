@@ -2,6 +2,11 @@
 @model ReslutGetUserDto;
 
 @{
+    var searchKey = Context.Request.Query["serchkey"].ToString();
+    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+}
+
+@{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 }
@@ -24,12 +29,45 @@
                             <div class="card-block card-dashboard">
                                 <p class="card-text">لیست کاربران شرکت توسعه عنران شاخص</p>
 
-                                <form method="get" class="col-xl-4 col-lg-6 col-md-12 mb-1">
-                                    <fieldset class="form-group">
-                                        <input type="text" class="form-control" name="serchkey">
-                                        <button class="btn btn-success">جستجو</button>
-                                    </fieldset>
+                                <form method="get" class="col-xl-6 col-lg-8 col-md-12 mb-1">
+
+                                    <div class="d-flex align-items-center">
+
+                                        <input type="text"
+                                               class="form-control ml-sm-0"
+                                               name="serchkey"
+                                               value="@searchKey"
+                                               placeholder="جستجوی کاربر..." />
+
+
+                                        <button type="submit" class="btn btn-success position-relative">
+
+                                            جستجو
+
+                                            @if (isFiltered)
+                                            {
+                                                <span class="position-absolute top-0 start-100 translate-middle
+                             badge rounded-pill badge-danger">
+
+                                                    @Model.Users.Count
+
+                                                </span>
+                                            }
+
+                                        </button>
+
+
+                                        @if (isFiltered)
+                                        {
+                                            <a href="/Admin/Users"
+                                               class="btn btn-warning">
+                                                نمایش همه کاربران (@Model.TotalRows)
+                                            </a>
+                                        }
+                                    </div>
+
                                 </form>
+
 
                                 <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
                                     <div class="col-sm-12">
@@ -38,6 +76,7 @@
                                                 <tr role="row">
                                                     <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="نام: activate to sort column descending" style="width: 222px;">نام و نام خانوادگی</th>
                                                     <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="ایمیل: activate to sort column ascending" style="width: 401px;">آدرس ایمیل</th>
+                                                    <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="تلفن: activate to sort column descending" style="width: 222px;">تلفن همراه</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -47,13 +86,21 @@
                                                     <tr role="row" class="odd">
                                                         <td class="sorting_1">@item.FullName</td>
                                                         <td>@item.Email</td>
+                                                        <td>@item.Tel</td>
                                                         <td>
-                                                            <button class="btn btn-info" onclick="ShowModalEdituser('@item.Id' , '@item.FullName' , '@item.Email')">ویرایش</button>
+                                                            <button class="btn btn-info" onclick="ShowModalEdituser('@item.Id' , '@item.FullName' , '@item.Email','@item.Tel')">ویرایش</button>
+
                                                             <button class="btn btn-danger" onclick="DeleteUser('@item.Id')">حــذف</button>
+                                                            @* <button class="btn btn-info" onclick="UserRols('@item.Id')">نقش ها</button> *@
+
+                                                            <button type="button" class="btn btn-primary mr-1" onclick="ShowModalRolsUser('@item.Id')">نقش ها<i class="ft-thumbs-up position-right"></i></button>
+
+
+
+
                                                             @if (item.IsActive)
                                                             {
                                                                 <button class="btn btn-warning" onclick="UserSatusChange('@item.Id')">غیر فعال</button>
-
                                                             }
                                                             else
                                                             {
@@ -74,17 +121,20 @@
 
         </section>
     </div>
- </div>
- 
- 
+</div>
+
+
+<div id="UserRolesContainer"></div>
+
 @section Scripts
 {
 
+    <partial name="_ValidationScriptsPartial" />
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <script>
-        
+
 
         function DeleteUser(UserId) {
             swal.fire({
@@ -106,7 +156,7 @@
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
                         type: "POST",
-                        url: "Delete",
+                        url: "/Admin/Users/Delete",
                         data: postData,
                         success: function (data) {
                             if (data.isSuccess == true) {
@@ -128,9 +178,27 @@
 
                             }
                         },
-                        error: function (request, status, error) {
-                            alert(request.responseText);
-                        }
+                        // error: function (request, status, error) {
+                        //     alert(request.responseText);
+                        // }
+                                error: function (request, status, error) {
+                                    console.log(request);
+                                    console.log(status);
+                                    console.log(error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        html:
+                                        '<b>Status:</b> ' + status + '<br>' +
+                                        '<b>Error:</b> ' + error + '<br><br>' +
+                                        request.responseText
+                                    });}
+
+
+
+
+
+
 
                     });
 
@@ -149,7 +217,7 @@
                 cancelButtonColor: '#7cacbe',
                 confirmButtonText: 'بله ، تغییر وضعیت انجام شود',
                 cancelButtonText: 'خیر'
-                
+
             }).then((result) => {
                 if (result.value) {
 
@@ -161,17 +229,20 @@
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
                         type: "POST",
-                        url: "UserSatusChange",
+                        url: "/Admin/Users/UserSatusChange",
                         data: postData,
                         success: function (data) {
                             if (data.isSuccess == true) {
-                                swal.fire(
-                                    'موفق!',
-                                    data.message,
-                                    'success'
-                                ).then(function (isConfirm) {
-                                    location.reload();
-                                });
+                                // swal.fire(
+                                //     'موفق!',
+                                //     data.message,
+                                //     'success'
+                                // ).then(function (isConfirm) {
+                                //     location.reload();
+                                // }
+                                (
+                                location.reload()
+                                );
                             }
                             else {
 
@@ -183,9 +254,23 @@
 
                             }
                         },
-                        error: function (request, status, error) {
-                            alert(request.responseText);
-                        }
+                                error: function (request, status, error) {
+                                    console.log(request);
+                                    console.log(status);
+                                    console.log(error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        html:
+                                        '<b>Status:</b> ' + status + '<br>' +
+                                        '<b>Error:</b> ' + error + '<br><br>' +
+                                        request.responseText
+                                    });}
+
+
+
+
+
 
                     });
 
@@ -193,17 +278,18 @@
             })
         }
 
-
         function Edituser() {
 
             var userId = $("#Edit_UserId").val();
             var fullName = $("#Edit_Fullname").val();
             var email = $("#Edit_Email").val();
+            var tel = $("#Edit_Tel").val();
 
             var postData = {
                 'UserId': userId,
                 'FullName': fullName,
                 'Email': email,
+                'Tel': tel,
             };
 
 
@@ -211,7 +297,8 @@
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
                 type: "POST",
-                url: "Edit",
+                // url: "Edit",
+                url: "/Admin/Users/Edit",
                 data: postData,
                 success: function (data) {
                     if (data.isSuccess == true) {
@@ -231,25 +318,79 @@
                         );
                     }
                 },
-                error: function (request, status, error) {
-                    alert(request.responseText);
-                }
+                // error: function (request, status, error) {
+                //     alert(request.responseText);
+                // }
+                                error: function (request, status, error) {
+                                    console.log(request);
+                                    console.log(status);
+                                    console.log(error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطا',
+                                        html:
+                                        '<b>Status:</b> ' + status + '<br>' +
+                                        '<b>Error:</b> ' + error + '<br><br>' +
+                                        request.responseText
+                                    });}
+
+
+
+
+
             });
 
             $('#EditUser').modal('hide');
 
         }
 
+        function ShowModalRolsUser(userId) {
+
+            $.ajax({
+
+                type: "GET",
+
+                url: "/Admin/Users/UserRoles",
+
+                data: { userId: userId },
+
+                success: function (result) {
+
+                    $("#UserRolesContainer").html(result);
+
+                    $("#UserRolesModal").modal('show');
+                },
+
+                error: function () {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا',
+                        text: 'دریافت نقش های کاربر انجام نشد'
+                    });
+                }
+            });
+        }
 
 
-        function ShowModalEdituser(UserId, fullName, Email) {
+
+
+
+        function ShowModalEdituser(UserId, fullName, Email,Tel) {
             $('#Edit_Fullname').val(fullName)
             $('#Edit_Email').val(Email)
             $('#Edit_UserId').val(UserId)
-
+            $('#Edit_Tel').val(Tel)
             $('#EditUser').modal('show');
-
         }
+
+        // function ShowModalRolsUser(UserId) {
+        //     $('#Roles_UserId').val(UserId)
+        //     $('#UserRolesModal').modal('show');
+        // }
+
+
+
 
     </script>
 }
@@ -279,17 +420,59 @@
                 <div class="modal-body">
                     <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
                         <fieldset class="form-group">
-                            <input type="hidden" id="Edit_UserId" />
                             <label for="basicInput">ایمیل</label>
                             <input type="text" class="form-control" id="Edit_Email">
                         </fieldset>
                     </div>
                 </div>
+
+                <div class="modal-body">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                        <fieldset class="form-group">
+                            <label for="basicInput">تلفن همراه</label>
+                            <input type="text" class="form-control" id="Edit_Tel">
+                        </fieldset>
+                    </div>
+                </div>
+
                 <div class="modal-footer">
-                    <a  class="btn btn-secondary" data-dismiss="modal">بستن</a>
-                    <a  class="btn btn-primary" onclick="Edituser()">اعمال تغییرات</a>
+                    <a class="btn btn-secondary" data-dismiss="modal">بستن</a>
+                    <a class="btn btn-primary" onclick="Edituser()">اعمال تغییرات</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal User Roles -->
+    <div class="modal fade" id="UserRolesModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">نقش های کاربر فروشگاه</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" id="Roles_UserId" />
+
+                    <div id="rolesList">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+   
+
 }
