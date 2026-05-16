@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bugeto_Store.Application.Interfaces.FacadPatterns;
-using Bugeto_Store.Application.Services.Products.Commands.AddNewProduct;
+using FitCore.Application.Interfaces.FacadPatterns;
+using FitCore.Application.Services.Products.Commands.AddNewProduct;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

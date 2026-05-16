@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Bugeto_Store.Application.Interfaces.FacadPatterns;
+using FitCore.Application.Interfaces.FacadPatterns;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Site.Areas.Admin.Controllers

@@ -1,4 +1,4 @@
-﻿@using Bugeto_Store.Application.Services.Users.Queries.GetUsers
+﻿@using FitCore.Application.Services.Users.Queries.GetUsers
 @model ReslutGetUserDto;
 
 @{
@@ -347,11 +347,8 @@
         function ShowModalRolsUser(userId) {
 
             $.ajax({
-
                 type: "GET",
-
                 url: "/Admin/Users/UserRoles",
-
                 data: { userId: userId },
 
                 success: function (result) {
@@ -361,12 +358,14 @@
                     $("#UserRolesModal").modal('show');
                 },
 
-                error: function () {
+                error: function (xhr, status, error) {
+
+                    console.log(xhr.responseText);
 
                     Swal.fire({
                         icon: 'error',
                         title: 'خطا',
-                        text: 'دریافت نقش های کاربر انجام نشد'
+                        html: xhr.responseText
                     });
                 }
             });

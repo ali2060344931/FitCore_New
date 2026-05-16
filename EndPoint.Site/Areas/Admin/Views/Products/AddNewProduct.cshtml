@@ -7,7 +7,7 @@
 <section class="basic-elements">
     <div class="row">
         <div class="col-sm-12">
-            <h2 class="content-header">فرم ثبت نام کاربر جدید</h2>
+            <h2 class="content-header">فرم ثبت محصولات جدید</h2>
         </div>
     </div>
     <div class="row">
@@ -15,7 +15,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title-wrap bar-success">
-                        <h4 class="card-title mb-0">اطلاعات کاربر جدید را وارد نمایید</h4>
+                        <h4 class="card-title mb-0">اطلاعات محصولات جدید را وارد نمایید</h4>
                     </div>
                 </div>
                 <div class="card-body">
@@ -111,9 +111,11 @@
                                                 <th>
                                                     نام ویژگی
                                                 </th>
+                                                
                                                 <th>
                                                     مقدار ویژگی
                                                 </th>
+                                                
                                                 <th>
 
                                                 </th>
@@ -122,16 +124,13 @@
                                         <tbody></tbody>
                                     </table>
 
-
-
-
-
                                     <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
                                         <fieldset class="form-group">
                                             <br />
                                             <a id="btnAddProduct" class="btn btn-success col-md-12"> افزودن محصول  </a>
                                         </fieldset>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -151,7 +150,7 @@
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
-
+    @* روش جی کوئری *@
     <script>
 
         $("#btnAddFeatures").on("click", function () {
@@ -167,12 +166,15 @@
                 );
             }
             else {
-                $('#tbl_Features tbody').append('<tr> <td>' + txtDisplayName + '</td>  <td>' + txtValue + '</td> <td> <a class="idFeatures btnDelete btn btn-danger"> حذف </a> </td> </tr>');
+                $('#tbl_Features tbody').append('<tr> <td>' + txtDisplayName + '</td>  <td>' + txtValue + '</td> <td> <a class="idFeatures btnDelete btn btn-danger"> حذف آیتم </a> </td> </tr>');
+                // دستور خالی کردن تکست باکسها
                 $("#txtDisplayName").val('');
                 $("#txtValue").val('');
             }
         });
 
+
+        // دستور حذف روکوردهای هر سطر
         $("#tbl_Features").on('click', '.idFeatures', function () {
             $(this).closest('tr').remove();
         });
@@ -220,7 +222,7 @@
 
 
 
-            // ارسال اطلاعات بع کنترلر
+            // ارسال اطلاعات به کنترلر
             var ajaxRequest = $.ajax({
                 type: "POST",
                 url: "AddNewProduct",

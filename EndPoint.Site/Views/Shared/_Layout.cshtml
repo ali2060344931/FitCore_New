@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@* @using FitCore.Application.Services.SiteSettings
+@inject ISiteSettingService SiteSettingService
+@SiteSettingService.Get().SiteName *@
+
+@* @{
+    var site = SiteSettingService.Get();
+} *@
+
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -67,6 +75,8 @@
                             <div class="header-account text-left">
                                 <div class="d-block">
                                     <div class="account-box">
+                                        
+                                        @* جهت بررسی لاگین کاربر *@
                                         @if (User.Identity.IsAuthenticated)
                                         {
                                             <div class="nav-account d-block pl">

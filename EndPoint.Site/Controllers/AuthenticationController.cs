@@ -1,19 +1,21 @@
-﻿using System;
+﻿using EndPoint.Site.Models.ViewModels.AuthenticationViewModel;
+
+using FitCore.Application.Services.Setings.Queries.GetSetings;
+using FitCore.Application.Services.SiteSettings;
+using FitCore.Application.Services.Users.Commands.RgegisterUser;
+using FitCore.Application.Services.Users.Commands.UserLogin;
+using FitCore.Common.Dto;
+
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-using Bugeto_Store.Application.Services.Users.Commands.RgegisterUser;
-using Bugeto_Store.Application.Services.Users.Commands.UserLogin;
-using Bugeto_Store.Common.Dto;
-
-using EndPoint.Site.Models.ViewModels.AuthenticationViewModel;
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Site.Controllers
 {
@@ -23,16 +25,44 @@ namespace EndPoint.Site.Controllers
         private readonly IRegisterUserService _registerUserService;
         private readonly IUserLoginService _userLoginService;
 
-        public AuthenticationController(IRegisterUserService registerUserService, IUserLoginService userLoginService)
+        private readonly IGetSetings _getSetings;
+        //private readonly ISiteSettingService _siteSetting;
+
+        private readonly ISiteSettingService _siteSettingService;
+        //public AuthenticationController(IRegisterUserService registerUserService, IUserLoginService userLoginService, IGetSetings getSetings, ISiteSettingService siteSetting)
+        //{
+        //    _registerUserService = registerUserService;
+        //    _userLoginService = userLoginService;
+        //    _getSetings = getSetings;
+        //    _siteSetting = siteSetting;
+        //}
+
+        public AuthenticationController(
+    IRegisterUserService registerUserService,
+    IUserLoginService userLoginService,
+    ISiteSettingService siteSettingService, IGetSetings getSetings)
         {
             _registerUserService = registerUserService;
             _userLoginService = userLoginService;
+            _siteSettingService = siteSettingService;
+            _getSetings = getSetings;
         }
+
 
         [HttpGet]
         public IActionResult Signup()
         {
-            return View();
+
+            //var result = _getSetings.Execute();
+            //var setting = result.Data.FirstOrDefault(p => p.Id == 1);
+
+            //if (setting == null)
+            //    setting = new SetingDto { TextFilde = "فروشگاه" };
+
+            //return View(setting);
+
+            var siteSetting = _siteSettingService.Get();
+            return View(siteSetting);
         }
 
         [HttpPost]
@@ -116,12 +146,26 @@ namespace EndPoint.Site.Controllers
 
 
 
+        //public IActionResult Signin(string ReturnUrl = "/")
+        //{
+        //    ViewBag.url = ReturnUrl;
+
+        //    var result = _getSetings.Execute();
+        //    var setting = result.Data.FirstOrDefault(p => p.Id == 1);
+
+        //    if (setting == null)
+        //        setting = new SetingDto { TextFilde = "فروشگاه" };
+
+        //    return View(setting);
+        //}
+
         [HttpGet]
-        public IActionResult Signin(string ReturnUrl = "/")
+        public IActionResult Signin()
         {
-            ViewBag.url = ReturnUrl;
-            return View();
+            var siteSetting = _siteSettingService.Get();
+            return View(siteSetting);
         }
+
 
         [HttpPost]
         public IActionResult Signin(string Email, string Password, string url = "/")

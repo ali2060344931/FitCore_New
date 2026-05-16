@@ -1,4 +1,4 @@
-﻿using Bugeto_Store.Application.Services.Common.Queries.GetMenuItem;
+﻿using FitCore.Application.Services.Common.Queries.GetMenuItem;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

@@ -1,25 +1,33 @@
-using System;
+using FitCore.Application.Interfaces.Contexts;
+using FitCore.Application.Interfaces.FacadPatterns;
+using FitCore.Application.Services.Products.FacadPattern;
+using FitCore.Application.Services.Setings.Queries.GetSetings;
+using FitCore.Application.Services.SiteSettings;
+using FitCore.Application.Services.Users.Commands.EditUser;
+using FitCore.Application.Services.Users.Commands.RemoveUser;
+using FitCore.Application.Services.Users.Commands.RgegisterUser;
+using FitCore.Application.Services.Users.Commands.UserLogin;
+using FitCore.Application.Services.Users.Commands.UserSatusChange;
+using FitCore.Application.Services.Users.Queries.GetRoles;
+using FitCore.Application.Services.Users.Queries.GetUsers;
+using FitCore.Domain.Entities.Users;
+using FitCore.Persistence.Contexts;
 
-using Bugeto_Store.Application.Interfaces.Contexts;
-using Bugeto_Store.Application.Interfaces.FacadPatterns;
-using Bugeto_Store.Application.Services.Products.FacadPattern;
-using Bugeto_Store.Application.Services.Users.Commands.EditUser;
-using Bugeto_Store.Application.Services.Users.Commands.RemoveUser;
-using Bugeto_Store.Application.Services.Users.Commands.RgegisterUser;
-using Bugeto_Store.Application.Services.Users.Commands.UserLogin;
-using Bugeto_Store.Application.Services.Users.Commands.UserSatusChange;
-using Bugeto_Store.Application.Services.Users.Queries.GetRoles;
-using Bugeto_Store.Application.Services.Users.Queries.GetUsers;
-using Bugeto_Store.Persistence.Contexts;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using System;
+
+using static FitCore.Persistence.Contexts.DataBaseContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +45,16 @@ builder.Services.AddAuthentication(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
 });
 
+//builder.Services.AddIdentity<AppUser, IdentityRole<long>>()
+//    .AddEntityFrameworkStores<DatabaseContext>()
+//    .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Auth/Login";
 
+    options.AccessDeniedPath = "/Auth/AccessDenied";
+});
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
@@ -53,8 +69,14 @@ builder.Services.AddScoped<IRemoveUserService, RemoveUserService>();
 builder.Services.AddScoped<IUserLoginService, UserLoginService>();
 builder.Services.AddScoped<IUserSatusChangeService, UserSatusChangeService>();
 builder.Services.AddScoped<IEditUserService, EditUserService>();
+builder.Services.AddScoped<IGetSetings, GetSetingService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
+
+
+//FacadeInjection
 builder.Services.AddScoped<IProductFacad, ProductFacad>();
 
 
@@ -67,7 +89,7 @@ builder.Services.AddFluentValidationAutoValidation();
 //var app = builder.Build();
 
 string connectionString =
-@"Data Source=.;Initial Catalog=Bugeto_StoreDb01;Integrated Security=True;TrustServerCertificate=True";
+@"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
 
 builder.Services.AddDbContext<DataBaseContext>(options =>
     options.UseSqlServer(connectionString));

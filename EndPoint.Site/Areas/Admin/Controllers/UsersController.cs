@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Bugeto_Store.Application.Services.Users.Commands.EditUser;
-using Bugeto_Store.Application.Services.Users.Commands.RemoveUser;
-using Bugeto_Store.Application.Services.Users.Commands.RgegisterUser;
-using Bugeto_Store.Application.Services.Users.Commands.UserSatusChange;
-using Bugeto_Store.Application.Services.Users.Queries.GetRoles;
-using Bugeto_Store.Application.Services.Users.Queries.GetUsers;
+﻿using FitCore.Application.Services.Users.Commands.EditUser;
+using FitCore.Application.Services.Users.Commands.RemoveUser;
+using FitCore.Application.Services.Users.Commands.RgegisterUser;
+using FitCore.Application.Services.Users.Commands.UserSatusChange;
+using FitCore.Application.Services.Users.Queries.GetRoles;
+using FitCore.Application.Services.Users.Queries.GetUsers;
+using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Internal;
+
+using System.Collections.Generic;
+using System.Text.Encodings.Web;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -25,7 +23,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IRemoveUserService _removeUserService;
         private readonly IUserSatusChangeService _userSatusChangeService;
         private readonly IEditUserService _editUserService;
-        public UsersController(IGetUsersService getUsersService
+        public UsersController(
+            IGetUsersService getUsersService
             , IGetRolesService getRolesService
             , IRegisterUserService registerUserService
             , IRemoveUserService removeUserService
@@ -82,9 +81,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
 
 
-        
+
         [HttpPost]
-        public IActionResult Create(string Email, string FullName, long RoleId, string Password, string RePassword,string Tel)
+        public IActionResult Create(string Email, string FullName, long RoleId, string Password, string RePassword, string Tel)
         {
             //if (!ModelState.IsValid)
             //{
@@ -96,7 +95,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             {
                 Email = Email,
                 FullName = FullName,
-                Tel=Tel,
+                Tel = Tel,
                 roles = new List<RolesInRegisterUserDto>()
                    {
                         new RolesInRegisterUserDto
@@ -109,7 +108,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             });
             return Json(result);
         }
-       
+
 
 
 
@@ -126,24 +125,24 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(long UserId, string Fullname,string Email,string Tel)
+        public IActionResult Edit(long UserId, string Fullname, string Email, string Tel)
         {
             return Json(_editUserService.Execute(new RequestEdituserDto
             {
                 Fullname = Fullname,
-                Email= Email,
-                Tel=Tel,
+                Email = Email,
+                Tel = Tel,
                 UserId = UserId,
             }));
         }
 
 
         [HttpGet]
-        public IActionResult UserRoles(string userId)
+        public IActionResult UserRoles(long userId)
         {
             var result = _getRolesService.Execute();
 
-            return PartialView("_UserRoles", result);
+            return PartialView("_UserRoles", result.Data);
         }
 
     }

@@ -1,4 +1,9 @@
-﻿
+﻿@using FitCore.Application.Services.SiteSettings
+@inject ISiteSettingService SiteSettingService
+@{
+    var siteSetting = SiteSettingService.Get();
+}
+
 @{
     ViewData["Title"] = "ثبت نام";
     Layout = null;
@@ -33,16 +38,16 @@
                                 <div class="account-box-headline">
                                     <a href="~/authentication/signin" class="login-ds">
                                         <span class="title">ورود</span>
-                                        <span class="sub-title">به فروشگاه باگتو</span>
+                                        <span class="sub-title">به @Model.SiteName خوش آمدید</span>
                                     </a>
                                     <a href="~/authentication/signup" class="register-ds active">
-                                        <span class="title">ثبت نام</span>
-                                        <span class="sub-title">در فروشگاه باگتو</span>
+                                        <span class="title">ثبت نام در</span>
+                                        <span class="sub-title">@Model.SiteName</span>
                                     </a>
                                 </div>
                                 <div class="Login-to-account mt-4">
                                     <div class="account-box-content">
-                                        <h4>ثبت نام در دیجی اسمارت</h4>
+                                        <h4> ثبت نام در  @Model.SiteName</h4>
                                         <form method="post" class="form-account text-right">
                                             <div class="form-account-title">
                                                 <label for="email-phone">نام نام خانوادگی</label>
@@ -75,9 +80,10 @@
                                                     <span class="ui-checkbox-check"></span>
                                                 </label>
                                                 <label for="remember" class="remember-me mr-0"><a href="#">حریم خصوصی</a> و <a href="#">شرایط قوانین </a>استفاده از سرویس های سایت دیجی‌اسمارت را مطالعه نموده و با کلیه موارد آن موافقم.</label>
+                                                <label for="remember" class="remember-me mr-0">آدرس ایمیل: @Model.Email    تلفن همراه:@Model.Phone</label>
                                             </div>
                                             <div class="form-row-account">
-                                                <a onclick="Registeruser()" class="btn btn-primary btn-register">ثبت نام در فروشگاه باگتو</a>
+                                                <a onclick="Registeruser()" class="btn btn-primary btn-register">ثبت نام در  @Model.SiteName</a>
                                             </div>
                                         </form>
                                     </div>
