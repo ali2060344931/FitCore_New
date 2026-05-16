@@ -1,5 +1,6 @@
 using FitCore.Application.Interfaces.Contexts;
 using FitCore.Application.Interfaces.FacadPatterns;
+using FitCore.Application.Services.Facads;
 using FitCore.Application.Services.Products.FacadPattern;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
@@ -75,9 +76,9 @@ builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
 
-
 //FacadeInjection
 builder.Services.AddScoped<IProductFacad, ProductFacad>();
+builder.Services.AddScoped<IMemberFacad, MemberFacad>();
 
 
 builder.Services.AddControllersWithViews();
