@@ -38,10 +38,10 @@ builder.Services.AddDbContext<DataBaseContext>(options =>
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 6;
 });
 
@@ -50,11 +50,11 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.AddIdentity<AppUser, IdentityRole<long>>(options =>
 {
-    options.Password.RequireDigit = false;
+    options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
 })
 .AddEntityFrameworkStores<DataBaseContext>()
 .AddDefaultTokenProviders();
@@ -70,10 +70,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 #region FluentValidation
 
-
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 builder.Services.AddFluentValidationAutoValidation();
-
 
 
 #endregion

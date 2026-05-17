@@ -59,15 +59,13 @@
 
                                         <h4>ثبت نام</h4>
 
-                                        <form asp-action="Register" asp-controller="Auth" method="post" class="form-account text-right">
-
-                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                        <form class="form-account text-right">
 
                                             <div class="form-account-title">
 
                                                 <label>نام و نام خانوادگی</label>
 
-                                                <input asp-for="FullName" class="number-email-input" />
+                                                <input type="text" class="number-email-input" id="FullName">
 
                                             </div>
 
@@ -75,7 +73,7 @@
 
                                                 <label>ایمیل</label>
 
-                                                <input asp-for="Email" class="number-email-input" />
+                                                <input type="email" class="number-email-input" id="Email">
 
                                             </div>
 
@@ -83,7 +81,7 @@
 
                                                 <label>رمز عبور</label>
 
-                                                <input asp-for="Password" type="password" class="password-input" />
+                                                <input type="password" class="password-input" id="Password">
 
                                             </div>
 
@@ -91,17 +89,17 @@
 
                                                 <label>تکرار رمز عبور</label>
 
-                                                <input asp-for="RePassword" type="password" class="password-input" />
+                                                <input type="password" class="password-input" id="RePassword">
 
                                             </div>
 
                                             <div class="form-row-account">
 
-                                                <button type="submit" class="btn btn-primary btn-register">
+                                                <a onclick="Registeruser()" class="btn btn-primary btn-register">
 
                                                     ثبت نام
 
-                                                </button>
+                                                </a>
 
                                             </div>
 
@@ -123,6 +121,12 @@
         </div>
     </div>
 
+    <div class="progress-wrap">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+    </div>
+
     <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
     <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
 
@@ -134,6 +138,79 @@
     <script src="~/SiteTemplate/assets/js/vendor/nouislider.min.js"></script>
 
     <script src="~/SiteTemplate/assets/js/main.js"></script>
+
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+
+        function Registeruser() {
+
+        var FullName = $("#FullName").val();
+        var Email = $("#Email").val();
+        var Password = $("#Password").val();
+        var RePassword = $("#RePassword").val();
+
+        var postData = {
+
+        FullName: FullName,
+        Email: Email,
+        Password: Password,
+        RePassword: RePassword
+
+        };
+
+        $.ajax({
+
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        type: "POST",
+        url: "/Auth/Register",
+        data: postData,
+
+        success: function (data) {
+
+        if (data.isSuccess == true) {
+
+        Swal.fire(
+        'موفق!',
+        data.message,
+        'success'
+        ).then(function () {
+
+        window.location.replace("/Auth/Login");
+
+        });
+
+        }
+
+        else {
+
+        Swal.fire(
+        'خطا',
+        data.message,
+        'warning'
+        );
+
+        }
+
+        },
+
+        error: function (request) {
+
+        Swal.fire(
+        'خطا',
+        request.responseText,
+        'error'
+        );
+
+        }
+
+        });
+
+        }
+
+    </script>
 
 </body>
 </html>

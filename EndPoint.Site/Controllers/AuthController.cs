@@ -7,6 +7,7 @@ using FitCore.Domain.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
+using System.Linq;
 using System.Threading.Tasks;
 
 using static FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService;
@@ -42,6 +43,22 @@ namespace EndPoint.Site.Controllers
         }
 
         [HttpPost]
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginUserRequest request)
+        {
+            var result = await _loginUserService.Execute(request);
+
+            if (result.IsSuccess)
+            {
+                return Json(new { isSuccess = true, message = result.Message });
+            }
+
+            return Json(new { isSuccess = false, message = result.Message });
+        }
+
+
+        /*
         public async Task<IActionResult> Login(LoginUserRequest request)
         {
             var model = new LoginPageViewModel
@@ -67,7 +84,7 @@ namespace EndPoint.Site.Controllers
             return View(model);
         }
 
-
+        */
 
         public class LoginPageViewModel
         {
@@ -97,23 +114,50 @@ namespace EndPoint.Site.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(request);
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .FirstOrDefault();
+
+                return Json(new { isSuccess = false, message = errors });
             }
-            var q = new RegisterUserRequest();
-            q.Email = request.Email;
-            q.Password = request.Password;
-            q.FullName = request.FullName;
-            q.GymId = 2;
+
+            request.GymId = 2;
+
+            var result = await _registerUserService.Execute(request);
+
+            return Json(new
+            {
+                isSuccess = result.IsSuccess,
+                message = result.Message
+            });
+        }
+
+
+
+
+        /*
+        public async Task<IActionResult> Register(RegisterUserRequest request)
+        {
+            var q = new RegisterUserRequest
+            {
+                Email = request.Email,
+                Password = request.Password,
+                RePassword = request.RePassword,
+                FullName = request.FullName,
+                GymId = 2
+            };
+
             var result = await _registerUserService.Execute(q);
 
             if (result.IsSuccess)
             {
-                return RedirectToAction("Login");
+                return Json(new { isSuccess = true, message = result.Message });
             }
 
-            ModelState.AddModelError("", result.Message);
-
-            return View(request);
+            return Json(new { isSuccess = false, message = result.Message });
         }
+        */
+
     }
 }

@@ -4,11 +4,13 @@ using FitCore.Domain.Entities.Users;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,24 +26,38 @@ namespace FitCore.Application.Services.Users.Commands.RegisterUser
     public partial class RegisterUserService : IRegisterUserService
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public RegisterUserService(UserManager<AppUser> userManager)
+        public RegisterUserService(
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<ResultDto> Execute(RegisterUserRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.FullName))
+                return new ResultDto { IsSuccess = false, Message = "نام و نام خانوادگی را وارد کنید" };
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+                return new ResultDto { IsSuccess = false, Message = "ایمیل را وارد کنید" };
+
+            if (string.IsNullOrWhiteSpace(request.Password))
+                return new ResultDto { IsSuccess = false, Message = "رمز عبور را وارد کنید" };
+
+            if (request.Password != request.RePassword)
+                return new ResultDto { IsSuccess = false, Message = "رمز عبور و تکرار آن یکسان نیست" };
+
             var userExist = await _userManager.FindByEmailAsync(request.Email);
 
             if (userExist != null)
-            {
                 return new ResultDto
                 {
                     IsSuccess = false,
                     Message = "این ایمیل قبلاً ثبت شده است"
                 };
-            }
 
             var user = new AppUser
             {
@@ -56,19 +72,13 @@ namespace FitCore.Application.Services.Users.Commands.RegisterUser
 
             if (!result.Succeeded)
             {
-                //return new ResultDto
-                //{
-                //    IsSuccess = false,
-                //    Message = "خطا در ثبت کاربر"
-                //};
-                if (!result.Succeeded)
+                var errors = result.Errors.Select(x => MapIdentityError(x.Description)).ToList();
+
+                return new ResultDto
                 {
-                    return new ResultDto
-                    {
-                        IsSuccess = false,
-                        Message = string.Join(" | ", result.Errors.Select(x => x.Description))
-                    };
-                }
+                    IsSuccess = false,
+                    Message = string.Join(" - ", errors)
+                };
             }
 
             return new ResultDto
@@ -78,31 +88,27 @@ namespace FitCore.Application.Services.Users.Commands.RegisterUser
             };
         }
 
-        public class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
+
+        private string MapIdentityError(string error)
         {
-            public RegisterUserValidator()
-            {
-                RuleFor(x => x.FullName)
-                    .NotEmpty()
-                    .WithMessage("نام الزامی است");
+            if (error.Contains("Passwords must have at least one non alphanumeric character"))
+                return "رمز عبور باید حداقل یک کاراکتر خاص مانند !@@#$%^&* داشته باشد";
 
-                RuleFor(x => x.Email)
-                    .NotEmpty()
-                    .EmailAddress()
-                    .WithMessage("ایمیل معتبر نیست");
+            if (error.Contains("Passwords must have at least one lowercase"))
+                return "رمز عبور باید حداقل یک حرف کوچک انگلیسی داشته باشد";
 
-                RuleFor(x => x.Password)
-                    .NotEmpty()
-                    .MinimumLength(6)
-                    .WithMessage("رمز عبور باید حداقل 6 کاراکتر باشد");
+            if (error.Contains("Passwords must have at least one uppercase"))
+                return "رمز عبور باید حداقل یک حرف بزرگ انگلیسی داشته باشد";
 
-                RuleFor(x => x.RePassword)
-                    .Equal(x => x.Password)
-                    .WithMessage("رمز عبور مطابقت ندارد");
-            }
+            if (error.Contains("Passwords must have at least one digit"))
+                return "رمز عبور باید حداقل یک عدد داشته باشد";
 
+            if (error.Contains("Email"))
+                return "ایمیل وارد شده معتبر نیست";
 
+            return error;
         }
 
+        
     }
 }

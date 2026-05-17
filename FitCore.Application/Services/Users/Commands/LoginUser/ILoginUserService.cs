@@ -1,12 +1,11 @@
 ﻿using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.Users.Commands.LoginUser
@@ -16,22 +15,31 @@ namespace FitCore.Application.Services.Users.Commands.LoginUser
         Task<ResultDto> Execute(LoginUserRequest request);
     }
 
-
     public class LoginUserService : ILoginUserService
     {
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
         public LoginUserService(
-            SignInManager<AppUser> signInManager,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
-            _signInManager = signInManager;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<ResultDto> Execute(LoginUserRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.Password))
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "ایمیل و رمز عبور را وارد کنید"
+                };
+            }
+
             var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
@@ -48,14 +56,13 @@ namespace FitCore.Application.Services.Users.Commands.LoginUser
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "حساب کاربری غیرفعال است"
+                    Message = "حساب کاربری شما غیرفعال است"
                 };
             }
 
-            var result = await _signInManager.PasswordSignInAsync(
+            var result = await _signInManager.CheckPasswordSignInAsync(
                 user,
                 request.Password,
-                request.RememberMe,
                 lockoutOnFailure: true);
 
             if (!result.Succeeded)
@@ -63,9 +70,39 @@ namespace FitCore.Application.Services.Users.Commands.LoginUser
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "ایمیل یا رمز عبور اشتباه است"
+                    Message = "رمز عبور اشتباه است"
                 };
             }
+
+            // ✅ ساخت Claims سفارشی
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName ?? ""),
+                new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim("GymId", user.GymId.ToString())
+            };
+
+            // اضافه کردن Role
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var identity = new ClaimsIdentity(
+                claims,
+                IdentityConstants.ApplicationScheme);
+
+            var principal = new ClaimsPrincipal(identity);
+
+            await _signInManager.Context.SignInAsync(
+                IdentityConstants.ApplicationScheme,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = request.RememberMe
+                });
 
             return new ResultDto
             {
@@ -73,8 +110,9 @@ namespace FitCore.Application.Services.Users.Commands.LoginUser
                 Message = "ورود با موفقیت انجام شد"
             };
         }
-    }
 
+
+    }
 
     public class LoginUserRequest
     {
@@ -84,4 +122,5 @@ namespace FitCore.Application.Services.Users.Commands.LoginUser
 
         public bool RememberMe { get; set; }
     }
+
 }
