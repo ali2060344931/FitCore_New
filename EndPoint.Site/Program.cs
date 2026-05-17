@@ -81,18 +81,13 @@ builder.Services.AddFluentValidationAutoValidation();
 #region Dependency Injection
 
 builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
-
 builder.Services.AddScoped<IGetSetings, GetSetingService>();
-
 builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.AddScoped<ILoginUserService, LoginUserService>();
-
 builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
 builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
 
-
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
-
 builder.Services.AddMemoryCache();
 
 #endregion

@@ -1,30 +1,139 @@
 ﻿@model FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService.RegisterUserRequest
-<form asp-action="Register" method="post">
 
-    <div>
-        <label>نام کامل</label>
-        <input asp-for="FullName" />
-        <span asp-validation-for="FullName"></span>
+@{
+    ViewData["Title"] = "ثبت نام";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ثبت نام</title>
+
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
+
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/noUISlider.min.css">
+
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg">
+
+                <section class="page-account-box">
+
+                    <div class="col-lg-6 col-md-6 col-xs-12 mx-auto">
+
+                        <div class="ds-userlogin">
+
+                            <a href="/" class="account-box-logo">FitCore</a>
+
+                            <div class="account-box">
+
+                                <div class="account-box-headline">
+
+                                    <a href="/Auth/Login" class="login-ds">
+                                        <span class="title">ورود</span>
+                                    </a>
+
+                                    <a href="/Auth/Register" class="register-ds active">
+                                        <span class="title">ثبت نام</span>
+                                    </a>
+
+                                </div>
+
+                                <div class="Login-to-account mt-4">
+
+                                    <div class="account-box-content">
+
+                                        <h4>ثبت نام</h4>
+
+                                        <form asp-action="Register" asp-controller="Auth" method="post" class="form-account text-right">
+
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+
+                                            <div class="form-account-title">
+
+                                                <label>نام و نام خانوادگی</label>
+
+                                                <input asp-for="FullName" class="number-email-input" />
+
+                                            </div>
+
+                                            <div class="form-account-title">
+
+                                                <label>ایمیل</label>
+
+                                                <input asp-for="Email" class="number-email-input" />
+
+                                            </div>
+
+                                            <div class="form-account-title">
+
+                                                <label>رمز عبور</label>
+
+                                                <input asp-for="Password" type="password" class="password-input" />
+
+                                            </div>
+
+                                            <div class="form-account-title">
+
+                                                <label>تکرار رمز عبور</label>
+
+                                                <input asp-for="RePassword" type="password" class="password-input" />
+
+                                            </div>
+
+                                            <div class="form-row-account">
+
+                                                <button type="submit" class="btn btn-primary btn-register">
+
+                                                    ثبت نام
+
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
     </div>
 
-    <div>
-        <label>ایمیل</label>
-        <input asp-for="Email" />
-        <span asp-validation-for="Email"></span>
-    </div>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
 
-    <div>
-        <label>رمز عبور</label>
-        <input asp-for="Password" type="password" />
-        <span asp-validation-for="Password"></span>
-    </div>
+    <script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/wNumb.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/nouislider.min.js"></script>
 
-    <div>
-        <label>تکرار رمز عبور</label>
-        <input asp-for="RePassword" type="password" />
-        <span asp-validation-for="RePassword"></span>
-    </div>
+    <script src="~/SiteTemplate/assets/js/main.js"></script>
 
-    <button type="submit">ثبت نام</button>
-
-</form>
+</body>
+</html>

@@ -1,4 +1,5 @@
-﻿using FitCore.Application.Services.Users.Commands.LoginUser;
+﻿using FitCore.Application.Services.SiteSettings;
+using FitCore.Application.Services.Users.Commands.LoginUser;
 using FitCore.Application.Services.Users.Commands.LogoutUser;
 using FitCore.Application.Services.Users.Commands.RegisterUser;
 using FitCore.Domain.Entities.Users;
@@ -16,11 +17,13 @@ namespace EndPoint.Site.Controllers
     {
         private readonly ILoginUserService _loginUserService;
         private readonly IRegisterUserService _registerUserService;
+        private readonly ISiteSettingService _siteSettingService;
 
-        public AuthController(ILoginUserService loginUserService, IRegisterUserService registerUserService)
+        public AuthController(ISiteSettingService siteSettingService, ILoginUserService loginUserService, IRegisterUserService registerUserService)
         {
             _loginUserService = loginUserService;
             _registerUserService = registerUserService;
+            _siteSettingService = siteSettingService;
         }
 
 
@@ -29,15 +32,27 @@ namespace EndPoint.Site.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            return View(new LoginUserRequest());
+            var model = new LoginPageViewModel
+            {
+                Login = new LoginUserRequest(),
+                SiteSetting = _siteSettingService.Get()
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginUserRequest request)
         {
+            var model = new LoginPageViewModel
+            {
+                Login = request,
+                SiteSetting = _siteSettingService.Get()
+            };
+
             if (!ModelState.IsValid)
             {
-                return View(request);
+                return View(model);
             }
 
             var result = await _loginUserService.Execute(request);
@@ -49,7 +64,15 @@ namespace EndPoint.Site.Controllers
 
             ModelState.AddModelError("", result.Message);
 
-            return View(request);
+            return View(model);
+        }
+
+
+
+        public class LoginPageViewModel
+        {
+            public LoginUserRequest Login { get; set; }
+            public SiteSettingDto SiteSetting { get; set; }
         }
 
 
@@ -80,8 +103,8 @@ namespace EndPoint.Site.Controllers
             q.Email = request.Email;
             q.Password = request.Password;
             q.FullName = request.FullName;
-            q.GymId = 1;
-            var result = await _registerUserService.Execute(request);
+            q.GymId = 2;
+            var result = await _registerUserService.Execute(q);
 
             if (result.IsSuccess)
             {
