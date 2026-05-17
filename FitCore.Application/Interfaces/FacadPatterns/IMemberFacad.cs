@@ -13,6 +13,10 @@ namespace FitCore.Application.Interfaces.FacadPatterns
     {
         IAddNewMemberService AddNewMemberService { get; }
 
+        IEditMemberService EditMemberService { get; }
+
+        IRemoveMemberService RemoveMemberService { get; }
+
         IGetMembersService GetMembersService { get; }
     }
 }

@@ -2,7 +2,7 @@
 @model ResultGetMembersDto
 
 @{
-    var searchKey = Context.Request.Query["serchkey"].ToString();
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
 
     ViewData["Title"] = "Members";
@@ -37,7 +37,7 @@
 
                                         <input type="text"
                                                class="form-control ml-sm-0"
-                                               name="serchkey"
+                                               name="SearchKey"
                                                value="@searchKey"
                                                placeholder="جستجوی عضو..." />
 
@@ -58,7 +58,7 @@
                                         {
                                             <a href="/Admin/Members"
                                                    class="btn btn-warning">
-                                                نمایش همه (@Model.TotalRows)
+                                                نمایش همه (@Model.RowCount)
                                             </a>
                                         }
 
@@ -130,7 +130,7 @@
 
                                     <span class="ml-3">
                                         کل اعضا :
-                                        <strong>@Model.TotalRows</strong>
+                                        <strong>@Model.RowCount</strong>
                                     </span>
 
                                 </div>

@@ -1,10 +1,7 @@
 ﻿using FitCore.Application.Interfaces.Contexts;
 using FitCore.Application.Interfaces.FacadPatterns;
-//using FitCore.Application.Interfaces.Facads;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Member.Queries;
-//using FitCore.Application.Services.Member.Commands.AddNewMemb;
-//using FitCore.Application.Services.Member.Queries.GetMembers;
 
 namespace FitCore.Application.Services.Facads
 {
@@ -31,7 +28,6 @@ namespace FitCore.Application.Services.Facads
         }
 
         private IGetMembersService _getMembersService;
-
         public IGetMembersService GetMembersService
         {
             get
@@ -39,6 +35,28 @@ namespace FitCore.Application.Services.Facads
                 return _getMembersService =
                     _getMembersService ??
                     new GetMembersService(_context);
+            }
+        }
+
+        private IEditMemberService _editMemberService;
+        public IEditMemberService EditMemberService
+        {
+            get
+            {
+                return _editMemberService =
+                    _editMemberService ??
+                    new EditMemberService(_context);
+            }
+        }
+
+        private IRemoveMemberService _removeMemberService;
+        public IRemoveMemberService RemoveMemberService
+        {
+            get
+            {
+                return _removeMemberService =
+                    _removeMemberService ??
+                    new RemoveMemberService(_context);
             }
         }
     }

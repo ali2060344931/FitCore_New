@@ -1,4 +1,5 @@
 ﻿using FitCore.Domain.Entities.Commons;
+using FitCore.Domain.Entities.Gyms;
 
 using System;
 using System.Reflection;
@@ -8,7 +9,7 @@ namespace FitCore.Domain.Entities.Members
     public class Member : BaseEntity
     {
         public long GymId { get; set; }
-        public Gyms.Gym Gym { get; set; }
+        public Gym Gym { get; set; }
 
         public string FirstName { get; set; }
 
@@ -27,10 +28,10 @@ namespace FitCore.Domain.Entities.Members
         public DateTime? MembershipEndDate { get; set; }
 
         // قد (برای تحلیل بدن)
-        public float? Height { get; set; }
+        public decimal? Height { get; set; }
 
         // وزن
-        public float? Weight { get; set; }
+        public decimal? Weight { get; set; }
 
         // وضعیت فعال بودن عضویت
         public bool IsActive { get; set; } = true;
