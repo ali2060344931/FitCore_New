@@ -1,0 +1,22 @@
+﻿using FitCore.Persistence.Seed;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+public static class SeederRunner
+{
+    public static async Task RunAsync(IServiceProvider serviceProvider)
+    {
+        var seeders = new List<ISeeder>
+        {
+            new RoleSeeder(),
+            new SettingsSeeder()
+        };
+
+        foreach (var seeder in seeders)
+        {
+            await seeder.SeedAsync(serviceProvider);
+        }
+    }
+}

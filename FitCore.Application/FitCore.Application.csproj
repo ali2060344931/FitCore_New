@@ -17,8 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Services\Common\Queries\" />
+    <Folder Include="Services\Gym\Queries\" />
     <Folder Include="Services\Setings\Commands\" />
-    <Folder Include="Services\Users\Commands\UserLogin\" />
   </ItemGroup>
 
 </Project>

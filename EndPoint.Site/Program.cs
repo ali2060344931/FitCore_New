@@ -1,26 +1,18 @@
 using FitCore.Application.Interfaces.Contexts;
 using FitCore.Application.Interfaces.FacadPatterns;
 using FitCore.Application.Services.Facads;
-using FitCore.Application.Services.Products.FacadPattern;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
-using FitCore.Application.Services.Users.Commands.EditUser;
-using FitCore.Application.Services.Users.Commands.RemoveUser;
-using FitCore.Application.Services.Users.Commands.RgegisterUser;
-using FitCore.Application.Services.Users.Commands.UserLogin;
-using FitCore.Application.Services.Users.Commands.UserSatusChange;
-using FitCore.Application.Services.Users.Queries.GetRoles;
-using FitCore.Application.Services.Users.Queries.GetUsers;
+using FitCore.Application.Services.Users.Commands.LoginUser;
+using FitCore.Application.Services.Users.Commands.LogoutUser;
+using FitCore.Application.Services.Users.Commands.RegisterUser;
 using FitCore.Domain.Entities.Users;
 using FitCore.Persistence.Contexts;
 
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,66 +20,11 @@ using Microsoft.Extensions.Hosting;
 
 using System;
 
-using static FitCore.Persistence.Contexts.DataBaseContext;
+using static FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Services
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.LoginPath = new PathString("/");
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
-});
-
-//builder.Services.AddIdentity<AppUser, IdentityRole<long>>()
-//    .AddEntityFrameworkStores<DatabaseContext>()
-//    .AddDefaultTokenProviders();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Auth/Login";
-
-    options.AccessDeniedPath = "/Auth/AccessDenied";
-});
-
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
-
-
-
-
-builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
-builder.Services.AddScoped<IGetUsersService, GetUsersService>();
-builder.Services.AddScoped<IGetRolesService, GetRolesService>();
-builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
-builder.Services.AddScoped<IRemoveUserService, RemoveUserService>();
-builder.Services.AddScoped<IUserLoginService, UserLoginService>();
-builder.Services.AddScoped<IUserSatusChangeService, UserSatusChangeService>();
-builder.Services.AddScoped<IEditUserService, EditUserService>();
-builder.Services.AddScoped<IGetSetings, GetSetingService>();
-builder.Services.AddMemoryCache();
-builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
-
-
-//FacadeInjection
-builder.Services.AddScoped<IProductFacad, ProductFacad>();
-builder.Services.AddScoped<IMemberFacad, MemberFacad>();
-
-
-builder.Services.AddControllersWithViews();
-
-
-builder.Services.AddFluentValidationAutoValidation();
-
-
-//var app = builder.Build();
+#region Database
 
 string connectionString =
 @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
@@ -95,10 +32,88 @@ string connectionString =
 builder.Services.AddDbContext<DataBaseContext>(options =>
     options.UseSqlServer(connectionString));
 
+#endregion
+
+#region Identity
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+});
+
+
+
+
+builder.Services.AddIdentity<AppUser, IdentityRole<long>>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
+.AddEntityFrameworkStores<DataBaseContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Auth/Login";
+    options.AccessDeniedPath = "/Auth/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+});
+
+#endregion
+
+#region FluentValidation
+
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+
+
+
+#endregion
+
+#region Dependency Injection
+
+builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
+
+builder.Services.AddScoped<IGetSetings, GetSetingService>();
+
+builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
+builder.Services.AddScoped<ILoginUserService, LoginUserService>();
+
+builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
+builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
+
+
+builder.Services.AddScoped<IMemberFacad, MemberFacad>();
+
+builder.Services.AddMemoryCache();
+
+#endregion
+
+#region MVC
+
+builder.Services.AddControllersWithViews();
 
 #endregion
 
 var app = builder.Build();
+
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    await SeederRunner.RunAsync(services);
+}
+
 
 #region Middleware
 
@@ -113,20 +128,26 @@ else
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+#endregion
+
+#region Routes
 
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 #endregion
 

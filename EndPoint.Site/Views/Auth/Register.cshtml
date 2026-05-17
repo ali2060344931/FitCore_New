@@ -1,0 +1,30 @@
+﻿@model FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService.RegisterUserRequest
+<form asp-action="Register" method="post">
+
+    <div>
+        <label>نام کامل</label>
+        <input asp-for="FullName" />
+        <span asp-validation-for="FullName"></span>
+    </div>
+
+    <div>
+        <label>ایمیل</label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div>
+        <label>رمز عبور</label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <div>
+        <label>تکرار رمز عبور</label>
+        <input asp-for="RePassword" type="password" />
+        <span asp-validation-for="RePassword"></span>
+    </div>
+
+    <button type="submit">ثبت نام</button>
+
+</form>
