@@ -75,7 +75,7 @@
                                                 <span class="icon-account">
                                                     <img src="~/SiteTemplate/assets/images/man.png" class="avator">
                                                 </span>
-                                                <span class="title-account">@User.Identity.Name</span>
+                                                <span class="title-account">کاربر: @User.Identity.Name</span>
                                                 <div class="dropdown-menu">
                                                     <ul class="account-uls mb-0">
                                                         <li class="account-item">
@@ -88,7 +88,8 @@
                                                             <a href="#" class="account-link">تنظیمات</a>
                                                         </li>
                                                         <li class="account-item">
-                                                            <a href="~/Auth/Login" class="account-link">خروج</a>
+                                                            <a href="~/Auth/Logout" class="account-link">خروج از برنامه</a>
+
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -1160,7 +1161,7 @@
 <!-- file js---------------------------------------------------->
 
 
-<script src="~/SiteTemplate/~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
 <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
 <!-- plugin----------------------------------------------------->
 <script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
@@ -1168,4 +1169,5 @@
 <script src="~/SiteTemplate/assets/js/vendor/jquery.nice-select.min.js"></script>
 <!-- main js---------------------------------------------------->
 <script src="~/SiteTemplate/assets/js/main.js"></script>
+@RenderSection("Scripts", required: false)
 </html>

@@ -1,17 +1,20 @@
+using FitCore.Application.Interfaces;
 using FitCore.Application.Interfaces.Contexts;
 using FitCore.Application.Interfaces.FacadPatterns;
+using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Facads;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
+using FitCore.Application.Services.SmsService.Commands;
 using FitCore.Application.Services.Users.Commands.LoginUser;
 using FitCore.Application.Services.Users.Commands.LogoutUser;
 using FitCore.Application.Services.Users.Commands.RegisterUser;
 using FitCore.Domain.Entities.Users;
 using FitCore.Persistence.Contexts;
-
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,50 +23,60 @@ using Microsoft.Extensions.Hosting;
 
 using System;
 
-using static FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService;
+//using static FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService;
+
+using SendOtpService = FitCore.Application.Services.Auth.SendOtpService;
+using VerifyOtpService = FitCore.Application.Services.Auth.VerifyOtpService;
+//using RegisterUserService = FitCore.Application.Services.Auth.RegisterUserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Database
 
 string connectionString =
-@"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
+    @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
 
 builder.Services.AddDbContext<DataBaseContext>(options =>
     options.UseSqlServer(connectionString));
 
 #endregion
 
-#region Identity
+#region Identity — ✅ اصلاح شده
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 6;
-});
+// HttpContextAccessor مورد نیاز SignInManager
+builder.Services.AddHttpContextAccessor();
 
-
-
+// =====================================================
+// ❌ حذف شد: builder.Services.AddAuthentication().AddCookie()
+// ✅ فقط AddIdentity — خودش Authentication را تنظیم می‌کند
+// =====================================================
 
 builder.Services.AddIdentity<AppUser, IdentityRole<long>>(options =>
 {
+    // تنظیمات رمز عبور یکجا در اینجا
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
+
+    // تنظیمات اضافی Identity در صورت نیاز
+    options.User.RequireUniqueEmail = false; // چون با موبایل کار می‌کنیم
+    options.SignIn.RequireConfirmedPhoneNumber = true;
 })
+
 .AddEntityFrameworkStores<DataBaseContext>()
 .AddDefaultTokenProviders();
 
+// تنظیمات کوکی Identity — ✅ این روش درست است
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Auth/Login";
     options.AccessDeniedPath = "/Auth/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    options.ExpireTimeSpan = TimeSpan.FromDays(30); // یا هر مدتی که می‌خواهید
+    options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    //options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 #endregion
@@ -72,7 +85,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 builder.Services.AddFluentValidationAutoValidation();
-
 
 #endregion
 
@@ -83,10 +95,15 @@ builder.Services.AddScoped<IGetSetings, GetSetingService>();
 builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.AddScoped<ILoginUserService, LoginUserService>();
 builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
-builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
+builder.Services.AddScoped<ISmsService, SmsService>();
+
+builder.Services.AddScoped<RegisterUserService>();
+builder.Services.AddScoped<SendOtpService>();
+builder.Services.AddScoped<VerifyOtpService>();
 
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
 builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, CustomClaimsPrincipalFactory>();
 
 #endregion
 
@@ -98,15 +115,11 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     await SeederRunner.RunAsync(services);
 }
-
 
 #region Middleware
 
@@ -121,13 +134,11 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
 
+// ✅ ترتیب صحیح: اول Authentication بعد Authorization
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 #endregion
@@ -143,5 +154,14 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 #endregion
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    context.Response.Headers["Pragma"] = "no-cache";
+    context.Response.Headers["Expires"] = "0";
+
+    await next();
+});
 
 app.Run();

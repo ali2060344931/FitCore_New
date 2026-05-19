@@ -1,0 +1,167 @@
+﻿@using FitCore.Application.Services.Users.Commands.LoginUser
+@using FitCore.Application.Services.SiteSettings
+
+@model EndPoint.Site.Controllers.AuthController_.LoginPageViewModel
+
+@{
+    ViewData["Title"] = "ورود";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ورود</title>
+
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
+
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/noUISlider.min.css">
+
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg">
+
+                <section class="page-account-box">
+
+                    <div class="col-lg-6 col-md-6 col-xs-12 mx-auto">
+
+                        <div class="ds-userlogin">
+
+                            <a href="/" class="account-box-logo">@Model.SiteSetting.SiteName</a>
+
+                            <div class="account-box">
+
+                                <div class="account-box-headline">
+
+                                    <a href="/Auth/Login" class="login-ds active">
+                                        <span class="title">ورود</span>
+                                        <span class="sub-title">به @Model.SiteSetting.SiteName خوش آمدید</span>
+                                    </a>
+
+                                    <a href="/Auth/Register" class="register-ds">
+                                        <span class="title">ثبت نام</span>
+                                        <span class="sub-title">در @Model.SiteSetting.SiteName</span>
+                                    </a>
+
+                                </div>
+
+                                <div class="Login-to-account mt-4">
+
+                                    <div class="account-box-content">
+
+                                        <h4>ورود به حساب کاربری</h4>
+
+                                        <form class="form-account text-right">
+                                            <!-- فیلد شماره موبایل -->
+                                            <div class="form-account-title">
+                                                <label>شماره موبایل</label>
+                                                <input type="text" class="number-email-input" id="phoneNumber" placeholder="مثال: 09120000000">
+                                            </div>
+
+                                            <!-- دکمه ارسال کد -->
+                                            <div class="form-row-account">
+                                                <a onclick="SendOtp()" class="btn btn-secondary btn-block">ارسال کد تایید</a>
+                                            </div>
+
+                                            <!-- فیلد کد تایید -->
+                                            <div class="form-account-title mt-4">
+                                                <label>کد تایید</label>
+                                                <input type="text" class="password-input" id="code" placeholder="کد دریافتی را وارد کنید">
+                                            </div>
+
+                                            <!-- دکمه تایید و ورود -->
+                                            <div class="form-row-account">
+                                                <a onclick="VerifyOtp()" class="btn btn-primary btn-login">تایید و ورود به سیستم</a>
+                                            </div>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-wrap">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+    </div>
+
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
+
+    <script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/wNumb.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/nouislider.min.js"></script>
+
+    <script src="~/SiteTemplate/assets/js/main.js"></script>
+
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        function SendOtp() {
+        var phone = $('#phoneNumber').val();
+
+        if (phone == "") {
+        Swal.fire("خطا", "لطفاً شماره موبایل را وارد کنید", "warning");
+        return;
+        }
+
+        $.post('/Auth/SendOtp', { phoneNumber: phone }, function (response) {
+        if (response.isSuccess) {
+        Swal.fire("موفق", response.message, "success");
+        } else {
+        Swal.fire("خطا", response.message, "error");
+        }
+        });
+        }
+
+        function VerifyOtp() {
+        var phone = $('#phoneNumber').val();
+        var code = $('#code').val();
+
+        if (phone == "" || code == "") {
+        Swal.fire("خطا", "شماره موبایل و کد تایید الزامی است", "warning");
+        return;
+        }
+
+        $.post('/Auth/VerifyOtp', { phoneNumber: phone, code: code }, function (response) {
+        if (response.isSuccess) {
+        Swal.fire("موفق", response.message, "success")
+        .then(() => { window.location.replace("/"); });
+        } else {
+        Swal.fire("خطا", response.message, "error");
+        }
+        });
+        }
+    </script>
+
+</body>
+</html>

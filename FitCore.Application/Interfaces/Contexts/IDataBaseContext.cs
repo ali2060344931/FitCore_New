@@ -1,6 +1,7 @@
 ﻿using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Setings;
+using FitCore.Domain.Entities.Users;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -18,6 +19,7 @@ namespace FitCore.Application.Interfaces.Contexts
         DbSet<Member> Members { get; set; }
 
         DbSet<Setings> Setings { get; set; }
+        public DbSet<UserOtpCode> UserOtpCodes { get; set; }
         DatabaseFacade Database { get; }
         int SaveChanges();
 

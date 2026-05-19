@@ -24,7 +24,7 @@ namespace FitCore.Persistence.Contexts
         public DbSet<Member> Members { get; set; }
 
         public DbSet<Setings> Setings { get; set; }
-
+        public DbSet<UserOtpCode> UserOtpCodes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
