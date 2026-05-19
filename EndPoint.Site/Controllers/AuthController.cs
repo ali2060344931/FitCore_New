@@ -2,13 +2,18 @@
 // AuthController
 // ===========================
 
+using FitCore.Application.Interfaces.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
+using System.Linq;
 using System.Threading.Tasks;
+
 
 namespace EndPoint.Site.Controllers
 {
@@ -20,31 +25,26 @@ namespace EndPoint.Site.Controllers
 
         private readonly RegisterUserService _registerUserService;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly RegisterUserViewModel _context;
 
+
+        private readonly IDataBaseContext _db; // تغییر نام به _db برای خوانایی
 
         public AuthController(
             SendOtpService sendOtpService,
             VerifyOtpService verifyOtpService,
-            RegisterUserService registerUserService, SignInManager<AppUser> signInManager)
+            RegisterUserService registerUserService,
+            IDataBaseContext db, // تزریق دیتابیس بجای ViewModel
+            SignInManager<AppUser> signInManager)
         {
             _sendOtpService = sendOtpService;
-
             _verifyOtpService = verifyOtpService;
-
             _registerUserService = registerUserService;
             _signInManager = signInManager;
-
+            _db = db; // انتساب به دیتابیس
         }
 
 
-
-        //public AuthController(
-        //    SendOtpService sendOtpService,
-        //    VerifyOtpService verifyOtpService)
-        //{
-        //    _sendOtpService = sendOtpService;
-        //    _verifyOtpService = verifyOtpService;
-        //}
 
         [HttpGet]
         public IActionResult Login()
@@ -72,14 +72,25 @@ namespace EndPoint.Site.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            return View();
-        }
+            // حالا از _db استفاده می‌کنیم که به جدول Gyms دسترسی دارد
+            var gyms = await _db.Gyms
+                .Where(g => g.IsActive)
+                .Select(g => new SelectListItem
+                {
+                    Value = g.Id.ToString(),
+                    Text = g.Name
+                })
+                .ToListAsync();
 
-        // ===========================
-        // RegisterUser Action
-        // ===========================
+            var model = new RegisterUserViewModel
+            {
+                Gyms = gyms
+            };
+
+            return View(model);
+        }
 
         [HttpPost]
         public async Task<IActionResult> RegisterUser(
@@ -101,5 +112,9 @@ namespace EndPoint.Site.Controllers
 
             return RedirectToAction("Login", "Auth");
         }
+
+
+
+
     }
 }

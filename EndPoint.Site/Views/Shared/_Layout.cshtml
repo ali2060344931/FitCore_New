@@ -67,7 +67,7 @@
                             <div class="header-account text-left">
                                 <div class="d-block">
                                     <div class="account-box">
-                                        
+
                                         @* جهت بررسی لاگین کاربر *@
                                         @if (User.Identity.IsAuthenticated)
                                         {
@@ -75,7 +75,12 @@
                                                 <span class="icon-account">
                                                     <img src="~/SiteTemplate/assets/images/man.png" class="avator">
                                                 </span>
-                                                <span class="title-account">کاربر: @User.Identity.Name</span>
+                                                <span class="title-account">
+                                                    @* کاربر: @User.Identity.Name | *@
+                                                    کاربر: <span style="color:red; font-weight:bold;">@User.Identity.Name</span> |
+                                                    باشگاه: <span style="color:red; font-weight:bold;">@User.FindFirst("GymName")?.Value</span>
+                                                    <div class="title-account">
+                                                </span>
                                                 <div class="dropdown-menu">
                                                     <ul class="account-uls mb-0">
                                                         <li class="account-item">

@@ -1,4 +1,6 @@
-﻿
+﻿@using FitCore.Application.Services.Auth
+@model RegisterUserViewModel
+
 @{
     ViewData["Title"] = "Register";
     Layout = null;
@@ -117,6 +119,33 @@
 
                                             </div>
 
+
+                                            <!-- ✅ فیلد انتخاب باشگاه اضافه شد -->
+
+                                            <div class="form-account-title">
+
+                                                <label>
+                                                    انتخاب باشگاه
+                                                </label>
+
+                                                <select id="gymId" class="number-email-input">
+
+                                                    <option value="">
+                                                        -- انتخاب کنید --
+                                                    </option>
+
+                                                    @foreach (var gym in Model.Gyms)
+                                                    {
+                                                        <option value="@gym.Value">
+                                                            @gym.Text
+                                                        </option>
+                                                    }
+
+                                                </select>
+
+                                            </div>
+
+
                                             <div class="form-row-account">
 
                                                 <button onclick="SendOtp()"
@@ -163,116 +192,132 @@
 
                         </div>
 
-                    </div>
+                    </section>
 
-                </section>
+                </div>
 
             </div>
 
         </div>
 
-    </div>
+    </body>
 
-</body>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
 
-<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
 
-<script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
+    <script src="~/SiteTemplate/assets/js/main.js"></script>
 
-<script src="~/SiteTemplate/assets/js/main.js"></script>
+    <link href="~/Sweetalert2/sweetalert2.min.css"
+          rel="stylesheet" />
 
-<link href="~/Sweetalert2/sweetalert2.min.css"
-      rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
-<script src="~/Sweetalert2/sweetalert2.min.js"></script>
+    <script>
 
-<script>
+        function SendOtp() {
 
-    function SendOtp() {
+        $.ajax({
 
-    $.ajax({
+        contentType: 'application/x-www-form-urlencoded',
 
-    contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
 
-    dataType: 'json',
+        type: "POST",
 
-    type: "POST",
+        url: "/Auth/SendOtp",
 
-    url: "/Auth/SendOtp",
+        data: {
 
-    data: {
+        mobile: $("#mobile").val()
 
-    mobile: $("#mobile").val()
-    },
+        },
 
-    success: function (data) {
+        success: function (data) {
 
-    if (data.isSuccess == true) {
+        if (data.isSuccess == true) {
 
-    swal.fire(
-    'موفق!',
-    data.message,
-    'success'
-    );
-    }
-    else {
+        swal.fire(
+        'موفق!',
+        data.message,
+        'success'
+        );
 
-    swal.fire(
-    'خطا!',
-    data.message,
-    'warning'
-    );
-    }
-    }
-    });
-    }
+        }
 
-    function RegisterUser() {
+        else {
 
-    $.ajax({
+        swal.fire(
+        'خطا!',
+        data.message,
+        'warning'
+        );
 
-    contentType: 'application/x-www-form-urlencoded',
+        }
 
-    dataType: 'json',
+        }
 
-    type: "POST",
+        });
 
-    url: "/Auth/RegisterUser",
+        }
 
-    data: {
 
-    fullName: $("#fullname").val(),
+        function RegisterUser() {
 
-    mobile: $("#mobile").val(),
+        $.ajax({
 
-    code: $("#code").val()
-    },
+        contentType: 'application/x-www-form-urlencoded',
 
-    success: function (data) {
+        dataType: 'json',
 
-    if (data.isSuccess == true) {
+        type: "POST",
 
-    swal.fire(
-    'موفق!',
-    data.message,
-    'success'
-    ).then(function () {
+        url: "/Auth/RegisterUser",
 
-    window.location.href = "/";
-    });
-    }
-    else {
+        data: {
 
-    swal.fire(
-    'خطا!',
-    data.message,
-    'warning'
-    );
-    }
-    }
-    });
-    }
+        fullName: $("#fullname").val(),
 
-</script>
+        mobile: $("#mobile").val(),
+
+        code: $("#code").val(),
+
+        gymId: $("#gymId").val()   // ✅ اضافه شد
+
+        },
+
+        success: function (data) {
+
+        if (data.isSuccess == true) {
+
+        swal.fire(
+        'موفق!',
+        data.message,
+        'success'
+        ).then(function () {
+
+        window.location.href = "/";
+
+        });
+
+        }
+
+        else {
+
+        swal.fire(
+        'خطا!',
+        data.message,
+        'warning'
+        );
+
+        }
+
+        }
+
+        });
+
+        }
+
+    </script>
 
 </html>

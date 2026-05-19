@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks; // اضافه شود
 
 public class RegisterUserService
@@ -30,19 +31,19 @@ public class RegisterUserService
         _logger = logger;
     }
 
-    public async Task<ResultDto> Execute(RequestRegisterUserDto request)
+    public async Task<ResultDto> Execute(RequestRegisterUserDto request, CancellationToken cancellationToken=default)
     {
         try
         {
             request.Mobile = request.Mobile.Trim();
             request.Code = request.Code.Trim();
 
-            // بررسی کد تایید
-            var otp =await _context.UserOtpCodes
+            // 1) بررسی کد تایید
+            var otp = await _context.UserOtpCodes
                 .FirstOrDefaultAsync(x =>
                     x.PhoneNumber == request.Mobile &&
                     x.Code == request.Code &&
-                    x.IsUsed == false /*&& x.ExpireTime > DateTime.Now*/);
+                    x.IsUsed == false);
 
             if (otp == null)
             {
@@ -53,7 +54,7 @@ public class RegisterUserService
                 };
             }
 
-            // بررسی وجود کاربر
+            // 2) بررسی وجود کاربر
             var user = await _userManager.Users
                 .FirstOrDefaultAsync(x => x.PhoneNumber == request.Mobile);
 
@@ -64,42 +65,36 @@ public class RegisterUserService
                     IsSuccess = false,
                     Message = "این شماره موبایل قبلاً ثبت شده است"
                 };
-            }     
-            
-            // ایجاد کاربر جدید
+            }
+
+            // 3) ✔ بررسی معتبر بودن GymId در همینجا
+            var gymExists = await _context.Gyms.AnyAsync(x => x.Id == request.GymId);
+
+            if (!gymExists)
+            {
+                return new ResultDto()
+                {
+                    IsSuccess = false,
+                    Message = "باشگاه انتخاب‌شده معتبر نیست"
+                };
+            }
+
+            // 4) ✔ ایجاد کاربر جدید
             AppUser newUser = new AppUser()
             {
                 FullName = request.FullName,
                 UserName = request.Mobile,
                 PhoneNumber = request.Mobile,
                 IsActive = true,
-                GymId = 2
+                GymId = request.GymId  // مقدار درست اینجا می‌نشیند
             };
 
-            // ✅ ساخت کاربر در Identity با try-catch دقیق
-            IdentityResult createUser;
-
-            try
-            {
-                createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Exception در CreateAsync");
-
-                var innerMessage = ex.InnerException?.Message ?? "No inner exception";
-
-                return new ResultDto()
-                {
-                    IsSuccess = false,
-                    Message = $"خطای داخلی سرور: {ex.Message} | Inner: {innerMessage}"
-                };
-            }
+            // ساخت کاربر
+            var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
 
             if (!createUser.Succeeded)
             {
                 string errors = string.Join("\n", createUser.Errors.Select(e => e.Description));
-                _logger.LogError("❌ Identity Errors: {Errors}", errors);
 
                 return new ResultDto()
                 {
@@ -108,11 +103,11 @@ public class RegisterUserService
                 };
             }
 
-            // ثبت مصرف OTP
+            // 5) ثبت مصرف OTP
             otp.IsUsed = true;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            // ورود خودکار
+            // 6) ورود خودکار
             await _signInManager.SignInAsync(newUser, isPersistent: true);
 
             return new ResultDto()
@@ -123,8 +118,6 @@ public class RegisterUserService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "❌ Exception کلی در RegisterUserService");
-
             return new ResultDto()
             {
                 IsSuccess = false,
