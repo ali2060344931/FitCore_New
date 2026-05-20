@@ -115,6 +115,8 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+
+//جهت ثبت اولیه مقادیر در برخی از جداول
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

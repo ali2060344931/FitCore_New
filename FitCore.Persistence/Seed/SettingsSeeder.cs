@@ -8,6 +8,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+
+/// <summary>
+/// ثبت اولیه تنظیمات
+/// </summary>
 public class SettingsSeeder : ISeeder
 {
     public async Task SeedAsync(IServiceProvider serviceProvider)

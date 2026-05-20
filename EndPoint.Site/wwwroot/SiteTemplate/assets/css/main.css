@@ -7717,3 +7717,199 @@ body.light .progress-wrap svg.progress-circle path {
 	stroke: var(--black-blue);
 }
 
+
+
+
+
+/* =====================================
+   FINAL — Permanent Fixed Header
+===================================== */
+
+.header-main {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 999999;
+    background: #ffffff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Spacer برای اینکه محتوا زیر هدر نره */
+#headerSpacer {
+    width: 100%;
+}
+/* Container برای دکمه‌ها */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px;
+}
+
+/* استایل دکمه‌های زیبا */
+.custom-btn {
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #383838 !important;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(110, 142, 251, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center; /* متن و آیکون وسط */
+    gap: 8px;
+    width: 200px; /* همه دکمه‌ها یک عرض */
+    /* یا min-width اگر متن بعضی‌ها طولانی‌تر است */
+    /* min-width: 180px; */
+}
+
+    /* افکت هنگام هاور */
+    .custom-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        color: #fff;
+    }
+
+    /* افکت کلیک */
+    .custom-btn:active {
+        transform: translateY(1px);
+    }
+/* ایجاد فاصله برای اینکه محتوا زیر هدر ثابت نره */
+.page-content-wrapper {
+    margin-top: 150px; /* این مقدار باید برابر با ارتفاع هدرت باشد */
+    padding: 20px;
+}
+
+
+
+/*برای گروه بندی فرم اصلی*/
+/*.section-group {
+    margin-bottom: 15px;*/ /* قبلاً 40px بود */
+    /*background: #f8f9fa;
+    padding: 10px 12px;*/ /* قبلاً 20px بود */
+    /*border-radius: 12px;
+    border: 1px solid #e9ecef;
+}*/
+.section-title {
+    display: inline-block;
+    background: rgba(110, 142, 251, 0.1); /* پس‌زمینه شفاف */
+    backdrop-filter: blur(10px); /* افکت شیشه‌ای */
+    padding: 8px 30px;
+    border-radius: 12px;
+    border: 1px solid rgba(110, 142, 251, 0.3);
+    color: #4a5568;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+
+
+    .section-title::after {
+        width: 40px; /* کوچک‌تر از 50px */
+        height: 2px; /* کمتر از 3px */
+    }
+/* کانتینر اصلی صفحه */
+.page-content-wrapper {
+    margin-top: 150px; /* تنظیم بر اساس ارتفاع هدر */
+    padding: 20px;
+}
+
+/* استایل کارت یا کادر هر بخش */
+.section-group {
+    background: #ffffff;
+    border: 2px solid #e1e8ed;
+    border-radius: 20px;
+    padding: 10px 15px; /* از 25px به 10px کاهش داده شد */
+    margin-bottom: 10px; /* فاصله بین کارت‌ها کم شد */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+/* عنوان */
+.section-title {
+    display: inline-block;
+    padding: 6px 18px; /* از 10px 30px کمتر شد */
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 50px;
+    font-size: 1rem; /* کمی کوچک‌تر برای هم‌خوانی */
+    font-weight: 700;
+    color: #495057;
+    margin-bottom: 10px; /* فاصله بین عنوان و دکمه‌ها کمتر شد */
+}
+
+/* فاصله و حالت چیدمان دکمه‌ها */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* فاصله بین دکمه‌ها کمی کمتر */
+    flex-wrap: wrap;
+    padding: 10px 0; /* از 30px به 10px کاهش برای فشرده‌تر شدن */
+}
+
+/* برای وسط‌چین کردن عنوان */
+.title-wrapper {
+    text-align: center;
+}
+
+/*==========*/
+.account-box {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 50px; /* دایره‌ای */
+    padding: 5px 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+    .account-box:hover {
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border-color: #6e8efb;
+    }
+
+.account-link {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* فاصله آیکون و متن */
+    text-decoration: none !important;
+    color: #495057 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    transition: color 0.3s ease;
+}
+
+    .account-link:hover {
+        color: #6e8efb !important;
+    }
+
+.divider {
+    width: 1px;
+    height: 15px;
+    background: #ced4da;
+    margin: 0 5px;
+}
+
+
+
+.btn-icon-lg {
+    font-size: 28px !important;
+    vertical-align: middle;
+    margin-left: 10px;
+    color: #FF0000; /* رنگ آیکن */
+}
+.btn-icon-lg-home {
+    font-size: 80px !important;
+    vertical-align: middle;
+    margin-left: 10px;
+    color: #FF0000; /* رنگ آیکن */
+}
+

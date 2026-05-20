@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
+/// <summary>
+/// ثبت اولیه نقش ها
+/// </summary>
 public class RoleSeeder : ISeeder
 {
     public async Task SeedAsync(IServiceProvider serviceProvider)

@@ -3,7 +3,9 @@ using System.Security.Cryptography;
 
 namespace FitCore.Common
 {
-
+    /// <summary>
+    /// جهت ایجاد کد پیامکی برای ارسال به کاربران
+    /// </summary>
     public static class OtpGenerator
     {
         public static string Generate()

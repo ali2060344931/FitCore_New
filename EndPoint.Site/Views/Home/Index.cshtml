@@ -2,5 +2,119 @@
     ViewData["Title"] = "Home Page";
 }
 
-<!-- header-------------------------------->
-<h2>سلام دوستان</h2>
+<div class="page-content-wrapper">
+     @if (User.Identity.IsAuthenticated)
+    {
+        <!-- شروع یک بخش -->
+        <div class="section-group">
+            <div class="title-wrapper" style="text-align: center;">
+
+                <h4 class="section-title">مدیریت کاربران و ثبت نام</h4>
+                <div class="btn-container">
+                    <button type="button" class="custom-btn" onclick="openForm('Form1')">
+                        <i class="fa fa-pencil-square-o btn-icon-lg"></i> ثبت نام جدید
+                    </button>
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
+                        <i class="fa fa-list-alt btn-icon-lg"></i> لیست رزروها
+                    </button>
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
+                        <i class="fa fa-list-alt btn-icon-lg"></i> گزارشات مالی
+                    </button>
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
+                        <i class="fa fa-list-alt btn-icon-lg"></i> گزارشات حسابداری
+                    </button>
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
+                        <i class="fa fa-list-alt btn-icon-lg"></i> گزارشات خزانه داری
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- شروع بخش بعدی -->
+        <div class="section-group">
+            <div class="title-wrapper" style="text-align: center;">
+
+                <h4 class="section-title">تنظیمات و پیکربندی</h4>
+                <div class="btn-container">
+                    <button type="button" class="custom-btn" onclick="openForm('Form3')">
+                        <i class="fa fa-calendar btn-icon-lg" aria-hidden="true"></i> تنظیمات سیستم
+                    </button>
+                    
+                    <button type="button" class="custom-btn" onclick="openForm('Form4')">
+                        <i class="fa fa-users btn-icon-lg"></i>
+                        مدیریت دسترسی
+                    </button>
+
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #f093fb, #f5576c);" onclick="openForm('Form4')">
+                        <i class="fa fa-shield btn-icon-lg"></i> امنیت
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="section-group">
+            <div class="title-wrapper" style="text-align: center;">
+
+                <h4 class="section-title">بخش آزمایشی</h4>
+                <div class="btn-container">
+                    <button type="button" class="custom-btn" onclick="openForm('Form3')">
+                        <i class="fa fa-cogs btn-icon-lg"></i> آزمایشی 1
+                    </button>
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #f093fb, #EACE01);" onclick="openForm('Form4')">
+                        <i class="fa fa-users btn-icon-lg"></i> آزمایشی 2
+                    </button>
+                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #f093fb, #EACE01);" onclick="openForm('Form4')">
+                        <i class="fa fa-shield btn-icon-lg"></i> آزمایشی 3
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-group">
+            <div class="title-wrapper" style="text-align: center;">
+                <h4 class="section-title">بخش آزمایشی</h4>
+            </div>
+
+            <div class="btn-container">
+                <button type="button" class="custom-btn" onclick="openForm('Form3')">
+                    <i class="fa fa-cogs btn-icon-lg"></i> آزمایشی 1
+                </button>
+                <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #f093fb, #EACE01);" onclick="openForm('Form4')">
+                    <i class="fa fa-users btn-icon-lg"></i> آزمایشی 2
+                </button>
+                <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #f093fb, #EACE01);" onclick="openForm('Form4')">
+                    <i class="fa fa-shield btn-icon-lg"></i> آزمایشی 3
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- نمایش پیام یا دکمه ورود برای کاربر مهمان -->
+        <div class="section-group" style="text-align: center; padding: 50px;">
+            <i class="fa fa-user-times btn-icon-lg-home" aria-hidden="true"></i><h3>دسترسی محدود</h3>
+            <p>برای مشاهده امکانات، لطفاً ابتدا وارد حساب کاربری خود شوید.</p>
+            <br>
+            <p>در قسمت بالای فرم روی دکمه ورود کلیک نمائید و یا ثبت نام جدید انجام دهید</p>
+            
+            @* <a href="/Account/Login" class="custom-btn" style="background: #6e8efb;">ورود به حساب کاربری</a> *@
+        </div>
+    }
+</div>
+
+
+
+
+
+<!-- اسکریپت برای فراخوانی مودال -->
+@section Scripts {
+    <script>
+        function openForm(formType) {
+            console.log("در حال باز کردن: " + formType);
+            // اینجا می‌توانید بر اساس formType، محتوای مودال را با AJAX تغییر دهید
+            $('#myModal').modal('show');
+        }
+    </script>
+}
+
