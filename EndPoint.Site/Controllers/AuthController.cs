@@ -61,15 +61,20 @@ namespace EndPoint.Site.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VerifyOtp(
-            string mobile,
-            string code)
+        public async Task<IActionResult> VerifyOtp(string mobile, string code)
         {
-            var result = await _verifyOtpService
-                .Execute(mobile, code);
-
+            var result = await _verifyOtpService.Execute(mobile, code);
             return Json(result);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
+        {
+            var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
+            return Json(result);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Register()

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks; // اضافه شود
+using System.Threading.Tasks; 
 
 public class RegisterUserService
 {
@@ -55,15 +55,15 @@ public class RegisterUserService
             }
 
             // 2) بررسی وجود کاربر
-            var user = await _userManager.Users
-                .FirstOrDefaultAsync(x => x.PhoneNumber == request.Mobile);
+            var userExistsInGym = await _userManager.Users
+                .AnyAsync(x => x.PhoneNumber == request.Mobile && x.GymId == request.GymId);
 
-            if (user != null)
+            if (userExistsInGym)
             {
                 return new ResultDto()
                 {
                     IsSuccess = false,
-                    Message = "این شماره موبایل قبلاً ثبت شده است"
+                    Message = "شما قبلاً در این باشگاه ثبت‌نام کرده‌اید."
                 };
             }
 
@@ -83,10 +83,10 @@ public class RegisterUserService
             AppUser newUser = new AppUser()
             {
                 FullName = request.FullName,
-                UserName = request.Mobile,
+                UserName = $"{request.Mobile}_{request.GymId}", // برای یکتایی در Identity
                 PhoneNumber = request.Mobile,
                 IsActive = true,
-                GymId = request.GymId  // مقدار درست اینجا می‌نشیند
+                GymId = request.GymId
             };
 
             // ساخت کاربر

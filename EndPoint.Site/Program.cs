@@ -96,13 +96,14 @@ builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.AddScoped<ILoginUserService, LoginUserService>();
 builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
 builder.Services.AddScoped<ISmsService, SmsService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ILoginTokenStore, MemoryLoginTokenStore>();
 
 builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<SendOtpService>();
 builder.Services.AddScoped<VerifyOtpService>();
 
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
-builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, CustomClaimsPrincipalFactory>();
 
 #endregion
