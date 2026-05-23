@@ -24,17 +24,15 @@
 
                             <div class="card-body">
 
-@*                                 <div class="col-md-6 mb-3">
-                                    <label>نام باشگاه</label>
+                                @*                                 <div class="col-md-6 mb-3">
+                                    <label></label>
                                     <input type="text" class="form-control"
-                                           id="Name" placeholder="نام باشگاه" />
+                                           id="Name" placeholder="@Html.DisplayNameFor(x => x.Name)" />
                                 </div>
  *@
 
                                 <div class="col-md-6 mb-3">
-
                                     <label asp-for="Name" class="form-label"></label>
-
                                     <input asp-for="Name"
                                            id="Name"
                                            class="form-control"
@@ -44,30 +42,65 @@
                                           class="text-danger"></span>
                                 </div>
 
-
-
-
                                 <div class="col-md-6 mb-3">
-                                    <label>کد باشگاه</label>
-                                    <input type="text" class="form-control"
-                                           id="Code" placeholder="کد باشگاه" />
+                                    <label asp-for="Code" class="form-label"></label>
+                                    <input asp-for="Code"
+                                           id="Code"
+                                           class="form-control"
+                                           placeholder="@Html.DisplayNameFor(x => x.Code)" />
+
+                                    <span asp-validation-for="Name"
+                                          class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="MobileNumber" class="form-label"></label>
+                                    <input asp-for="MobileNumber"
+                                           id="MobileNumber"
+                                           class="form-control"
+                                           placeholder="@Html.DisplayNameFor(x => x.MobileNumber)" />
+
+                                    <span asp-validation-for="Name"
+                                          class="text-danger"></span>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label>موبایل</label>
+                                    <label asp-for="Description" class="form-label"></label>
+
+                                    <!-- تغییر از input به textarea -->
+                                    <textarea asp-for="Description"
+                                              id="Description"
+                                              class="form-control"
+                                              placeholder="@Html.DisplayNameFor(x => x.Description)"
+                                              rows="4">
+                                          </textarea>
+
+                                    <span asp-validation-for="Description"
+                                          class="text-danger"></span>
+                                </div>
+
+
+
+                                @*                                 <div class="col-md-6 mb-3">
+                                    <label></label>
+                                    <input type="text" class="form-control"
+                                           id="Code" placeholder="@Html.DisplayNameFor(x => x.Code)" />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label></label>
                                     <input type="text" class="form-control"
                                            id="MobileNumber"
-                                           placeholder="شماره موبایل" />
+                                           placeholder="@Html.DisplayNameFor(x => x.MobileNumber)" />
                                 </div>
 
                                 <div class="form-group">
-                                    <label>توضیحات</label>
+                                    <label></label>
                                     <textarea class="form-control"
                                               id="Description"
-                                              placeholder="توضیحات راجع به باشگاه"
+                                              placeholder="@Html.DisplayNameFor(x => x.Description)"
                                               rows="2"></textarea>
                                 </div>
-                                
+ *@
                             </div>
 
                             <div class="card-footer">

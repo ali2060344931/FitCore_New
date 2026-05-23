@@ -17,6 +17,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _memberFacad = memberFacad;
         }
 
+        [HttpGet]
         public IActionResult Index(int page = 1, string SearchKey="")
         {
             long gymId = 2;

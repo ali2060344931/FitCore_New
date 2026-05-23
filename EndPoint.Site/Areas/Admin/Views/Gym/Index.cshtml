@@ -2,6 +2,9 @@
 @model List<GymDto>
 
 @{
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
+    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+
     ViewData["Title"] = "باشگاه ها";
     Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
 
@@ -44,6 +47,52 @@
             تست Create
         </a> *@
     </div>
+
+    @* جستجو *@
+    @* <div class="col-md-6 mb-3">
+        <input type="text"
+               class="form-control ml-sm-0"
+               name="SearchKey"
+               value="@searchKey"
+               placeholder="جستجوی باشگاه..." />
+
+        <button type="submit" class="btn btn-success position-relative">جستجو...</button>
+
+    </div> *@
+    <form method="get" class="col-xl-6 col-lg-8 col-md-12 mb-1">
+
+        <div class="d-flex align-items-center">
+
+            <input type="text"
+                   class="form-control ml-sm-0"
+                   name="SearchKey"
+                   value="@searchKey"
+                   placeholder="جستجوی عضو..." />
+
+            <button type="submit" class="btn btn-success position-relative">
+
+                جستجو
+
+@*                 @if (isFiltered)
+                {
+                    <span class="badge badge-danger">
+                        @Model.Members.Count
+                    </span>
+                }
+ *@
+            </button>
+
+@*             @if (isFiltered)
+            {
+                <a href="/Admin/Members"
+                   class="btn btn-warning">
+                    نمایش همه (@Model.RowCount)
+                </a>
+            }
+ *@
+        </div>
+
+    </form>
 
     <div class="custom-card">
 
