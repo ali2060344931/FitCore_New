@@ -1,20 +1,23 @@
-using FitCore.Application.Interfaces;
-using FitCore.Application.Interfaces.Contexts;
-using FitCore.Application.Interfaces.FacadPatterns;
+using FitCore.Application.Contexts;
+using FitCore.Application.FacadPatterns;
+using FitCore.Application.Interfaces.IGym;
+using FitCore.Application.Interfaces.ISms;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Facads;
+using FitCore.Application.Services.Gyms.Commands;
+using FitCore.Application.Services.Gyms.Commands.DeleteGym;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
 using FitCore.Application.Services.Users.Commands.LoginUser;
 using FitCore.Application.Services.Users.Commands.LogoutUser;
-using FitCore.Application.Services.Users.Commands.RegisterUser;
 using FitCore.Domain.Entities.Users;
 using FitCore.Persistence.Contexts;
+using FitCore.Persistence.Seed;
+
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +25,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using System;
+using System.Collections.Generic;
+
 
 //using static FitCore.Application.Services.Users.Commands.RegisterUser.RegisterUserService;
 
@@ -99,6 +104,16 @@ builder.Services.AddScoped<ISmsService, SmsService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ILoginTokenStore, MemoryLoginTokenStore>();
 
+//<=====Gym=====>
+builder.Services.AddScoped<IAddGymService, AddGymService>();
+builder.Services.AddScoped<IDeleteGymService, DeleteGymService>();
+builder.Services.AddScoped<IEditGymService, EditGymService>();
+builder.Services.AddScoped<IGetGymByIdService, GetGymByIdService>();
+builder.Services.AddScoped<IGetGymsService, GetGymsService>();
+//>=====Gym=====<
+
+
+
 builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<SendOtpService>();
 builder.Services.AddScoped<VerifyOtpService>();
@@ -124,6 +139,12 @@ using (var scope = app.Services.CreateScope())
     await SeederRunner.RunAsync(services);
 }
 
+
+
+
+
+
+
 #region Middleware
 
 if (app.Environment.IsDevelopment())
@@ -147,6 +168,8 @@ app.UseAuthorization();
 #endregion
 
 #region Routes
+
+
 
 app.MapControllerRoute(
     name: "areas",

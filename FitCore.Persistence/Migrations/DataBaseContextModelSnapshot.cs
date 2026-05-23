@@ -22,7 +22,7 @@ namespace FitCore.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,7 +30,31 @@ namespace FitCore.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("AllowOnlineRegistration")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("BrandName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("CitiesId")
+                        .HasMaxLength(100)
+                        .HasColumnType("int");
+
                     b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("InsertTime")
@@ -42,19 +66,64 @@ namespace FitCore.Persistence.Migrations
                     b.Property<bool>("IsRemoved")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxOtpRequestPerMinute")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MobileNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OtpExpireSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Province")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("RemoveTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SubDomain")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("SubscriptionExpireDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Website")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CitiesId");
 
                     b.ToTable("Gyms");
                 });
@@ -120,6 +189,43 @@ namespace FitCore.Persistence.Migrations
                     b.HasIndex("GymId");
 
                     b.ToTable("Members");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Cities", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProvincesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProvincesId");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Provinces", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Provinces");
                 });
 
             modelBuilder.Entity("FitCore.Domain.Entities.Setings.Setings", b =>
@@ -396,9 +502,18 @@ namespace FitCore.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
+                {
+                    b.HasOne("FitCore.Domain.Entities.Provinces.Cities", "Cities")
+                        .WithMany("Gyms")
+                        .HasForeignKey("CitiesId");
+
+                    b.Navigation("Cities");
+                });
+
             modelBuilder.Entity("FitCore.Domain.Entities.Members.Member", b =>
                 {
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
+                    b.HasOne("FitCore.Domain.Entities.Gyms.Gyms", "Gym")
                         .WithMany("Members")
                         .HasForeignKey("GymId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -407,9 +522,20 @@ namespace FitCore.Persistence.Migrations
                     b.Navigation("Gym");
                 });
 
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Cities", b =>
+                {
+                    b.HasOne("FitCore.Domain.Entities.Provinces.Provinces", "Provinces")
+                        .WithMany("Ciltys")
+                        .HasForeignKey("ProvincesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provinces");
+                });
+
             modelBuilder.Entity("FitCore.Domain.Entities.Users.AppUser", b =>
                 {
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
+                    b.HasOne("FitCore.Domain.Entities.Gyms.Gyms", "Gym")
                         .WithMany("Users")
                         .HasForeignKey("GymId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,11 +595,21 @@ namespace FitCore.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
                 {
                     b.Navigation("Members");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Cities", b =>
+                {
+                    b.Navigation("Gyms");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Provinces", b =>
+                {
+                    b.Navigation("Ciltys");
                 });
 #pragma warning restore 612, 618
         }

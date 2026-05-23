@@ -36,6 +36,7 @@
 
                 <h4 class="section-title">تنظیمات و پیکربندی</h4>
                 <div class="btn-container">
+                    
                     <button type="button" class="custom-btn" onclick="openForm('Form3')">
                         <i class="fa fa-calendar btn-icon-lg" aria-hidden="true"></i> تنظیمات سیستم
                     </button>
@@ -46,7 +47,7 @@
                     </button>
 
                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #f093fb, #f5576c);" onclick="openForm('Form4')">
-                        <i class="fa fa-shield btn-icon-lg"></i> امنیت
+                        <i class="fa fa-shield btn-icon-lg"></i> مشخصات باشگاه
                     </button>
                 </div>
             </div>
@@ -110,11 +111,15 @@
 <!-- اسکریپت برای فراخوانی مودال -->
 @section Scripts {
     <script>
+
         function openForm(formType) {
             console.log("در حال باز کردن: " + formType);
             // اینجا می‌توانید بر اساس formType، محتوای مودال را با AJAX تغییر دهید
             $('#myModal').modal('show');
         }
+
+
+
     </script>
 }
 

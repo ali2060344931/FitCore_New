@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FitCore.Application.Interfaces.Contexts
+namespace FitCore.Application.Contexts
 {
     public interface IDataBaseContext
     {
-        DbSet<Gym> Gyms { get; set; }
+        DbSet<Gyms> Gyms { get; set; }
 
         DbSet<Member> Members { get; set; }
 
@@ -23,6 +23,7 @@ namespace FitCore.Application.Interfaces.Contexts
         DatabaseFacade Database { get; }
         int SaveChanges();
 
+        Task<int> SaveChangesAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

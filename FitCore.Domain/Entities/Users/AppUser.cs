@@ -10,7 +10,7 @@ namespace FitCore.Domain.Entities.Users
 
         public long GymId { get; set; }
 
-        public Gym Gym { get; set; }
+        public Gyms.Gyms Gym { get; set; }
 
         public bool IsActive { get; set; }
     }

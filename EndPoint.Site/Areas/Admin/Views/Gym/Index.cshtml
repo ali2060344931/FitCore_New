@@ -1,0 +1,170 @@
+﻿@using FitCore.Application.Services.Gyms.Commands.AddGym
+@model List<GymDto>
+
+@{
+    ViewData["Title"] = "باشگاه ها";
+    Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+
+    int pageSize = 3;
+    int currentPage = 1;
+
+    if (Context.Request.Query.ContainsKey("page"))
+    {
+        int.TryParse(Context.Request.Query["page"], out currentPage);
+
+        if (currentPage <= 0)
+            currentPage = 1;
+    }
+
+    int totalItems = Model.Count();
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+    var gyms = Model
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+}
+
+
+<div class="container-fluid mt-4">
+
+    <div class="page-title-box">
+
+        <div class="page-title">
+            لیست باشگاه ها
+        </div>
+
+        <a asp-area="Admin"
+           asp-controller="Gym"
+           asp-action="Create"
+           class="btn btn-success btn-add-new">
+            + ثبت باشگاه جدید
+        </a>
+        @* <a href="/Admin/Gym/Create" class="btn btn-success">
+            تست Create
+        </a> *@
+    </div>
+
+    <div class="custom-card">
+
+        <div class="table-info">
+            تعداد کل باشگاه ها:
+            <strong>@totalItems</strong>
+        </div>
+
+        @if (gyms.Any())
+        {
+            <table class="table custom-table">
+
+                <thead>
+
+                    <tr>
+                        <th>نام باشگاه</th>
+                        <th>کد باشگاه</th>
+                        <th>شماره موبایل</th>
+                        <th>توضیحات</th>
+                        <th width="180">عملیات</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in gyms)
+                    {
+                        <tr>
+
+                            <td>
+                                <strong>@item.Name</strong>
+                            </td>
+
+                            <td>
+                                @item.Code
+                            </td>
+
+                            <td>
+                                @item.MobileNumber
+                            </td>
+
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.Description)
+                                    ? "---"
+                                    : item.Description)
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-edit">
+                                        ویرایش
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-delete">
+                                        حذف
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="pagination-box">
+
+                    @if (currentPage > 1)
+                    {
+                        <a href="?page=@(currentPage - 1)">
+                            قبلی
+                        </a>
+                    }
+
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        if (i == currentPage)
+                        {
+                            <span class="active-page">
+                                @i
+                            </span>
+                        }
+                        else
+                        {
+                            <a href="?page=@i">
+                                @i
+                            </a>
+                        }
+                    }
+
+                    @if (currentPage < totalPages)
+                    {
+                        <a href="?page=@(currentPage + 1)">
+                            بعدی
+                        </a>
+                    }
+
+                </div>
+            }
+
+        }
+        else
+        {
+            <div class="empty-box">
+                هیچ باشگاهی ثبت نشده است
+            </div>
+        }
+
+    </div>
+
+</div>

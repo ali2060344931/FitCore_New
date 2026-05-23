@@ -548,7 +548,8 @@ pre code {
   word-break: normal;
 }
 
-.pre-scrollable {
+.pre-scrol
+{
   max-height: 340px;
   overflow-y: scroll;
 }

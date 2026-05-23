@@ -2,7 +2,7 @@
 // AuthController
 // ===========================
 
-using FitCore.Application.Interfaces.Contexts;
+using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Domain.Entities.Users;
 
@@ -15,8 +15,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace EndPoint.Site.Controllers
+namespace EndPoint.Site.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+
     public class AuthController : Controller
     {
         private readonly SendOtpService _sendOtpService;
@@ -53,12 +55,20 @@ namespace EndPoint.Site.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendOtp(string mobile)
+        public async Task<IActionResult> SendOtpLogin(string mobile)
         {
             var result = await _sendOtpService.Execute(mobile);
-
             return Json(result);
         }
+        [HttpPost]
+        public async Task<IActionResult> SendOtpReg(string FullName, string mobile, int gymId)
+        {
+            var result = await _sendOtpService.Execute(FullName, mobile, gymId);
+            return Json(result);
+        }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> VerifyOtp(string mobile, string code)

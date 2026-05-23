@@ -7806,6 +7806,7 @@ body.light .progress-wrap svg.progress-circle path {
     color: #4a5568;
     font-size: 1rem;
     margin-bottom: 20px;
+    width: 400px
 }
 
 
@@ -7911,5 +7912,16 @@ body.light .progress-wrap svg.progress-circle path {
     vertical-align: middle;
     margin-left: 10px;
     color: #FF0000; /* رنگ آیکن */
+}
+/* برای کل فرم */
+.form-account {
+    direction: rtl;
+    text-align: right;
+}
+
+/* برای اینکه مکان‌نما (Cursor) در فیلدها از راست شروع شود */
+.number-email-input {
+    direction: rtl;
+    text-align: right;
 }
 

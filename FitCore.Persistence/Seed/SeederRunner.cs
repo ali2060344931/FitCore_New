@@ -11,7 +11,9 @@ public static class SeederRunner
         var seeders = new List<ISeeder>
         {
             new RoleSeeder(),
-            new SettingsSeeder()
+            new SettingsSeeder(),
+            new ProvinceSeeder(),
+            new CitySeeder()
         };
 
         foreach (var seeder in seeders)

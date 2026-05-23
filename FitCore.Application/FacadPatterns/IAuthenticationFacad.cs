@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FitCore.Application.Interfaces.FacadPatterns
+namespace FitCore.Application.FacadPatterns
 {
     internal interface IAuthenticationFacad
     {

@@ -1,12 +1,16 @@
-﻿using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
 using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Members;
+using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FitCore.Persistence.Contexts
 {
@@ -19,23 +23,24 @@ namespace FitCore.Persistence.Contexts
         {
         }
 
-        public DbSet<Gym> Gyms { get; set; }
+        public DbSet<Gyms> Gyms { get; set; }
 
         public DbSet<Member> Members { get; set; }
 
         public DbSet<Setings> Setings { get; set; }
         public DbSet<UserOtpCode> UserOtpCodes { get; set; }
+        public DbSet<Provinces> Provinces { get; set; }
+        public DbSet<Cities> Cities { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            SeedData(modelBuilder);
             ApplyQueryFilter(modelBuilder);
         }
 
         private void ApplyQueryFilter(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Gym>().HasQueryFilter(x => !x.IsRemoved);
+            modelBuilder.Entity<Gyms>().HasQueryFilter(x => !x.IsRemoved);
 
             modelBuilder.Entity<Member>().HasQueryFilter(x => !x.IsRemoved);
 
@@ -45,21 +50,21 @@ namespace FitCore.Persistence.Contexts
                 .HasForeignKey(x => x.GymId);
         }
 
-        private void SeedData(ModelBuilder modelBuilder)
+
+        public override int SaveChanges()
         {
-
-
-
-
-
-            //modelBuilder.Entity<Setings>().HasData(new Setings
-            //{
-            //    Id = 1,
-            //    Code = "01",
-            //    TextFilde = "نرم افزار فیتکو",
-            //    Email = "Ali@Gmail.com",
-            //    Phone = "09111161996"
-            //});
+            return base.SaveChanges();
         }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await base.SaveChangesAsync();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }

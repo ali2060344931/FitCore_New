@@ -69,3 +69,168 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/*------------توسط غلامزاده اضافه شد----------------
+*/
+    .page-title-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .custom-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 25px;
+    }
+
+    .btn-add-new {
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .custom-table {
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        width: 100%;
+    }
+
+        .custom-table thead tr {
+            background: #f8f9fa;
+        }
+
+        .custom-table thead th {
+            border: none;
+            color: #555;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .custom-table tbody tr {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all .2s ease;
+        }
+
+            .custom-table tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 18px rgba(0,0,0,0.10);
+            }
+
+        .custom-table tbody td {
+            text-align: center;
+            vertical-align: middle;
+            border: none;
+            color: #444;
+            padding: 8px 10px;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+
+
+            .custom-table tbody td:first-child {
+                border-radius: 12px 0 0 12px;
+            }
+
+            .custom-table tbody td:last-child {
+                border-radius: 0 12px 12px 0;
+            }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-edit {
+        background: #ffc107;
+        border: none;
+        color: #fff;
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        transition: .2s;
+    }
+
+        .btn-edit:hover {
+            background: #e0a800;
+            color: #fff;
+        }
+
+    .btn-delete {
+        background: #dc3545;
+        border: none;
+        color: #fff;
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        transition: .2s;
+    }
+
+        .btn-delete:hover {
+            background: #bb2d3b;
+            color: #fff;
+        }
+
+    .empty-box {
+        text-align: center;
+        padding: 50px;
+        color: #999;
+        font-size: 16px;
+    }
+
+    .pagination-box {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .pagination-box a,
+        .pagination-box span {
+            min-width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: .2s;
+        }
+
+        .pagination-box a {
+            background: #f1f3f5;
+            color: #333;
+        }
+
+            .pagination-box a:hover {
+                background: #198754;
+                color: #fff;
+            }
+
+        .pagination-box .active-page {
+            background: #198754;
+            color: #fff;
+        }
+
+    .table-info {
+        margin-bottom: 20px;
+        color: #666;
+        font-size: 14px;
+    }

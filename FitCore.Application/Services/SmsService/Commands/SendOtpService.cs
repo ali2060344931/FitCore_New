@@ -1,5 +1,5 @@
-﻿using FitCore.Application.Interfaces;
-using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
+using FitCore.Application.Interfaces.ISms;
 using FitCore.Common;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Users;

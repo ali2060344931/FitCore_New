@@ -9,7 +9,7 @@ namespace FitCore.Domain.Entities.Members
     public class Member : BaseEntity
     {
         public long GymId { get; set; }
-        public Gym Gym { get; set; }
+        public Gyms.Gyms Gym { get; set; }
 
         public string FirstName { get; set; }
 

@@ -1,7 +1,7 @@
-﻿using FitCore.Application.Interfaces.Contexts;
-using FitCore.Application.Interfaces.FacadPatterns;
-using FitCore.Application.Services.Members.Commands;
+﻿using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Member.Queries;
+using FitCore.Application.Contexts;
+using FitCore.Application.FacadPatterns;
 
 namespace FitCore.Application.Services.Facads
 {

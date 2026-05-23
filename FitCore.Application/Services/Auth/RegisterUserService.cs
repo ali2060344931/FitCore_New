@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Users;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 
 public class RegisterUserService
 {
@@ -54,6 +54,15 @@ public class RegisterUserService
                 };
             }
 
+
+            if (request.GymId == 0)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "باشگاه انتخاب نشده است"
+                };
+            }
             // 2) بررسی وجود کاربر
             var userExistsInGym = await _userManager.Users
                 .AnyAsync(x => x.PhoneNumber == request.Mobile && x.GymId == request.GymId);

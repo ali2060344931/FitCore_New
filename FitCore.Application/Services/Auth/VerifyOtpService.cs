@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Users;
 
@@ -38,7 +38,7 @@ namespace FitCore.Application.Services.Auth
 
             // 1) اعتبارسنجی OTP (طبق ساختار خودت)
             var otp = await _db.UserOtpCodes
-                .FirstOrDefaultAsync(x => x.PhoneNumber == mobile && x.Code == code && x.IsUsed == false, cancellationToken);
+                .FirstOrDefaultAsync(x => x.PhoneNumber == mobile && x.Code == code && x.IsUsed == false, cancellationToken=default);
 
             if (otp == null)
             {
@@ -48,6 +48,11 @@ namespace FitCore.Application.Services.Auth
                     Message = "کد تایید نامعتبر یا منقضی شده است"
                 };
             }
+
+            otp.IsUsed = true;
+            otp.CreatedAt = DateTime.Now;
+
+            await _db.SaveChangesAsync(cancellationToken);
 
             // (اختیاری) اگر expire داری اینجا چک کن
 

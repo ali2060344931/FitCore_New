@@ -1,13 +1,12 @@
-﻿using FitCore.Application.Interfaces;
-using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
+using FitCore.Application.Interfaces.ISms;
 using FitCore.Common;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.EntityFrameworkCore; // اضافه شده برای استفاده از AnyAsync
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,26 +23,43 @@ namespace FitCore.Application.Services.Auth
             _smsService = smsService;
         }
 
-        public async Task<ResultDto> Execute(string phoneNumber, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// برای بخش ثبت نام کاربر
+        /// </summary>
+        /// <param name="FullName"></param>
+        /// <param name="phoneNumber"></param>
+        /// <param name="gymId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<ResultDto> Execute(string FullName, string phoneNumber,int gymId, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(FullName))
+                return new ResultDto { IsSuccess = false, Message = "نـــــام و نام خانوادگی را وارد نمائید" };
+            
+            
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 return new ResultDto { IsSuccess = false, Message = "شماره موبایل را وارد کنید" };
+            
+            
+            if (gymId==0)
+                return new ResultDto { IsSuccess = false, Message = "هیچ باشگاهی انتخاب نشد" };
 
-            // ✅ Rate Limit (3 بار در دقیقه)
+            // 2. بررسی Rate Limit (3 بار در دقیقه)
             var oneMinuteAgo = DateTime.Now.AddMinutes(-1);
 
-            var requestCount = _context.UserOtpCodes
-                .Count(x => x.PhoneNumber == phoneNumber && x.CreatedAt > oneMinuteAgo);
+            var requestCount = await _context.UserOtpCodes
+                .CountAsync(x => x.PhoneNumber == phoneNumber && x.CreatedAt > oneMinuteAgo, cancellationToken);
 
             if (requestCount >= 3)
             {
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "لطفاً کمی صبر کنید"
+                    Message = "تعداد درخواست‌های شما بیش از حد مجاز است، لطفاً کمی صبر کنید."
                 };
             }
 
+            // 3. تولید و ذخیره کد OTP
             var code = OtpGenerator.Generate();
 
             var otp = new UserOtpCode
@@ -58,12 +74,65 @@ namespace FitCore.Application.Services.Auth
             _context.UserOtpCodes.Add(otp);
             await _context.SaveChangesAsync(cancellationToken);
 
+            // 4. ارسال پیامک
             await _smsService.SendAsync(phoneNumber, $"کد تایید شما: {code}");
 
             return new ResultDto
             {
                 IsSuccess = true,
-                Message = "کد ارسال شد"
+                Message = "کد تایید با موفقیت ارسال شد."
+            };
+        }
+        /// <summary>
+        /// برای بخش ورود کاربر
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<ResultDto> Execute( string phoneNumber, CancellationToken cancellationToken = default)
+        {
+            
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                return new ResultDto { IsSuccess = false, Message = "شماره موبایل را وارد کنید" };
+            
+            
+            // 2. بررسی Rate Limit (3 بار در دقیقه)
+            var oneMinuteAgo = DateTime.Now.AddMinutes(-1);
+
+            var requestCount = await _context.UserOtpCodes
+                .CountAsync(x => x.PhoneNumber == phoneNumber && x.CreatedAt > oneMinuteAgo, cancellationToken);
+
+            if (requestCount >= 3)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "تعداد درخواست‌های شما بیش از حد مجاز است، لطفاً کمی صبر کنید."
+                };
+            }
+
+            // 3. تولید و ذخیره کد OTP
+            var code = OtpGenerator.Generate();
+
+            var otp = new UserOtpCode
+            {
+                PhoneNumber = phoneNumber,
+                Code = code,
+                CreatedAt = DateTime.Now,
+                ExpireTime = DateTime.Now.AddMinutes(2),
+                IsUsed = false
+            };
+
+            _context.UserOtpCodes.Add(otp);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            // 4. ارسال پیامک
+            await _smsService.SendAsync(phoneNumber, $"کد تایید شما: {code}");
+
+            return new ResultDto
+            {
+                IsSuccess = true,
+                Message = "کد تایید با موفقیت ارسال شد."
             };
         }
     }

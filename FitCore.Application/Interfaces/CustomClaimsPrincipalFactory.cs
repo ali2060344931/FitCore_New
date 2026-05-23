@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using FitCore.Application.Interfaces.Contexts;
+using FitCore.Application.Contexts;
 
 public class CustomClaimsPrincipalFactory
     : UserClaimsPrincipalFactory<AppUser, IdentityRole<long>>

@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
 
 using System;

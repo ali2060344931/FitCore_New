@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FitCore.Application.Interfaces
+namespace FitCore.Application.Interfaces.ISms
 {
     public interface ISmsService
     {

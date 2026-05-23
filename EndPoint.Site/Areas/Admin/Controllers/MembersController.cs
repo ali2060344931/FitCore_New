@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Interfaces.FacadPatterns;
+﻿using FitCore.Application.FacadPatterns;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 

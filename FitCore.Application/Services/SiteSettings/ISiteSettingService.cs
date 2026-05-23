@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Interfaces.Contexts;
+﻿using FitCore.Application.Contexts;
 
 using Microsoft.Extensions.Caching.Memory;
 

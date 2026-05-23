@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Interfaces;
+﻿using FitCore.Application.Interfaces.ISms;
 
 using System;
 using System.Collections.Generic;
