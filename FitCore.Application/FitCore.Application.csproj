@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Common\Queries\" />
     <Folder Include="Services\Gyms\Commands\CheangStatus\" />
     <Folder Include="Services\Setings\Commands\" />
     <Folder Include="Services\SmsService\Queries\" />

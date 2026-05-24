@@ -6,6 +6,7 @@ using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Facads;
 using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.DeleteGym;
+using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
@@ -110,6 +111,9 @@ builder.Services.AddScoped<IDeleteGymService, DeleteGymService>();
 builder.Services.AddScoped<IEditGymService, EditGymService>();
 builder.Services.AddScoped<IGetGymByIdService, GetGymByIdService>();
 builder.Services.AddScoped<IGetGymsService, GetGymsService>();
+builder.Services.AddScoped<ICompleteGymInfoService, CompleteGymInfoService>();
+builder.Services.AddScoped<IGetProvincesService, GetProvincesService>();
+builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
 //>=====Gym=====<
 
 

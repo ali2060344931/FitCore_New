@@ -8,23 +8,35 @@ namespace FitCore.Application.Services.Gyms.Commands.EditGym
     {
         public long Id { get; set; }
 
-        [Required]
+        [Display(Name = "نام باشگاه")]
+        [Required(ErrorMessage = "نام باشگاه الزامی است")]
+        [MaxLength(200)]
         public string Name { get; set; }
 
-        [Required]
+        [Display(Name = "کد یکتای باشگاه")]
+        [Required(ErrorMessage = "کد باشگاه الزامی است")]
+        [MaxLength(50)]
         public string Code { get; set; }
 
+
+        [Display(Name = "توضیحات")]
+        [MaxLength(1000)]
+        public string Description { get; set; }
+
+
+        [Required(ErrorMessage = "شماره همراه الزامی است")]
+        [Display(Name = "شماره موبایل")]
+        [MaxLength(20)]
+        public string MobileNumber { get; set; }
+
+
+       /*
         public string SubDomain { get; set; }
 
         public string BrandName { get; set; }
 
-        public string Description { get; set; }
 
         public string Logo { get; set; }
-
-        public string PhoneNumber { get; set; }
-
-        public string MobileNumber { get; set; }
 
         [EmailAddress]
         public string Email { get; set; }
@@ -54,6 +66,7 @@ namespace FitCore.Application.Services.Gyms.Commands.EditGym
         public int OtpExpireSeconds { get; set; }
 
         public int MaxOtpRequestPerMinute { get; set; }
+      */
     }
 
 }

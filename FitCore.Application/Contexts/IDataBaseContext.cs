@@ -1,5 +1,6 @@
 ﻿using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Members;
+using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.Users;
 
@@ -20,6 +21,10 @@ namespace FitCore.Application.Contexts
 
         DbSet<Setings> Setings { get; set; }
         public DbSet<UserOtpCode> UserOtpCodes { get; set; }
+
+        public DbSet<Province> Provinces { get; set; }
+        public DbSet<City> Cities { get; set; }
+
         DatabaseFacade Database { get; }
         int SaveChanges();
 

@@ -1,0 +1,30 @@
+﻿@model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+<div class="col-md-@Model.Col fc-input-group">
+
+    <label class="form-label">
+
+        @Model.LabelName
+
+    </label>
+
+    <input type="file"
+           id="@Model.Id"
+           name="@Model.Name"
+           class="form-control"
+           accept="image/*"
+           onchange="previewImage(event)" />
+
+    <img id="preview_@Model.Id" style="max-width:150px; margin-top:10px;" />
+
+    <script>
+            function previewImage(event) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    document.getElementById('preview_' + event.target.id).src = reader.result;
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }
+    </script>
+
+</div>

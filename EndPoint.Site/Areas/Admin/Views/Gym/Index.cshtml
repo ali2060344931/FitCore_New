@@ -2,25 +2,33 @@
 @model List<GymDto>
 
 @{
-    var searchKey = Context.Request.Query["SearchKey"].ToString();
-    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
-
     ViewData["Title"] = "باشگاه ها";
-    Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml";
+
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var searchKey =
+        Context.Request.Query["SearchKey"].ToString();
 
     int pageSize = 3;
+
     int currentPage = 1;
 
     if (Context.Request.Query.ContainsKey("page"))
     {
-        int.TryParse(Context.Request.Query["page"], out currentPage);
+        int.TryParse(
+            Context.Request.Query["page"],
+            out currentPage);
 
         if (currentPage <= 0)
+        {
             currentPage = 1;
+        }
     }
 
     int totalItems = Model.Count();
-    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+    int totalPages =
+        (int)Math.Ceiling((double)totalItems / pageSize);
 
     var gyms = Model
         .Skip((currentPage - 1) * pageSize)
@@ -28,192 +36,304 @@
         .ToList();
 }
 
-
 <div class="container-fluid mt-4">
 
-    <div class="page-title-box">
+    <!-- Header -->
 
-        <div class="page-title">
-            لیست باشگاه ها
-        </div>
+    <div class="fc-page-header">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"لیست باشگاه ها"' />
 
         <a asp-area="Admin"
            asp-controller="Gym"
            asp-action="Create"
-           class="btn btn-success btn-add-new">
+           class="btn btn-success">
+
             + ثبت باشگاه جدید
+
         </a>
-        @* <a href="/Admin/Gym/Create" class="btn btn-success">
-            تست Create
-        </a> *@
+
     </div>
 
-    @* جستجو *@
-    @* <div class="col-md-6 mb-3">
-        <input type="text"
-               class="form-control ml-sm-0"
-               name="SearchKey"
-               value="@searchKey"
-               placeholder="جستجوی باشگاه..." />
+    <!-- Search Box -->
 
-        <button type="submit" class="btn btn-success position-relative">جستجو...</button>
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
+             model="searchKey" />
 
-    </div> *@
-    <form method="get" class="col-xl-6 col-lg-8 col-md-12 mb-1">
+    <!-- Card -->
 
-        <div class="d-flex align-items-center">
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
 
-            <input type="text"
-                   class="form-control ml-sm-0"
-                   name="SearchKey"
-                   value="@searchKey"
-                   placeholder="جستجوی عضو..." />
+    <div class="mb-3">
 
-            <button type="submit" class="btn btn-success position-relative">
+        تعداد کل باشگاه ها :
 
-                جستجو
+        <strong>
+            @totalItems
+        </strong>
 
-@*                 @if (isFiltered)
+    </div>
+
+    @if (gyms.Any())
+    {
+        <table class="table table-striped table-hover">
+
+            <thead>
+
+                <tr>
+
+                    <th>نام باشگاه</th>
+
+                    <th>کد باشگاه</th>
+
+                    <th>شماره موبایل</th>
+
+                    <th>توضیحات</th>
+
+                    <th width="180">
+                        عملیات
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in gyms)
                 {
-                    <span class="badge badge-danger">
-                        @Model.Members.Count
-                    </span>
-                }
- *@
-            </button>
-
-@*             @if (isFiltered)
-            {
-                <a href="/Admin/Members"
-                   class="btn btn-warning">
-                    نمایش همه (@Model.RowCount)
-                </a>
-            }
- *@
-        </div>
-
-    </form>
-
-    <div class="custom-card">
-
-        <div class="table-info">
-            تعداد کل باشگاه ها:
-            <strong>@totalItems</strong>
-        </div>
-
-        @if (gyms.Any())
-        {
-            <table class="table custom-table">
-
-                <thead>
-
                     <tr>
-                        <th>نام باشگاه</th>
-                        <th>کد باشگاه</th>
-                        <th>شماره موبایل</th>
-                        <th>توضیحات</th>
-                        <th width="180">عملیات</th>
-                    </tr>
 
-                </thead>
+                        <td>
 
-                <tbody>
+                            <strong>
+                                @item.Name
+                            </strong>
 
-                    @foreach (var item in gyms)
-                    {
-                        <tr>
+                        </td>
 
-                            <td>
-                                <strong>@item.Name</strong>
-                            </td>
+                        <td>
+                            @item.Code
+                        </td>
 
-                            <td>
-                                @item.Code
-                            </td>
+                        <td>
+                            @item.MobileNumber
+                        </td>
 
-                            <td>
-                                @item.MobileNumber
-                            </td>
+                        <td>
 
-                            <td>
-                                @(string.IsNullOrWhiteSpace(item.Description)
-                                    ? "---"
-                                    : item.Description)
-                            </td>
+                            @(string.IsNullOrWhiteSpace(item.Description)
+                                ? "---"
+                                : item.Description)
 
-                            <td>
+                        </td>
 
-                                <div class="action-buttons">
+                        <td>
+
+                            <div class="fc-action-buttons">
+
+                                <div class="fc-action-buttons">
 
                                     <a asp-action="Edit"
                                        asp-route-id="@item.Id"
-                                       class="btn btn-edit">
+                                       class="btn btn-warning btn-sm">
+
                                         ویرایش
+
                                     </a>
 
-                                    <a asp-action="Delete"
+                                    <a asp-action="CompleteInfo"
                                        asp-route-id="@item.Id"
-                                       class="btn btn-delete">
-                                        حذف
+                                       class="btn btn-info btn-sm">
+
+                                        اطلاعات تکمیلی
+
                                     </a>
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="DeleteGym(@item.Id)">
+
+                                        حذف
+
+                                    </button>
 
                                 </div>
+                            </div>
 
-                            </td>
+                        </td>
 
-                        </tr>
-                    }
+                    </tr>
+                }
 
-                </tbody>
+            </tbody>
 
-            </table>
+        </table>
 
-            <!-- Pagination -->
-            @if (totalPages > 1)
-            {
-                <div class="pagination-box">
-
-                    @if (currentPage > 1)
-                    {
-                        <a href="?page=@(currentPage - 1)">
-                            قبلی
-                        </a>
-                    }
-
-                    @for (int i = 1; i <= totalPages; i++)
-                    {
-                        if (i == currentPage)
-                        {
-                            <span class="active-page">
-                                @i
-                            </span>
-                        }
-                        else
-                        {
-                            <a href="?page=@i">
-                                @i
-                            </a>
-                        }
-                    }
-
-                    @if (currentPage < totalPages)
-                    {
-                        <a href="?page=@(currentPage + 1)">
-                            بعدی
-                        </a>
-                    }
-
-                </div>
-            }
-
-        }
-        else
+        <!-- Pagination -->
+        @if (totalPages > 1)
         {
-            <div class="empty-box">
-                هیچ باشگاهی ثبت نشده است
+            <div class="fc-pagination">
+
+                @if (currentPage > 1)
+                {
+                    <a href="?page=@(currentPage - 1)&SearchKey=@searchKey">
+
+                        قبلی
+
+                    </a>
+                }
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    if (i == currentPage)
+                    {
+                        <span class="active">
+
+                            @i
+
+                        </span>
+                    }
+                    else
+                    {
+                        <a href="?page=@i&SearchKey=@searchKey">
+
+                            @i
+
+                        </a>
+                    }
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <a href="?page=@(currentPage + 1)&SearchKey=@searchKey">
+
+                        بعدی
+
+                    </a>
+                }
+
             </div>
         }
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                 model='"هیچ باشگاهی ثبت نشده است"' />
+    }
 
-    </div>
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
 
 </div>
+
+@section Scripts
+{
+    <link href="~/Sweetalert2/sweetalert2.min.css"
+          rel="stylesheet" />
+
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+
+        function DeleteGym(Id) {
+
+        swal.fire({
+
+        title: 'حذف باشگاه',
+
+        text: "آیا از حذف باشگاه مطمئن هستید؟",
+
+        icon: 'warning',
+
+        showCancelButton: true,
+
+        confirmButtonColor: '#d33',
+
+        cancelButtonColor: '#7cacbe',
+
+        confirmButtonText: 'بله، حذف شود',
+
+        cancelButtonText: 'خیر'
+
+        }).then((result) => {
+
+        if (result.value) {
+
+        var postData = {
+
+        'Id': Id
+
+        };
+
+        $.ajax({
+
+        contentType: 'application/x-www-form-urlencoded',
+
+        dataType: 'json',
+
+        type: "POST",
+
+        url: "/Admin/Gym/Delete",
+
+        data: postData,
+
+        success: function (data) {
+
+        if (data.isSuccess == true) {
+
+        swal.fire(
+
+        'موفق!',
+
+        data.message,
+
+        'success'
+
+        ).then(function () {
+
+        location.reload();
+
+        });
+
+        }
+        else {
+
+        swal.fire(
+
+        'هشدار!',
+
+        data.message,
+
+        'warning'
+
+        );
+
+        }
+
+        },
+
+        error: function (request, status, error) {
+
+        swal.fire(
+
+        'خطا!',
+
+        'مشکلی در ارتباط با سرور رخ داده است',
+
+        'error'
+
+        );
+
+        }
+
+        });
+
+        }
+
+        });
+
+        }
+
+    </script>
+}

@@ -1,0 +1,28 @@
+﻿@model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+<div class="col-md-@Model.Col fc-input-group">
+
+    <label class="form-label">
+
+        @Model.LabelName
+
+    </label>
+
+    <input type="file"
+           id="@Model.Id"
+           name="@Model.Name"
+           class="form-control" />    
+           
+           @(Model.ReadOnly ? "readonly" : "")
+    @(Model.Disabled ? "disabled" : "") />
+
+    @if (!string.IsNullOrWhiteSpace(Model.ValidationMessage))
+    {
+        <span class="text-danger">
+
+            @Model.ValidationMessage
+
+        </span>
+    }
+
+</div>

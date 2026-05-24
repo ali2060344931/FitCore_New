@@ -40,7 +40,7 @@ namespace FitCore.Persistence.Seed
 
             var cityLines = await File.ReadAllLinesAsync(path);
 
-            List<Cities> cities = new();
+            List<City> cities = new();
 
             foreach (var line in cityLines)
             {
@@ -60,7 +60,7 @@ namespace FitCore.Persistence.Seed
 
                 if (province != null)
                 {
-                    cities.Add(new Cities
+                    cities.Add(new City
                     {
                         Name = cityName,
                         ProvincesId = province.Id

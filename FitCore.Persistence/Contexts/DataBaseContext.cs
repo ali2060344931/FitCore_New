@@ -29,8 +29,8 @@ namespace FitCore.Persistence.Contexts
 
         public DbSet<Setings> Setings { get; set; }
         public DbSet<UserOtpCode> UserOtpCodes { get; set; }
-        public DbSet<Provinces> Provinces { get; set; }
-        public DbSet<Cities> Cities { get; set; }
+        public DbSet<Province> Provinces { get; set; }
+        public DbSet<City> Cities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

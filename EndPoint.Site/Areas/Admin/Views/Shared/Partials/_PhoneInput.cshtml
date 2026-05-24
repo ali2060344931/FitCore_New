@@ -1,0 +1,30 @@
+﻿@model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+<div class="col-md-@Model.Col fc-input-group">
+
+    <label class="form-label">
+
+        @Model.LabelName
+
+    </label>
+
+    <input type="tel"
+           id="@Model.Id"
+           name="@Model.Name"
+           value="@Model.Value"
+           class="form-control"
+           placeholder="@Model.Placeholder"
+           oninput="this.value = this.value.replace(/[^0-9+]/g,'')" />
+           @(Model.ReadOnly ? "readonly" : "")
+    @(Model.Disabled ? "disabled" : "") />
+
+    @if (!string.IsNullOrWhiteSpace(Model.ValidationMessage))
+    {
+        <span class="text-danger">
+
+            @Model.ValidationMessage
+
+        </span>
+    }
+
+</div>

@@ -16,8 +16,11 @@ namespace FitCore.Application.Services.Gyms.Commands.AddGym
         public string MobileNumber { get; set; }
         public string Email { get; set; }
         public string Website { get; set; }
-        public string Province { get; set; }
-        public Cities Cities { get; set; }
+        public Province Province { get; set; }
+        public int? ProvinceID { get; set; }
+        public City Cities { get; set; }
+        public int? CitiesId { get; set; }
+
         public string Address { get; set; }
         public string PostalCode { get; set; }
         public double? Latitude { get; set; }

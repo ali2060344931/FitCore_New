@@ -1,188 +1,181 @@
 ﻿@using FitCore.Application.ViewModels.Gyms
+@using FitCore.Application.ViewModels.Common
+
 @model CreateGymDto
 
 @{
     ViewData["Title"] = "ثبت باشگاه جدید";
-    Layout = "_Adminlayout";
+
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col-lg-10 mx-auto">
+<div class="container-fluid mt-4">
 
-            <section class="page-account-box">
+    <div class="fc-form-container">
 
-                <div class="account-box">
+        <!-- Title -->
 
-                    <div class="account-box-headline">
-                        <span class="title">ثبت باشگاه جدید</span>
-                    </div>
+        <h2 class="fc-form-title">
 
-                    <div class="account-box-content p-4">
+            ثبت باشگاه جدید
 
-                        <form id="CreateMemberForm">
+        </h2>
 
-                            <div class="card-body">
+        <!-- Form -->
 
-                                @*                                 <div class="col-md-6 mb-3">
-                                    <label></label>
-                                    <input type="text" class="form-control"
-                                           id="Name" placeholder="@Html.DisplayNameFor(x => x.Name)" />
-                                </div>
- *@
+        <form id="CreateGymForm">
 
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="Name" class="form-label"></label>
-                                    <input asp-for="Name"
-                                           id="Name"
-                                           class="form-control"
-                                           placeholder="@Html.DisplayNameFor(x => x.Name)" />
+            <div class="row">
 
-                                    <span asp-validation-for="Name"
-                                          class="text-danger"></span>
-                                </div>
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "Name",
 
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="Code" class="form-label"></label>
-                                    <input asp-for="Code"
-                                           id="Code"
-                                           class="form-control"
-                                           placeholder="@Html.DisplayNameFor(x => x.Code)" />
+                             Name = "Name",
 
-                                    <span asp-validation-for="Name"
-                                          class="text-danger"></span>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="MobileNumber" class="form-label"></label>
-                                    <input asp-for="MobileNumber"
-                                           id="MobileNumber"
-                                           class="form-control"
-                                           placeholder="@Html.DisplayNameFor(x => x.MobileNumber)" />
+                             LabelName = @Html.DisplayNameFor(m => m.Name),
 
-                                    <span asp-validation-for="Name"
-                                          class="text-danger"></span>
-                                </div>
+                             Placeholder = @Html.DisplayNameFor(m => m.Name),
 
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="Description" class="form-label"></label>
-
-                                    <!-- تغییر از input به textarea -->
-                                    <textarea asp-for="Description"
-                                              id="Description"
-                                              class="form-control"
-                                              placeholder="@Html.DisplayNameFor(x => x.Description)"
-                                              rows="4">
-                                          </textarea>
-
-                                    <span asp-validation-for="Description"
-                                          class="text-danger"></span>
-                                </div>
+                             Col = 6
+                         }' />
 
 
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Code",
 
-                                @*                                 <div class="col-md-6 mb-3">
-                                    <label></label>
-                                    <input type="text" class="form-control"
-                                           id="Code" placeholder="@Html.DisplayNameFor(x => x.Code)" />
-                                </div>
+             Name = "Code",
 
-                                <div class="col-md-6 mb-3">
-                                    <label></label>
-                                    <input type="text" class="form-control"
-                                           id="MobileNumber"
-                                           placeholder="@Html.DisplayNameFor(x => x.MobileNumber)" />
-                                </div>
+             LabelName = @Html.DisplayNameFor(m => m.Code),
 
-                                <div class="form-group">
-                                    <label></label>
-                                    <textarea class="form-control"
-                                              id="Description"
-                                              placeholder="@Html.DisplayNameFor(x => x.Description)"
-                                              rows="2"></textarea>
-                                </div>
- *@
-                            </div>
+             Placeholder = @Html.DisplayNameFor(m => m.Code),
 
-                            <div class="card-footer">
+             Col = 6
+         }' />
 
-                                <button type="button"
-                                        onclick="CreateGym()"
-                                        class="btn btn-primary">
-                                    ثبت باشگاه
-                                </button>
 
-                            </div>
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "MobileNumber",
 
-                        </form>
+             Name = "MobileNumber",
 
-                    </div>
+             LabelName = @Html.DisplayNameFor(m => m.MobileNumber),
 
-                </div>
+             Placeholder = @Html.DisplayNameFor(m => m.MobileNumber),
 
-            </section>
+             Col = 6
+         }' />
 
-        </div>
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Description",
+
+             Name = "Description",
+
+             LabelName = @Html.DisplayNameFor(m => m.Description),
+
+             Placeholder = @Html.DisplayNameFor(m => m.Description),
+
+             Col = 12
+         }' />
+
+</div>
+
+            <!-- Buttons -->
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
+        </form>
     </div>
 </div>
 
 @section Scripts {
-    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <partial name="_ValidationScriptsPartial" />
 
+    <link href="~/Sweetalert2/sweetalert2.min.css"
+          rel="stylesheet" />
 
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <script>
 
-        function CreateGym() {
+        $("#CreateGymForm").submit(function (e) {
+
+        e.preventDefault();
 
         var data = {
 
         Name: $("#Name").val(),
+
         Code: $("#Code").val(),
-        Description: $("#Description").val(),
+
         MobileNumber: $("#MobileNumber").val(),
 
+        Description: $("#Description").val()
         };
 
         $.ajax({
 
         type: "POST",
+
         url: "/Admin/Gym/Create",
+
         data: data,
 
         success: function (data) {
 
         if (data.isSuccess == true) {
 
-        swal.fire(
-        'موفق!',
-        data.message,
-        'success'
-        ).then(function () {
+        Swal.fire({
 
-        window.location.href = '/Admin/Gym';
+        icon: 'success',
+
+        title: 'موفق',
+
+        text: data.message
+
+        }).then(() => {
+
+        window.location.href = "/Admin/Gym";
+
         });
         }
         else {
 
-        swal.fire(
-        'هشدار!',
-        data.message,
-        'warning'
-        );
+        Swal.fire({
+
+        icon: 'warning',
+
+        title: 'هشدار',
+
+        text: data.message
+
+        });
         }
         },
 
-        error: function (request) {
+        error: function () {
 
-        alert(request.responseText);
-        }
+        Swal.fire({
+
+        icon: 'error',
+
+        title: 'خطا',
+
+        text: 'خطایی رخ داده است'
 
         });
         }
 
-    </script>
+        });
 
+        });
+
+    </script>
 }

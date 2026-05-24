@@ -234,3 +234,79 @@ body {
         color: #666;
         font-size: 14px;
     }
+/*    -----------------------------*/
+.fc-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fc-page-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.fc-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.fc-search-form {
+    margin-bottom: 20px;
+}
+
+.fc-empty-box {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+}
+
+.fc-action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.fc-pagination {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+    .fc-pagination a {
+        padding: 8px 14px;
+        background: #f1f1f1;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .fc-pagination .active {
+        background: #198754;
+        color: white;
+    }
+
+.fc-form-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.fc-form-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.fc-form-buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+.fc-input-group {
+    margin-bottom: 20px;
+}

@@ -2,7 +2,7 @@
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Users;
-
+using FitCore.Domain.Entities.Provinces;
 using System;
 using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -75,14 +75,15 @@ namespace FitCore.Domain.Entities.Gyms
 
         [Display(Name = "استان")]
         [MaxLength(100)]
-        public string Province { get; set; }
+        public int? ProvincesId { get; set; }
 
+        public Province Provinces { get; set; }
 
 
         [Display(Name = "شهر")]
         [MaxLength(100)]
         public int? CitiesId { get; set; }
-        public Cities Cities { get; set; } 
+        public City Cities { get; set; } 
 
 
         [Display(Name = "آدرس")]

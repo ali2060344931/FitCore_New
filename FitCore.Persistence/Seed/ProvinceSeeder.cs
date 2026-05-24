@@ -37,13 +37,13 @@ namespace FitCore.Persistence.Seed
 
             var provinceNames = await File.ReadAllLinesAsync(path);
 
-            List<Provinces> provinces = new();
+            List<Province> provinces = new();
 
             foreach (var item in provinceNames)
             {
                 if (!string.IsNullOrWhiteSpace(item))
                 {
-                    provinces.Add(new Provinces
+                    provinces.Add(new Province
                     {
                         Name = item.Trim()
                     });

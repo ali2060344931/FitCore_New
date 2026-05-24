@@ -1,0 +1,23 @@
+﻿@model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+<div class="col-md-@Model.Col fc-input-group">
+
+    <label class="form-label">
+
+        @Model.LabelName
+
+    </label>
+
+    <select id="@Model.Id"
+            name="@Model.Name"
+            class="form-select">
+
+        @foreach (var item in Model.Items)
+        {
+            <option value="@item.Value" selected="@(item.Value == Model.Value ? "selected" : null)">
+                @item.Text
+            </option>
+        }
+    </select>
+
+</div>

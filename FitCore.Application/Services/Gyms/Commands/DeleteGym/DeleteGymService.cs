@@ -3,6 +3,7 @@ using FitCore.Application.Interfaces.IGym;
 using FitCore.Application.Interfaces.ISms;
 using FitCore.Common.Dto;
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 namespace FitCore.Application.Services.Gyms.Commands.DeleteGym
@@ -17,25 +18,24 @@ namespace FitCore.Application.Services.Gyms.Commands.DeleteGym
             _context = context;
         }
 
-
-        public async Task<ResultDto> Execute(long id, CancellationToken cancellationToken = default)
+        public ResultDto Execute(long UserId)
         {
-            var gym = _context.Gyms.Find(id);
-
-            if (gym == null)
+            var user = _context.Gyms.Find(UserId);
+            if (user == null)
+            {
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "باشگاهی با این مشخصات یافت نشد."
+                    Message = "کاربر یافت نشد"
                 };
-
-            _context.Gyms.Remove(gym);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return new ResultDto
+            }
+            user.RemoveTime = DateTime.Now;
+            user.IsRemoved = true;
+            _context.SaveChanges();
+            return new ResultDto()
             {
                 IsSuccess = true,
-                Message = "با موفقیت حذف شد."
+                Message = "کاربر با موفقیت حذف شد"
             };
         }
 

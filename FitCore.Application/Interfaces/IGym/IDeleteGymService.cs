@@ -8,6 +8,7 @@ namespace FitCore.Application.Interfaces.IGym
 {
     public interface IDeleteGymService
     {
-        Task<ResultDto> Execute(long id, CancellationToken cancellationToken = default);
+        //Task<ResultDto> Execute(long id);
+        ResultDto Execute(long UserId);
     }
 }

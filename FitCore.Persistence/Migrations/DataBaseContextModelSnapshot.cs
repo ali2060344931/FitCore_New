@@ -82,6 +82,7 @@ namespace FitCore.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("MobileNumber")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -101,9 +102,9 @@ namespace FitCore.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Province")
+                    b.Property<int?>("ProvincesId")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("RemoveTime")
                         .HasColumnType("datetime2");
@@ -124,6 +125,8 @@ namespace FitCore.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CitiesId");
+
+                    b.HasIndex("ProvincesId");
 
                     b.ToTable("Gyms");
                 });
@@ -191,7 +194,7 @@ namespace FitCore.Persistence.Migrations
                     b.ToTable("Members");
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Cities", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.City", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,7 +215,7 @@ namespace FitCore.Persistence.Migrations
                     b.ToTable("Cities");
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Provinces", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Province", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -504,11 +507,17 @@ namespace FitCore.Persistence.Migrations
 
             modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
                 {
-                    b.HasOne("FitCore.Domain.Entities.Provinces.Cities", "Cities")
+                    b.HasOne("FitCore.Domain.Entities.Provinces.City", "Cities")
                         .WithMany("Gyms")
                         .HasForeignKey("CitiesId");
 
+                    b.HasOne("FitCore.Domain.Entities.Provinces.Province", "Provinces")
+                        .WithMany()
+                        .HasForeignKey("ProvincesId");
+
                     b.Navigation("Cities");
+
+                    b.Navigation("Provinces");
                 });
 
             modelBuilder.Entity("FitCore.Domain.Entities.Members.Member", b =>
@@ -522,9 +531,9 @@ namespace FitCore.Persistence.Migrations
                     b.Navigation("Gym");
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Cities", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.City", b =>
                 {
-                    b.HasOne("FitCore.Domain.Entities.Provinces.Provinces", "Provinces")
+                    b.HasOne("FitCore.Domain.Entities.Provinces.Province", "Provinces")
                         .WithMany("Ciltys")
                         .HasForeignKey("ProvincesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -602,12 +611,12 @@ namespace FitCore.Persistence.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Cities", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.City", b =>
                 {
                     b.Navigation("Gyms");
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Provinces", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Province", b =>
                 {
                     b.Navigation("Ciltys");
                 });
