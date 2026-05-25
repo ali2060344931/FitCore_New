@@ -1,4 +1,5 @@
-﻿using FitCore.Application.Interfaces.IGym;
+﻿using FitCore.Application.Contexts;
+using FitCore.Application.Interfaces.IGym;
 using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.AddGym;
 using FitCore.Application.Services.Gyms.Commands.EditGym;
@@ -30,9 +31,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly ICompleteGymInfoService _completeGymInfoService;
 
         public readonly IGetProvincesService _getProvincesService;
-
+        public readonly IDataBaseContext _dataBaseContext;
         public readonly IGetCitiesService _getCitiesService;
-        public GymController(IGetCitiesService getCitiesService, IGetProvincesService getProvincesService, ICompleteGymInfoService completeGymInfoService, IGetGymByIdService getGymByIdService, IGetGymsService gymService, IEditGymService editGymService, IAddGymService addGymService, IDeleteGymService deleteGymService)
+        public GymController(IDataBaseContext dataBaseContext, IGetCitiesService getCitiesService, IGetProvincesService getProvincesService, ICompleteGymInfoService completeGymInfoService, IGetGymByIdService getGymByIdService, IGetGymsService gymService, IEditGymService editGymService, IAddGymService addGymService, IDeleteGymService deleteGymService)
         {
             _getGymByIdService = getGymByIdService;
             _getGymsService = gymService;
@@ -42,6 +43,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _completeGymInfoService = completeGymInfoService;
             _getProvincesService = getProvincesService;
             _getCitiesService = getCitiesService;
+            _dataBaseContext = dataBaseContext;
         }
 
 
@@ -102,9 +104,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(long id)
+        public IActionResult Edit(string code)
         {
-            var gym = _getGymByIdService.GetById(id);
+            var gym = _getGymByIdService.GetById(code);
             if (gym == null) return NotFound();
 
             var model = new UpdateGymDto
@@ -148,9 +150,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult CompleteInfo(long id)
+        public IActionResult CompleteInfo(string code)
         {
-            var gym = _getGymByIdService.GetById(id);
+            var gym = _getGymByIdService.GetById(code);
 
             if (gym == null)
             {
@@ -197,27 +199,55 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 MaxOtpRequestPerMinute =
                     gym.MaxOtpRequestPerMinute
             };
-            ViewBag.Provinces = _getProvincesService.Execute()
-                .Select(p => new SelectListItem
+
+            // استان انتخاب شده
+
+            int? provinceId = null;
+
+            if (gym.CitiesId != null)
+            {
+                provinceId = _dataBaseContext.Cities
+                    .Where(c => c.Id == gym.CitiesId)
+                    .Select(c => c.ProvincesId)
+                    .FirstOrDefault();
+            }
+
+            // استان ها
+
+            ViewBag.Provinces = _dataBaseContext.Provinces
+                .Select(p => new SelectListItem()
                 {
                     Value = p.Id.ToString(),
-                    Text = p.Name
+
+                    Text = p.Name,
+
+                    Selected = (provinceId == p.Id)
                 })
                 .ToList();
 
-//            var city = _getCitiesService.Execute(1);
+            // شهرها
 
+            if (provinceId != null)
+            {
+                ViewBag.Cities = _dataBaseContext.Cities
+                    .Where(c => c.ProvincesId == provinceId)
+                    .Select(c => new SelectListItem()
+                    {
+                        Value = c.Id.ToString(),
 
-//            ViewBag.Cities = new SelectList(
-//    _getCitiesService.Execute(city.ProvincesId),
-//    "Id",
-//    "Name",
-//    model.CitiesId
-//);
+                        Text = c.Name,
+
+                        Selected = (gym.CitiesId == c.Id)
+                    })
+                    .ToList();
+            }
+            else
+            {
+                ViewBag.Cities = new List<SelectListItem>();
+            }
 
             return View(model);
         }
-
 
         [HttpPost]
         public IActionResult CompleteInfo(CompleteGymInfoDto dto)

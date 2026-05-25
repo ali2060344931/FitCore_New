@@ -73,11 +73,11 @@ namespace FitCore.Domain.Entities.Gyms
 
 
 
-        [Display(Name = "استان")]
-        [MaxLength(100)]
-        public int? ProvincesId { get; set; }
+        //[Display(Name = "استان")]
+        //[MaxLength(100)]
+        //public int? ProvincesId { get; set; }
 
-        public Province Provinces { get; set; }
+        //public Province Provinces { get; set; }
 
 
         [Display(Name = "شهر")]

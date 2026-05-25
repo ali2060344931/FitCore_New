@@ -20,7 +20,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Index(int page = 1, string SearchKey="")
         {
-            long gymId = 2;
+            long gymId = 23;
 
             var request = new RequestGetMemberDto
             {

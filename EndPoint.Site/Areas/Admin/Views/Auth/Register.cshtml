@@ -44,7 +44,7 @@
                             <a href="#" class="account-box-logo">FitCore</a>
                             <div class="account-box">
                                 <div class="account-box-headline">
-                                    <a href="~/Auth/Login" class="login-ds"><span class="title">ورود</span><span class="sub-title">ورود به حساب</span></a>
+                                    <a href="~/admin/Auth/Login" class="login-ds"><span class="title">ورود</span><span class="sub-title">ورود به حساب</span></a>
                                     <a href="#" class="register-ds active"><span class="title">ثبت نام</span><span class="sub-title">ایجاد حساب</span></a>
                                 </div>
                                 <div class="Login-to-account mt-4">
@@ -133,7 +133,7 @@
 
     setBtnLoading("btnSendOtp", true, "در حال ارسال...");
 
-    $.post("/Auth/SendOtpReg", {
+    $.post("/admin/Auth/SendOtpReg", {
     FullName: fullname,
     mobile: mobile,
     gymId: gymId
@@ -152,10 +152,6 @@
     });
     }
 
-
-
-
-
     function startTimer() {
     var sec = 60;
     $("#btnResend").hide();
@@ -173,7 +169,7 @@
 
     function RegisterUser() {
     setBtnLoading("btnRegister", true, "در حال ثبت...");
-    $.post("/Auth/RegisterUser", {
+    $.post("/admin/Auth/RegisterUser", {
     fullName: $("#fullname").val(),
     mobile: $("#mobile").val(),
     code: $("#code").val(),

@@ -246,12 +246,12 @@ header.header-main{
     opacity: 0.8 !important;
 }
 
-.account-box{
+.account-box {
     width: auto;
     height: 50px;
     border-radius: 10px;
     background-color: #FFF;
-    color: #555!important;
+    color: #555 !important;
     line-height: 44px;
     padding: 5px 10px 5px 43px;
     float: left;
@@ -261,6 +261,8 @@ header.header-main{
     border-radius: 20px;
     overflow: hidden;
     cursor: pointer;
+    min-width: 300px; /* این مقدار باعث می‌شود باکس حداقل ۳۰۰ پیکسل باشد */
+    white-space: nowrap; /* جلوگیری از شکستن خط در صورت طولانی بودن متن */
 }
 
 .account-box span.icon-account{
@@ -7925,3 +7927,10 @@ body.light .progress-wrap svg.progress-circle path {
     text-align: right;
 }
 
+.wide-account-box {
+    width: 350px !important; /* یا هر مقداری که نیاز دارید */
+    min-width: 250px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}

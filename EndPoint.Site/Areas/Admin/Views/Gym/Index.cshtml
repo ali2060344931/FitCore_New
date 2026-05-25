@@ -136,27 +136,22 @@
                                 <div class="fc-action-buttons">
 
                                     <a asp-action="Edit"
-                                       asp-route-id="@item.Id"
+                                       asp-route-code="@item.Code"
                                        class="btn btn-warning btn-sm">
 
                                         ویرایش
 
                                     </a>
-
                                     <a asp-action="CompleteInfo"
-                                       asp-route-id="@item.Id"
+                                       asp-route-code="@item.Code"
                                        class="btn btn-info btn-sm">
-
                                         اطلاعات تکمیلی
-
                                     </a>
 
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
                                             onclick="DeleteGym(@item.Id)">
-
                                         حذف
-
                                     </button>
 
                                 </div>

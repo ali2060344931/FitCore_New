@@ -16,9 +16,9 @@ namespace FitCore.Application.Services.Gyms.Commands
             _context = context;
         }
 
-        public GymDto GetById(long id)
+        public GymDto GetById(string code)
         {
-            var x = _context.Gyms.Find(id);
+            var x = _context.Gyms.FirstOrDefault(x => x.Code == code);
 
             if (x == null) return null;
 
@@ -35,7 +35,7 @@ namespace FitCore.Application.Services.Gyms.Commands
                 MobileNumber = x.MobileNumber,
                 Email = x.Email,
                 Website = x.Website,
-                ProvinceID = x.ProvincesId,
+                //ProvinceID = x.ProvincesId,
                 CitiesId = x.CitiesId,
                 Address = x.Address,
                 PostalCode = x.PostalCode,

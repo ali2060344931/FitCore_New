@@ -1,186 +1,156 @@
-﻿@* @using FitCore.Application.Services.Members.Commands.AddNewMember *@
-@using FitCore.Application.Services.Members.Commands
-@* @using FitCore.Domain.Entities.Members *@
+﻿@using FitCore.Application.Services.Members.Commands
+@using FitCore.Application.ViewModels.Common
 
 @model RequestAddNewMemberDto
 
 @{
-    ViewData["Title"] = "افزودن عضو";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "ثبت عضو جدید";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
-<div class="content-wrapper">
+<div class="container-fluid mt-4">
 
-    <section class="content-header">
+    <div class="fc-form-container">
 
-        <div class="container-fluid">
+        <!-- Title -->
+        <h2 class="fc-form-title">
+            ثبت عضو جدید
+        </h2>
 
-            <div class="row mb-2">
+        <!-- Form -->
+        <form id="CreateMemberForm">
 
-                <div class="col-sm-6">
-                    <h1>افزودن عضو جدید</h1>
+            <div class="row">
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "FirstName",
+                             Name = "FirstName",
+                             LabelName = @Html.DisplayNameFor(m => m.FirstName),
+                             Placeholder = @Html.DisplayNameFor(m => m.FirstName),
+                             Col = 6
+                         }' />
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "LastName",
+             Name = "LastName",
+             LabelName = @Html.DisplayNameFor(m => m.LastName),
+             Placeholder = @Html.DisplayNameFor(m => m.LastName),
+             Col = 6
+         }' />
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Mobile",
+             Name = "Mobile",
+             LabelName = @Html.DisplayNameFor(m => m.Mobile),
+             Placeholder = @Html.DisplayNameFor(m => m.Mobile),
+             Col = 6
+         }' />
+
+<div class="col-md-6 mb-3">
+                    <label asp-for="Gender">@Html.DisplayNameFor(m => m.Gender)</label>
+                    <select class="form-control" id="Gender" asp-for="Gender">
+                        <option value="0">مرد</option>
+                        <option value="1">زن</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BirthDate">@Html.DisplayNameFor(m => m.BirthDate)</label>
+                    <!-- تغییر به text و اضافه کردن کلاس برای شناسایی -->
+                    <input type="text" class="form-control date-picker-input" id="BirthDate" readonly />
+                    <!-- یک فیلد مخفی برای ارسال تاریخ به سرور (در قالب میلادی یا رشته‌ای که سرور قبول می‌کند) -->
+                    <input type="hidden" id="BirthDateHidden" asp-for="BirthDate" />
                 </div>
 
             </div>
 
-        </div>
-
-    </section>
-
-    <section class="content">
-
-        <div class="container-fluid">
-
-            <div class="card card-primary">
-
-                <div class="card-header">
-
-                    <h3 class="card-title">
-                        اطلاعات عضو
-                    </h3>
-
-                </div>
-
-                <form id="CreateMemberForm">
-
-                    <div class="card-body">
-
-                        <div class="form-group">
-
-                            <label>نام</label>
-                            <input type="text" class="form-control" id="FirstName" />
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>نام خانوادگی</label>
-
-                            <input type="text"
-                                   class="form-control"
-                                   id="LastName" />
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>موبایل</label>
-
-                            <input type="text"
-                                   class="form-control"
-                                   id="Mobile" />
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>جنسیت</label>
-
-                            <select class="form-control"
-                                    id="Gender">
-
-                                <option value="0">
-                                    مرد
-                                </option>
-
-                                <option value="1">
-                                    زن
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>تاریخ تولد</label>
-
-                            <input type="date"
-                                   class="form-control"
-                                   id="BirthDate" />
-
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer">
-
-                        <button type="button"
-                                onclick="CreateMember()"
-                                class="btn btn-primary">
-                            ثبت عضو
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </section>
-
+            <!-- Buttons -->
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
+        </form>
+    </div>
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- SweetAlert2 -->
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
-    <partial name="_ValidationScriptsPartial" />
-
-
+    <!-- Persian Datepicker -->
+    <link href="~/AdminTemplate/app-assets/css/persian-datepicker.min.css" rel="stylesheet" />
+    <script src="~/AdminTemplate/app-assets/js/persian-date.min.js"></script>
+    <script src="~/AdminTemplate/app-assets/js/persian-datepicker.min.js"></script>
 
     <script>
+        $(document).ready(function() {
+        // فعال‌سازی تقویم
+        $(".date-picker-input").pDatepicker({
+        initialValue: false,
+        format: 'YYYY/MM/DD',
+        altField: '#BirthDateHidden',
+        altFormat: 'YYYY/MM/DD',
+        observer: true,
+        autoClose: true
+        });
 
-        function CreateMember() {
+        // ارسال فرم
+        $("#CreateMemberForm").submit(function (e) {
+        e.preventDefault();
+
+        // اگر فرم Validation سمت کلاینت ندارد، اینجا چک کنید
+        if (!$(this).valid()) return;
 
         var data = {
-
-        GymId: 2,
+        GymId: 2, // حتما در آینده این را از مدل یا کلیم‌ها بگیرید
         FirstName: $("#FirstName").val(),
         LastName: $("#LastName").val(),
         Mobile: $("#Mobile").val(),
         Gender: parseInt($("#Gender").val()),
-        BirthDate: $("#BirthDate").val()
+        // اصلاح: خواندن مقدار از فیلد مخفی
+        BirthDate: $("#BirthDateHidden").val()
         };
 
         $.ajax({
-
         type: "POST",
         url: "/Admin/Members/Create",
         data: data,
-
-        success: function (data) {
-
-        if (data.isSuccess == true) {
-
-        swal.fire(
-        'موفق!',
-        data.message,
-        'success'
-        ).then(function () {
-
-        window.location.href = '/Admin/Members';
+        beforeSend: function() {
+        // اختیاری: غیرفعال کردن دکمه ثبت برای جلوگیری از دابل کلیک
+        },
+        success: function (response) {
+        if (response.isSuccess) {
+        Swal.fire({
+        icon: 'success',
+        title: 'موفق',
+        text: response.message,
+        confirmButtonText: 'تأیید'
+        }).then(() => {
+        window.location.href = "/Admin/Members";
         });
-        }
-        else {
-
-        swal.fire(
-        'هشدار!',
-        data.message,
-        'warning'
-        );
+        } else {
+        Swal.fire({
+        icon: 'warning',
+        title: 'خطا در ثبت',
+        text: response.message
+        });
         }
         },
-
-        error: function (request) {
-
-        alert(request.responseText);
-        }
-
+        error: function () {
+        Swal.fire({
+        icon: 'error',
+        title: 'خطا',
+        text: 'خطایی در ارتباط با سرور رخ داده است'
         });
         }
-
+        });
+        });
+        });
     </script>
-
 }

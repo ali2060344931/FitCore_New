@@ -30,7 +30,7 @@ namespace FitCore.Application.Services.Gyms.Commands
                 MobileNumber = x.MobileNumber,
                 Email = x.Email,
                 Website = x.Website,
-                ProvinceID = x.ProvincesId,
+                //ProvinceID = x.ProvincesId,
                 CitiesId = x.CitiesId,
                 Address = x.Address,
                 PostalCode = x.PostalCode,
