@@ -1,0 +1,16 @@
+﻿@model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+<div class="col-md-@Model.Col fc-input-group">
+    <label for="@Model.Id" class="form-label font-weight-bold">
+        @Model.LabelName
+    </label>
+
+    <input type="text"
+           id="@Model.Id"
+           name="@Model.Name"
+           class="form-control"
+           placeholder="@Model.Placeholder"
+           value="@Model.Value"
+           readonly
+           style="background-color: #fff; cursor: pointer;" />
+</div>

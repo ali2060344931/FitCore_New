@@ -42,11 +42,11 @@ namespace FitCore.Domain.Entities.Members
         public string BirthDate { get; set; }
 
         [DisplayName("تاریخ شروع عضویت")]
-        [Required(ErrorMessage = "تاریخ شروع عضویت الزامی است.")]
+        //[Required(ErrorMessage = "تاریخ شروع عضویت الزامی است.")]
         public string MembershipStartDate { get; set; }
 
         [DisplayName("تاریخ پایان عضویت")]
-        [Required(ErrorMessage = "تاریخ پایان عضویت الزامی است.")]
+        //[Required(ErrorMessage = "تاریخ پایان عضویت الزامی است.")]
         public string MembershipEndDate { get; set; }
 
         [DisplayName("قد (cm)")]

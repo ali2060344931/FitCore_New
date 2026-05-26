@@ -1,0 +1,600 @@
+﻿@using FitCore.Application.Services.Gyms.Commands.EditGym.FitCore.Application.ViewModels.Gyms
+@model CompleteGymInfoDto
+
+@{
+    ViewData["Title"] = "اطلاعات تکمیلی باشگاه";
+
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- Header -->
+
+    <div class="fc-page-header">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"اطلاعات تکمیلی باشگاه"' />
+
+    </div>
+
+    <!-- Card Start -->
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <form id="CompleteGymInfoForm">
+
+        <input type="hidden"
+               id="Id"
+               value="@Model.Id" />
+
+        <div class="row">
+
+            <!-- BrandName -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    نام برند
+
+                </label>
+
+                <input type="text"
+                       id="BrandName"
+                       value="@Model.BrandName"
+                       class="form-control" />
+
+            </div>
+
+            <!-- SubDomain -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    زیردامنه
+
+                </label>
+
+                <input type="text"
+                       id="SubDomain"
+                       value="@Model.SubDomain"
+                       class="form-control" />
+
+            </div>
+
+            <!-- PhoneNumber -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    تلفن ثابت
+
+                </label>
+
+                <input type="text"
+                       id="PhoneNumber"
+                       value="@Model.PhoneNumber"
+                       class="form-control" />
+
+            </div>
+
+            <!-- Email -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    ایمیل
+
+                </label>
+
+                <input type="email"
+                       id="Email"
+                       value="@Model.Email"
+                       class="form-control" />
+
+            </div>
+
+            <!-- Website -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    وب سایت
+
+                </label>
+
+                <input type="text"
+                       id="Website"
+                       value="@Model.Website"
+                       class="form-control" />
+
+            </div>
+
+            <!-- Province -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    استان
+
+                </label>
+
+                <select id="ProvinceId"
+                        asp-items="ViewBag.Provinces"
+                        class="form-control">
+
+                    <option value="">
+                        انتخاب استان
+                    </option>
+
+                </select>
+                @* <select id="ProvinceId"
+                        name="ProvinceId"
+                        class="form-control">
+                    <option value="">
+                        انتخاب استان
+                    </option>
+
+                    @foreach (var item in ViewBag.Provinces)
+                    {
+                        <option value="@item.Value"
+                                selected="@item.Selected">
+
+                            @item.Text
+
+                        </option>
+                    }
+
+                </select> *@
+            </div>
+
+            <!-- City -->
+            <div class="col-md-6 mb-3">
+                <label class="form-label">
+                    شهر
+                </label>
+                <select asp-for="CitiesId"
+                        asp-items="ViewBag.Cities"
+                        class="form-control">
+
+                    <option value="">
+                        انتخاب شهر
+                    </option>
+
+                </select>
+                @* <select id="CitiesId"
+                        name="CitiesId"
+                        class="form-control">
+
+                    <option value="">
+                        انتخاب شهر
+                    </option>
+
+                    @foreach (var item in ViewBag.Cities)
+                    {
+                        if (item.Selected)
+                        {
+                            <option value="@item.Value" selected>
+                                @item.Text
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">
+                                @item.Text
+                            </option>
+                        }
+                    }
+
+                </select> *@
+            </div>
+
+
+
+            <!-- Address -->
+
+            <div class="col-md-12 mb-3">
+
+                <label class="form-label">
+
+                    آدرس
+
+                </label>
+
+                <textarea id="Address"
+                          rows="3"
+                          class="form-control">@Model.Address</textarea>
+
+            </div>
+
+            <!-- PostalCode -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    کد پستی
+
+                </label>
+
+                <input type="text"
+                       id="PostalCode"
+                       value="@Model.PostalCode"
+                       class="form-control" />
+
+            </div>
+
+            <!-- Latitude -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    عرض جغرافیایی
+
+                </label>
+
+                <input type="text"
+                       id="Latitude"
+                       value="@Model.Latitude"
+                       class="form-control" />
+
+            </div>
+
+            <!-- Longitude -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    طول جغرافیایی
+
+                </label>
+
+                <input type="text"
+                       id="Longitude"
+                       value="@Model.Longitude"
+                       class="form-control" />
+
+            </div>
+
+            <!-- MaxMembers -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    حداکثر اعضا
+
+                </label>
+
+                <input type="number"
+                       id="MaxMembers"
+                       value="@Model.MaxMembers"
+                       class="form-control" />
+
+            </div>
+
+            <!-- SubscriptionExpireDate -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    تاریخ انقضا
+
+                </label>
+
+                <input type="date"
+                       id="SubscriptionExpireDate"
+                       value="@(Model.SubscriptionExpireDate)"
+                       class="form-control" />
+
+            </div>
+
+            <!-- OtpExpireSeconds -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    اعتبار OTP
+
+                </label>
+
+                <input type="number"
+                       id="OtpExpireSeconds"
+                       value="@Model.OtpExpireSeconds"
+                       class="form-control" />
+
+            </div>
+
+            <!-- MaxOtpRequestPerMinute -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+
+                    حداکثر درخواست OTP
+
+                </label>
+
+                <input type="number"
+                       id="MaxOtpRequestPerMinute"
+                       value="@Model.MaxOtpRequestPerMinute"
+                       class="form-control" />
+
+            </div>
+
+            <!-- IsActive -->
+
+
+
+            <div class="col-md-6 mb-3">
+                <!-- حذف mt-6 که فضای بیش از حد ایجاد می‌کند و جایگزینی با کلاس‌های استاندارد -->
+                <div class="form-check" style="display: flex; align-items: center; margin-top: 15px;">
+
+                    <input class="form-check-input"
+                           type="checkbox"
+                           asp-for="IsActive"
+                           style="margin-left: 10px; margin-right: 0;" />
+
+                    <label asp-for="IsActive" class="form-check-label" style="margin-right: 25px;">
+                        باشگاه فعال
+                    </label>
+                </div>
+            </div>
+
+
+
+@*             <div class="col-md-6 mb-3">
+
+                <div class="form-check mt-3">
+
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="IsActive"
+                    @(Model.IsActive ? "checked" : "") />
+
+                    <label class="form-check-label">
+
+                        فعال
+
+                    </label>
+
+                </div>
+
+            </div>
+ *@
+            <!-- AllowOnlineRegistration -->
+
+
+            <div class="col-md-6 mb-3">
+                <!-- حذف mt-6 که فضای بیش از حد ایجاد می‌کند و جایگزینی با کلاس‌های استاندارد -->
+                <div class="form-check" style="display: flex; align-items: center; margin-top: 15px;">
+
+                    <input class="form-check-input"
+                           type="checkbox"
+                           asp-for="AllowOnlineRegistration"
+                           style="margin-left: 10px; margin-right: 0;" />
+
+                    <label asp-for="AllowOnlineRegistration" class="form-check-label" style="margin-right: 25px;">
+                        اجازه ثبت نام آنلاین
+                    </label>
+                </div>
+            </div>
+
+
+@*             <div class="col-md-6 mb-3">
+
+                <div class="form-check mt-3">
+
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="AllowOnlineRegistration"
+                    @(Model.AllowOnlineRegistration ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        اجازه ثبت نام آنلاین
+                    </label>
+
+                </div>
+
+            </div>
+ *@        </div>
+
+        
+
+        <!-- Buttons -->
+
+        <div class="mt-4">
+
+            <button type="button"
+                    class="btn btn-success"
+                    onclick="SaveGymInfo()">
+
+                ذخیره اطلاعات
+
+            </button>
+
+            <a href="/Admin/Gym"
+               class="btn btn-secondary">
+
+                بازگشت
+
+            </a>
+
+        </div>
+
+    </form>
+
+    <!-- Card End -->
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>
+
+@section Scripts
+{
+    <link href="~/Sweetalert2/sweetalert2.min.css"
+          rel="stylesheet" />
+
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+
+        // Load Cities
+
+        $("#ProvinceId").change(function () {
+
+        var provinceId = $(this).val();
+
+        var citySelect = $("#CitiesId");
+
+        citySelect.empty();
+
+        citySelect.append(
+        new Option("انتخاب شهر", "")
+        );
+
+        if (provinceId !== "") {
+
+        $.ajax({
+
+        url: '/Admin/Gym/GetCities',
+
+        type: 'GET',
+
+        data: { provinceId: provinceId },
+
+        success: function (data) {
+
+        $.each(data, function (index, item) {
+
+        citySelect.append(
+        new Option(item.text, item.value)
+        );
+
+        });
+
+        }
+
+        });
+
+        }
+
+        });
+
+        
+        
+        // Save
+
+        function SaveGymInfo() {
+
+        var data = {
+
+        Id: $("#Id").val(),
+
+        BrandName: $("#BrandName").val(),
+
+        SubDomain: $("#SubDomain").val(),
+
+        PhoneNumber: $("#PhoneNumber").val(),
+
+        Email: $("#Email").val(),
+
+        Website: $("#Website").val(),
+
+        CitiesId: $("#CitiesId").val(),
+
+        Address: $("#Address").val(),
+
+        PostalCode: $("#PostalCode").val(),
+
+        Latitude: $("#Latitude").val(),
+
+        Longitude: $("#Longitude").val(),
+
+        IsActive: $("#IsActive").is(":checked"),
+
+        SubscriptionExpireDate:
+        $("#SubscriptionExpireDate").val(),
+
+        MaxMembers: $("#MaxMembers").val(),
+
+        AllowOnlineRegistration:
+        $("#AllowOnlineRegistration").is(":checked"),
+
+        OtpExpireSeconds:
+        $("#OtpExpireSeconds").val(),
+
+        MaxOtpRequestPerMinute:
+        $("#MaxOtpRequestPerMinute").val()
+
+        };
+
+        console.log($("#CitiesId").val());
+
+        console.log(data);
+
+        $.ajax({
+
+        type: "POST",
+
+        url: "/Admin/Gym/CompleteInfo",
+
+        data: data,
+
+        success: function (result) {
+
+        console.log(result);
+
+        if (result.isSuccess == true) {
+
+        Swal.fire(
+        'موفق!',
+        result.message,
+        'success'
+        ).then(function () {
+
+        window.location.href = '/Admin/Gym';
+
+        });
+
+        }
+        else {
+
+        Swal.fire(
+        'هشدار!',
+        result.message,
+        'warning'
+        );
+
+        }
+
+        },
+
+        error: function (xhr) {
+
+        console.log(xhr);
+
+        Swal.fire(
+        'خطا!',
+        'مشکلی در ارتباط با سرور رخ داده است',
+        'error'
+        );
+
+        }
+
+        });
+
+        }
+
+    </script>
+}

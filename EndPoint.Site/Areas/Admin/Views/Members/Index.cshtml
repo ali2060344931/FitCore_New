@@ -1,4 +1,6 @@
 ﻿@using FitCore.Application.Services.Member.Queries
+@using FitCore.Common
+@using FitCore.Domain.Entities.Members
 @model ResultGetMembersDto
 
 @{
@@ -7,6 +9,8 @@
 
     var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+
+
 }
 
 <div class="container-fluid mt-4">
@@ -83,8 +87,8 @@
                         <td>@item.Mobile</td>
 
                         <td>
-                            @(item.Gender==0 ? "مرد" : "زن")
-                            </td>
+                            @((int)item.Gender == 1 ? "مرد" : "زن")
+                        </td>
 
                         <td>
                             @(item.BirthDate == default ? "---" : item.BirthDate)
@@ -96,18 +100,17 @@
                                    asp-area="Admin"
                                    asp-controller="Members"
                                    asp-action="Edit"
-                                   asp-route-code="@item.Id">
+                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
                                     ویرایش
                                 </a>
 
-                                @* <a asp-action="Edit"
-                                   asp-route-code="@item.Code"
-                                   class="btn btn-warning btn-sm">
-
-                                    ویرایش
-
-                                </a> *@
-
+@*                                 <form asp-area="Admin" asp-controller="Members" asp-action="Edit" method="post" style="display:inline;">
+                                    <input type="hidden" name="Id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-info btn-sm">
+                                        ویرایش
+                                    </button>
+                                </form>
+ *@
                                 <button type="button"
                                         class="btn btn-danger btn-sm"
                                         onclick="DeleteMember(@item.Id)">

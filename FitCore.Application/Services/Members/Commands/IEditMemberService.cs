@@ -1,6 +1,5 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
-using FitCore.Domain.Entities.Members;
 
 using System;
 using System.Collections.Generic;
@@ -42,9 +41,9 @@ namespace FitCore.Application.Services.Members.Commands
             member.Mobile = request.Mobile;
             member.Gender = request.Gender;
             member.BirthDate = request.BirthDate;
-            member.MembershipEndDate = request.MembershipEndDate;
-            member.Height = request.Height;
-            member.Weight = request.Weight;
+            //member.MembershipEndDate = request.MembershipEndDate;
+            //member.Height = request.Height;
+            //member.Weight = request.Weight;
             member.UpdateTime = DateTime.Now;
 
             _context.SaveChanges();
@@ -55,26 +54,5 @@ namespace FitCore.Application.Services.Members.Commands
                 Message = "ویرایش انجام شد"
             };
         }
-    }
-
-    public class RequestEditMemberDto
-    {
-        public long Id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string Mobile { get; set; }
-
-        public Gender Gender { get; set; }
-
-        public string BirthDate { get; set; }
-
-        public string MembershipEndDate { get; set; }
-
-        public decimal Height { get; set; }
-
-        public decimal Weight { get; set; }
     }
 }

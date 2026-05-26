@@ -93,6 +93,7 @@ namespace FitCore.Application.Services.Members.Commands
 
         [DisplayName("جنسیت")]
         [Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]
+        
         public Gender Gender { get; set; }
 
         [DisplayName("تاریخ تولد")]

@@ -1,11 +1,13 @@
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
+using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Facads;
 using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.DeleteGym;
+using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
@@ -115,8 +117,13 @@ builder.Services.AddScoped<ICompleteGymInfoService, CompleteGymInfoService>();
 builder.Services.AddScoped<IGetProvincesService, GetProvincesService>();
 builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
 //>=====Gym=====<
+//<=====Member=====>
 
+builder.Services.AddScoped<IGetMembersByIdService, GetMembersByIdService>();
 
+//>=====Member=====<
+
+//IGetMembersByCodeService
 
 builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<SendOtpService>();

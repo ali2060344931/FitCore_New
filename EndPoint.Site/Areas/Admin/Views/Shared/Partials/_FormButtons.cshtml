@@ -1,14 +1,11 @@
-﻿<div class="fc-form-buttons">
+﻿@model FitCore.Application.ViewModels.Common.FormButtonsViewModel
 
-    <button type="submit"
-            class="btn btn-success">
-
-        ذخیره اطلاعات
+<div class="fc-form-buttons">
+    <button type="submit" class="btn btn-success">
+        @Model.SubmitText
     </button>
 
-    <a href="/Admin/Gym"
-       class="btn btn-secondary">
-        بازگشت
+    <a href="@Model.BackUrl" class="btn btn-secondary">
+        @Model.BackText
     </a>
-
 </div>

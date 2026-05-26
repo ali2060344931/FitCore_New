@@ -7934,3 +7934,9 @@ body.light .progress-wrap svg.progress-circle path {
     align-items: center;
     padding: 10px;
 }
+.form-account-title input,
+.form-account-title select {
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+}

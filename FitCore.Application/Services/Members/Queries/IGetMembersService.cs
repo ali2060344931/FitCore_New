@@ -1,9 +1,7 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
-using FitCore.Domain.Entities.Members;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace FitCore.Application.Services.Member.Queries
@@ -11,17 +9,6 @@ namespace FitCore.Application.Services.Member.Queries
     public interface IGetMembersService
     {
         ResultDto<ResultGetMembersDto> Execute(RequestGetMemberDto request);
-    }
-
-    public class RequestGetMemberDto
-    {
-        public string SearchKey { get; set; }
-
-        public int Page { get; set; } = 1;
-
-        public int PageSize { get; set; } = 10;
-
-        public long GymId { get; set; }
     }
 
     public class GetMembersService : IGetMembersService
@@ -76,43 +63,5 @@ namespace FitCore.Application.Services.Member.Queries
                 IsSuccess = true
             };
         }
-
-
-
-    }
-
-    public class ResultGetMemberDto
-    {
-        public long Id { get; set; }
-        public string FullName { get; set; }
-        public string Mobile { get; set; }
-        public Gender Gender { get; set; }
-        public string BirthDate { get; set; }
-    }
-
-    public class GetMemberDto
-    {
-        public long Id { get; set; }
-
-        public string FullName { get; set; }
-
-        public string Mobile { get; set; }
-
-        public Gender Gender { get; set; }
-
-        public DateTime BirthDate { get; set; }
-    }
-
-    public class ResultGetMembersDto
-    {
-        public List<ResultGetMemberDto> Members { get; set; }
-
-        public int CurrentPage { get; set; }
-
-        public int RowCount { get; set; }
-
-        public int PageSize { get; set; }
-        public int Rows { get; set; }
-
     }
 }
