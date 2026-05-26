@@ -80,8 +80,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(string code)
         {
-            int id=Converter.int
-            var gym = _dataBaseContext.Members.Where(c=>c.Id    == code);
+            //int id=Converter.int
+            //var gym = _dataBaseContext.Members.Where(c=>c.Id    == code);
 
             return View();
         }
