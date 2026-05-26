@@ -69,7 +69,7 @@ namespace FitCore.Application.Services.Members.Commands
 
         public Gender Gender { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public string BirthDate { get; set; }
 
         public DateTime MembershipEndDate { get; set; }
 

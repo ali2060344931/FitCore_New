@@ -19,7 +19,7 @@ namespace FitCore.Domain.Entities.Members
 
         public Gender Gender { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public string BirthDate { get; set; }
 
         // تاریخ شروع عضویت
         public DateTime MembershipStartDate { get; set; }

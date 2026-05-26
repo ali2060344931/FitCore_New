@@ -82,10 +82,12 @@
 
                         <td>@item.Mobile</td>
 
-                        <td>@item.Gender</td>
+                        <td>
+                            @(item.Gender==0 ? "مرد" : "زن")
+                            </td>
 
                         <td>
-                            @(item.BirthDate == default ? "---" : item.BirthDate.ToString("yyyy/MM/dd"))
+                            @(item.BirthDate == default ? "---" : item.BirthDate)
                         </td>
 
                         <td>
@@ -94,9 +96,17 @@
                                    asp-area="Admin"
                                    asp-controller="Members"
                                    asp-action="Edit"
-                                   asp-route-id="@item.Id">
+                                   asp-route-code="@item.Id">
                                     ویرایش
                                 </a>
+
+                                @* <a asp-action="Edit"
+                                   asp-route-code="@item.Code"
+                                   class="btn btn-warning btn-sm">
+
+                                    ویرایش
+
+                                </a> *@
 
                                 <button type="button"
                                         class="btn btn-danger btn-sm"

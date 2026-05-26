@@ -1,0 +1,123 @@
+﻿@using FitCore.Application.Services.Gyms.Commands.EditGym
+@using FitCore.Application.ViewModels.Common
+
+@model UpdateGymDto
+
+@{
+    ViewData["Title"] = "ویرایش اعضاء باشگاه";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="fc-form-container">
+
+        <!-- Title -->
+        <h2 class="fc-form-title">ویرایش اعضاء باشگاه</h2>
+
+        <!-- Form -->
+        <form id="EditMembersForm">
+            <!-- فیلد مخفی برای Id -->
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+
+            <div class="row">
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "Name",
+                             Name = "Name",
+                             Value = Model.Name,
+                             LabelName = @Html.DisplayNameFor(m => m.Name),
+                             Placeholder = @Html.DisplayNameFor(m => m.Name),
+                             Col = 6
+                         }' />
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Code",
+             Name = "Code",
+             Value = Model.Code.ToString(),
+             LabelName = @Html.DisplayNameFor(m => m.Code),
+             Placeholder = @Html.DisplayNameFor(m => m.Code),
+             Col = 2
+         }' />
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "MobileNumber",
+             Name = "MobileNumber",
+             Value = Model.MobileNumber,
+             LabelName = @Html.DisplayNameFor(m => m.MobileNumber),
+             Placeholder = @Html.DisplayNameFor(m => m.MobileNumber),
+             Col = 2
+         }' />
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Description",
+             Name = "Description",
+             Value = Model.Description,
+             LabelName = @Html.DisplayNameFor(m => m.Description),
+             Placeholder = @Html.DisplayNameFor(m => m.Description),
+             Col = 6
+         }' />
+</div>
+
+            <!-- Buttons -->
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        $("#EditMembersForm").submit(function (e) {
+        e.preventDefault();
+
+        var data = {
+        Id: $("#Id").val(),
+        Name: $("#Name").val(),
+        Code: $("#Code").val(),
+        MobileNumber: $("#MobileNumber").val(),
+        Description: $("#Description").val()
+        };
+
+        $.ajax({
+        type: "POST",
+        url: "/Admin/Gym/Edit", // آدرس اکشن ویرایش شما
+        data: data,
+        success: function (data) {
+        if (data.isSuccess == true) {
+        Swal.fire({
+        icon: 'success',
+        title: 'موفق',
+        text: data.message
+        }).then(() => {
+        window.location.href = "/Admin/Gym";
+        });
+        }
+        else {
+        Swal.fire({
+        icon: 'warning',
+        title: 'هشدار........',
+        text: data.message
+        });
+        }
+        },
+        error: function () {
+        Swal.fire({
+        icon: 'error',
+        title: 'خطا',
+        text: 'خطایی در هنگام ویرایش رخ داده است'
+        });
+        }
+        });
+        });
+    </script>
+}

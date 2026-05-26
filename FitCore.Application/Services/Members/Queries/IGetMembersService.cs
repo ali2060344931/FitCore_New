@@ -87,7 +87,7 @@ namespace FitCore.Application.Services.Member.Queries
         public string FullName { get; set; }
         public string Mobile { get; set; }
         public Gender Gender { get; set; }
-        public DateTime BirthDate { get; set; }
+        public string BirthDate { get; set; }
     }
 
     public class GetMemberDto
