@@ -284,7 +284,7 @@ namespace FitCore.Persistence.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("GymId")
+                    b.Property<long?>("GymId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsActive")
@@ -534,9 +534,7 @@ namespace FitCore.Persistence.Migrations
                 {
                     b.HasOne("FitCore.Domain.Entities.Gyms.Gyms", "Gym")
                         .WithMany("Users")
-                        .HasForeignKey("GymId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GymId");
 
                     b.Navigation("Gym");
                 });

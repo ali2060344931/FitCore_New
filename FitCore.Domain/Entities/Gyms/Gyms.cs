@@ -2,7 +2,6 @@
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Users;
-using FitCore.Domain.Entities.Provinces;
 using System;
 using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
