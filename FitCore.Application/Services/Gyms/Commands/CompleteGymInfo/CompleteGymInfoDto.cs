@@ -49,7 +49,7 @@ namespace FitCore.Application.Services.Gyms.Commands.EditGym
             public bool IsActive { get; set; }
 
             [Display(Name = "تاریخ انقضا")]
-            public DateTime? SubscriptionExpireDate { get; set; }
+            public String SubscriptionExpireDate { get; set; }
 
             [Display(Name = "حداکثر اعضا")]
             public int MaxMembers { get; set; }

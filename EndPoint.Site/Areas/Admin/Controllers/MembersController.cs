@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.RulesetToEditorconfig;
 
 using System.Linq;
+using System.Security.Claims;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -52,6 +53,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(RequestAddNewMemberDto request)
         {
+
+            var gymId = long.Parse(User.FindFirstValue("GymId"));
+            request.GymId = gymId;
+
             var result = _memberFacad.AddNewMemberService.Execute(request);
             return Json(result);
         }

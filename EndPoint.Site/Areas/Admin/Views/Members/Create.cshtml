@@ -4,15 +4,12 @@
 @model RequestAddNewMemberDto
 
 @{
-    
     ViewData["Title"] = "ثبت عضو جدید";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
 <div class="container-fluid mt-4">
-
     <div class="fc-form-container">
-
         <!-- Title -->
         <h2 class="fc-form-title">
             ثبت عضو جدید
@@ -20,238 +17,158 @@
 
         <!-- Form -->
         <form id="CreateMemberForm">
-
             <div class="row">
-
+                <!-- FirstName -->
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel
                          {
                              Id = "FirstName",
                              Name = "FirstName",
-                             LabelName = @Html.DisplayNameFor(m => m.FirstName),
-                             Placeholder = @Html.DisplayNameFor(m => m.FirstName),
+                             LabelName = Html.DisplayNameFor(m => m.FirstName),
+                             Placeholder = Html.DisplayNameFor(m => m.FirstName),
                              Col = 6
                          }' />
 
-<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-         model='new BaseInputViewModel
-         {
-             Id = "LastName",
-             Name = "LastName",
-             LabelName = @Html.DisplayNameFor(m => m.LastName),
-             Placeholder = @Html.DisplayNameFor(m => m.LastName),
-             Col = 6
-         }' />
+                <!-- LastName -->
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "LastName",
+                             Name = "LastName",
+                             LabelName = Html.DisplayNameFor(m => m.LastName),
+                             Placeholder = Html.DisplayNameFor(m => m.LastName),
+                             Col = 6
+                         }' />
 
-<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-         model='new BaseInputViewModel
-         {
-             Id = "Mobile",
-             Name = "Mobile",
-             LabelName = @Html.DisplayNameFor(m => m.Mobile),
-             Placeholder = @Html.DisplayNameFor(m => m.Mobile),
-             Col = 6
-         }' />
+                <!-- Mobile -->
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "Mobile",
+                             Name = "Mobile",
+                             LabelName = Html.DisplayNameFor(m => m.Mobile),
+                             Placeholder = Html.DisplayNameFor(m => m.Mobile),
+                             Col = 6
+                         }' />
 
-<div class="col-md-6 mb-3">
-                    <label asp-for="Gender">@Html.DisplayNameFor(m => m.Gender)</label>
+                <!-- Gender -->
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Gender" class="form-label font-weight-bold">@Html.DisplayNameFor(m => m.Gender)</label>
                     <select class="form-control" id="Gender" asp-for="Gender">
                         <option value="0">مرد</option>
                         <option value="1">زن</option>
                     </select>
                 </div>
 
-
+                <!-- BirthDate (خوانش مستقیم رشته شمسی) -->
                 <div class="col-md-6 mb-3">
-
-                    <label asp-for="BirthDate">
-
-                        @Html.DisplayNameFor(m => m.BirthDate)
-
-                    </label>
-
+                    <label asp-for="BirthDate" class="form-label font-weight-bold">@Html.DisplayNameFor(m => m.BirthDate)</label>
                     <input type="text"
                            id="BirthDate"
-                           class="form-control" />
-
-                    <input type="hidden"
-                           id="BirthDateHidden"
-                           name="BirthDate" />
+                           name="BirthDate"
+                           class="form-control"
+                           placeholder="مثال: ۱۳۸۰/۰۶/۱۵"
+                           readonly
+                           style="background-color: #fff; cursor: pointer;" />
                 </div>
             </div>
 
-            <!-- Buttons -->
+            <!-- Buttons (ثبت و بازگشت) -->
             <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
         </form>
     </div>
 </div>
 
 @section Scripts {
-
     <partial name="_ValidationScriptsPartial" />
 
     <!-- SweetAlert2 -->
-
-    <link href="~/Sweetalert2/sweetalert2.min.css"
-          rel="stylesheet" />
-
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <!-- Persian DatePicker -->
-
-    <link href="~/lib/persian-datepicker/persian-datepicker.min.css"
-          rel="stylesheet" />
-
+    <link href="~/lib/persian-datepicker/persian-datepicker.min.css" rel="stylesheet" />
     <script src="~/lib/persian-datepicker/persian-date.min.js"></script>
-
     <script src="~/lib/persian-datepicker/persian-datepicker.min.js"></script>
 
     <script>
-
         $(document).ready(function () {
 
-        // Persian DatePicker>>
-        
-        
-        $("#BirthDate").persianDatepicker({
+            // ۱. مقداردهی اولیه تقویم شمسی
+            $("#BirthDate").persianDatepicker({
+                format: 'YYYY/MM/DD',
+                autoClose: true,
+                initialValue: false,
+                observer: true,
+                calendar: {
+                    persian: {
+                        locale: 'fa'
+                    }
+                }
+            });
 
-        format: 'YYYY/MM/DD',
+            // ۲. ارسال فرم به صورت AJAX
+            $("#CreateMemberForm").submit(function (e) {
+                e.preventDefault();
 
-        autoClose: true,
+                // ولیدیشن اولیه سمت کلاینت برای فیلد تاریخ
+                var birthDateVal = $("#BirthDate").val();
+                if (!birthDateVal) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'توجه',
+                        text: 'لطفاً تاریخ تولد را انتخاب کنید.'
+                    });
+                    return;
+                }
 
-        initialValue: false,
+                // آماده‌سازی تمیز شیء داده
+                var data = {
+                    FirstName: $("#FirstName").val().trim(),
+                    LastName: $("#LastName").val().trim(),
+                    Mobile: $("#Mobile").val().trim(),
+                    Gender: parseInt($("#Gender").val()),
+                    BirthDate: birthDateVal // ارسال مستقیم رشته‌ی شمسی تاریخ
+                };
 
-        observer: true,
-
-        calendar: {
-        persian: {
-        locale: 'fa'
-        }
-        },
-
-        onSelect: function () {
-
-        // تاریخ شمسی انتخاب شده
-
-        var persianDateValue = $("#BirthDate").val();
-
-
-         console.log("Persian Date:");
-        // console.log(persianDateValue);
-
-        // تبدیل به میلادی
-
-        // var pd = new persianDate(persianDateValue);
-
-        // var gregorianDate = pd.toCalendar('gregorian')
-        // .format('YYYY-MM-DD');
-        // gregorianDate =
-        // toEnglishDigits(gregorianDate);
-
-        // console.log("Gregorian Date:");
-        // console.log(gregorianDate);
-
-        // ذخیره تاریخ میلادی در hidden
-
-        $("#BirthDateHidden").val(persianDateValue);
-        }
-        });       
-        
-        
-        
-        
-        //<< Persian DatePicker
-
-
-
-
-
-
-
-        // Submit Form
-
-        $("#CreateMemberForm").submit(function (e) {
-
-        e.preventDefault();
-
-        var data = {
-
-        GymId: 23,
-
-        FirstName: $("#FirstName").val(),
-
-        LastName: $("#LastName").val(),
-
-        Mobile: $("#Mobile").val(),
-
-        Gender: parseInt($("#Gender").val()),
-
-        BirthDate: $("#BirthDateHidden").val()
-        };
-
-        console.log(data);
-
-        $.ajax({
-
-        type: "POST",
-
-        url: "/Admin/Members/Create",
-
-        data: data,
-
-        success: function (response) {
-
-        if (response.isSuccess) {
-
-        Swal.fire({
-
-        icon: 'success',
-
-        title: 'موفق',
-
-        text: response.message
-
-        }).then(() => {
-
-        window.location.href = "/Admin/Members";
+                // ارسال به سرور
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Members/Create",
+                    data: data,
+                    beforeSend: function() {
+                        // غیرفعال کردن دکمه ثبت برای جلوگیری از Double Submit
+                        $("button[type='submit']").prop('disabled', true);
+                    },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفقیت‌آمیز',
+                                text: response.message || 'عضو جدید با موفقیت ثبت شد.'
+                            }).then(() => {
+                                window.location.href = "/Admin/Members";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'خطا در ثبت',
+                                text: response.message
+                            });
+                            $("button[type='submit']").prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطای سیستمی',
+                            text: 'برقراری ارتباط با سرور با شکست مواجه شد.'
+                        });
+                        $("button[type='submit']").prop('disabled', false);
+                    }
+                });
+            });
 
         });
-
-        } else {
-
-        Swal.fire({
-
-        icon: 'warning',
-
-        title: 'خطا',
-
-        text: response.message
-
-        });
-
-        }
-
-        },
-
-        error: function () {
-
-        Swal.fire({
-
-        icon: 'error',
-
-        title: 'خطا',
-
-        text: 'خطا در ارتباط با سرور'
-
-        });
-
-        }
-
-        });
-
-        });
-
-        });
-
     </script>
 }
