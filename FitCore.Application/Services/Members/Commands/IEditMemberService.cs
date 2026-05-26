@@ -71,7 +71,7 @@ namespace FitCore.Application.Services.Members.Commands
 
         public string BirthDate { get; set; }
 
-        public DateTime MembershipEndDate { get; set; }
+        public string MembershipEndDate { get; set; }
 
         public decimal Height { get; set; }
 

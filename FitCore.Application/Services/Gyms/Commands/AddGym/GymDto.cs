@@ -26,7 +26,7 @@ namespace FitCore.Application.Services.Gyms.Commands.AddGym
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public bool IsActive { get; set; }
-        public DateTime? SubscriptionExpireDate { get; set; }
+        public String SubscriptionExpireDate { get; set; }
         public int MaxMembers { get; set; }
         public bool AllowOnlineRegistration { get; set; }
         public int OtpExpireSeconds { get; set; }

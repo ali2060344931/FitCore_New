@@ -113,7 +113,7 @@ namespace FitCore.Domain.Entities.Gyms
 
 
         [Display(Name = "تاریخ انقضای اشتراک")]
-        public DateTime? SubscriptionExpireDate { get; set; }
+        public String SubscriptionExpireDate { get; set; }
 
 
 
