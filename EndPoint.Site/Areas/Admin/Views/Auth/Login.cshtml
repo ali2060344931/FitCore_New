@@ -189,6 +189,7 @@
 
 <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
 <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+</html>
 
 <script>
     var OTP_RESEND_SECONDS = 60;
@@ -293,7 +294,7 @@
 
     $.ajax({
     type: "POST",
-    url: "/Auth/SendOtpLogin",
+    url: "/admin/Auth/SendOtpLogin",
     dataType: "json",
     data: { mobile: mobile },
     success: function (data) {
@@ -329,7 +330,7 @@
 
     $.ajax({
     type: "POST",
-    url: "/Auth/VerifyOtp",
+    url: "/admin/Auth/VerifyOtp",
     dataType: "json",
     data: { mobile: mobile, code: code },
     success: function (data) {
@@ -376,7 +377,7 @@
 
     $.ajax({
     type: "POST",
-    url: "/Auth/CompleteLogin",
+    url: "/admin/Auth/CompleteLogin",
     dataType: "json",
     data: { loginToken: loginToken, gymId: gymId },
     success: function (data) {
@@ -408,4 +409,4 @@
     });
 </script>
 
-</html>
+

@@ -6,10 +6,12 @@ using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +20,8 @@ using System.Threading.Tasks;
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
     [Area("Admin")]
-
+    //[Authorize] // حتما چک شود که کاربر لاگین باشد
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class AuthController : Controller
     {
         private readonly SendOtpService _sendOtpService;
@@ -118,15 +121,27 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
 
-
-    
-
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
 
+            // پاک کردن دستی کوکی‌ها در صورت نیاز (اگر نام کوکی سفارشی است)
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie);
+            }
             return RedirectToAction("Login", "Auth");
+            //return RedirectToAction("Login", "Auth", new { area = "Admin" });
+
         }
+
+
+        //public async Task<IActionResult> Logout()
+        //{
+        //    await _signInManager.SignOutAsync();
+
+        //    return RedirectToAction("Login", "Auth");
+        //}
 
 
 

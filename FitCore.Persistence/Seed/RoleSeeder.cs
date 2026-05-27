@@ -21,7 +21,8 @@ public class RoleSeeder : ISeeder
             "Admin",
             "Operator",
             "Trainer",
-            "Member"
+            "Member",
+            "Customer"
         };
 
         foreach (var role in roles)

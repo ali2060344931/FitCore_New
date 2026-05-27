@@ -13,7 +13,9 @@
     <div class="fc-form-container">
 
         <!-- Title -->
-        <h2 class="fc-form-title">ویرایش اعضاء باشگاه</h2>
+        @* <h2 class="fc-form-title">ویرایش اعضاء باشگاه</h2> *@
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"ویرایش اعضاء باشگاه"' />
 
         <!-- Form -->
         <form id="EditMembersForm">
@@ -84,14 +86,9 @@ new SelectListItem { Value = "2", Text = "زن" }
          }' />
 
 
-
-
 </div>
 
             <!-- Buttons -->
-
-
-
             <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
                      model='new FormButtonsViewModel
                      {

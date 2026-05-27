@@ -11,9 +11,12 @@
 <div class="container-fluid mt-4">
     <div class="fc-form-container">
         <!-- Title -->
-        <h2 class="fc-form-title">
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"ثبت عضو جدید"' />
+
+        @* <h2 class="fc-form-title">
             ثبت عضو جدید
-        </h2>
+        </h2> *@
 
         <!-- Form -->
         <form id="CreateMemberForm">
@@ -74,7 +77,15 @@
             </div>
 
             <!-- Buttons (ثبت و بازگشت) -->
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
+            @* <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" /> *@
+
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" 
+         model='new FitCore.Application.ViewModels.Common.FormButtonsViewModel 
+         { 
+             SubmitText = "ذخیره تغییرات", 
+                         BackUrl = "/Admin/Members",
+             BackText = "انصراف و بازگشت" 
+         }' />
         </form>
     </div>
 </div>

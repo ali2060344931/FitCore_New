@@ -150,7 +150,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult CompleteInfo(string code)
+        public IActionResult CompleteGymInfo(string code)
         {
             var gym = _getGymByIdService.GetById(code);
 
@@ -250,7 +250,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult CompleteInfo(CompleteGymInfoDto dto)
+        public IActionResult CompleteGymInfo(CompleteGymInfoDto dto)
         {
             var result = _completeGymInfoService.Execute(dto);
 

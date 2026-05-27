@@ -34,22 +34,18 @@
                                 <div class="header-search row text-right">
                                     <div class="header-search-box">
                                         <form action="#" class="form-search">
-                                            <input type="search" class="header-search-input" name="search-input" placeholder="نام کالا، برند و یا دسته مورد نظر خود را جستجو کنید…">
-                                            <div class="action-btns">
-                                                <button class="btn btn-search" type="submit">
-                                                    <i class="fa fa-search"></i>
-                                                </button>
-                                                <div class="search-filter">
-                                                    <div class="form-ui">
-                                                        <div class="custom-select-ui">
-                                                            <select class="right">
-                                                                <option>همه دسته ها</option>
-                                                                <option>کالای دیجیتال</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                            <div class="header-search-box-container">
+
+                                                <input type="search" class="header-search-input" name="search-input" placeholder="موضوع مورد نطر را جستجو کنید…">
+                                                <div class="action-btns">
+                                                    <button class="btn btn-search" type="submit">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
                                                 </div>
+
                                             </div>
+
+
                                         </form>
                                     </div>
                                 </div>
@@ -66,9 +62,9 @@
                                         @if (User.Identity.IsAuthenticated)
                                         {
                                             <div class="nav-account d-block pl">
-                                                
+
                                                 <div class="nav-account">
-                                                        <div class="account-box wide-account-box">
+                                                    <div class="account-box wide-account-box">
                                                         <span class="icon-account">
                                                             @* <img src="~/SiteTemplate/assets/images/man.png" class="avator"> *@
                                                         </span>
@@ -465,8 +461,6 @@
 <script src="~/SiteTemplate/assets/js/vendor/jquery.nice-select.min.js"></script>
 <!-- main js---------------------------------------------------->
 <script src="~/SiteTemplate/assets/js/main.js"></script>
-
-
 
 <script>
     $(document).ready(function () {

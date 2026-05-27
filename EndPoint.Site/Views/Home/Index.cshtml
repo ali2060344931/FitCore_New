@@ -11,9 +11,13 @@
 
                 <h4 class="section-title">مدیریت کاربران و ثبت نام</h4>
                 <div class="btn-container">
-                    <button type="button" class="custom-btn" onclick="openForm('Form1')">
-                        <i class="fa fa-pencil-square-o btn-icon-lg"></i> ثبت نام جدید
-                    </button>
+
+
+                    <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="custom-btn">
+                        <i class="fa fa-pencil-square-o btn-icon-lg"></i> مدیریت سایت
+                    </a>
+
+
                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
                         <i class="fa fa-list-alt btn-icon-lg"></i> لیست رزروها
                     </button>

@@ -33,7 +33,7 @@ namespace FitCore.Domain.Entities.Members
         public string Mobile { get; set; }
 
         [DisplayName("جنسیت")]
-        [Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]
+        //[Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]
         public Gender Gender { get; set; }
 
         [DisplayName("تاریخ تولد")]

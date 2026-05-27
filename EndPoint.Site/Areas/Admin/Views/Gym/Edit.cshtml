@@ -12,7 +12,9 @@
     <div class="fc-form-container">
 
         <!-- Title -->
-        <h2 class="fc-form-title">ویرایش اطلاعات باشگاه</h2>
+        @* <h2 class="fc-form-title">ویرایش اطلاعات باشگاه</h2> *@
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"ویرایش اطلاعات باشگاه"' />
 
         <!-- Form -->
         <form id="EditGymForm">
@@ -66,7 +68,15 @@
 </div>
 
             <!-- Buttons -->
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
+            @* <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" /> *@
+            
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" 
+         model='new FitCore.Application.ViewModels.Common.FormButtonsViewModel 
+         { 
+             SubmitText = "ذخیره تغییرات", 
+             BackUrl = "/Admin/Gym", 
+             BackText = "انصراف و بازگشت" 
+         }' />
         </form>
     </div>
 </div>

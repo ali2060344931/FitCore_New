@@ -13,7 +13,8 @@ public static class SeederRunner
             new RoleSeeder(),
             new SettingsSeeder(),
             new ProvinceSeeder(),
-            new CitySeeder()
+            new CitySeeder(),
+            new SuperAdminSeeder(),
         };
 
         foreach (var seeder in seeders)

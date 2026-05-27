@@ -1,0 +1,319 @@
+﻿@using FitCore.Application.Services.Gyms.Commands.EditGym.FitCore.Application.ViewModels.Gyms
+@using FitCore.Application.ViewModels.Common
+@model CompleteGymInfoDto
+
+@{
+    ViewData["Title"] = "اطلاعات تکمیلی باشگاه";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- Header -->
+    <div class="fc-page-header">
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"اطلاعات تکمیلی باشگاه"' />
+    </div>
+
+    <!-- Card Start -->
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <form id="CompleteGymInfoForm">
+        <!-- فیلد مخفی برای Id -->
+        <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+
+        <div class="row">
+            <!-- BrandName -->
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                     model='new BaseInputViewModel
+                     {
+                         Id = "BrandName",
+                         Name = "BrandName",
+                         Value = Model.BrandName,
+                         LabelName = Html.DisplayNameFor(m => m.BrandName),
+                         Placeholder = Html.DisplayNameFor(m => m.BrandName),
+                         Col = 6
+                     }' />
+
+<!-- SubDomain -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "SubDomain",
+             Name = "SubDomain",
+             Value = Model.SubDomain,
+             LabelName = Html.DisplayNameFor(m => m.SubDomain),
+             Placeholder = Html.DisplayNameFor(m => m.SubDomain),
+             Col = 6
+         }' />
+
+<!-- PhoneNumber -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "PhoneNumber",
+             Name = "PhoneNumber",
+             Value = Model.PhoneNumber,
+             LabelName = Html.DisplayNameFor(m => m.PhoneNumber),
+             Placeholder = Html.DisplayNameFor(m => m.PhoneNumber),
+             Col = 6
+         }' />
+
+<!-- Email -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Email",
+             Name = "Email",
+             Value = Model.Email,
+             LabelName = Html.DisplayNameFor(m => m.Email),
+             Placeholder = Html.DisplayNameFor(m => m.Email),
+             Col = 6
+         }' />
+
+<!-- Website -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Website",
+             Name = "Website",
+             Value = Model.Website,
+             LabelName = Html.DisplayNameFor(m => m.Website),
+             Placeholder = Html.DisplayNameFor(m => m.Website),
+             Col = 6
+         }' />
+
+<!-- Province -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "ProvinceId",
+             Name = "ProvinceId",
+             LabelName = "استان",
+             Items = ViewBag.Provinces,
+             Col = 3
+         }' />
+
+<!-- City -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "CitiesId",
+             Name = "CitiesId",
+             LabelName = "شهر",
+             Items = ViewBag.Cities,
+             Value = Model.CitiesId?.ToString(),
+             Col = 3
+         }' />
+
+<!-- PostalCode -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "PostalCode",
+             Name = "PostalCode",
+             Value = Model.PostalCode,
+             LabelName = Html.DisplayNameFor(m => m.PostalCode),
+             Placeholder = Html.DisplayNameFor(m => m.PostalCode),
+             Col = 4
+         }' />
+
+<!-- Latitude -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Latitude",
+             Name = "Latitude",
+             Value = Model.Latitude.ToString(),
+             LabelName = Html.DisplayNameFor(m => m.Latitude),
+             Placeholder = Html.DisplayNameFor(m => m.Latitude),
+             Col = 4
+         }' />
+
+<!-- Longitude -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Longitude",
+             Name = "Longitude",
+             Value = Model.Longitude.ToString(),
+             LabelName = Html.DisplayNameFor(m => m.Longitude),
+             Placeholder = Html.DisplayNameFor(m => m.Longitude),
+             Col = 4
+         }' />
+
+<!-- MaxMembers -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "MaxMembers",
+             Name = "MaxMembers",
+             Value = Model.MaxMembers.ToString(),
+             LabelName = Html.DisplayNameFor(m => m.MaxMembers),
+             Placeholder = Html.DisplayNameFor(m => m.MaxMembers),
+             Col = 4
+         }' />
+
+<!-- OtpExpireSeconds -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "OtpExpireSeconds",
+             Name = "OtpExpireSeconds",
+             Value = Model.OtpExpireSeconds.ToString(),
+             LabelName = Html.DisplayNameFor(m => m.OtpExpireSeconds),
+             Placeholder = Html.DisplayNameFor(m => m.OtpExpireSeconds),
+             Col = 4
+         }' />
+
+<!-- MaxOtpRequestPerMinute -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "MaxOtpRequestPerMinute",
+             Name = "MaxOtpRequestPerMinute",
+             Value = Model.MaxOtpRequestPerMinute.ToString(),
+             LabelName = Html.DisplayNameFor(m => m.MaxOtpRequestPerMinute),
+             Placeholder = Html.DisplayNameFor(m => m.MaxOtpRequestPerMinute),
+             Col = 4
+         }' />
+
+<!-- Address -->
+<partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Address",
+             Name = "Address",
+             Value = Model.Address,
+             LabelName = Html.DisplayNameFor(m => m.Address),
+             Placeholder = Html.DisplayNameFor(m => m.Address),
+             Col = 12
+         }' />
+
+<!-- IsActive & OnlineRegistration (بصورت دستی بدلیل نبود پارشیال چک‌باکس در مثال شما) -->
+
+<div class="col-md-6 mb-3">
+                <div class="form-check" style="display: flex; align-items: center; margin-top: 15px;">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="IsActive"
+                           name="IsActive"
+                    @(Model.IsActive ? "checked" : "")
+                           style="margin-left: 10px; margin-right: 0;" />
+
+                    <label class="form-check-label"
+                           for="IsActive"
+                           style="margin-right: 25px;">
+                        @Html.DisplayNameFor(m => m.IsActive)
+                    </label>
+                </div>
+            </div>
+
+
+
+
+            <div class="col-md-6 mb-3">
+                <div class="form-check" style="display: flex; align-items: center; margin-top: 15px;">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="AllowOnlineRegistration"
+                           name="AllowOnlineRegistration"
+                    @(Model.AllowOnlineRegistration ? "checked" : "")
+                           style="margin-left: 10px; margin-right: 0;" />
+
+                    <label class="form-check-label"
+                           for="AllowOnlineRegistration"
+                           style="margin-right: 25px;">
+                        @Html.DisplayNameFor(m => m.AllowOnlineRegistration)
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                 model='new FormButtonsViewModel
+                 {
+                     SubmitText = "ذخیره تغییرات",
+                     BackUrl = "/Admin/Gym",
+                     BackText = "انصراف و بازگشت"
+                 }' />
+</form>
+
+    <!-- Card End -->
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>
+
+@section Scripts
+{
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        // Load Cities
+        $("#ProvinceId").change(function () {
+        var provinceId = $(this).val();
+        var citySelect = $("#CitiesId");
+        citySelect.empty();
+        citySelect.append(new Option("انتخاب شهر", ""));
+
+        if (provinceId !== "") {
+        $.ajax({
+        url: '/Admin/Gym/GetCities',
+        type: 'GET',
+        data: { provinceId: provinceId },
+        success: function (data) {
+        $.each(data, function (index, item) {
+        citySelect.append(new Option(item.text, item.value));
+        });
+        }
+        });
+        }
+        });
+
+        // Save using Form Submit event (Professional approach for type="submit" buttons)
+        $("#CompleteGymInfoForm").submit(function (e) {
+        e.preventDefault();
+
+        var data = {
+        Id: $("#Id").val(),
+        BrandName: $("#BrandName").val(),
+        SubDomain: $("#SubDomain").val(),
+        PhoneNumber: $("#PhoneNumber").val(),
+        Email: $("#Email").val(),
+        Website: $("#Website").val(),
+        CitiesId: $("#CitiesId").val(),
+        Address: $("#Address").val(),
+        PostalCode: $("#PostalCode").val(),
+        Latitude: $("#Latitude").val(),
+        Longitude: $("#Longitude").val(),
+        IsActive: $("#IsActive").is(":checked"),
+        SubscriptionExpireDate: $("#SubscriptionExpireDate").val(),
+        MaxMembers: $("#MaxMembers").val(),
+        AllowOnlineRegistration: $("#AllowOnlineRegistration").is(":checked"),
+        OtpExpireSeconds: $("#OtpExpireSeconds").val(),
+        MaxOtpRequestPerMinute: $("#MaxOtpRequestPerMinute").val()
+        };
+
+        $.ajax({
+        type: "POST",
+        url: "/Admin/Gym/CompleteGymInfo",
+        data: data,
+        success: function (result) {
+        if (result.isSuccess == true) {
+        Swal.fire('موفق!', result.message, 'success').then(function () {
+        window.location.href = '/Admin/Gym';
+        });
+        } else {
+        Swal.fire('هشدار!', result.message, 'warning');
+        }
+        },
+        error: function (xhr) {
+        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+        }
+        });
+        });
+    </script>
+}

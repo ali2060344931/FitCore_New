@@ -181,7 +181,6 @@ app.UseAuthorization();
 #region Routes
 
 
-
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");

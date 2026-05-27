@@ -25,7 +25,7 @@ namespace FitCore.Application.Services.Member.Queries
         public string Mobile { get; set; }
 
         [DisplayName("جنسیت")]
-        [Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]
+        //[Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]
 
         public Gender Gender { get; set; }
 

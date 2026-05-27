@@ -8,7 +8,7 @@ namespace FitCore.Domain.Entities.Users
     {
         public string FullName { get; set; }
 
-        public long GymId { get; set; }
+        public long? GymId { get; set; }
 
         public Gyms.Gyms Gym { get; set; }
 

@@ -14,12 +14,14 @@
     <div class="fc-form-container">
 
         <!-- Title -->
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"ثبت باشگاه جدید"' />
 
-        <h2 class="fc-form-title">
+        @* <h2 class="fc-form-title">
 
             ثبت باشگاه جدید
 
-        </h2>
+        </h2> *@
 
         <!-- Form -->
 
@@ -89,7 +91,19 @@
 </div>
 
             <!-- Buttons -->
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" />
+            @* <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" /> *@
+<partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" 
+         model='new FitCore.Application.ViewModels.Common.FormButtonsViewModel 
+         { 
+             SubmitText = "ذخیره تغییرات", 
+             BackUrl = "/Admin/Gym", 
+             BackText = "انصراف و بازگشت" 
+         }' />        
+        
+        
+        
+        
+        
         </form>
     </div>
 </div>
