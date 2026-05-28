@@ -5,6 +5,12 @@ namespace FitCore.Application.ViewModels.Gyms
 {
     public class CreateGymDto
     {
+        [Display(Name = "نام مدیر باشگاه")]
+        [Required(ErrorMessage = "نام مدیر باشگاه الزامی است")]
+        [MaxLength(200)]
+        public string FullName { get; set; }
+        
+        
         [Display(Name = "نام باشگاه")]
         [Required(ErrorMessage = "نام باشگاه الزامی است")]
         [MaxLength(200)]

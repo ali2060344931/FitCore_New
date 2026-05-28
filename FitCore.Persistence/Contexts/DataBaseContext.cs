@@ -18,55 +18,57 @@ namespace FitCore.Persistence.Contexts
         IdentityDbContext<AppUser, IdentityRole<long>, long>,
         IDataBaseContext
     {
-        public DataBaseContext(DbContextOptions<DataBaseContext> options)
+        public DataBaseContext(
+            DbContextOptions<DataBaseContext> options)
             : base(options)
         {
         }
 
-        public DbSet<Gyms> Gyms { get; set; }
+        public DbSet<Gym> Gyms { get; set; }
 
         public DbSet<Member> Members { get; set; }
 
         public DbSet<Setings> Setings { get; set; }
+
         public DbSet<UserOtpCode> UserOtpCodes { get; set; }
+
         public DbSet<Province> Provinces { get; set; }
+
         public DbSet<City> Cities { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(
+            ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             ApplyQueryFilter(modelBuilder);
         }
 
-        private void ApplyQueryFilter(ModelBuilder modelBuilder)
+        private void ApplyQueryFilter(
+            ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Gyms>().HasQueryFilter(x => !x.IsRemoved);
-
-            modelBuilder.Entity<Member>().HasQueryFilter(x => !x.IsRemoved);
+            modelBuilder.Entity<Gym>()
+                .HasQueryFilter(x => !x.IsRemoved);
 
             modelBuilder.Entity<Member>()
-                .HasOne(x => x.AppUser)
-                .WithMany(x => x.Members)
-                .HasForeignKey(x => x.AppUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasQueryFilter(x => !x.IsRemoved);
 
+            modelBuilder.Entity<Member>()
+                .HasOne(m => m.AppUser)
+                .WithOne(u => u.Member)
+                .HasForeignKey<Member>(m => m.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
-
 
         public override int SaveChanges()
         {
             return base.SaveChanges();
         }
 
-        public async Task<int> SaveChangesAsync()
+        public override Task<int> SaveChangesAsync(
+            CancellationToken cancellationToken = default)
         {
-            return await base.SaveChangesAsync();
+            return base.SaveChangesAsync(cancellationToken);
         }
-
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            return await base.SaveChangesAsync(cancellationToken);
-        }
-
     }
 }

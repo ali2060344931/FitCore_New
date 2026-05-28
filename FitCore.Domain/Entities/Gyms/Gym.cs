@@ -1,22 +1,22 @@
 ﻿using FitCore.Domain.Entities.Commons;
-using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Users;
+
 using System;
 using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitCore.Domain.Entities.Gyms
 {
 
-    public class Gyms : BaseEntity
+    public class Gym : BaseEntity
     {
         [Display(Name = "نام باشگاه")]
         [Required(ErrorMessage = "نام باشگاه الزامی است")]
         [MaxLength(200)]
         public string Name { get; set; }
 
-
+        public long? AdminUserId { get; set; }
 
         [Display(Name = "کد یکتای باشگاه")]
         [Required(ErrorMessage = "کد باشگاه الزامی است")]
@@ -70,19 +70,10 @@ namespace FitCore.Domain.Entities.Gyms
         [Display(Name = "وب سایت")]
         public string Website { get; set; }
 
-
-
-        //[Display(Name = "استان")]
-        //[MaxLength(100)]
-        //public int? ProvincesId { get; set; }
-
-        //public Province Provinces { get; set; }
-
-
         [Display(Name = "شهر")]
         [MaxLength(100)]
         public int? CitiesId { get; set; }
-        public City Cities { get; set; } 
+        public City Cities { get; set; }
 
 
         [Display(Name = "آدرس")]
@@ -118,7 +109,7 @@ namespace FitCore.Domain.Entities.Gyms
 
 
         [Display(Name = "حداکثر تعداد اعضا")]
-        public int MaxMembers { get; set; }
+        public int? MaxMembers { get; set; } = 0;
 
 
 
@@ -128,20 +119,17 @@ namespace FitCore.Domain.Entities.Gyms
 
 
         [Display(Name = "زمان اعتبار کد تایید (ثانیه)")]
-        public int OtpExpireSeconds { get; set; }
+        public int? OtpExpireSeconds { get; set; } = 0;
 
 
 
         [Display(Name = "حداکثر درخواست کد در دقیقه")]
-        public int MaxOtpRequestPerMinute { get; set; }
+        public int? MaxOtpRequestPerMinute { get; set; } = 0;
 
 
 
         [Display(Name = "کاربران باشگاه")]
         public ICollection<AppUser> Users { get; set; }
 
-
-        //[Display(Name = "اعضای باشگاه")]
-        //public ICollection<Member> Members { get; set; }
     }
 }

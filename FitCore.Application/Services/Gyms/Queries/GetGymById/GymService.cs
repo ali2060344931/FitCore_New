@@ -42,10 +42,10 @@ namespace FitCore.Application.Services.Gyms.Commands
                 Longitude = x.Longitude,
                 IsActive = x.IsActive,
                 SubscriptionExpireDate = x.SubscriptionExpireDate,
-                MaxMembers = x.MaxMembers,
+                MaxMembers = (int)x.MaxMembers,
                 AllowOnlineRegistration = x.AllowOnlineRegistration,
-                OtpExpireSeconds = x.OtpExpireSeconds,
-                MaxOtpRequestPerMinute = x.MaxOtpRequestPerMinute
+                OtpExpireSeconds = (int)x.OtpExpireSeconds,
+                MaxOtpRequestPerMinute = (int)x.MaxOtpRequestPerMinute
             };
         }
 

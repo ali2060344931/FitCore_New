@@ -14,8 +14,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitCore.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20260521150637_addgymdata")]
-    partial class addgymdata
+    [Migration("20260528060213_EditGymName")]
+    partial class EditGymName
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,9 @@ namespace FitCore.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<long?>("AdminUserId")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("AllowOnlineRegistration")
                         .HasColumnType("bit");
 
@@ -46,9 +49,9 @@ namespace FitCore.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("City")
+                    b.Property<int?>("CitiesId")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -87,6 +90,7 @@ namespace FitCore.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("MobileNumber")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -106,10 +110,6 @@ namespace FitCore.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Province")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime?>("RemoveTime")
                         .HasColumnType("datetime2");
 
@@ -117,8 +117,8 @@ namespace FitCore.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("SubscriptionExpireDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("SubscriptionExpireDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
@@ -127,6 +127,8 @@ namespace FitCore.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CitiesId");
 
                     b.ToTable("Gyms");
                 });
@@ -139,20 +141,18 @@ namespace FitCore.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
+                    b.Property<long>("AppUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BirthDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
-
-                    b.Property<long>("GymId")
-                        .HasColumnType("bigint");
 
                     b.Property<decimal?>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -166,16 +166,10 @@ namespace FitCore.Persistence.Migrations
                     b.Property<bool>("IsRemoved")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("MembershipEndDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("MembershipEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("MembershipStartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Mobile")
+                    b.Property<string>("MembershipStartDate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("RemoveTime")
@@ -189,9 +183,47 @@ namespace FitCore.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GymId");
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
 
                     b.ToTable("Members");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProvincesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProvincesId");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Province", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Provinces");
                 });
 
             modelBuilder.Entity("FitCore.Domain.Entities.Setings.Setings", b =>
@@ -253,7 +285,7 @@ namespace FitCore.Persistence.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("GymId")
+                    b.Property<long?>("GymId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsActive")
@@ -468,24 +500,42 @@ namespace FitCore.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
+                {
+                    b.HasOne("FitCore.Domain.Entities.Provinces.City", "Cities")
+                        .WithMany("Gyms")
+                        .HasForeignKey("CitiesId");
+
+                    b.Navigation("Cities");
+                });
+
             modelBuilder.Entity("FitCore.Domain.Entities.Members.Member", b =>
                 {
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
-                        .WithMany("Members")
-                        .HasForeignKey("GymId")
+                    b.HasOne("FitCore.Domain.Entities.Users.AppUser", "AppUser")
+                        .WithOne("Member")
+                        .HasForeignKey("FitCore.Domain.Entities.Members.Member", "AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Gym");
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.City", b =>
+                {
+                    b.HasOne("FitCore.Domain.Entities.Provinces.Province", "Provinces")
+                        .WithMany("Ciltys")
+                        .HasForeignKey("ProvincesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provinces");
                 });
 
             modelBuilder.Entity("FitCore.Domain.Entities.Users.AppUser", b =>
                 {
                     b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
                         .WithMany("Users")
-                        .HasForeignKey("GymId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GymId");
 
                     b.Navigation("Gym");
                 });
@@ -543,9 +593,22 @@ namespace FitCore.Persistence.Migrations
 
             modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
                 {
-                    b.Navigation("Members");
-
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.City", b =>
+                {
+                    b.Navigation("Gyms");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Province", b =>
+                {
+                    b.Navigation("Ciltys");
+                });
+
+            modelBuilder.Entity("FitCore.Domain.Entities.Users.AppUser", b =>
+                {
+                    b.Navigation("Member");
                 });
 #pragma warning restore 612, 618
         }

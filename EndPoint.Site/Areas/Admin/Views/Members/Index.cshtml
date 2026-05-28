@@ -71,8 +71,8 @@
                 <tr>
                     <th>نام و نام خانوادگی</th>
                     <th>تلفن همراه</th>
-                    <th>جنسیت</th>
-                    <th>تاریخ تولد</th>
+                    @* <th>جنسیت</th>
+                    <th>تاریخ تولد</th> *@
                     <th width="180">عملیات</th>
                 </tr>
             </thead>
@@ -87,13 +87,13 @@
 
                         <td>@item.Mobile</td>
 
-                        <td>
+                        @* <td>
                             @((int)item.Gender == 1 ? "مرد" : "زن")
                         </td>
 
                         <td>
                             @(item.BirthDate == default ? "---" : item.BirthDate)
-                        </td>
+                        </td> *@
 
                         <td>
                             <div class="fc-action-buttons">

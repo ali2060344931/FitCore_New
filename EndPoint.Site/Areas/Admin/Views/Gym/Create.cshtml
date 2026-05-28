@@ -29,6 +29,36 @@
 
             <div class="row">
 
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "FullName",
+
+                             Name = "FullName",
+
+                             LabelName = @Html.DisplayNameFor(m => m.FullName),
+
+                             Placeholder = @Html.DisplayNameFor(m => m.FullName),
+
+                             Col = 6
+                         }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Id = "MobileNumber",
+
+                             Name = "MobileNumber",
+
+                             LabelName = @Html.DisplayNameFor(m => m.MobileNumber),
+
+                             Placeholder = @Html.DisplayNameFor(m => m.MobileNumber),
+
+                             Col = 2
+                         }' />
+
+
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel
                          {
@@ -55,23 +85,10 @@
 
              Placeholder = @Html.DisplayNameFor(m => m.Code),
 
-             Col = 6
+             Col = 2
          }' />
 
 
-<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-         model='new BaseInputViewModel
-         {
-             Id = "MobileNumber",
-
-             Name = "MobileNumber",
-
-             LabelName = @Html.DisplayNameFor(m => m.MobileNumber),
-
-             Placeholder = @Html.DisplayNameFor(m => m.MobileNumber),
-
-             Col = 6
-         }' />
 
 
 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
@@ -125,6 +142,7 @@
 
         var data = {
 
+        FullName: $("#FullName").val(),
         Name: $("#Name").val(),
 
         Code: $("#Code").val(),

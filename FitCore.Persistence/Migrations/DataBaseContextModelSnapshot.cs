@@ -22,7 +22,7 @@ namespace FitCore.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,6 +33,9 @@ namespace FitCore.Persistence.Migrations
                     b.Property<string>("Address")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<long?>("AdminUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("AllowOnlineRegistration")
                         .HasColumnType("bit");
@@ -75,10 +78,10 @@ namespace FitCore.Persistence.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<int>("MaxMembers")
+                    b.Property<int?>("MaxMembers")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxOtpRequestPerMinute")
+                    b.Property<int?>("MaxOtpRequestPerMinute")
                         .HasColumnType("int");
 
                     b.Property<string>("MobileNumber")
@@ -91,7 +94,7 @@ namespace FitCore.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("OtpExpireSeconds")
+                    b.Property<int?>("OtpExpireSeconds")
                         .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
@@ -175,7 +178,8 @@ namespace FitCore.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
 
                     b.ToTable("Members");
                 });
@@ -491,7 +495,7 @@ namespace FitCore.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
                 {
                     b.HasOne("FitCore.Domain.Entities.Provinces.City", "Cities")
                         .WithMany("Gyms")
@@ -503,9 +507,9 @@ namespace FitCore.Persistence.Migrations
             modelBuilder.Entity("FitCore.Domain.Entities.Members.Member", b =>
                 {
                     b.HasOne("FitCore.Domain.Entities.Users.AppUser", "AppUser")
-                        .WithMany("Members")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithOne("Member")
+                        .HasForeignKey("FitCore.Domain.Entities.Members.Member", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -524,7 +528,7 @@ namespace FitCore.Persistence.Migrations
 
             modelBuilder.Entity("FitCore.Domain.Entities.Users.AppUser", b =>
                 {
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gyms", "Gym")
+                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
                         .WithMany("Users")
                         .HasForeignKey("GymId");
 
@@ -582,7 +586,7 @@ namespace FitCore.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
+            modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gym", b =>
                 {
                     b.Navigation("Users");
                 });
@@ -599,7 +603,7 @@ namespace FitCore.Persistence.Migrations
 
             modelBuilder.Entity("FitCore.Domain.Entities.Users.AppUser", b =>
                 {
-                    b.Navigation("Members");
+                    b.Navigation("Member");
                 });
 #pragma warning restore 612, 618
         }

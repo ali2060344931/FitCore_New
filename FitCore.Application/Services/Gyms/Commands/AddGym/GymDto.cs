@@ -27,10 +27,10 @@ namespace FitCore.Application.Services.Gyms.Commands.AddGym
         public double? Longitude { get; set; }
         public bool IsActive { get; set; }
         public String SubscriptionExpireDate { get; set; }
-        public int MaxMembers { get; set; }
+        public int? MaxMembers { get; set; }
         public bool AllowOnlineRegistration { get; set; }
-        public int OtpExpireSeconds { get; set; }
-        public int MaxOtpRequestPerMinute { get; set; }
+        public int? OtpExpireSeconds { get; set; }
+        public int? MaxOtpRequestPerMinute { get; set; }
     }
 
 }

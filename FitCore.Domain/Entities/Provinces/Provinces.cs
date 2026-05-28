@@ -16,6 +16,6 @@ namespace FitCore.Domain.Entities.Provinces
         public string Name { get; set; }
         public virtual Province Provinces { get; set; }
 
-        public virtual ICollection<Gyms.Gyms> Gyms { get; set; }
+        public virtual ICollection<Gyms.Gym> Gyms { get; set; }
     }
 }

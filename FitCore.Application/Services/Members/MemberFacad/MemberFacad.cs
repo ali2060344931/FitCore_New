@@ -1,7 +1,9 @@
-﻿using FitCore.Application.Services.Members.Commands;
-using FitCore.Application.Services.Member.Queries;
-using FitCore.Application.Contexts;
+﻿using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
+using FitCore.Application.Services.Member.Queries;
+using FitCore.Application.Services.Members.Commands;
+
+using Microsoft.AspNetCore.Http;
 
 namespace FitCore.Application.Services.Facads
 {
@@ -28,13 +30,16 @@ namespace FitCore.Application.Services.Facads
         }
 
         private IGetMembersService _getMembersService;
+
+
+        private readonly IHttpContextAccessor _httpContextAccessor; // ۱. اضافه کردن فیلد
+
+
         public IGetMembersService GetMembersService
         {
             get
             {
-                return _getMembersService =
-                    _getMembersService ??
-                    new GetMembersService(_context);
+                return _getMembersService = _getMembersService ?? new GetMembersService(_context, _httpContextAccessor);
             }
         }
 

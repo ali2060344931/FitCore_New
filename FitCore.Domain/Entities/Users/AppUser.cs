@@ -1,9 +1,6 @@
-﻿using FitCore.Domain.Entities.Gyms;
-using FitCore.Domain.Entities.Members;
+﻿using FitCore.Domain.Entities.Members;
 
 using Microsoft.AspNetCore.Identity;
-
-using System.Collections.Generic;
 
 namespace FitCore.Domain.Entities.Users
 {
@@ -13,9 +10,9 @@ namespace FitCore.Domain.Entities.Users
 
         public long? GymId { get; set; }
 
-        public Gyms.Gyms Gym { get; set; }
+        public Gyms.Gym Gym { get; set; }
 
         public bool IsActive { get; set; }
-        public ICollection<Member> Members { get; set; } = new List<Member>();
+        public Member Member { get; set; }
     }
 }

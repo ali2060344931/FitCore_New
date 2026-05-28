@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.RulesetToEditorconfig;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -27,12 +28,20 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _dataBaseContext = dataBaseContext;
             _getMembersByIdService = getMembersByIdService;
         }
-        // در کنترلر یا یک کلاس Utility
 
         [HttpGet]
-        public IActionResult Index(int page = 1, string SearchKey = "")
+        public async Task<IActionResult> Index(int page = 1, string SearchKey = "")
         {
-            var appUserId = long.Parse(User.FindFirstValue("AppUserId"));
+
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdValue))
+            {
+                return Unauthorized();
+            }
+
+            var appUserId = long.Parse(userIdValue);
+
             var request = new RequestGetMemberDto
             {
                 AppUserId = appUserId,
@@ -41,7 +50,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 SearchKey = SearchKey
             };
 
-            var result = _memberFacad.GetMembersService.Execute(request);
+            //var result = _memberFacad.GetMembersService.Execute(request);
+            var result =await  _memberFacad.GetMembersService.Execute(request);
 
             return View(result.Data);
         }

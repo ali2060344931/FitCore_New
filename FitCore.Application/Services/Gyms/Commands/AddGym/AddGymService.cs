@@ -2,88 +2,190 @@
 using FitCore.Application.Interfaces.IGym;
 using FitCore.Application.ViewModels.Gyms;
 using FitCore.Common.Dto;
-namespace FitCore.Application.Services.Gyms.Commands
+using FitCore.Common.Roles;
+using FitCore.Domain.Entities.Gyms;
+using FitCore.Domain.Entities.Users;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace FitCore.Application.Services.Gyms.Commands.AddGym
 {
     public class AddGymService : IAddGymService
     {
         private readonly IDataBaseContext _context;
 
-        public AddGymService(IDataBaseContext context)
+        private readonly UserManager<AppUser> _userManager;
+
+        public AddGymService(
+            IDataBaseContext context,
+            UserManager<AppUser> userManager)
         {
             _context = context;
+
+            _userManager = userManager;
         }
 
-        public ResultDto Execute(CreateGymDto dto)
+        public async Task<ResultDto> Execute(
+            CreateGymDto request)
         {
-            // بررسی خالی بودن فیلدها
-            if (string.IsNullOrWhiteSpace(dto.Name))
+            try
             {
-                return new ResultDto
+                request.Name =
+                    request.Name?.Trim();
+
+                request.Code =
+                    request.Code?.Trim();
+
+                request.MobileNumber =
+                    request.MobileNumber?.Trim();
+
+                request.FullName =
+                    request.FullName?.Trim();
+
+                // بررسی تکراری بودن کد باشگاه
+                var gymCodeExists =
+                    await _context.Gyms
+                    .AnyAsync(x => x.Code == request.Code);
+
+                if (gymCodeExists)
                 {
-                    IsSuccess = false,
-                    Message = "نام باشگاه الزامی است"
+                    return new ResultDto()
+                    {
+                        IsSuccess = false,
+
+                        Message =
+                            "کد باشگاه تکراری است"
+                    };
+                }
+
+                // بررسی تکراری بودن موبایل مدیر
+
+                var userExists =
+                    await _userManager.Users
+                    .AnyAsync(x =>
+                        x.PhoneNumber ==
+                        request.MobileNumber);
+
+                if (userExists)
+                {
+                    return new ResultDto()
+                    {
+                        IsSuccess = false,
+
+                        Message =
+                            "این شماره موبایل قبلاً ثبت شده است"
+                    };
+                }
+
+
+                // ایجاد باشگاه
+
+                var gym = new Gym()
+                {
+                    Name = request.Name,
+
+                    Code = request.Code,
+
+                    Description =
+                        request.Description,
+
+                    MobileNumber =
+                        request.MobileNumber,
+
+                    IsActive = true,
+
+                };
+
+                _context.Gyms.Add(gym);
+
+                await _context.SaveChangesAsync(default);
+
+                // ایجاد مدیر باشگاه
+
+                var adminUser = new AppUser()
+                {
+                    FullName = request.FullName,
+
+                    UserName =
+                        $"{request.MobileNumber}_{gym.Id}",
+
+                    PhoneNumber =
+                        request.MobileNumber,
+
+                    IsActive = true,
+
+                    GymId = gym.Id
+                };
+
+                // ثبت User
+
+                var createUserResult =
+                    await _userManager
+                    .CreateAsync(
+                        adminUser,
+                        "FitCore@123");
+
+                if (!createUserResult.Succeeded)
+                {
+                    string errors = string.Join(
+                        "\n",
+                        createUserResult.Errors
+                        .Select(x => x.Description));
+
+                    return new ResultDto()
+                    {
+                        IsSuccess = false,
+
+                        Message = errors
+                    };
+                }
+
+                // ثبت Role
+
+                var roleResult =
+                    await _userManager
+                    .AddToRoleAsync(
+                        adminUser,
+                        UserRoles.Admin);
+
+                if (!roleResult.Succeeded)
+                {
+                    string errors = string.Join(
+                        "\n",
+                        roleResult.Errors
+                        .Select(x => x.Description));
+
+                    return new ResultDto()
+                    {
+                        IsSuccess = false,
+
+                        Message = errors
+                    };
+                }
+
+                return new ResultDto()
+                {
+                    IsSuccess = true,
+
+                    Message =
+                        "باشگاه و مدیر باشگاه با موفقیت ثبت شدند"
                 };
             }
-
-            if (string.IsNullOrWhiteSpace(dto.Code))
+            catch (Exception ex)
             {
-                return new ResultDto
+                return new ResultDto()
                 {
                     IsSuccess = false,
-                    Message = "کد باشگاه الزامی است"
+
+                    Message =
+                        ex.Message
                 };
             }
-
-            if (string.IsNullOrWhiteSpace(dto.MobileNumber))
-            {
-                return new ResultDto
-                {
-                    IsSuccess = false,
-                    Message = "شماره موبایل الزامی است"
-                };
-            }
-
-            // اعتبارسنجی فرمت موبایل
-            if (!IsValidMobile(dto.MobileNumber))
-            {
-                return new ResultDto
-                {
-                    IsSuccess = false,
-                    Message = "فرمت شماره موبایل صحیح نیست"
-                };
-            }
-
-            var gym = new Domain.Entities.Gyms.Gyms
-            {
-                Name = dto.Name.Trim(),
-                Code = dto.Code.Trim(),
-                Description = dto.Description,
-                MobileNumber = dto.MobileNumber.Trim(),
-            };
-
-            _context.Gyms.Add(gym);
-            _context.SaveChanges();
-
-            return new ResultDto
-            {
-                IsSuccess = true,
-                Message = "باشگاه با موفقیت ثبت شد"
-            };
-        }
-
-        private bool IsValidMobile(string mobile)
-        {
-            if (string.IsNullOrWhiteSpace(mobile))
-                return false;
-
-            mobile = mobile.Trim();
-
-            // شماره موبایل ایران: 09xxxxxxxxx
-            return System.Text.RegularExpressions.Regex.IsMatch(
-                mobile,
-                @"^09\d{9}$"
-            );
         }
     }
-
 }

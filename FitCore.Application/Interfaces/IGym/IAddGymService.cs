@@ -10,7 +10,7 @@ namespace FitCore.Application.Interfaces.IGym
 {
     public interface IAddGymService
     {
-        ResultDto Execute(CreateGymDto dto);
+        Task<ResultDto> Execute(CreateGymDto request);
     }
 
 }

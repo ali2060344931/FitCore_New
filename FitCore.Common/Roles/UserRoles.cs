@@ -15,7 +15,8 @@ namespace FitCore.Common.Roles
         public const string Operator = "Operator";
         public const string Customer = "Customer";
 
-
+        public const string AdminHigher = "SuperAdmin,Admin";
+        public const string Staff = "SuperAdmin,Admin,Operator";
 
     }
 }

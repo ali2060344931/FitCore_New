@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -65,12 +67,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             }
 
             return View(gyms);
+
+
         }
-        //public IActionResult Index()
-        //{
-        //    var gyms = _getGymsService.GetAll();
-        //    return View(gyms);
-        //}
 
 
         [HttpGet]
@@ -81,7 +80,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(CreateGymDto vm)
+        public async Task<IActionResult> Create(CreateGymDto vm) // اضافه شدن async و Task
         {
             if (!ModelState.IsValid)
             {
@@ -97,7 +96,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 });
             }
 
-            var result = _addGymService.Execute(vm);
+            // حتماً باید await شود تا کنترلر منتظر پایان عملیات دیتابیس بماند
+            var result = await _addGymService.Execute(vm);
 
             return Json(result);
         }
@@ -188,16 +188,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 SubscriptionExpireDate =
                     gym.SubscriptionExpireDate,
 
-                MaxMembers = gym.MaxMembers,
+                MaxMembers = (int)gym.MaxMembers,
 
                 AllowOnlineRegistration =
                     gym.AllowOnlineRegistration,
 
-                OtpExpireSeconds =
-                    gym.OtpExpireSeconds,
+                OtpExpireSeconds = (int)gym.OtpExpireSeconds,
 
-                MaxOtpRequestPerMinute =
-                    gym.MaxOtpRequestPerMinute
+                MaxOtpRequestPerMinute = (int)gym.MaxOtpRequestPerMinute
             };
 
             // استان انتخاب شده

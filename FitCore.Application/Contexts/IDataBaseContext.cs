@@ -4,6 +4,7 @@ using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -15,7 +16,7 @@ namespace FitCore.Application.Contexts
 {
     public interface IDataBaseContext
     {
-        DbSet<Gyms> Gyms { get; set; }
+        DbSet<Gym> Gyms { get; set; }
 
         DbSet<Member> Members { get; set; }
 
@@ -26,9 +27,18 @@ namespace FitCore.Application.Contexts
         public DbSet<City> Cities { get; set; }
 
         DatabaseFacade Database { get; }
+
+        DbSet<AppUser> Users { get; set; }
+
+        DbSet<IdentityRole<long>> Roles { get; set; }
+
+        DbSet<IdentityUserRole<long>> UserRoles { get; set; }
+
+
+
         int SaveChanges();
 
-        Task<int> SaveChangesAsync();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(
+                CancellationToken cancellationToken = default);
     }
 }

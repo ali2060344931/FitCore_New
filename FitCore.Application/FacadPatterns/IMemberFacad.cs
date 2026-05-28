@@ -1,11 +1,5 @@
-﻿using FitCore.Application.Services.Members.Commands;
-using FitCore.Application.Services.Member.Queries;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FitCore.Application.Services.Member.Queries;
+using FitCore.Application.Services.Members.Commands;
 
 namespace FitCore.Application.FacadPatterns
 {

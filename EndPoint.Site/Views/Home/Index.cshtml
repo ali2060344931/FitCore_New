@@ -1,9 +1,10 @@
-﻿@{
+﻿@using FitCore.Common
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="page-content-wrapper">
-     @if (User.Identity.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated)
     {
         <!-- شروع یک بخش -->
         <div class="section-group">
@@ -13,9 +14,14 @@
                 <div class="btn-container">
 
 
-                    <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="custom-btn">
-                        <i class="fa fa-pencil-square-o btn-icon-lg"></i> مدیریت سایت
-                    </a>
+
+                    @if (User.IsAdmin())
+                    {
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="custom-btn">
+                            <i class="fa fa-pencil-square-o btn-icon-lg"></i> مدیریت سایت
+                        </a>
+                    }
+
 
 
                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
@@ -40,11 +46,11 @@
 
                 <h4 class="section-title">تنظیمات و پیکربندی</h4>
                 <div class="btn-container">
-                    
+
                     <button type="button" class="custom-btn" onclick="openForm('Form3')">
                         <i class="fa fa-calendar btn-icon-lg" aria-hidden="true"></i> تنظیمات سیستم
                     </button>
-                    
+
                     <button type="button" class="custom-btn" onclick="openForm('Form4')">
                         <i class="fa fa-users btn-icon-lg"></i>
                         مدیریت دسترسی
@@ -102,7 +108,7 @@
             <p>برای مشاهده امکانات، لطفاً ابتدا وارد حساب کاربری خود شوید.</p>
             <br>
             <p>در قسمت بالای فرم روی دکمه ورود کلیک نمائید و یا ثبت نام جدید انجام دهید</p>
-            
+
             @* <a href="/Account/Login" class="custom-btn" style="background: #6e8efb;">ورود به حساب کاربری</a> *@
         </div>
     }

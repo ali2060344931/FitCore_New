@@ -1,4 +1,32 @@
-﻿<!DOCTYPE html>
+﻿@using FitCore.Domain.Entities.Users
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+
+@* @{
+    var appUser = await UserManager.GetUserAsync(User);
+    var roles = appUser == null ? new List<string>() : (await UserManager.GetRolesAsync(appUser)).ToList();
+    var rolesText = roles.Any() ? string.Join("، ", roles) : "بدون نقش";
+}
+ *@
+
+
+@using System.Security.Claims
+
+@{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+    string persianRole = role switch
+    {
+        "Admin" => "مدیر سیستم",
+        "GymManager" => "مدیر باشگاه",
+        "Coach" => "مربی",
+        "Member" => "عضو",
+        _ => "نامشخص"
+    };
+}
+
+
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -64,7 +92,9 @@
                                             <div class="nav-account d-block pl">
 
                                                 <div class="nav-account">
-                                                    <div class="account-box wide-account-box">
+
+
+                                                    <div class="account-box wide-account-box" style="width: auto !important; min-width: max-content; display: flex; white-space: nowrap; padding: 0 15px;">
                                                         <span class="icon-account">
                                                             @* <img src="~/SiteTemplate/assets/images/man.png" class="avator"> *@
                                                         </span>
@@ -72,10 +102,20 @@
                                                             @* کاربر: @User.Identity.Name | *@
                                                             کاربر: <span style="color:red; font-weight:bold;">@User.Identity.Name</span> |
                                                             باشگاه: <span style="color:red; font-weight:bold;">@User.FindFirst("GymName")?.Value</span>
+                                                            نقش: <span style="color:red; font-weight:bold;">@persianRole</span>                                                        @{
+
+
+                                                        }
                                                         </span>
 
                                                     </div>
+
+
+
                                                 </div>
+
+
+
                                                 <div class="dropdown-menu">
                                                     <ul class="account-uls mb-0">
                                                         <li class="account-item">
