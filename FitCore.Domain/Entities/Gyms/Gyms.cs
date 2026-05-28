@@ -141,8 +141,7 @@ namespace FitCore.Domain.Entities.Gyms
         public ICollection<AppUser> Users { get; set; }
 
 
-
-        [Display(Name = "اعضای باشگاه")]
-        public ICollection<Member> Members { get; set; }
+        //[Display(Name = "اعضای باشگاه")]
+        //public ICollection<Member> Members { get; set; }
     }
 }

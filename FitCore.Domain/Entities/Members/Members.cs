@@ -14,7 +14,7 @@ namespace FitCore.Domain.Entities.Members
     {
         [DisplayName("کاربر")]
         [Required(ErrorMessage = "انتخاب کاربر الزامی است.")]
-        [ForeignKey("AppUserId")]
+        //[ForeignKey("AppUserId")]
         public long AppUserId { get; set; }
         public AppUser AppUser    { get; set; }
 

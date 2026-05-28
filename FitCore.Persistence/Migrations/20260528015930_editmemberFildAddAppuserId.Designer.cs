@@ -4,6 +4,7 @@ using FitCore.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitCore.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260528015930_editmemberFildAddAppuserId")]
+    partial class editmemberFildAddAppuserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,6 +149,9 @@ namespace FitCore.Persistence.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
+                    b.Property<long?>("GymsId")
+                        .HasColumnType("bigint");
+
                     b.Property<decimal?>("Height")
                         .HasColumnType("decimal(18,2)");
 
@@ -176,6 +182,8 @@ namespace FitCore.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("GymsId");
 
                     b.ToTable("Members");
                 });
@@ -503,10 +511,14 @@ namespace FitCore.Persistence.Migrations
             modelBuilder.Entity("FitCore.Domain.Entities.Members.Member", b =>
                 {
                     b.HasOne("FitCore.Domain.Entities.Users.AppUser", "AppUser")
-                        .WithMany("Members")
+                        .WithMany()
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("FitCore.Domain.Entities.Gyms.Gyms", null)
+                        .WithMany("Members")
+                        .HasForeignKey("GymsId");
 
                     b.Navigation("AppUser");
                 });
@@ -584,6 +596,8 @@ namespace FitCore.Persistence.Migrations
 
             modelBuilder.Entity("FitCore.Domain.Entities.Gyms.Gyms", b =>
                 {
+                    b.Navigation("Members");
+
                     b.Navigation("Users");
                 });
 
@@ -595,11 +609,6 @@ namespace FitCore.Persistence.Migrations
             modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Province", b =>
                 {
                     b.Navigation("Ciltys");
-                });
-
-            modelBuilder.Entity("FitCore.Domain.Entities.Users.AppUser", b =>
-                {
-                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }
