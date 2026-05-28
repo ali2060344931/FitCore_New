@@ -24,14 +24,12 @@ namespace FitCore.Application.Services.Member.Queries
         public ResultDto<ResultGetMembersDto> Execute(RequestGetMemberDto request)
         {
             var members = _context.Members
-                .Where(x => x.GymId == request.GymId);
+                .Where(x => x.AppUserId == request.AppUserId);
 
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
                 members = members.Where(x =>
-                    x.FirstName.Contains(request.SearchKey) ||
-                    x.LastName.Contains(request.SearchKey) ||
-                    x.Mobile.Contains(request.SearchKey));
+                    x.AppUser.FullName.Contains(request.SearchKey));
             }
 
             int rowCount = members.Count();
@@ -43,8 +41,8 @@ namespace FitCore.Application.Services.Member.Queries
                 .Select(x => new ResultGetMemberDto
                 {
                     Id = x.Id,
-                    FullName = x.FirstName + " " + x.LastName,
-                    Mobile = x.Mobile,
+                    FullName = x.AppUser.FullName,
+                    Mobile = x.AppUser.PhoneNumber,
                     Gender = x.Gender,
                     BirthDate = x.BirthDate
                 }).ToList();

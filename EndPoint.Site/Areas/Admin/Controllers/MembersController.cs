@@ -32,10 +32,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Index(int page = 1, string SearchKey = "")
         {
-            var gymId = long.Parse(User.FindFirstValue("GymId"));
+            var appUserId = long.Parse(User.FindFirstValue("AppUserId"));
             var request = new RequestGetMemberDto
             {
-                GymId = gymId,
+                AppUserId = appUserId,
                 Page = page,
                 PageSize = 10,
                 SearchKey = SearchKey
@@ -57,8 +57,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         public IActionResult Create(RequestAddNewMemberDto request)
         {
 
-            var gymId = long.Parse(User.FindFirstValue("GymId"));
-            request.GymId = gymId;
+            var appUserId = long.Parse(User.FindFirstValue("AppUserId"));
+            request.AppUserId = appUserId;
 
             var result = _memberFacad.AddNewMemberService.Execute(request);
             return Json(result);

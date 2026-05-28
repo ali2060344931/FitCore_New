@@ -1,5 +1,6 @@
 ﻿using FitCore.Domain.Entities.Commons;
 using FitCore.Domain.Entities.Gyms;
+using FitCore.Domain.Entities.Users;
 
 using System;
 using System.ComponentModel;
@@ -11,26 +12,29 @@ namespace FitCore.Domain.Entities.Members
 {
     public class Member : BaseEntity
     {
-        [DisplayName("باشگاه")]
-        [Required(ErrorMessage = "انتخاب باشگاه الزامی است.")]
-        [ForeignKey("GymId")]
-        public long GymId { get; set; }
-        public Gyms.Gyms Gym { get; set; }
+        [DisplayName("کاربر")]
+        [Required(ErrorMessage = "انتخاب کاربر الزامی است.")]
+        [ForeignKey("AppUserId")]
+        public long AppUserId { get; set; }
+        public AppUser AppUser    { get; set; }
 
-        [DisplayName("نام")]
-        [Required(ErrorMessage = "نام الزامی است.")]
-        [MaxLength(100, ErrorMessage = "نام نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
-        public string FirstName { get; set; }
+        //public long GymId { get; set; }
+        //public Gyms.Gyms Gym { get; set; }
 
-        [DisplayName("نام خانوادگی")]
-        [Required(ErrorMessage = "نام خانوادگی الزامی است.")]
-        [MaxLength(100, ErrorMessage = "نام خانوادگی نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
-        public string LastName { get; set; }
+        //[DisplayName("نام")]
+        //[Required(ErrorMessage = "نام الزامی است.")]
+        //[MaxLength(100, ErrorMessage = "نام نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
+        //public string FirstName { get; set; }
 
-        [DisplayName("شماره موبایل")]
-        [Required(ErrorMessage = "شماره موبایل الزامی است.")]
-        [RegularExpression(@"^09\d{9}$", ErrorMessage = "فرمت شماره موبایل صحیح نیست. (مثال: 09123456789)")]
-        public string Mobile { get; set; }
+        //[DisplayName("نام خانوادگی")]
+        //[Required(ErrorMessage = "نام خانوادگی الزامی است.")]
+        //[MaxLength(100, ErrorMessage = "نام خانوادگی نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
+        //public string LastName { get; set; }
+
+        //[DisplayName("شماره موبایل")]
+        //[Required(ErrorMessage = "شماره موبایل الزامی است.")]
+        //[RegularExpression(@"^09\d{9}$", ErrorMessage = "فرمت شماره موبایل صحیح نیست. (مثال: 09123456789)")]
+        //public string Mobile { get; set; }
 
         [DisplayName("جنسیت")]
         //[Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]

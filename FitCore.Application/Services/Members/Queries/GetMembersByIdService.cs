@@ -42,11 +42,11 @@ namespace FitCore.Application.Services.Members.Queries
                 Data = new GetMemberByIdDto
                 {
                     Id = id,
-                    FirstName = q.FirstName,
+                    //FirstName = q.FirstName,
                     BirthDate=q.BirthDate,
                     Gender=q.Gender,
-                    LastName=q.LastName,
-                    Mobile=q.Mobile
+                    //LastName=q.LastName,
+                    //Mobile=q.Mobile
                 },
 
                 IsSuccess = true

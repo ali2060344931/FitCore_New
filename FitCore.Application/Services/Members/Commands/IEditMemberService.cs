@@ -36,9 +36,9 @@ namespace FitCore.Application.Services.Members.Commands
                 };
             }
 
-            member.FirstName = request.FirstName;
-            member.LastName = request.LastName;
-            member.Mobile = request.Mobile;
+            //member.FirstName = request.FirstName;
+            //member.LastName = request.LastName;
+            //member.Mobile = request.Mobile;
             member.Gender = request.Gender;
             member.BirthDate = request.BirthDate;
             //member.MembershipEndDate = request.MembershipEndDate;

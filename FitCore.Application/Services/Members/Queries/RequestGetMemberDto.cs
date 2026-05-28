@@ -8,6 +8,6 @@
 
         public int PageSize { get; set; } = 10;
 
-        public long GymId { get; set; }
+        public long AppUserId { get; set; }
     }
 }

@@ -27,12 +27,12 @@
                          {
                              Id = "FirstName",
                              Name = "FirstName",
-                             LabelName = Html.DisplayNameFor(m => m.FirstName),
-                             Placeholder = Html.DisplayNameFor(m => m.FirstName),
+                             LabelName = Html.DisplayNameFor(m => m.AppUser.FullName),
+                             Placeholder = Html.DisplayNameFor(m => m.AppUser.FullName),
                              Col = 6
                          }' />
 
-                <!-- LastName -->
+@* <!-- LastName -->
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel
                          {
@@ -41,21 +41,21 @@
                              LabelName = Html.DisplayNameFor(m => m.LastName),
                              Placeholder = Html.DisplayNameFor(m => m.LastName),
                              Col = 6
-                         }' />
+                         }' /> *@
 
                 <!-- Mobile -->
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel
-                         {
-                             Id = "Mobile",
-                             Name = "Mobile",
-                             LabelName = Html.DisplayNameFor(m => m.Mobile),
-                             Placeholder = Html.DisplayNameFor(m => m.Mobile),
-                             Col = 6
-                         }' />
+         {
+             Id = "Mobile",
+             Name = "Mobile",
+             LabelName = Html.DisplayNameFor(m => m.AppUser.PhoneNumber),
+             Placeholder = Html.DisplayNameFor(m => m.AppUser.PhoneNumber),
+             Col = 6
+         }' />
 
-                <!-- Gender -->
-                <div class="col-md-6 mb-3">
+<!-- Gender -->
+<div class="col-md-6 mb-3">
                     <label asp-for="Gender" class="form-label font-weight-bold">@Html.DisplayNameFor(m => m.Gender)</label>
                     <select class="form-control" id="Gender" asp-for="Gender">
                         <option value="1">مرد</option>
@@ -79,14 +79,14 @@
             <!-- Buttons (ثبت و بازگشت) -->
             @* <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" /> *@
 
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" 
-         model='new FitCore.Application.ViewModels.Common.FormButtonsViewModel 
-         { 
-             SubmitText = "ذخیره تغییرات", 
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                     model='new FitCore.Application.ViewModels.Common.FormButtonsViewModel
+                     {
+                         SubmitText = "ذخیره تغییرات",
                          BackUrl = "/Admin/Members",
-             BackText = "انصراف و بازگشت" 
-         }' />
-        </form>
+                         BackText = "انصراف و بازگشت"
+                     }' />
+</form>
     </div>
 </div>
 
@@ -105,80 +105,80 @@
     <script>
         $(document).ready(function () {
 
-            // ۱. مقداردهی اولیه تقویم شمسی
-            $("#BirthDate").persianDatepicker({
-                format: 'YYYY/MM/DD',
-                autoClose: true,
-                initialValue: false,
-                observer: true,
-                calendar: {
-                    persian: {
-                        locale: 'fa'
-                    }
-                }
-            });
+        // ۱. مقداردهی اولیه تقویم شمسی
+        $("#BirthDate").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        initialValue: false,
+        observer: true,
+        calendar: {
+        persian: {
+        locale: 'fa'
+        }
+        }
+        });
 
-            // ۲. ارسال فرم به صورت AJAX
-            $("#CreateMemberForm").submit(function (e) {
-                e.preventDefault();
+        // ۲. ارسال فرم به صورت AJAX
+        $("#CreateMemberForm").submit(function (e) {
+        e.preventDefault();
 
-                // ولیدیشن اولیه سمت کلاینت برای فیلد تاریخ
-                var birthDateVal = $("#BirthDate").val();
-                if (!birthDateVal) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'توجه',
-                        text: 'لطفاً تاریخ تولد را انتخاب کنید.'
-                    });
-                    return;
-                }
+        // ولیدیشن اولیه سمت کلاینت برای فیلد تاریخ
+        var birthDateVal = $("#BirthDate").val();
+        if (!birthDateVal) {
+        Swal.fire({
+        icon: 'warning',
+        title: 'توجه',
+        text: 'لطفاً تاریخ تولد را انتخاب کنید.'
+        });
+        return;
+        }
 
-                // آماده‌سازی تمیز شیء داده
-                var data = {
-                    FirstName: $("#FirstName").val().trim(),
-                    LastName: $("#LastName").val().trim(),
-                    Mobile: $("#Mobile").val().trim(),
-                    Gender: parseInt($("#Gender").val()),
-                    BirthDate: birthDateVal // ارسال مستقیم رشته‌ی شمسی تاریخ
-                };
+        // آماده‌سازی تمیز شیء داده
+        var data = {
+        FirstName: $("#FirstName").val().trim(),
+        LastName: $("#LastName").val().trim(),
+        Mobile: $("#Mobile").val().trim(),
+        Gender: parseInt($("#Gender").val()),
+        BirthDate: birthDateVal // ارسال مستقیم رشته‌ی شمسی تاریخ
+        };
 
-                // ارسال به سرور
-                $.ajax({
-                    type: "POST",
-                    url: "/Admin/Members/Create",
-                    data: data,
-                    beforeSend: function() {
-                        // غیرفعال کردن دکمه ثبت برای جلوگیری از Double Submit
-                        $("button[type='submit']").prop('disabled', true);
-                    },
-                    success: function (response) {
-                        if (response.isSuccess) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'موفقیت‌آمیز',
-                                text: response.message || 'عضو جدید با موفقیت ثبت شد.'
-                            }).then(() => {
-                                window.location.href = "/Admin/Members";
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'خطا در ثبت',
-                                text: response.message
-                            });
-                            $("button[type='submit']").prop('disabled', false);
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'خطای سیستمی',
-                            text: 'برقراری ارتباط با سرور با شکست مواجه شد.'
-                        });
-                        $("button[type='submit']").prop('disabled', false);
-                    }
-                });
-            });
+        // ارسال به سرور
+        $.ajax({
+        type: "POST",
+        url: "/Admin/Members/Create",
+        data: data,
+        beforeSend: function() {
+        // غیرفعال کردن دکمه ثبت برای جلوگیری از Double Submit
+        $("button[type='submit']").prop('disabled', true);
+        },
+        success: function (response) {
+        if (response.isSuccess) {
+        Swal.fire({
+        icon: 'success',
+        title: 'موفقیت‌آمیز',
+        text: response.message || 'عضو جدید با موفقیت ثبت شد.'
+        }).then(() => {
+        window.location.href = "/Admin/Members";
+        });
+        } else {
+        Swal.fire({
+        icon: 'warning',
+        title: 'خطا در ثبت',
+        text: response.message
+        });
+        $("button[type='submit']").prop('disabled', false);
+        }
+        },
+        error: function () {
+        Swal.fire({
+        icon: 'error',
+        title: 'خطای سیستمی',
+        text: 'برقراری ارتباط با سرور با شکست مواجه شد.'
+        });
+        $("button[type='submit']").prop('disabled', false);
+        }
+        });
+        });
 
         });
     </script>

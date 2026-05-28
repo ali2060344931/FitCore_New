@@ -1,6 +1,7 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Members;
+using FitCore.Domain.Entities.Users;
 
 using System;
 using System.ComponentModel;
@@ -29,13 +30,13 @@ namespace FitCore.Application.Services.Members.Commands
         {
             MemberEntity member = new MemberEntity()
             {
-                GymId = request.GymId,
+                AppUserId = request.AppUserId,
 
-                FirstName = request.FirstName,
+                //FirstName = request.FirstName,
 
-                LastName = request.LastName,
+                //LastName = request.LastName,
 
-                Mobile = request.Mobile,
+                //Mobile = request.Mobile,
 
                 Gender = request.Gender,
 
@@ -58,38 +59,30 @@ namespace FitCore.Application.Services.Members.Commands
 
     public class RequestAddNewMemberDto
     {
-        //public long GymId { get; set; }
-
-        //public string FirstName { get; set; }
-
-        //public string LastName { get; set; }
-
-        //public string Mobile { get; set; }
-
-        //public Gender Gender { get; set; }
-
-        //public string BirthDate { get; set; }
         //============
 
-        [DisplayName("باشگاه")]
-        [Required(ErrorMessage = "انتخاب باشگاه الزامی است.")]
-        [ForeignKey("GymId")]
-        public long GymId { get; set; }
+        [DisplayName("کاربر")]
+        [Required(ErrorMessage = "انتخاب کاربر الزامی است.")]
+        [ForeignKey("AppUserId")]
+        public long AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
 
-        [DisplayName("نام")]
-        [Required(ErrorMessage = "نام الزامی است.")]
-        [MaxLength(100, ErrorMessage = "نام نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
-        public string FirstName { get; set; }
 
-        [DisplayName("نام خانوادگی")]
-        [Required(ErrorMessage = "نام خانوادگی الزامی است.")]
-        [MaxLength(100, ErrorMessage = "نام خانوادگی نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
-        public string LastName { get; set; }
 
-        [DisplayName("شماره موبایل")]
-        [Required(ErrorMessage = "شماره موبایل الزامی است.")]
-        [RegularExpression(@"^09\d{9}$", ErrorMessage = "فرمت شماره موبایل صحیح نیست. (مثال: 09123456789)")]
-        public string Mobile { get; set; }
+        //[DisplayName("نام")]
+        //[Required(ErrorMessage = "نام الزامی است.")]
+        //[MaxLength(100, ErrorMessage = "نام نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
+        //public string FirstName { get; set; }
+
+        //[DisplayName("نام خانوادگی")]
+        //[Required(ErrorMessage = "نام خانوادگی الزامی است.")]
+        //[MaxLength(100, ErrorMessage = "نام خانوادگی نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
+        //public string LastName { get; set; }
+
+        //[DisplayName("شماره موبایل")]
+        //[Required(ErrorMessage = "شماره موبایل الزامی است.")]
+        //[RegularExpression(@"^09\d{9}$", ErrorMessage = "فرمت شماره موبایل صحیح نیست. (مثال: 09123456789)")]
+        //public string Mobile { get; set; }
 
         [DisplayName("جنسیت")]
         [Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]

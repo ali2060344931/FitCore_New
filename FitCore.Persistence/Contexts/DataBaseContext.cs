@@ -44,10 +44,10 @@ namespace FitCore.Persistence.Contexts
 
             modelBuilder.Entity<Member>().HasQueryFilter(x => !x.IsRemoved);
 
-            modelBuilder.Entity<Member>()
-                .HasOne(x => x.Gym)
-                .WithMany(x => x.Members)
-                .HasForeignKey(x => x.GymId);
+            //modelBuilder.Entity<Member>()
+            //    .HasOne(x => x.AppUser)
+            //    .WithMany(x => x.Id)
+            //    .HasForeignKey(x => x.);
         }
 
 
