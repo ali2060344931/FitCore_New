@@ -5,20 +5,17 @@ using FitCore.Domain.Entities.Users;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitCore.Domain.Entities.NutritionProgram.NutritionProgram
 {
     /// <summary>
     /// برنامه تغذیه
     /// </summary>
-    public class NutritionProgram:BaseEntity
+    public class NutritionProgram : BaseEntity
     {
 
         public long GymId { get; set; }
-        
+
         public long MemberId { get; set; }
 
         public long CreatedByUserId { get; set; }
@@ -33,9 +30,9 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionProgram
         public int GoalTypeId { get; set; }
         public GoalType GoalType { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public string StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public string EndDate { get; set; }
 
         public bool IsActive { get; set; }
 
