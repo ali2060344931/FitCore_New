@@ -25,37 +25,15 @@
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel
                          {
-                             Id = "FirstName",
-                             Name = "FirstName",
-                             LabelName = Html.DisplayNameFor(m => m.AppUser.FullName),
-                             Placeholder = Html.DisplayNameFor(m => m.AppUser.FullName),
-                             Col = 6
+                             Id = "FullName",
+                             Name = "FullName",
+                             LabelName = Html.DisplayNameFor(m => m.FullName),
+                             Placeholder = Html.DisplayNameFor(m => m.FullName),
+                             Col = 4
                          }' />
 
-@* <!-- LastName -->
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "LastName",
-                             Name = "LastName",
-                             LabelName = Html.DisplayNameFor(m => m.LastName),
-                             Placeholder = Html.DisplayNameFor(m => m.LastName),
-                             Col = 6
-                         }' /> *@
-
-                <!-- Mobile -->
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel
-         {
-             Id = "Mobile",
-             Name = "Mobile",
-             LabelName = Html.DisplayNameFor(m => m.AppUser.PhoneNumber),
-             Placeholder = Html.DisplayNameFor(m => m.AppUser.PhoneNumber),
-             Col = 6
-         }' />
-
 <!-- Gender -->
-<div class="col-md-6 mb-3">
+<div class="col-md-1 mb-3">
                     <label asp-for="Gender" class="form-label font-weight-bold">@Html.DisplayNameFor(m => m.Gender)</label>
                     <select class="form-control" id="Gender" asp-for="Gender">
                         <option value="1">مرد</option>
@@ -63,8 +41,23 @@
                     </select>
                 </div>
 
+
+
+
+
+                <!-- Mobile -->
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel
+         {
+             Id = "Mobile",
+             Name = "Mobile",
+                             LabelName = Html.DisplayNameFor(m => m.Mobile),
+                             Placeholder = Html.DisplayNameFor(m => m.Mobile),
+             Col = 2
+         }' />
+
                 <!-- BirthDate (خوانش مستقیم رشته شمسی) -->
-                <div class="col-md-6 mb-3">
+                <div class="col-md-2 mb-3">
                     <label asp-for="BirthDate" class="form-label font-weight-bold">@Html.DisplayNameFor(m => m.BirthDate)</label>
                     <input type="text"
                            id="BirthDate"
@@ -77,7 +70,6 @@
             </div>
 
             <!-- Buttons (ثبت و بازگشت) -->
-            @* <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml" /> *@
 
             <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
                      model='new FitCore.Application.ViewModels.Common.FormButtonsViewModel
@@ -135,8 +127,7 @@
 
         // آماده‌سازی تمیز شیء داده
         var data = {
-        FirstName: $("#FirstName").val().trim(),
-        LastName: $("#LastName").val().trim(),
+        FullName: $("#FullName").val().trim(),
         Mobile: $("#Mobile").val().trim(),
         Gender: parseInt($("#Gender").val()),
         BirthDate: birthDateVal // ارسال مستقیم رشته‌ی شمسی تاریخ

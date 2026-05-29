@@ -71,8 +71,8 @@
                 <tr>
                     <th>نام و نام خانوادگی</th>
                     <th>تلفن همراه</th>
-                    @* <th>جنسیت</th>
-                    <th>تاریخ تولد</th> *@
+                    <th>جنسیت</th>
+                    <th>تاریخ تولد</th>
                     <th width="180">عملیات</th>
                 </tr>
             </thead>
@@ -87,13 +87,13 @@
 
                         <td>@item.Mobile</td>
 
-                        @* <td>
-                            @((int)item.Gender == 1 ? "مرد" : "زن")
+                        <td>
+                            @(item.Gender == Gender.Male ? "مرد" : "زن")
                         </td>
 
                         <td>
                             @(item.BirthDate == default ? "---" : item.BirthDate)
-                        </td> *@
+                        </td>
 
                         <td>
                             <div class="fc-action-buttons">
@@ -105,13 +105,6 @@
                                     ویرایش
                                 </a>
 
-@*                                 <form asp-area="Admin" asp-controller="Members" asp-action="Edit" method="post" style="display:inline;">
-                                    <input type="hidden" name="Id" value="@item.Id" />
-                                    <button type="submit" class="btn btn-info btn-sm">
-                                        ویرایش
-                                    </button>
-                                </form>
- *@
                                 <button type="button"
                                         class="btn btn-danger btn-sm"
                                         onclick="DeleteMember(@item.Id)">

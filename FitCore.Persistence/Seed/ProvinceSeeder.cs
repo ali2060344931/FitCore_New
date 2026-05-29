@@ -51,7 +51,7 @@ namespace FitCore.Persistence.Seed
             }
 
             await context.Provinces.AddRangeAsync(provinces);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(default);
         }
     }
 }

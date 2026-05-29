@@ -28,7 +28,7 @@ public class SettingsSeeder : ISeeder
                 Phone = "09111111111"
             });
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(default);
         }
     }
 }

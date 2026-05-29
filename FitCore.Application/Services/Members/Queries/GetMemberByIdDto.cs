@@ -9,15 +9,11 @@ namespace FitCore.Application.Services.Member.Queries
     {
         public long Id { get; set; }
 
-        [DisplayName("نام")]
-        [Required(ErrorMessage = "نام الزامی است.")]
-        [MaxLength(100, ErrorMessage = "نام نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
-        public string FirstName { get; set; }
+        [DisplayName("نام و نام خانوادگی")]
+        [Required(ErrorMessage = "نام و نام خانوادگی الزامی است.")]
+        [MaxLength(100, ErrorMessage = "نام و نام خانوادگی نباید بیشتر از ۱5۰ کاراکتر باشد.")]
+        public string FullName { get; set; }
 
-        [DisplayName("نام خانوادگی")]
-        [Required(ErrorMessage = "نام خانوادگی الزامی است.")]
-        [MaxLength(100, ErrorMessage = "نام خانوادگی نباید بیشتر از ۱۰۰ کاراکتر باشد.")]
-        public string LastName { get; set; }
 
         [DisplayName("شماره موبایل")]
         [Required(ErrorMessage = "شماره موبایل الزامی است.")]
@@ -27,6 +23,7 @@ namespace FitCore.Application.Services.Member.Queries
         [DisplayName("جنسیت")]
         //[Required(ErrorMessage = "انتخاب جنسیت الزامی است.")]
 
+        //public int? GenderId { get; set; }
         public Gender Gender { get; set; }
 
         [DisplayName("تاریخ تولد")]
@@ -34,4 +31,7 @@ namespace FitCore.Application.Services.Member.Queries
         // [Required(ErrorMessage = "تاریخ تولد الزامی است.")]
         public string BirthDate { get; set; }
     }
+
+
+
 }

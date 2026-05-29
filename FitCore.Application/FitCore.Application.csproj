@@ -19,6 +19,16 @@
 
   <ItemGroup>
     <Folder Include="Services\Gyms\Commands\CheangStatus\" />
+    <Folder Include="Services\NutritionPrograms\Commands\AddNutritionProgram\" />
+    <Folder Include="Services\NutritionPrograms\Commands\AddProgramDay\" />
+    <Folder Include="Services\NutritionPrograms\Commands\AddMeal\" />
+    <Folder Include="Services\NutritionPrograms\Commands\AddMealItem\" />
+    <Folder Include="Services\NutritionPrograms\Commands\EditProgram\" />
+    <Folder Include="Services\NutritionPrograms\Commands\CopyProgram\" />
+    <Folder Include="Services\NutritionPrograms\Queries\GetProgramById\" />
+    <Folder Include="Services\NutritionPrograms\Queries\GetPrograms\" />
+    <Folder Include="Services\NutritionPrograms\Queries\GetMemberPrograms\" />
+    <Folder Include="Services\NutritionPrograms\Queries\GetFoods\" />
     <Folder Include="Services\Setings\Commands\" />
     <Folder Include="Services\SmsService\Queries\" />
   </ItemGroup>

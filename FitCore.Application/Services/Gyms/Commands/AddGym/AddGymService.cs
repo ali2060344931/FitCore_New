@@ -30,8 +30,7 @@ namespace FitCore.Application.Services.Gyms.Commands.AddGym
             _userManager = userManager;
         }
 
-        public async Task<ResultDto> Execute(
-            CreateGymDto request)
+        public async Task<ResultDto> Execute(CreateGymDto request)
         {
             try
             {

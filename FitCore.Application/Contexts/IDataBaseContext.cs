@@ -19,7 +19,6 @@ namespace FitCore.Application.Contexts
         DbSet<Gym> Gyms { get; set; }
 
         DbSet<Member> Members { get; set; }
-
         DbSet<Setings> Setings { get; set; }
         public DbSet<UserOtpCode> UserOtpCodes { get; set; }
 

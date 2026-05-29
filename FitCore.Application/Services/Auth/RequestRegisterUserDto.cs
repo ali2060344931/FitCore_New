@@ -13,6 +13,8 @@ namespace FitCore.Application.Services.Auth
         public string Mobile { get; set; }
 
         public string Code { get; set; }
+
+        public string BirthDate { get; set; }
         public bool IsUsed { get; set; }
 
         public long GymId { get; set; }   // ← این خیلی مهم است

@@ -1,6 +1,11 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Members;
+using FitCore.Domain.Entities.NutritionProgram.Food;
+using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
+using FitCore.Domain.Entities.NutritionProgram.NutritionMealItem;
+using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
+using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.Users;
@@ -27,7 +32,7 @@ namespace FitCore.Persistence.Contexts
         public DbSet<Gym> Gyms { get; set; }
 
         public DbSet<Member> Members { get; set; }
-
+        public DbSet<AppUser> Users { get; set; }
         public DbSet<Setings> Setings { get; set; }
 
         public DbSet<UserOtpCode> UserOtpCodes { get; set; }
@@ -35,6 +40,20 @@ namespace FitCore.Persistence.Contexts
         public DbSet<Province> Provinces { get; set; }
 
         public DbSet<City> Cities { get; set; }
+
+
+        //===============NutritionProgram
+        public DbSet<Food> Foods { get; set; }
+        public DbSet<NutritionUnitType> NutritionUnitTypes { get; set; }
+        public DbSet<FoodCategoryType> FoodCategoryTypes { get; set; }
+        public DbSet<NutritionMeal> NutritionMeals { get; set; }
+        public DbSet<MealType> MealTypes { get; set; }
+        public DbSet<NutritionMealItem> NutritionMealItems { get; set; }
+        public DbSet<NutritionProgram> NutritionPrograms { get; set; }
+        public DbSet<NutritionProgramType> NutritionProgramTypes { get; set; }
+        public DbSet<GoalType> GetGoalTypes { get; set; }
+        public DbSet<NutritionProgramDay> NutritionProgramDays { get; set; }
+        //===============
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
@@ -58,6 +77,101 @@ namespace FitCore.Persistence.Contexts
                 .WithOne(u => u.Member)
                 .HasForeignKey<Member>(m => m.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            //NutritionProgram
+
+
+            //*************
+            // ---------- NutritionProgram ----------
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionProgram.NutritionProgram>(entity =>
+            {
+                entity.HasOne(x => x.Member)
+                      .WithMany() // اگر در Member کالکشن NutritionPrograms نداری
+                      .HasForeignKey(x => x.MemberId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.Gym)
+                      .WithMany()
+                      .HasForeignKey(x => x.GymId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.CreatedByUser)
+                      .WithMany()
+                      .HasForeignKey(x => x.CreatedByUserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.ProgramType)
+                      .WithMany(x => x.nutritionPrograms)
+                      .HasForeignKey(x => x.ProgramTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.GoalType)
+                      .WithMany(x => x.nutritionPrograms)
+                      .HasForeignKey(x => x.GoalTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ---------- NutritionProgramDay ----------
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay.NutritionProgramDay>(entity =>
+            {
+                entity.HasOne(x => x.NutritionProgram)
+                      .WithMany(x => x.Days)
+                      .HasForeignKey(x => x.NutritionProgramId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ---------- NutritionMeal ----------
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionMeal.NutritionMeal>(entity =>
+            {
+                entity.HasOne(x => x.NutritionProgramDay)
+                      .WithMany(x => x.Meals)
+                      .HasForeignKey(x => x.NutritionProgramDayId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.MealType)
+                      .WithMany(x => x.nutritionMeals)
+                      .HasForeignKey(x => x.MealTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+            // ---------- NutritionMealItem ----------
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionMealItem.NutritionMealItem>(entity =>
+            {
+                entity.HasOne(x => x.NutritionMeal)
+                      .WithMany(x => x.Items)
+                      .HasForeignKey(x => x.NutritionMealId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.Food)
+                      .WithMany() // چون در Food کالکشن MealItems نداری
+                      .HasForeignKey(x => x.FoodId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.UnitType)
+      .WithMany()
+      .HasForeignKey(x => x.UnitTypeId)
+      .OnDelete(DeleteBehavior.NoAction);
+                // نکته: شما UnitType در NutritionMealItem تعریف کرده‌ای ولی UnitTypeId نداری.
+                // پس فعلاً رابطه‌ای برای UnitType ساخته نمی‌شود. اگر می‌خواهی FK باشد باید UnitTypeId اضافه کنی.
+            });
+
+            // ---------- Food ----------
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.Food.Food>(entity =>
+            {
+                entity.HasOne(x => x.DefaultUnit)
+                      .WithMany(x => x.food)
+                      .HasForeignKey(x => x.DefaultUnitId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.CategoryType)
+                      .WithMany(x => x.food)
+                      .HasForeignKey(x => x.CategoryTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+
+            });
+            //*************
+
         }
 
         public override int SaveChanges()
@@ -65,10 +179,10 @@ namespace FitCore.Persistence.Contexts
             return base.SaveChanges();
         }
 
-        public override Task<int> SaveChangesAsync(
-            CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(
+            CancellationToken cancellationToken)
         {
-            return base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

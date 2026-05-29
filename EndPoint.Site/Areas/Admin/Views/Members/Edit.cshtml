@@ -26,24 +26,13 @@
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel
                          {
-                             Id = "FirstName",
-                             Name = "FirstName",
-                             Value = Model.FirstName,
-                             LabelName = @Html.DisplayNameFor(m => m.FirstName),
-                             Placeholder = @Html.DisplayNameFor(m => m.FirstName),
+                             Id = "FullName",
+                             Name = "FullName",
+                             Value = Model.FullName,
+                             LabelName = @Html.DisplayNameFor(m => m.FullName),
+                             Placeholder = @Html.DisplayNameFor(m => m.FullName),
                              Col = 3
                          }' />
-<partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-         model='new BaseInputViewModel
-         {
-             Id = "LastName",
-             Name = "LastName",
-             Value = Model.LastName,
-             LabelName = @Html.DisplayNameFor(m => m.LastName),
-             Placeholder = @Html.DisplayNameFor(m => m.LastName),
-             Col = 3
-         }' />
-
 
 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
          model='new BaseInputViewModel
@@ -137,8 +126,7 @@ new SelectListItem { Value = "2", Text = "زن" }
 
         var data = {
         Id: $("#Id").val(), // ارسال آیدی برای ویرایش
-        FirstName: $("#FirstName").val().trim(),
-        LastName: $("#LastName").val().trim(),
+        FullName: $("#FullName").val().trim(),
         Mobile: $("#Mobile").val().trim(),
         Gender: parseInt($("#Gender").val()),
         BirthDate: birthDateVal
@@ -151,6 +139,9 @@ new SelectListItem { Value = "2", Text = "زن" }
         beforeSend: function() {
         $("button[type='submit']").prop('disabled', true).text('در حال ثبت...');
         },
+
+
+
         success: function (response) {
         if (response.isSuccess) {
         Swal.fire({ icon: 'success', title: 'موفقیت‌آمیز', text: response.message })
@@ -160,6 +151,8 @@ new SelectListItem { Value = "2", Text = "زن" }
         $("button[type='submit']").prop('disabled', false).text('ثبت تغییرات');
         }
         },
+
+
         error: function () {
         Swal.fire({ icon: 'error', title: 'خطا', text: 'ارتباط با سرور برقرار نشد.' });
         $("button[type='submit']").prop('disabled', false).text('ثبت تغییرات');

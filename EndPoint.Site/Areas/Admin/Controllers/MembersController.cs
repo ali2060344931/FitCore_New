@@ -22,11 +22,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IMemberFacad _memberFacad;
         private readonly IDataBaseContext _dataBaseContext;
         private readonly IGetMembersByIdService _getMembersByIdService;
-        public MembersController(IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext)
+        private readonly IAddNewMemberService _addNewMemberService;
+        
+        public MembersController(IAddNewMemberService addNewMemberService,IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext)
         {
             _memberFacad = memberFacad;
             _dataBaseContext = dataBaseContext;
             _getMembersByIdService = getMembersByIdService;
+            _addNewMemberService=addNewMemberService;
         }
 
         [HttpGet]
@@ -64,15 +67,23 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(RequestAddNewMemberDto request)
+        public async Task<IActionResult> Create(
+    RequestAddNewMemberDto request)
         {
+            var userId =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var appUserId = long.Parse(User.FindFirstValue("AppUserId"));
-            request.AppUserId = appUserId;
+            request.AppUserId =
+                long.Parse(userId);
 
-            var result = _memberFacad.AddNewMemberService.Execute(request);
+            var result =
+                await _memberFacad
+                .AddNewMemberService
+                .Execute(request);
+
             return Json(result);
         }
+
 
 
         [HttpGet]
@@ -89,8 +100,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var qq = new GetMemberByIdDto
             {
                 Id= decryptedId,
-                FirstName = q.Data.FirstName,
-                LastName = q.Data.LastName,
+                FullName = q.Data.FullName,
                 Mobile = q.Data.Mobile,
                 BirthDate = q.Data.BirthDate,
                 Gender = q.Data.Gender,

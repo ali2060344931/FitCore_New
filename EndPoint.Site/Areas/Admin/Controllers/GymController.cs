@@ -6,9 +6,11 @@ using FitCore.Application.Services.Gyms.Commands.EditGym;
 using FitCore.Application.Services.Gyms.Commands.EditGym.FitCore.Application.ViewModels.Gyms;
 using FitCore.Application.ViewModels.Gyms;
 using FitCore.Common.Dto;
+using FitCore.Common.Roles;
 
 using Humanizer;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +50,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _dataBaseContext = dataBaseContext;
         }
 
-
+        [Authorize(Roles = UserRoles.SuperAdmin)]
+        //[Authorize(Roles = UserRoles.SuperAdmin + "," + UserRoles.Admin)]
         public IActionResult Index(string SearchKey = "")
         {
             var gyms = _getGymsService.GetAll();

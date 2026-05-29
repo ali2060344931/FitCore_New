@@ -24,35 +24,48 @@ namespace FitCore.Application.Services.Members.Commands
 
         public ResultDto Execute(RequestEditMemberDto request)
         {
-            var member = _context.Members
-                .FirstOrDefault(x => x.Id == request.Id);
-
-            if (member == null)
+            try
             {
+                var member = _context.Members
+            .FirstOrDefault(x => x.AppUserId == request.Id);
+                var user = _context.Users.Where(c => c.Id == request.Id).FirstOrDefault();
+
+                if (member == null)
+                {
+                    return new ResultDto
+                    {
+                        IsSuccess = false,
+                        Message = "عضو یافت نشد"
+                    };
+                }
+
+
+                user.FullName = request.FullName;
+                user.PasswordHash = request.Mobile;
+                member.Gender = request.Gender;
+                member.BirthDate = request.BirthDate;
+                member.UpdateTime = DateTime.Now;
+
+                 _context.SaveChanges();
+
+                return new ResultDto
+                {
+                    IsSuccess = true,
+                    Message = "ویرایش انجام شد"
+                };
+
+            }
+            catch (Exception)
+            {
+
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "عضو یافت نشد"
+                    Message = "ویرایش انجام نشـــد"
                 };
+
+
             }
-
-            //member.FirstName = request.FirstName;
-            //member.LastName = request.LastName;
-            //member.Mobile = request.Mobile;
-            member.Gender = request.Gender;
-            member.BirthDate = request.BirthDate;
-            //member.MembershipEndDate = request.MembershipEndDate;
-            //member.Height = request.Height;
-            //member.Weight = request.Weight;
-            member.UpdateTime = DateTime.Now;
-
-            _context.SaveChanges();
-
-            return new ResultDto
-            {
-                IsSuccess = true,
-                Message = "ویرایش انجام شد"
-            };
         }
     }
 }

@@ -2,19 +2,33 @@
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
+using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace FitCore.Application.Services.Facads
 {
     public class MemberFacad : IMemberFacad
     {
+
         private readonly IDataBaseContext _context;
 
+        private readonly UserManager<AppUser> _userManager;
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public MemberFacad(
-            IDataBaseContext context)
+            IDataBaseContext context,
+            UserManager<AppUser> userManager,
+            IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+
+            _userManager = userManager;
+
+            _httpContextAccessor =
+                httpContextAccessor;
         }
 
         private IAddNewMemberService _addNewMemberService;
@@ -25,23 +39,29 @@ namespace FitCore.Application.Services.Facads
             {
                 return _addNewMemberService =
                     _addNewMemberService ??
-                    new AddNewMemberService(_context);
+                    new AddNewMemberService(
+                        _context,
+                        _userManager);
             }
         }
 
         private IGetMembersService _getMembersService;
 
-
-        private readonly IHttpContextAccessor _httpContextAccessor; // ۱. اضافه کردن فیلد
-
-
         public IGetMembersService GetMembersService
         {
             get
             {
-                return _getMembersService = _getMembersService ?? new GetMembersService(_context, _httpContextAccessor);
+                return _getMembersService =
+                    _getMembersService ??
+                    new GetMembersService(
+                        _context,
+                        _httpContextAccessor);
             }
         }
+
+
+
+
 
         private IEditMemberService _editMemberService;
         public IEditMemberService EditMemberService
@@ -53,6 +73,9 @@ namespace FitCore.Application.Services.Facads
                     new EditMemberService(_context);
             }
         }
+
+
+
 
         private IRemoveMemberService _removeMemberService;
         public IRemoveMemberService RemoveMemberService

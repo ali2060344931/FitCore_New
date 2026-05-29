@@ -1,7 +1,6 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
 using FitCore.Common.Roles;
-using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Identity;
@@ -164,9 +163,9 @@ namespace FitCore.Application.Services.Auth
                     };
                 }
 
-                
-                
-                
+
+
+
                 // ایجاد رکورد Member
 
                 var member = new Domain.Entities.Members.Member()

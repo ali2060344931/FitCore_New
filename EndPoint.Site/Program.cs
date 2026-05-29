@@ -9,6 +9,7 @@ using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.AddGym;
 using FitCore.Application.Services.Gyms.Commands.DeleteGym;
 using FitCore.Application.Services.Member.Queries;
+using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
@@ -170,17 +171,30 @@ builder.Services.AddScoped<IGetProvincesService,
 builder.Services.AddScoped<IGetCitiesService,
     GetCitiesService>();
 
-// ===== Member =====
+//>=====Member=====<
 
 builder.Services.AddScoped<IGetMembersByIdService,
     GetMembersByIdService>();
 
 
+builder.Services.AddScoped<IAddNewMemberService, AddNewMemberService>();
+
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
 builder.Services.AddScoped<IGetMembersService, GetMembersService>();
 
-
 // ===== Auth =====
+
+
+
+
+builder.Services.AddScoped<IEditMemberService, EditMemberService>();
+
+builder.Services.AddScoped<IRemoveMemberService, RemoveMemberService>();
+
+
+
+
+
 
 builder.Services.AddScoped<RegisterUserService>();
 

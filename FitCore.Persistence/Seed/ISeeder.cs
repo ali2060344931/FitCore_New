@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FitCore.Persistence.Seed
@@ -10,6 +7,4 @@ namespace FitCore.Persistence.Seed
     {
         Task SeedAsync(IServiceProvider serviceProvider);
     }
-
-
 }

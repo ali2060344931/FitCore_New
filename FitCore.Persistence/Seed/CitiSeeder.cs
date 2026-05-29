@@ -69,7 +69,7 @@ namespace FitCore.Persistence.Seed
             }
 
             await context.Cities.AddRangeAsync(cities);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(default);
         }
     }
 }

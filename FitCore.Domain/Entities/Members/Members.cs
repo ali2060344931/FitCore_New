@@ -1,7 +1,9 @@
 ﻿using FitCore.Domain.Entities.Commons;
+using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using FitCore.Domain.Entities.Users;
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,6 +18,7 @@ namespace FitCore.Domain.Entities.Members
 
 
         [DisplayName("جنسیت")]
+        //public int? GenderId { get; set; }
         public Gender Gender { get; set; }
 
         [DisplayName("تاریخ تولد")]
@@ -42,7 +45,7 @@ namespace FitCore.Domain.Entities.Members
         [DisplayName("توضیحات")]
         [MaxLength(500, ErrorMessage = "توضیحات نباید بیشتر از ۵۰۰ کاراکتر باشد.")]
         public string Description { get; set; }
-
+        //public ICollection<NutritionProgram.NutritionProgram.NutritionProgram> NutritionPrograms { get; set; }
     }
     public enum Gender
     {

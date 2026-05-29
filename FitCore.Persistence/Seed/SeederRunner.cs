@@ -15,6 +15,11 @@ public static class SeederRunner
             new ProvinceSeeder(),
             new CitySeeder(),
             new SuperAdminSeeder(),
+            new NutritionUnitTypeSeeder(),
+            new FoodCategoryTypeSeeder(),
+            new MealTypeSeeder(),
+            new NutritionProgramTypeSeeder(),
+            new GoalTypeSeeder(),
         };
 
         foreach (var seeder in seeders)
