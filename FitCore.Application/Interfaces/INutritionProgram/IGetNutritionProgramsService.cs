@@ -11,6 +11,6 @@ namespace FitCore.Application.Interfaces.INutritionProgram
 {
     public interface IGetNutritionProgramsService
     {
-        Task<ResultDto> Execute(RequestAddNutritionProgramDto request);
+        Task<ResultDto<NutritionProgramDto>> Execute();
     }
 }

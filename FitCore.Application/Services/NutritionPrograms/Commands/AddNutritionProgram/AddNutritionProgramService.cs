@@ -138,7 +138,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
         public string Title { get; set; }
 
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         public GoalType Goal { get; set; }
 
