@@ -415,5 +415,21 @@ $(document).ready(function(){
         $customEvents.on('onBeforeSlide.lg', function(event, prevIndex, index){
             $('.lg-outer').css('background-color', colours[index])
         });
-        // product-img-----------------------------
+    // product-img-----------------------------
+
+    $(document).ready(function () {
+        $('.js-select2').select2({
+            width: '100%'
+        });
+    });
+
+    $(document).ready(function () {
+        $('.js-select2').select2({
+            width: '100%',
+            language: 'fa',
+            placeholder: 'انتخاب کنید',
+            allowClear: true
+        });
+    });
+
 });

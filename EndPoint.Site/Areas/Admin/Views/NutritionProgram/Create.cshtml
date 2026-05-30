@@ -16,7 +16,29 @@
 
         <form id="CreateNutritionProgramForm">
 
+
+
+
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdownSearch.cshtml"
+                     model='new BaseInputViewModel
+                     {
+                         Id = "MemberId",
+                         Name = "MemberId",
+                         LabelName = "انتخاب ورشکار",
+                         Col = 2,
+                         Items = ViewBag.members
+                     }' />
+
+
+
+
+
+
             <div class="row">
+
+
+
+
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel
@@ -59,7 +81,7 @@
                              Id = "StartDate",
                              Name = "StartDate",
                              LabelName = Html.DisplayNameFor(m => m.StartDate),
-                             Placeholder = "مثال: 1370/05/20",
+                             Placeholder = Html.DisplayNameFor(m => m.StartDate),
                              Col = 2
                          }' />
 
@@ -71,47 +93,12 @@
                              Id = "EndDate",
                              Name = "EndDate",
                              LabelName = Html.DisplayNameFor(m => m.EndDate),
-                             Placeholder = "مثال: 1370/05/20",
+                             Placeholder = Html.DisplayNameFor(m => m.EndDate),
                              Col = 2
                          }' />
 
 
             </div>
-
-
-            @* <div class="row">
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="StartDate" class="form-label font-weight-bold">
-                        @Html.DisplayNameFor(m => m.StartDate)
-                    </label>
-
-                    <input type="text"
-                           id="StartDate"
-                           name="StartDate"
-                           class="form-control"
-                           readonly
-                           style="background-color:#fff;cursor:pointer;" />
-                </div>
-
-
-
-
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="EndDate" class="form-label font-weight-bold">
-                        @Html.DisplayNameFor(m => m.EndDate)
-                    </label>
-
-                    <input type="text"
-                           id="EndDate"
-                           name="EndDate"
-                           class="form-control"
-                           readonly
-                           style="background-color:#fff;cursor:pointer;" />
-                </div>
-
-            </div> *@
 
 
             <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
@@ -125,21 +112,6 @@
                      }' />
 
 
-            @* <div class="row">
-
-                <div class="col-md-12 mb-3">
-                    <label asp-for="Description" class="form-label font-weight-bold">
-                        توضیحات
-                    </label>
-
-                    <textarea asp-for="Description"
-                              id="Description"
-                              rows="5"
-                              class="form-control">
-                    </textarea>
-                </div>
-
-            </div> *@
 
             <div class="row">
 
@@ -184,6 +156,9 @@
     <script src="~/lib/persian-datepicker/persian-date.min.js"></script>
     <script src="~/lib/persian-datepicker/persian-datepicker.min.js"></script>
 
+
+
+
     <script>
 
         $(document).ready(function () {
@@ -192,13 +167,16 @@
                 format: 'YYYY/MM/DD',
                 autoClose: true,
                 initialValue: false
+                
             });
+
 
             $("#EndDate").persianDatepicker({
                 format: 'YYYY/MM/DD',
                 autoClose: true,
                 initialValue: false
             });
+
 
             $("#CreateNutritionProgramForm").submit(function (e) {
 
@@ -207,6 +185,7 @@
                 var data = {
 
                     Title: $("#Title").val(),
+                    
                     Description: $("#Description").val(),
 
                     ProgramTypeId:
@@ -214,6 +193,9 @@
 
                     GoalTypeId:
                         parseInt($("#GoalTypeId").val()),
+
+                        MemberId:
+                        parseInt($("#MemberId").val()),
 
                     StartDate:
                         $("#StartDate").val(),
@@ -270,6 +252,13 @@
             });
 
         });
+
+        //         $(document).ready(function () {
+        //     $('.js-select2').select2({
+        //         width: '100%'
+        //     });
+        // });
+
 
     </script>
 }

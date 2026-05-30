@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -86,6 +87,49 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+
+
+            // 1) گرفتن شناسه کاربر لاگین کرده
+            long currentUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // 2) گرفتن GymId همان کاربر از جدول Users
+            var currentUserGymId = await _context.Users
+                .Where(u => u.Id == currentUserId)
+                .Select(u => u.GymId)
+                .FirstOrDefaultAsync();
+
+            // اگر کاربر GymId ندارد، لیست خالی یا پیام مناسب
+            if (currentUserGymId == null)
+            {
+                ViewBag.Members = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "", Text = "برای این کاربر باشگاهی ثبت نشده است" }
+        };
+                return View();
+            }
+
+            // 3) فقط اعضایی که GymId کاربرشان برابر با GymId مدیر/کاربر جاری است
+            var members = await _context.Members
+                .Where(m => m.IsActive)
+                .Where(m => m.AppUser.GymId == currentUserGymId)
+                .Select(m => new SelectListItem
+                {
+                    Value = m.Id.ToString(),          // MemberId برای NutritionProgram
+                    Text = m.AppUser.FullName         // نام از جدول Users
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            members.Insert(0, new SelectListItem
+            {
+                Value = "",
+                Text = "انتخاب عضو (ورزشکار)"
+            });
+
+            ViewBag.Members = members;
+
+
+
             var programTypes = await _context.NutritionProgramTypes
                 .OrderBy(x => x.Name)
                 .Select(x => new SelectListItem
@@ -100,10 +144,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Value = "",
                 Text = "انتخاب کنید"
             });
-
             ViewBag.ProgramTypes = programTypes;
 
 
+            //نوع برنامه
             var goalTypes = await _context.GetGoalTypes
                 .OrderBy(x => x.Name)
                 .Select(x => new SelectListItem
@@ -133,12 +177,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         // POST: NutritionProgramController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RequestAddNutritionProgramDto request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             request.CreatedByUserId = long.Parse(userId);
+            
+            var q=_context.Users.Where(c=>c.Id== request.CreatedByUserId).First().GymId;
 
+            request.GymId=q.Value;
             var result = await _nutritionProgramFacad.AddNutritionProgramService.Execute(request);
             return Json(result);
         }

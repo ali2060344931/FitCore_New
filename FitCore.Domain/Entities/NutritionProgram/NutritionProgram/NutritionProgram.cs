@@ -14,7 +14,7 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionProgram
     public class NutritionProgram : BaseEntity
     {
 
-        public long GymId { get; set; }
+        public long? GymId { get; set; }
 
         public long MemberId { get; set; }
 
