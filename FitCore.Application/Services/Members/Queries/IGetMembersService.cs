@@ -27,8 +27,7 @@ namespace FitCore.Application.Services.Member.Queries
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ResultDto<ResultGetMembersDto>> Execute(
-            RequestGetMemberDto request)
+        public async Task<ResultDto<ResultGetMembersDto>> Execute(RequestGetMemberDto request)
         {
             //========================================
             // پیدا کردن کاربر جاری

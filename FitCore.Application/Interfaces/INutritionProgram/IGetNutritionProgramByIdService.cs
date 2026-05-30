@@ -10,6 +10,6 @@ namespace FitCore.Application.Interfaces.INutritionProgram
 {
     public interface IGetNutritionProgramByIdService
     {
-        Task<Results> e
+        //Task<Results> e
     }
 }

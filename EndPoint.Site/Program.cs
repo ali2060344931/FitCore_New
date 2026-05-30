@@ -11,6 +11,7 @@ using FitCore.Application.Services.Gyms.Commands.DeleteGym;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
+using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
@@ -18,6 +19,7 @@ using FitCore.Application.Services.SmsService.Commands;
 using FitCore.Application.Services.Users.Commands.LoginUser;
 using FitCore.Application.Services.Users.Commands.LogoutUser;
 using FitCore.Common.Roles;
+using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 using FitCore.Persistence.Contexts;
 using FitCore.Persistence.Seed;
@@ -122,9 +124,9 @@ builder.Services
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ElevatedRights", policy =>        policy.RequireRole("Admin", "SuperAdmin"));
+    options.AddPolicy("ElevatedRights", policy => policy.RequireRole("Admin", "SuperAdmin"));
 
-    options.AddPolicy("FinancialManager", policy =>        policy.RequireRole("Admin", "SuperAdmin", "Accountant"));
+    options.AddPolicy("FinancialManager", policy => policy.RequireRole("Admin", "SuperAdmin", "Accountant"));
 });
 
 
@@ -173,13 +175,25 @@ builder.Services.AddScoped<IGetCitiesService,
 
 //>=====Member=====<
 
+
+
+//===== Facad =====
+builder.Services.AddScoped<IMemberFacad, MemberFacad>();
+builder.Services.AddScoped<INutritionProgramFacad, NutritionProgramFacad>();
+//===== Facad =====
+
+
+
 builder.Services.AddScoped<IGetMembersByIdService,
     GetMembersByIdService>();
 
 
 builder.Services.AddScoped<IAddNewMemberService, AddNewMemberService>();
 
-builder.Services.AddScoped<IMemberFacad, MemberFacad>();
+
+
+
+
 builder.Services.AddScoped<IGetMembersService, GetMembersService>();
 
 // ===== Auth =====

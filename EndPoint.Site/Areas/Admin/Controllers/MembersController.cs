@@ -23,13 +23,13 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IDataBaseContext _dataBaseContext;
         private readonly IGetMembersByIdService _getMembersByIdService;
         private readonly IAddNewMemberService _addNewMemberService;
-        
-        public MembersController(IAddNewMemberService addNewMemberService,IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext)
+
+        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext)
         {
             _memberFacad = memberFacad;
             _dataBaseContext = dataBaseContext;
             _getMembersByIdService = getMembersByIdService;
-            _addNewMemberService=addNewMemberService;
+            _addNewMemberService = addNewMemberService;
         }
 
         [HttpGet]
@@ -53,8 +53,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 SearchKey = SearchKey
             };
 
-            //var result = _memberFacad.GetMembersService.Execute(request);
-            var result =await  _memberFacad.GetMembersService.Execute(request);
+            var result = await _memberFacad.GetMembersService.Execute(request);
 
             return View(result.Data);
         }
@@ -67,20 +66,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-    RequestAddNewMemberDto request)
+        public async Task<IActionResult> Create(RequestAddNewMemberDto request)
         {
-            var userId =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            request.AppUserId =
-                long.Parse(userId);
-
-            var result =
-                await _memberFacad
-                .AddNewMemberService
-                .Execute(request);
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            request.AppUserId = long.Parse(userId);
+            var result = await _memberFacad.AddNewMemberService.Execute(request);
             return Json(result);
         }
 
@@ -99,7 +89,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var qq = new GetMemberByIdDto
             {
-                Id= decryptedId,
+                Id = decryptedId,
                 FullName = q.Data.FullName,
                 Mobile = q.Data.Mobile,
                 BirthDate = q.Data.BirthDate,

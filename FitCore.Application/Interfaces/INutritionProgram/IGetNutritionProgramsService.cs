@@ -1,4 +1,5 @@
 ﻿using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram;
+using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
 using FitCore.Common.Dto;
 
 using System;
@@ -11,6 +12,6 @@ namespace FitCore.Application.Interfaces.INutritionProgram
 {
     public interface IGetNutritionProgramsService
     {
-        Task<ResultDto<NutritionProgramDto>> Execute();
+        Task<ResultGetNutritionProgramsDto> Execute(RequestGetNutritionProgramsDto request);
     }
 }

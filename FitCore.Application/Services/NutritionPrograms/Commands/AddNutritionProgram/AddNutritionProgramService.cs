@@ -6,7 +6,8 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using Microsoft.EntityFrameworkCore;
 
 using System;
-
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram
@@ -22,8 +23,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
             _context = context;
         }
 
-        public async Task<ResultDto> Execute(
-            RequestAddNutritionProgramDto request)
+        public async Task<ResultDto> Execute(RequestAddNutritionProgramDto request)
         {
             try
             {
@@ -91,13 +91,15 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                     {
                         Title = request.Title,
                         Description = request.Description,
-                        GoalType = request.Goal,
+                        GoalTypeId = request.GoalTypeId,
+                        ProgramTypeId = request.ProgramTypeId,
                         GymId = request.GymId,
                         MemberId = request.MemberId,
                         StartDate = request.StartDate,
                         EndDate = request.EndDate,
                         IsActive = request.IsActive,
                         InsertTime = DateTime.Now,
+                        CreatedByUserId = request.CreatedByUserId,
                     };
 
                 //====================================
@@ -136,15 +138,33 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
         public long MemberId { get; set; }
 
-        public string Title { get; set; }
+        public long CreatedByUserId { get; set; }
 
+        public int ProgramTypeId { get; set; }
+
+
+        public int GoalTypeId { get; set; }
+
+
+        [DisplayName("عنوان برنامه")]
+        [Required(ErrorMessage = "عنوان برنامه الزامی است")]
+
+        public string Title { get; set; }
+        
+        [DisplayName("توضیحات")]
+
+        
         public string Description { get; set; }
 
-        public GoalType Goal { get; set; }
 
-        public int Calories { get; set; }
+
+        [DisplayName("تاریخ شروع")]
+        [Required(ErrorMessage = "تاریخ شروع برنامه الزامی است")]
 
         public string StartDate { get; set; }
+
+        [DisplayName("تاریخ پایان")]
+        [Required(ErrorMessage = "تاریخ پایان برنامه الزامی است")]
 
         public string EndDate { get; set; }
 

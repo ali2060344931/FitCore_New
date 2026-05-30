@@ -37,8 +37,6 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
         public DateTime CreateDate { get; set; }
 
-        // Navigation
-
         public Gym Gym { get; set; }
 
         public FitCore.Domain.Entities.Members.Member Member { get; set; }
