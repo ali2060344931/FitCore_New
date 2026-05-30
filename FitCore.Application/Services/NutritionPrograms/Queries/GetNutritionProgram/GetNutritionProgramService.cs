@@ -39,7 +39,11 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 nutritionPrograms =
                     nutritionPrograms.Where(x =>
                         x.Title.Contains(request.SearchKey) ||
-                        x.GoalType.Name.Contains(request.SearchKey));
+                        x.GoalType.Name.Contains(request.SearchKey) ||
+                        x.Member.AppUser.FullName.Contains(request.SearchKey) ||
+                        x.ProgramType.Name.Contains(request.SearchKey) ||
+                        x.StartDate.Contains(request.SearchKey) ||
+                        x.EndDate.Contains(request.SearchKey));
             }
 
             int rowCount =
@@ -56,8 +60,8 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
                     Title = x.Title,
 
-                    Goal = x.GoalType.Name,
-
+                    GoalType = x.GoalType.Name,
+                    ProgramType=x.ProgramType.Name,
                     MemberName =x.Member.AppUser.FullName,
 
                     StartDate = x.StartDate,

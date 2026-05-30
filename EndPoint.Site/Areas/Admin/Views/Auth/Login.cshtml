@@ -280,6 +280,8 @@
     return value;
     }
 
+
+
     function SendOtp() {
     var mobile = normalizeMobile($("#mobile").val());
 
@@ -299,7 +301,12 @@
     data: { mobile: mobile },
     success: function (data) {
     if (data.isSuccess === true) {
-    swal.fire('موفق!', data.message, 'success');
+    swal.fire(
+        'موفق!',
+        data.message,
+        'success',
+   
+    );
     showOtpSection();
     } else {
     swal.fire('خطا!', data.message, 'warning');

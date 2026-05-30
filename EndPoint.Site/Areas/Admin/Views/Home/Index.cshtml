@@ -1,11 +1,29 @@
-﻿@{
-    // var searchKey = Context.Request.Query["SearchKey"].ToString();
-    // var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+﻿@using System.Security.Claims
+@using FitCore.Persistence.Contexts
+
+@{
+    var appUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+}
+@{
 
     ViewData["Title"] = "باشگاه";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_Adminlayout.cshtml";
 
-
-    <h2>نرم افزار مدیریت باشگاه ها</h2>
 }
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="p-4 px-5 shadow text-center"
+         style="background: linear-gradient(135deg, #198754, #0dcaf0);
+        color: white;
+        border-radius: 50px;">
+        <h2 class="m-0 mb-3">نرم افزار مدیریت باشگاه ها</h2>
+        <h3 class="m-0">
+            نام(عنوان) باشگاه:
+            <span class="text-danger fw-bold">@ViewBag.GymName</span>
+        </h3>
+    </div>
+</div>
+
+
 

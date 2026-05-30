@@ -19,7 +19,7 @@
 
 
 
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdownSearch.cshtml"
+            @*             <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdownSearch.cshtml"
                      model='new BaseInputViewModel
                      {
                          Id = "MemberId",
@@ -28,15 +28,22 @@
                          Col = 2,
                          Items = ViewBag.members
                      }' />
+ *@                     
+            @* <p>نام و نام خانوادگی ورشکار(متقاضی): @ViewBag.Members</p> *@
+
+            <div class="mb-3">
+                <label class="form-label">نام و نام خانوادگی ورزشکار (متقاضی)</label>
+
+                <div class="form-control d-inline-block bg-dark text-white border-0"
+                     style="width: fit-content;">
+                    @ViewBag.MemberName
+                </div>
+            </div>
 
 
+            
 
-
-
-
-            <div class="row">
-
-
+                         
 
 
 
@@ -49,27 +56,27 @@
                              Placeholder = Html.DisplayNameFor(m => m.Title),
                              Col = 6
                          }' />
+<div class="row">
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "ProgramTypeId",
-                             Name = "ProgramTypeId",
-                             LabelName = "نوع برنامه",
-                             Col = 2,
-                             Items = ViewBag.ProgramTypes
-                         }' />
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "GoalTypeId",
-                             Name = "GoalTypeId",
-                             LabelName = "هدف برنامه",
-                             Col = 2,
-                             Items = ViewBag.GetGoalTypes
-                         }' />
-            </div>
+<partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "ProgramTypeId",
+             Name = "ProgramTypeId",
+             LabelName = "نوع برنامه",
+             Col = 2,
+             Items = ViewBag.ProgramTypes
+         }' />
+<partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "GoalTypeId",
+             Name = "GoalTypeId",
+             LabelName = "هدف برنامه",
+             Col = 2,
+             Items = ViewBag.GetGoalTypes
+         }' />
+</div>
 
 
             <div class="row">
@@ -87,18 +94,18 @@
 
 
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "EndDate",
-                             Name = "EndDate",
-                             LabelName = Html.DisplayNameFor(m => m.EndDate),
-                             Placeholder = Html.DisplayNameFor(m => m.EndDate),
-                             Col = 2
-                         }' />
+<partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "EndDate",
+             Name = "EndDate",
+             LabelName = Html.DisplayNameFor(m => m.EndDate),
+             Placeholder = Html.DisplayNameFor(m => m.EndDate),
+             Col = 2
+         }' />
 
 
-            </div>
+</div>
 
 
             <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
@@ -113,7 +120,7 @@
 
 
 
-            <div class="row">
+<div class="row">
 
                 <div class="col-md-2 mb-3">
                     <label class="form-label font-weight-bold">
@@ -140,7 +147,7 @@
                          BackText = "انصراف و بازگشت"
                      }' />
 
-        </form>
+</form>
 
     </div>
 </div>
@@ -163,93 +170,95 @@
 
         $(document).ready(function () {
 
-            $("#StartDate").persianDatepicker({
-                format: 'YYYY/MM/DD',
-                autoClose: true,
-                initialValue: false
-                
-            });
+        $("#StartDate").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        initialValue: false
+
+        });
 
 
-            $("#EndDate").persianDatepicker({
-                format: 'YYYY/MM/DD',
-                autoClose: true,
-                initialValue: false
-            });
+        $("#EndDate").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        initialValue: false
+        });
 
+        const memberId = @(ViewBag.MemberId ?? 0);
 
-            $("#CreateNutritionProgramForm").submit(function (e) {
+        $("#CreateNutritionProgramForm").submit(function (e) {
 
-                e.preventDefault();
+        e.preventDefault();
 
-                var data = {
+        var data = {
 
-                    Title: $("#Title").val(),
-                    
-                    Description: $("#Description").val(),
+        Title: $("#Title").val(),
 
-                    ProgramTypeId:
-                        parseInt($("#ProgramTypeId").val()),
+        Description: $("#Description").val(),
 
-                    GoalTypeId:
-                        parseInt($("#GoalTypeId").val()),
+        ProgramTypeId:
+        parseInt($("#ProgramTypeId").val()),
 
-                        MemberId:
-                        parseInt($("#MemberId").val()),
+        GoalTypeId:
+        parseInt($("#GoalTypeId").val()),
 
-                    StartDate:
-                        $("#StartDate").val(),
+        MemberId: memberId,
+         // MemberId:@ViewBag.MemberId,
+         // MemberId: parseInt($("#MemberId").val()),
 
-                    EndDate:
-                        $("#EndDate").val(),
+        StartDate:
+        $("#StartDate").val(),
 
-                    IsActive:
-                        $("#IsActive").val() === "true"
-                };
+        EndDate:
+        $("#EndDate").val(),
 
-                $.ajax({
+        IsActive:
+        $("#IsActive").val() === "true"
+        };
 
-                    type: "POST",
+        $.ajax({
 
-                    url: "/Admin/NutritionProgram/Create",
+        type: "POST",
 
-                    data: data,
+        url: "/Admin/NutritionProgram/Create",
 
-                    success: function (response) {
+        data: data,
 
-                        if (response.isSuccess) {
+        success: function (response) {
 
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'موفق',
-                                text: response.message
-                            }).then(() => {
+        if (response.isSuccess) {
 
-                                window.location.href =
-                                    "/Admin/NutritionProgram";
-                            });
-                        }
-                        else {
+        Swal.fire({
+        icon: 'success',
+        title: 'موفق',
+        text: response.message
+        }).then(() => {
 
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'خطا',
-                                text: response.message
-                            });
-                        }
-                    },
+        window.location.href =
+        "/Admin/NutritionProgram";
+        });
+        }
+        else {
 
-                    error: function () {
+        Swal.fire({
+        icon: 'warning',
+        title: 'خطا',
+        text: response.message
+        });
+        }
+        },
 
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'خطا',
-                            text: 'خطا در ارتباط با سرور'
-                        });
-                    }
-                });
+        error: function () {
 
-            });
+        Swal.fire({
+        icon: 'error',
+        title: 'خطا',
+        text: 'خطا در ارتباط با سرور'
+        });
+        }
+        });
+
+        });
 
         });
 

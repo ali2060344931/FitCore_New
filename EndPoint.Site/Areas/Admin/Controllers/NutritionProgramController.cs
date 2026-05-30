@@ -6,6 +6,8 @@ using FitCore.Application.Services.Facads;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
+using FitCore.Common;
+using FitCore.Domain.Entities.Members;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -70,25 +72,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return View();
         }
 
-        /*
-        [HttpPost]
-        public async Task<IActionResult> Create(RequestAddNewMemberDto request)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            request.AppUserId = long.Parse(userId);
-            var result = await _memberFacad.AddNewMemberService.Execute(request);
-            return Json(result);
-        }
-         */
 
 
 
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string id="")
         {
-
-
+            /*
             // 1) گرفتن شناسه کاربر لاگین کرده
             long currentUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -107,7 +98,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         };
                 return View();
             }
-
+            
             // 3) فقط اعضایی که GymId کاربرشان برابر با GymId مدیر/کاربر جاری است
             var members = await _context.Members
                 .Where(m => m.IsActive)
@@ -127,8 +118,21 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             });
 
             ViewBag.Members = members;
+            */
+
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
+            long userid = SecurityUtils.DecryptId(id);
+            //var userid = _context.Members.Where(c => c.Id == memberId).First().AppUserId;
+            var membername = _context.Users.Where(c => c.Id == userid).First().FullName;
+            ViewBag.MemberName = membername;
+            
+            var MemberId=_context.Members.Where(c=>c.AppUserId== userid).First().Id;
 
 
+            ViewBag.MemberId = MemberId;
 
             var programTypes = await _context.NutritionProgramTypes
                 .OrderBy(x => x.Name)
@@ -182,10 +186,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             request.CreatedByUserId = long.Parse(userId);
-            
-            var q=_context.Users.Where(c=>c.Id== request.CreatedByUserId).First().GymId;
 
-            request.GymId=q.Value;
+            var q = _context.Users.Where(c => c.Id == request.CreatedByUserId).First().GymId;
+
+            request.GymId = q.Value;
             var result = await _nutritionProgramFacad.AddNutritionProgramService.Execute(request);
             return Json(result);
         }

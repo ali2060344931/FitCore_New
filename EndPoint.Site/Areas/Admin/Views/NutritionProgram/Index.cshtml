@@ -69,8 +69,10 @@
             <thead>
                 <tr>
                     <th>عنوان برنامه</th>
-                    <th>نوع برنامه</th>
                     <th>نام و نام خانوادگی متقاضی</th>
+
+                    <th>نوع برنامه</th>
+                    <th>زمان برنامه</th>
                     <th>تاریخ شروع</th>
                     <th>تاریخ پایان</th>
                     <th>فعـــال</th>
@@ -85,12 +87,15 @@
                         <td>
                             <strong>@item.Title</strong>
                         </td>
-
-                        <td>@item.Goal</td>
-
                         <td>
                             @item.MemberName
                         </td>
+
+                        <td>@item.GoalType</td>
+
+                        <td>@item.ProgramType</td>
+
+
                         <td>
                             @item.StartDate
                         </td>
@@ -98,7 +103,7 @@
                             @item.EndDate
                         </td>
                         <td>
-                            @item.IsActive
+                            @(item.IsActive==true? "بله":"خیر")
                         </td>
 
 

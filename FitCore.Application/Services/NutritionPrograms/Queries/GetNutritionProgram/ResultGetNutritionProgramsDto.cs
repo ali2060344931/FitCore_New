@@ -28,7 +28,9 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
         public string Title { get; set; }
 
-        public string Goal { get; set; }
+        public string GoalType { get; set; }
+        
+        public string ProgramType { get; set; }
 
         public string MemberName { get; set; }
 

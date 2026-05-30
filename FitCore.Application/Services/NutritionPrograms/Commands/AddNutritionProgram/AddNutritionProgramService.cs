@@ -100,6 +100,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                         IsActive = request.IsActive,
                         InsertTime = DateTime.Now,
                         CreatedByUserId = request.CreatedByUserId,
+                        CreateDate= DateTime.Now
                     };
 
                 //====================================
@@ -121,12 +122,13 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                     Message = "برنامه غذایی با موفقیت ثبت شد"
                 };
             }
-            catch (Exception)
+            catch (DbUpdateException ex)
             {
-                return new ResultDto()
+                var inner = ex.InnerException?.Message;
+                return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "خطا در ثبت برنامه غذایی"
+                    Message = "خطا در ثبت برنامه غذایی: " + inner
                 };
             }
         }

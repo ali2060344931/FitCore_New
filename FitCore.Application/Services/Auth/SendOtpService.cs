@@ -4,11 +4,16 @@ using FitCore.Common;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore; // اضافه شده برای استفاده از AnyAsync
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Hosting;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FitCore.Application.Services.Auth
 {
@@ -16,11 +21,12 @@ namespace FitCore.Application.Services.Auth
     {
         private readonly IDataBaseContext _context;
         private readonly ISmsService _smsService;
-
-        public SendOtpService(IDataBaseContext context, ISmsService smsService)
+        private readonly IWebHostEnvironment _environment;
+        public SendOtpService(IDataBaseContext context, ISmsService smsService, IWebHostEnvironment environment)
         {
             _context = context;
             _smsService = smsService;
+            _environment= environment;
         }
 
         /// <summary>
@@ -89,11 +95,11 @@ namespace FitCore.Application.Services.Auth
         /// <param name="phoneNumber"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<ResultDto> Execute( string phoneNumber, CancellationToken cancellationToken = default)
+        public async Task<ResultDto<string>> Execute( string phoneNumber, CancellationToken cancellationToken = default)
         {
             
             if (string.IsNullOrWhiteSpace(phoneNumber))
-                return new ResultDto { IsSuccess = false, Message = "شماره موبایل را وارد کنید" };
+                return new ResultDto<string> { IsSuccess = false, Message = "شماره موبایل را وارد کنید" };
             
             
             // 2. بررسی Rate Limit (3 بار در دقیقه)
@@ -104,16 +110,16 @@ namespace FitCore.Application.Services.Auth
 
             if (requestCount >= 3)
             {
-                return new ResultDto
+                return new ResultDto<string>
                 {
                     IsSuccess = false,
-                    Message = "تعداد درخواست‌های شما بیش از حد مجاز است، لطفاً کمی صبر کنید."
+                    Message = "تعداد درخواست‌های شما بیش از حد مجاز است، لطفاً کمی صبر کنید.",
+                   
                 };
             }
 
             // 3. تولید و ذخیره کد OTP
             var code = OtpGenerator.Generate();
-
             var otp = new UserOtpCode
             {
                 PhoneNumber = phoneNumber,
@@ -129,11 +135,32 @@ namespace FitCore.Application.Services.Auth
             // 4. ارسال پیامک
             await _smsService.SendAsync(phoneNumber, $"کد تایید شما: {code}");
 
-            return new ResultDto
+            //return new ResultDto<string>
+            //{
+            //    IsSuccess = true,
+            //    Message = "کد تایید با موفقیت ارسال شد.",
+            //    Data = code
+            //};
+
+
+            if (_environment.IsDevelopment())
             {
-                IsSuccess = true,
-                Message = "کد تایید با موفقیت ارسال شد."
-            };
+                return new ResultDto<string>
+                {
+                    IsSuccess = true,
+                    Message = "کد تایید با موفقیت ارسال شد.",
+                    Data = code
+                };
+            }
+            else
+            {
+                return new ResultDto<string>
+                {
+                    IsSuccess = true,
+                    Message = "کد تایید با موفقیت ارسال شد.",
+                    Data = null
+                };
+            }
         }
     }
 }
