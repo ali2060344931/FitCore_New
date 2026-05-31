@@ -1,21 +1,17 @@
-﻿using Azure.Core;
+﻿using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
-using FitCore.Application.Services.Facads;
-using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram;
+using FitCore.Application.Services.NutritionPrograms.Commands.DeleteNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
 using FitCore.Common;
-using FitCore.Domain.Entities.Members;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -28,27 +24,27 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly INutritionProgramFacad _nutritionProgramFacad;
         private readonly IDataBaseContext _context;
-        public NutritionProgramController(INutritionProgramFacad nutritionProgramFacad, IDataBaseContext context)
+        //private readonly IDeleteNutritionProgramService _deleteNutritionProgramService ;
+
+
+        public NutritionProgramController(
+            INutritionProgramFacad nutritionProgramFacad,
+            IDataBaseContext context)
         {
             _nutritionProgramFacad = nutritionProgramFacad;
             _context = context;
         }
 
-
-
         //====================================================
         // لیست برنامه های غذایی
         //====================================================
-
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, string SearchKey = "")
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrWhiteSpace(userIdValue))
-            {
                 return Unauthorized();
-            }
 
             var appUserId = long.Parse(userIdValue);
 
@@ -61,79 +57,185 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             };
 
             var result = await _nutritionProgramFacad.GetNutritionProgramsService.Execute(request);
-
             return View(result);
         }
 
-
-        // GET: NutritionProgramController/Details/5
-        public ActionResult Details(int id)
+        //====================================================
+        // Create - GET
+        //====================================================
+        [HttpGet]
+        public async Task<IActionResult> Create(string id = "")
         {
-            return View();
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            long userId = SecurityUtils.DecryptId(id);
+
+            var member = await _context.Members
+                .Include(m => m.AppUser)
+                .FirstOrDefaultAsync(m => m.AppUserId == userId);
+
+            if (member == null)
+                return NotFound();
+
+            await FillLookupsAsync();
+
+            ViewBag.MemberName = member.AppUser.FullName;
+
+            var model = new NutritionProgramCreateEditViewModel
+            {
+                MemberId = member.Id,
+                IsActive = true
+            };
+
+            return View("CreateEdit", model);
         }
 
-
-
-
-
-        [HttpGet]
-        public async Task<IActionResult> Create(string id="")
+        //====================================================
+        // Create - POST
+        //====================================================
+        [HttpPost]
+        public async Task<IActionResult> Create(NutritionProgramCreateEditViewModel model)
         {
-            /*
-            // 1) گرفتن شناسه کاربر لاگین کرده
-            long currentUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "اطلاعات ورودی معتبر نیست."
+                });
+            }
 
-            // 2) گرفتن GymId همان کاربر از جدول Users
-            var currentUserGymId = await _context.Users
-                .Where(u => u.Id == currentUserId)
-                .Select(u => u.GymId)
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userIdValue))
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "کاربر نامعتبر است."
+                });
+            }
+
+            var createdByUserId = long.Parse(userIdValue);
+
+            var gymId = await _context.Users
+                .Where(x => x.Id == createdByUserId)
+                .Select(x => x.GymId)
                 .FirstOrDefaultAsync();
 
-            // اگر کاربر GymId ندارد، لیست خالی یا پیام مناسب
-            if (currentUserGymId == null)
+            if (gymId == null)
             {
-                ViewBag.Members = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "", Text = "برای این کاربر باشگاهی ثبت نشده است" }
-        };
-                return View();
-            }
-            
-            // 3) فقط اعضایی که GymId کاربرشان برابر با GymId مدیر/کاربر جاری است
-            var members = await _context.Members
-                .Where(m => m.IsActive)
-                .Where(m => m.AppUser.GymId == currentUserGymId)
-                .Select(m => new SelectListItem
+                return Json(new
                 {
-                    Value = m.Id.ToString(),          // MemberId برای NutritionProgram
-                    Text = m.AppUser.FullName         // نام از جدول Users
-                })
-                .OrderBy(x => x.Text)
-                .ToListAsync();
-
-            members.Insert(0, new SelectListItem
-            {
-                Value = "",
-                Text = "انتخاب عضو (ورزشکار)"
-            });
-
-            ViewBag.Members = members;
-            */
-
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest();
+                    isSuccess = false,
+                    message = "باشگاه کاربر یافت نشد."
+                });
             }
-            long userid = SecurityUtils.DecryptId(id);
-            //var userid = _context.Members.Where(c => c.Id == memberId).First().AppUserId;
-            var membername = _context.Users.Where(c => c.Id == userid).First().FullName;
-            ViewBag.MemberName = membername;
-            
-            var MemberId=_context.Members.Where(c=>c.AppUserId== userid).First().Id;
+
+            var request = new RequestAddNutritionProgramDto
+            {
+                GymId = gymId.Value,
+                MemberId = model.MemberId,
+                CreatedByUserId = createdByUserId,
+                ProgramTypeId = model.ProgramTypeId,
+                GoalTypeId = model.GoalTypeId,
+                Title = model.Title,
+                Description = model.Description,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                IsActive = model.IsActive
+            };
+
+            var result = await _nutritionProgramFacad.AddNutritionProgramService.Execute(request);
+            return Json(result);
+        }
+
+        //====================================================
+        // Edit - GET
+        //====================================================
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id = "")
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            long Id = SecurityUtils.DecryptId(id);
 
 
-            ViewBag.MemberId = MemberId;
+            var item = await _context.NutritionPrograms
+                .Include(x => x.Member)
+                .ThenInclude(x => x.AppUser)
+                .FirstOrDefaultAsync(x => x.Id == Id);
 
+            if (item == null)
+                return NotFound();
+
+            await FillLookupsAsync();
+
+            ViewBag.MemberName = item.Member?.AppUser?.FullName ?? "-";
+
+            var model = new NutritionProgramCreateEditViewModel
+            {
+                Id = item.Id,
+                MemberId = item.MemberId,
+                ProgramTypeId = item.ProgramTypeId,
+                GoalTypeId = item.GoalTypeId,
+                Title = item.Title,
+                Description = item.Description,
+                StartDate = item.StartDate,
+                EndDate = item.EndDate,
+                IsActive = item.IsActive
+            };
+
+            return View("CreateEdit", model);
+        }
+
+        //====================================================
+        // Edit - POST
+        //====================================================
+        [HttpPost]
+        public async Task<IActionResult> Edit(NutritionProgramCreateEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "اطلاعات ورودی معتبر نیست."
+                });
+            }
+
+            var item = await _context.NutritionPrograms
+                .FirstOrDefaultAsync(x => x.Id == model.Id);
+
+            if (item == null)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "رکورد مورد نظر یافت نشد."
+                });
+            }
+
+            item.ProgramTypeId = model.ProgramTypeId;
+            item.GoalTypeId = model.GoalTypeId;
+            item.Title = model.Title;
+            item.Description = model.Description;
+            item.StartDate = model.StartDate;
+            item.EndDate = model.EndDate;
+            item.IsActive = model.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                isSuccess = true,
+                message = "برنامه غذایی با موفقیت ویرایش شد."
+            });
+        }
+
+        private async Task FillLookupsAsync()
+        {
             var programTypes = await _context.NutritionProgramTypes
                 .OrderBy(x => x.Name)
                 .Select(x => new SelectListItem
@@ -148,10 +250,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Value = "",
                 Text = "انتخاب کنید"
             });
+
             ViewBag.ProgramTypes = programTypes;
 
-
-            //نوع برنامه
             var goalTypes = await _context.GetGoalTypes
                 .OrderBy(x => x.Name)
                 .Select(x => new SelectListItem
@@ -168,74 +269,18 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             });
 
             ViewBag.GetGoalTypes = goalTypes;
-
-
-            return View(new RequestAddNutritionProgramDto()
-            {
-                IsActive = true
-            });
         }
 
-
-
-
-        // POST: NutritionProgramController/Create
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RequestAddNutritionProgramDto request)
+        public IActionResult Delete(string id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            request.CreatedByUserId = long.Parse(userId);
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
 
-            var q = _context.Users.Where(c => c.Id == request.CreatedByUserId).First().GymId;
+            long Id = SecurityUtils.DecryptId(id);
 
-            request.GymId = q.Value;
-            var result = await _nutritionProgramFacad.AddNutritionProgramService.Execute(request);
-            return Json(result);
+            return Json(_nutritionProgramFacad.DeleteNutritionProgramService.Execute(Id));
         }
 
-
-
-        // GET: NutritionProgramController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: NutritionProgramController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: NutritionProgramController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: NutritionProgramController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

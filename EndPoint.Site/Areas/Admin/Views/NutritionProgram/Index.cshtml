@@ -7,7 +7,7 @@
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 
     var searchKey = Context.Request.Query["SearchKey"].ToString();
-      var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
 
 
 }
@@ -103,7 +103,7 @@
                             @item.EndDate
                         </td>
                         <td>
-                            @(item.IsActive==true? "بله":"خیر")
+                            @(item.IsActive == true ? "بله" : "خیر")
                         </td>
 
 
@@ -111,17 +111,28 @@
                             <div class="fc-action-buttons">
                                 <a class="btn btn-info btn-sm"
                                    asp-area="Admin"
-                                   asp-controller="NutritionPrograms"
+                                   asp-controller="NutritionProgram"
                                    asp-action="Edit"
                                    asp-route-id="@SecurityUtils.EncryptId(item.Id)">
                                     ویرایش
                                 </a>
 
+@*                                 <a class="btn btn-danger btn-sm"
+                                   asp-area="Admin"
+                                   asp-controller="NutritionProgram"
+                                   asp-action="Delete"
+                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                    حــذف
+                                </a>
+ *@
+
+
                                 <button type="button"
                                         class="btn btn-danger btn-sm"
-                                        onclick="DeleteMember(@item.Id)">
+                                        onclick="NutritionProgram('@SecurityUtils.EncryptId(item.Id)')">
                                     حذف
                                 </button>
+
                             </div>
                         </td>
                     </tr>
@@ -158,7 +169,7 @@
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <script>
-        function DeleteMember(id) {
+        function NutritionProgram(id) {
         Swal.fire({
         title: 'حذف برنامه',
         text: "آیا از حذف برنامه مطمئن هستید؟",
@@ -174,7 +185,7 @@
         contentType: 'application/x-www-form-urlencoded',
         dataType: 'json',
         type: "POST",
-        url: "/Admin/Members/Delete",
+        url: "/Admin/NutritionProgram/Delete",
         data: { Id: id },
         success: function (data) {
         if (data.isSuccess === true) {

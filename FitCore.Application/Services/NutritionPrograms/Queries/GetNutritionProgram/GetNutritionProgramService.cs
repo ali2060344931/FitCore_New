@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
 {
-    public class GetNutritionProgramsService :IGetNutritionProgramsService
+    public class GetNutritionProgramsService : IGetNutritionProgramsService
     {
         private readonly IDataBaseContext _context;
 
@@ -30,7 +30,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
             int pageSize = 20;
 
             var nutritionPrograms =
-                _context.NutritionPrograms
+                _context.NutritionPrograms.Where(c=>c.IsRemoved==false)
                 .Include(x => x.Member)
                 .AsQueryable();
 
@@ -61,8 +61,8 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                     Title = x.Title,
 
                     GoalType = x.GoalType.Name,
-                    ProgramType=x.ProgramType.Name,
-                    MemberName =x.Member.AppUser.FullName,
+                    ProgramType = x.ProgramType.Name,
+                    MemberName = x.Member.AppUser.FullName,
 
                     StartDate = x.StartDate,
 
