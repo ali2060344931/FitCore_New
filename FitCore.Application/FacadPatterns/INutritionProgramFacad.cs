@@ -1,4 +1,5 @@
 ﻿using FitCore.Application.Interfaces.INutritionProgram;
+using FitCore.Application.Services.NutritionPrograms.Commands.DeleteNutritionProgram;
 
 namespace FitCore.Application.FacadPatterns
 {
@@ -9,7 +10,7 @@ namespace FitCore.Application.FacadPatterns
         IGetNutritionProgramsService GetNutritionProgramsService { get; }
 
 
-        //IGetNutritionProgramByIdService GetNutritionProgramByIdService { get; }
+        IDeleteNutritionProgramService DeleteNutritionProgramService { get; }
 
 
     }

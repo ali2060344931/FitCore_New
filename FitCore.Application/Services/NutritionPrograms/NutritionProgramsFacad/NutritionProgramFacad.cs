@@ -2,6 +2,7 @@
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.INutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram;
+using FitCore.Application.Services.NutritionPrograms.Commands.DeleteNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
 
 namespace FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad
@@ -10,24 +11,29 @@ namespace FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad
     {
         private readonly IDataBaseContext _context;
 
-        public NutritionProgramFacad(
-            IDataBaseContext context)
+        public NutritionProgramFacad(IDataBaseContext context)
         {
             _context = context;
         }
 
-
+        //View
         private IGetNutritionProgramsService _getNutritionProgramsService;
         public IGetNutritionProgramsService GetNutritionProgramsService =>
             _getNutritionProgramsService ??=
             new GetNutritionProgramsService(_context);
-       
-        
-        
-        private IAddNutritionProgramService  _addNutritionProgramService;
+
+
+        //Add
+        private IAddNutritionProgramService _addNutritionProgramService;
         public IAddNutritionProgramService AddNutritionProgramService =>
             _addNutritionProgramService ??=
             new AddNutritionProgramService(_context);
+
+        //Delete
+        private IDeleteNutritionProgramService _deleteNutritionProgramServises;
+        public IDeleteNutritionProgramService DeleteNutritionProgramService =>
+            _deleteNutritionProgramServises ??=
+            new DeleteNutritionProgramServises(_context);
 
     }
 }

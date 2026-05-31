@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
 {
-
-
-
     public class ResultGetNutritionProgramsDto
     {
         public List<GetNutritionProgramsDto> NutritionPrograms { get; set; }

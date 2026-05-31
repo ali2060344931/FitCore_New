@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="Services\Gyms\Commands\CheangStatus\" />
     <Folder Include="Services\NutritionPrograms\Commands\EditNutritionProgram\" />
-    <Folder Include="Services\NutritionPrograms\Commands\DeleteNutritionProgram\" />
     <Folder Include="Services\NutritionPrograms\Queries\GetMemberPrograms\" />
     <Folder Include="Services\NutritionPrograms\Queries\GetNutritionProgramById\" />
     <Folder Include="Services\Setings\Commands\" />
