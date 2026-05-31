@@ -38,7 +38,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
             {
                 nutritionPrograms =
                     nutritionPrograms.Where(x =>
-                        x.Title.Contains(request.SearchKey) ||
+                       x.Member.AppUser.PhoneNumber.Contains(request.SearchKey) ||
                         x.GoalType.Name.Contains(request.SearchKey) ||
                         x.Member.AppUser.FullName.Contains(request.SearchKey) ||
                         x.ProgramType.Name.Contains(request.SearchKey) ||
@@ -58,11 +58,12 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 {
                     Id = x.Id,
 
-                    Title = x.Title,
+                    //Title = x.Title,
 
                     GoalType = x.GoalType.Name,
                     ProgramType = x.ProgramType.Name,
                     MemberName = x.Member.AppUser.FullName,
+                    MemberMobile = x.Member.AppUser.PhoneNumber,
 
                     StartDate = x.StartDate,
 

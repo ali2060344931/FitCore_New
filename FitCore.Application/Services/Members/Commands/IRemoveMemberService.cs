@@ -23,10 +23,23 @@ namespace FitCore.Application.Services.Members.Commands
             _context = context;
         }
 
-        public ResultDto Execute(long memberId)
+        public ResultDto Execute(long userId)
         {
+
+            var memberId = _context.Members.Where(c => c.AppUserId == userId).First().Id;
+
+            var NutritionProgramsCount=_context.NutritionPrograms.Any(c=>c.MemberId == memberId);
+            if (NutritionProgramsCount)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "بدلیل ثبت اطلاعات در برنامه غذایی، امکان حذف این فرد وجود ندارد"
+                };
+            }
+
             var member = _context.Members
-                .FirstOrDefault(x => x.Id == memberId);
+                .FirstOrDefault(x => x.Id == userId);
 
             if (member == null)
             {

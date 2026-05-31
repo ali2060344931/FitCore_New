@@ -32,6 +32,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
         public string ProgramType { get; set; }
 
         public string MemberName { get; set; }
+        public string MemberMobile { get; set; }
 
         public string StartDate { get; set; }
 

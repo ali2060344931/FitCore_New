@@ -17,9 +17,9 @@ namespace EndPoint.Site.Areas.Admin.Models
         [Required(ErrorMessage = "هدف برنامه الزامی است")]
         public int GoalTypeId { get; set; }
 
-        [DisplayName("عنوان برنامه")]
-        [Required(ErrorMessage = "عنوان برنامه الزامی است")]
-        public string Title { get; set; }
+        //[DisplayName("عنوان برنامه")]
+        //[Required(ErrorMessage = "عنوان برنامه الزامی است")]
+        //public string Title { get; set; }
 
         [DisplayName("توضیحات")]
         public string Description { get; set; }

@@ -70,7 +70,8 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                 bool isExist =
                     await _context.NutritionPrograms
                     .AnyAsync(x =>
-                        x.Title == request.Title &&
+                        x.GoalTypeId == request.GoalTypeId &&
+                        x.ProgramTypeId == request.ProgramTypeId &&
                         x.MemberId == request.MemberId);
 
                 if (isExist)
@@ -78,7 +79,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                     return new ResultDto()
                     {
                         IsSuccess = false,
-                        Message = "برنامه غذایی با این عنوان قبلا ثبت شده است"
+                        Message = "برنامه غذایی با این عنوان و برنامه زمانبندی قبلا ثبت شده است"
                     };
                 }
 
@@ -89,7 +90,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                 NutritionProgram nutritionProgram =
                     new NutritionProgram()
                     {
-                        Title = request.Title,
+                        //Title = request.Title,
                         Description = request.Description,
                         GoalTypeId = request.GoalTypeId,
                         ProgramTypeId = request.ProgramTypeId,
@@ -100,7 +101,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                         IsActive = request.IsActive,
                         InsertTime = DateTime.Now,
                         CreatedByUserId = request.CreatedByUserId,
-                        CreateDate= DateTime.Now
+                        //CreateDate= DateTime.Now
                     };
 
                 //====================================
@@ -153,6 +154,8 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
         public string Title { get; set; }
         
+
+
         [DisplayName("توضیحات")]
 
         

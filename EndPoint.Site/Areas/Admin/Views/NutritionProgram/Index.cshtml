@@ -23,10 +23,6 @@
 
 }
 <!-- برای صفحه بندی لیست -->
-
-
-
-
 @{
     ViewData["Title"] = "برنامه غذایی";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
@@ -90,7 +86,7 @@
     </div>
 
 
-    <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
+    @* <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" /> *@
 
 
     @if (Model.NutritionPrograms != null && Model.NutritionPrograms.Any())
@@ -99,10 +95,11 @@
 
             <thead>
                 <tr>
-                    <th>عنوان برنامه</th>
+
                     <th>نام و نام خانوادگی متقاضی</th>
-                    <th>نوع برنامه</th>
-                    <th>برنامه زمانبدی</th>
+                    <th>تلفن همراه</th>
+                    <th>هدف برنامه</th>
+                    <th>نوع برنامه غذایی</th>
                     <th>تاریخ شروع</th>
                     <th>تاریخ پایان</th>
                     <th>فعـــال</th>
@@ -115,10 +112,12 @@
                 {
                     <tr>
                         <td>
-                            <strong>@item.Title</strong>
+                                <strong style="color:#0d6efd;">@item.MemberName</strong>
                         </td>
+
+                        
                         <td>
-                            @item.MemberName
+                            @item.MemberMobile
                         </td>
 
                         <td>@item.GoalType</td>
@@ -157,8 +156,8 @@
                         </td>
                     </tr>
                 }
+
    
-            
             
             
             </tbody>

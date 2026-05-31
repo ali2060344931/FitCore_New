@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <Folder Include="Services\Gyms\Commands\CheangStatus\" />
+    <Folder Include="Services\NutritionProgramBuilder\Facad\" />
+    <Folder Include="Services\NutritionProgramBuilder\Queries\" />
     <Folder Include="Services\NutritionPrograms\Commands\EditNutritionProgram\" />
     <Folder Include="Services\NutritionPrograms\Queries\GetMemberPrograms\" />
     <Folder Include="Services\NutritionPrograms\Queries\GetNutritionProgramById\" />

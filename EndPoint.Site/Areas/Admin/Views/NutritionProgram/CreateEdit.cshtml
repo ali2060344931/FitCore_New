@@ -20,35 +20,14 @@
             <input type="hidden" id="MemberId" name="MemberId" value="@Model.MemberId" />
 
             <div class="mb-3">
-                <label class="form-label">نام و نام خانوادگی ورزشکار (متقاضی)</label>
+                <label class="form-label">مشخصات ورزشکار (متقاضی)</label>
                 <div class="form-control d-inline-block bg-dark text-white border-0"
                      style="width: fit-content;">
-                    @ViewBag.MemberName
+                    @(ViewBag.MemberName + " - " + ViewBag.MemberMobile)
                 </div>
             </div>
 
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-                     model='new BaseInputViewModel
-                     {
-                         Id = "Title",
-                         Name = "Title",
-                         Value = Model.Title,
-                         LabelName = Html.DisplayNameFor(m => m.Title),
-                         Placeholder = Html.DisplayNameFor(m => m.Title),
-                         Col = 6
-                     }' />
-
             <div class="row">
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "ProgramTypeId",
-                             Name = "ProgramTypeId",
-                             LabelName = "نوع برنامه",
-                             Col = 2,
-                             Items = ViewBag.ProgramTypes,
-                             Value = Model.ProgramTypeId.ToString()
-                         }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel
@@ -60,7 +39,21 @@
                              Items = ViewBag.GetGoalTypes,
                              Value = Model.GoalTypeId.ToString()
                          }' />
-            </div>
+
+
+
+<partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "ProgramTypeId",
+             Name = "ProgramTypeId",
+             LabelName = "نوع برنامه",
+             Col = 2,
+             Items = ViewBag.ProgramTypes,
+             Value = Model.ProgramTypeId.ToString()
+         }' />
+
+</div>
 
             <div class="row">
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
@@ -74,31 +67,31 @@
                              Col = 2
                          }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+<partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "EndDate",
+             Name = "EndDate",
+             Value = Model.EndDate,
+             LabelName = Html.DisplayNameFor(m => m.EndDate),
+             Placeholder = Html.DisplayNameFor(m => m.EndDate),
+             Col = 2
+         }' />
+</div>
+            <div class="row">
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
                          model='new BaseInputViewModel
                          {
-                             Id = "EndDate",
-                             Name = "EndDate",
-                             Value = Model.EndDate,
-                             LabelName = Html.DisplayNameFor(m => m.EndDate),
-                             Placeholder = Html.DisplayNameFor(m => m.EndDate),
-                             Col = 2
+                             Id = "Description",
+                             Name = "Description",
+                             Value = Model.Description,
+                             LabelName = Html.DisplayNameFor(m => m.Description),
+                             Placeholder = Html.DisplayNameFor(m => m.Description),
+                             Col = 6
                          }' />
-            </div>
 
-            <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
-                     model='new BaseInputViewModel
-                     {
-                         Id = "Description",
-                         Name = "Description",
-                         Value = Model.Description,
-                         LabelName = Html.DisplayNameFor(m => m.Description),
-                         Placeholder = Html.DisplayNameFor(m => m.Description),
-                         Col = 6
-                     }' />
-
-            <div class="row">
-                <div class="col-md-2 mb-3">
+<div class="col-md-1 mb-3">
                     <label class="form-label font-weight-bold">فعال</label>
                     <select id="IsActive" name="IsActive" class="form-control">
                         @if (Model.IsActive)
@@ -122,7 +115,7 @@
                          BackUrl = "/Admin/NutritionProgram",
                          BackText = "انصراف و بازگشت"
                      }' />
-        </form>
+</form>
     </div>
 </div>
 
@@ -140,66 +133,165 @@
     <script>
         $(document).ready(function () {
 
-            $("#StartDate").persianDatepicker({
-                format: 'YYYY/MM/DD',
-                autoClose: true,
-                initialValue: false
-            });
+        const PROGRAM_TYPE = {
+        Daily: 1,
+        Weekly: 2,
+        Monthly: 3
+        };
 
-            $("#EndDate").persianDatepicker({
-                format: 'YYYY/MM/DD',
-                autoClose: true,
-                initialValue: false
-            });
+        // تبدیل ارقام فارسی/عربی به انگلیسی
+        function toEnglishDigits(str) {
+        if (!str) return str;
 
-            $("#NutritionProgramForm").submit(function (e) {
-                e.preventDefault();
+        const map = {
+        '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+        '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
+        '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+        '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
+        };
 
-                const isEdit = @(isEdit ? "true" : "false");
-                const url = isEdit ? "/Admin/NutritionProgram/Edit" : "/Admin/NutritionProgram/Create";
+        return str.replace(/[۰-۹٠-٩]/g, function (d) {
+        return map[d] || d;
+        });
+        }
 
-                var data = {
-                    Id: parseInt($("#Id").val()) || 0,
-                    MemberId: parseInt($("#MemberId").val()) || 0,
-                    Title: $("#Title").val(),
-                    Description: $("#Description").val(),
-                    ProgramTypeId: parseInt($("#ProgramTypeId").val()) || 0,
-                    GoalTypeId: parseInt($("#GoalTypeId").val()) || 0,
-                    StartDate: $("#StartDate").val(),
-                    EndDate: $("#EndDate").val(),
-                    IsActive: $("#IsActive").val() === "true"
-                };
+        function syncEndDate() {
+        const programTypeId = parseInt($("#ProgramTypeId").val(), 10) || 0;
 
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: data,
-                    success: function (response) {
-                        if (response.isSuccess) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'موفق',
-                                text: response.message
-                            }).then(() => {
-                                window.location.href = "/Admin/NutritionProgram";
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'خطا',
-                                text: response.message
-                            });
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'خطا',
-                            text: 'خطا در ارتباط با سرور'
-                        });
-                    }
-                });
-            });
+        let start = ($("#StartDate").val() || "").trim();
+        start = toEnglishDigits(start);
+
+        console.log("syncEndDate fired");
+        console.log("ProgramTypeId:", programTypeId);
+        console.log("StartDate(raw):", $("#StartDate").val());
+        console.log("StartDate(en):", start);
+
+        if (!programTypeId || !start || start.length !== 10) {
+        return;
+        }
+
+        const parts = start.split('/');
+        if (parts.length !== 3) {
+        return;
+        }
+
+        const jy = parseInt(parts[0], 10);
+        const jm = parseInt(parts[1], 10);
+        const jd = parseInt(parts[2], 10);
+
+        if (!jy || !jm || !jd) {
+        return;
+        }
+
+        let p = new persianDate([jy, jm, jd]);
+
+        if (programTypeId === PROGRAM_TYPE.Daily) {
+        // روزانه: همان روز
+        }
+        else if (programTypeId === PROGRAM_TYPE.Weekly) {
+        // هفتگی: 7 روز شامل روز شروع => +6
+        p = p.add('days', 6);
+        }
+        else if (programTypeId === PROGRAM_TYPE.Monthly) {
+        // ماهانه: شروع + 1 ماه - 1 روز
+        p = p.add('months', 1).add('days', -1);
+        }
+        else {
+        return;
+        }
+
+        const endStr = p.format('YYYY/MM/DD');
+        console.log("EndDate:", endStr);
+
+        $("#EndDate").val(endStr).trigger("change");
+        }
+
+        // Initialize StartDate picker فقط یک بار
+        $("#StartDate").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        initialValue: false,
+        observer: true,
+        onSelect: function () {
+        syncEndDate();
+        }
+        });
+
+        // Initialize EndDate picker فقط یک بار
+        $("#EndDate").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        initialValue: false,
+        observer: true
+        });
+
+        // تغییر نوع برنامه
+        $("#ProgramTypeId").on("change", function () {
+        syncEndDate();
+        });
+
+        // تغییر تاریخ شروع
+        $("#StartDate").on("change keyup blur", function () {
+        syncEndDate();
+        });
+
+        // اگر فرم در حالت Edit باز شد و داده داشت
+        syncEndDate();
+
+        // فقط یک submit handler
+        $("#NutritionProgramForm").on("submit", function (e) {
+        e.preventDefault();
+
+        syncEndDate();
+
+        const isEdit = @(isEdit ? "true" : "false");
+        const url = isEdit
+        ? "/Admin/NutritionProgram/Edit"
+        : "/Admin/NutritionProgram/Create";
+
+        const data = {
+        Id: parseInt($("#Id").val(), 10) || 0,
+        MemberId: parseInt($("#MemberId").val(), 10) || 0,
+        Description: $("#Description").val(),
+        ProgramTypeId: parseInt($("#ProgramTypeId").val(), 10) || 0,
+        GoalTypeId: parseInt($("#GoalTypeId").val(), 10) || 0,
+        StartDate: toEnglishDigits($("#StartDate").val()),
+        EndDate: toEnglishDigits($("#EndDate").val()),
+        IsActive: $("#IsActive").val() === "true"
+        };
+
+        $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        success: function (response) {
+        if (response.isSuccess) {
+        Swal.fire({
+        icon: 'success',
+        title: 'موفق',
+        text: response.message
+        }).then(function () {
+        window.location.href = "/Admin/NutritionProgram";
+        });
+        } else {
+        Swal.fire({
+        icon: 'warning',
+        title: 'خطا',
+        text: response.message
+        });
+        }
+        },
+        error: function () {
+        Swal.fire({
+        icon: 'error',
+        title: 'خطا',
+        text: 'خطا در ارتباط با سرور'
+        });
+        }
+        });
+        });
+
         });
     </script>
+
 }

@@ -81,6 +81,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             await FillLookupsAsync();
 
             ViewBag.MemberName = member.AppUser.FullName;
+            ViewBag.MemberMobile = member.AppUser.PhoneNumber;
 
             var model = new NutritionProgramCreateEditViewModel
             {
@@ -139,7 +140,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 CreatedByUserId = createdByUserId,
                 ProgramTypeId = model.ProgramTypeId,
                 GoalTypeId = model.GoalTypeId,
-                Title = model.Title,
+                //Title = model.Title,
                 Description = model.Description,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
@@ -180,7 +181,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 MemberId = item.MemberId,
                 ProgramTypeId = item.ProgramTypeId,
                 GoalTypeId = item.GoalTypeId,
-                Title = item.Title,
+                //Title = item.Title,
                 Description = item.Description,
                 StartDate = item.StartDate,
                 EndDate = item.EndDate,
@@ -219,7 +220,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             item.ProgramTypeId = model.ProgramTypeId;
             item.GoalTypeId = model.GoalTypeId;
-            item.Title = model.Title;
+            //item.Title = model.Title;
             item.Description = model.Description;
             item.StartDate = model.StartDate;
             item.EndDate = model.EndDate;
