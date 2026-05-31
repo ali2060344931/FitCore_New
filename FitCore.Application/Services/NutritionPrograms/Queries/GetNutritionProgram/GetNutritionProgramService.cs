@@ -27,7 +27,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
         public async Task<ResultGetNutritionProgramsDto> Execute(RequestGetNutritionProgramsDto request)
         {
-            int pageSize = 20;
+            
 
             var nutritionPrograms =
                 _context.NutritionPrograms.Where(c=>c.IsRemoved==false)
@@ -52,8 +52,8 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
             var result =
                 await nutritionPrograms
                 .OrderByDescending(x => x.Id)
-                .Skip((request.Page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(x => new GetNutritionProgramsDto
                 {
                     Id = x.Id,
@@ -82,9 +82,13 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
                 PageCount =
                     (int)Math.Ceiling(
-                        (double)rowCount / pageSize)
+                        (double)rowCount / request.PageSize),
+                PageSize = request.PageSize
+
             };
         }
+
+       
     }
 
 }

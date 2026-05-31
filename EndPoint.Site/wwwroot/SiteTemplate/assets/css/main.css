@@ -7983,3 +7983,83 @@ body.light .progress-wrap {
     width: 100%;
     padding: 5px 10px;
 }
+
+
+
+/*===================*/
+
+.fc-pagination {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+    .fc-pagination a {
+        padding: 8px 14px;
+        background: #f1f1f1;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .fc-pagination .active {
+        background: #198754;
+        color: white;
+    }
+
+.fc-form-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.fc-form-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.fc-form-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    background-color: aqua;
+    border-radius: 16px;
+    padding: 10px;
+}
+
+.fc-input-group {
+    margin-bottom: 20px;
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.row > .col-1 {
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+
+.text-center .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.pagination .page-link {
+    min-width: 38px;
+    text-align: center;
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.dropdown-toggle {
+    min-width: 70px;
+}
+
+/*==******************/

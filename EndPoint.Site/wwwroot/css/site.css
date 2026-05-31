@@ -269,6 +269,13 @@ body {
     gap: 10px;
 }
 
+
+
+
+/*===================
+*/
+
+
 .fc-pagination {
     display: flex;
     gap: 10px;
@@ -313,3 +320,50 @@ body {
 .fc-input-group {
     margin-bottom: 20px;
 }
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.row > .col-1 {
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+.text-center .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+.pagination .page-link {
+    min-width: 38px;
+    text-align: center;
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.dropdown-toggle {
+    min-width: 70px;
+}
+
+/*99999999999999999*/
+.custom-paging .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-paging .col {
+    flex: unset;
+    width: auto;
+}
+
+.custom-paging .col-1 {
+    flex: unset;
+    width: auto;
+    margin-right: 5px;
+}
+
+

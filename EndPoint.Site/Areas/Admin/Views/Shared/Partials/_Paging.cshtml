@@ -1,0 +1,30 @@
+﻿@addTagHelper *, LazZiya.TagHelpers
+@using EndPoint.Site.Areas.Admin.Models
+@model PagingPartialViewModel
+
+<div class="text-center custom-paging">
+    <paging total-records="Model.RowCount"
+            page-no="Model.CurrentPage"
+            page-size="Model.PageSize"
+            show-prev-next="true"
+            show-page-size-nav="true"
+            show-total-pages="true"
+            show-total-records="true"
+            show-first-last="true"
+            show-gap="true"
+            @* page-size-dropdown-items="10,20,30" *@
+            query-string-key-page-no="@Model.PageQueryKey"
+            query-string-key-page-size="@Model.PageSizeQueryKey"
+
+            @* page-size-text="تعداد نمایش"
+            show-first-numbered-page="true"
+            show-last-numbered-page="true" *@
+            @* page-size-options="@Model.PageSizeOptions" *@
+            gap-size="2">
+    </paging>
+</div>
+
+
+
+
+

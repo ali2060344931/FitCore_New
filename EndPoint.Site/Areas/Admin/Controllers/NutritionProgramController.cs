@@ -39,7 +39,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         // لیست برنامه های غذایی
         //====================================================
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, string SearchKey = "")
+        public async Task<IActionResult> Index(int page = 1,int PageSize=20, string SearchKey = "")
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -52,7 +52,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             {
                 AppUserId = appUserId,
                 Page = page,
-                PageSize = 10,
+                PageSize = PageSize,
                 SearchKey = SearchKey
             };
 

@@ -15,7 +15,9 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
         public int PageCount { get; set; }
 
         public int RowCount { get; set; }
-        public int Row { get; set; }
+        public int PageSize { get; set; }
+
+
     }
 
 
@@ -48,5 +50,4 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
         public long AppUserId { get; set; }
     }
-
 }
