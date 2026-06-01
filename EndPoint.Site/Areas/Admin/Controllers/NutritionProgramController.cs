@@ -155,9 +155,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return Json(new
             {
+                //isSuccess = true,
+                //message = result.Message,
+                //redirectUrl = Url.Action("Index", "NutritionProgramBuilder", new { id = programId })
                 isSuccess = true,
-                message = result.Message,
-                redirectUrl = Url.Action("Index", "NutritionProgramBuilder", new { id = programId })
+                message = "برنامه غذایی با موفقیت ثبت شد",
+                id = result.Data.Id, // یا ProgramId
+                //redirectUrl = "/Admin/NutritionProgram"
+                //redirectUrl = "/Admin/NutritionProgramBuilder"
+                redirectUrl = Url.Action("Index", "NutritionProgram", new { area = "Admin" })
             });
         }
 

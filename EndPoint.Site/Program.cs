@@ -14,6 +14,13 @@ using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealDto;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealItemDto;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionProgramDay;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.AutoGenerateNutritionDays;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.EditNutritionDay;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.EditNutritionMeal;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.EditNutritionMealItem;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionDay;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionMeal;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionMealItem;
 using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
 using FitCore.Application.Services.Provinces.Queries;
@@ -177,6 +184,13 @@ builder.Services.AddScoped<IAddNutritionProgramDayService, AddNutritionProgramDa
 builder.Services.AddScoped<IAddNutritionMealService, AddNutritionMealService>();
 builder.Services.AddScoped<IAddNutritionMealItemService, AddNutritionMealItemService>();
 builder.Services.AddScoped<IGetBuilderLookupService, GetBuilderLookupService>();
+builder.Services.AddScoped<IRemoveNutritionMealItemService, RemoveNutritionMealItemService>();
+builder.Services.AddScoped<IEditNutritionMealItemService, EditNutritionMealItemService>();
+builder.Services.AddScoped<IRemoveNutritionMealService, RemoveNutritionMealService>();
+builder.Services.AddScoped<IEditNutritionMealService, EditNutritionMealService>();
+builder.Services.AddScoped<IRemoveNutritionDayService, RemoveNutritionDayService>();
+builder.Services.AddScoped<IEditNutritionDayService, EditNutritionDayService>();
+builder.Services.AddScoped<IAutoGenerateNutritionDaysService, AutoGenerateNutritionDaysService>();
 
 
 

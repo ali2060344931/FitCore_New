@@ -2,8 +2,6 @@
 @using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
 @using FitCore.Common
 
-
-
 <!-- برای صفحه بندی لیست -->
 @model ResultGetNutritionProgramsDto
 @{
@@ -15,10 +13,6 @@
         PageQueryKey = "page",
 
         PageSizeQueryKey = "PageSize"
-
-
-
-
     };
 
 }
@@ -29,14 +23,9 @@
 
     var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
-
-
 }
 
-
-
 <div class="container-fluid mt-4">
-
     <!-- Header -->
     <div class="fc-page-header">
 
@@ -52,10 +41,6 @@
         </a>
 
     </div>
-
-
-
-
 
     <!-- Search Box -->
     <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
@@ -84,11 +69,6 @@
         }
 
     </div>
-
-
-    @* <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" /> *@
-
-
     @if (Model.NutritionPrograms != null && Model.NutritionPrograms.Any())
     {
         <table class="table table-striped table-hover">
@@ -138,6 +118,16 @@
 
                         <td>
                             <div class="fc-action-buttons">
+                                
+                                <a class="btn btn-primary btn-sm"
+                                   asp-area="Admin"
+                                   asp-controller="NutritionProgramBuilder"
+                                   asp-action="Index"
+                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                    مشاهده فرم برنامه
+                                </a>
+
+
                                 <a class="btn btn-info btn-sm"
                                    asp-area="Admin"
                                    asp-controller="NutritionProgram"
@@ -145,6 +135,7 @@
                                    asp-route-id="@SecurityUtils.EncryptId(item.Id)">
                                     ویرایش
                                 </a>
+
 
                                 <button type="button"
                                         class="btn btn-danger btn-sm"

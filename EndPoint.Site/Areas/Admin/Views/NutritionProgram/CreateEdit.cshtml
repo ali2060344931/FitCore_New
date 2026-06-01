@@ -112,7 +112,7 @@
                      model='new FormButtonsViewModel
                      {
                          SubmitText = isEdit ? "ذخیره تغییرات" : "ثبت برنامه غذایی",
-                         BackUrl = "/Admin/NutritionProgram",
+                         BackUrl = "/Admin/Members",
                          BackText = "انصراف و بازگشت"
                      }' />
 </form>
@@ -264,18 +264,53 @@
         type: "POST",
         url: url,
         data: data,
-        
+
         success: function (response) {
         if (response.isSuccess) {
+
         Swal.fire({
         icon: 'success',
         title: 'موفق',
-        text: response.message
+        text: response.message,
+        confirmButtonText: 'ادامه'
         }).then(function () {
+
+        // فقط در حالت Create این سؤال نمایش داده شود
+        if (!isEdit) {
+        Swal.fire({
+        title: 'ورود به فرم برنامه‌ساز',
+        text: 'آیا می‌خواهید اکنون فرم NutritionProgramBuilder برای ثبت ساختار برنامه غذایی نمایش داده شود؟',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'بله، نمایش بده',
+        cancelButtonText: 'خیر'
+        }).then(function (result) {
+
+        if (result.isConfirmed) {
+        if (response.id && parseInt(response.id) > 0) {
+        window.location.href = '/Admin/NutritionProgramBuilder/Index?programId=' + response.id;
+        } else {
+        Swal.fire({
+        icon: 'warning',
+        title: 'هشدار',
+        text: 'شناسه برنامه ثبت‌شده دریافت نشد.'
+        });
+        }
+        } else {
         if (response.redirectUrl) {
         window.location.href = response.redirectUrl;
         }
+        }
+
         });
+        } else {
+        if (response.redirectUrl) {
+        window.location.href = response.redirectUrl;
+        }
+        }
+
+        });
+
         } else {
         Swal.fire({
         icon: 'warning',
@@ -283,12 +318,7 @@
         text: response.message
         });
         }
-        }
-        ,
-
-
-
-
+        },
 
         error: function () {
         Swal.fire({
