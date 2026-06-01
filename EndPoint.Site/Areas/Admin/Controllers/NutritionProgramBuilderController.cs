@@ -1,16 +1,30 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FitCore.Application.Services.NutritionProgramBuilder.Queries;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
     public class NutritionProgramBuilderController : Controller
     {
-        // GET: NutritionProgramBuilder
-        public ActionResult Index()
+        private readonly
+                IGetProgramBuilderService
+                _getProgramBuilderService;
+
+        public NutritionProgramBuilderController(
+            IGetProgramBuilderService
+                getProgramBuilderService)
         {
-            return View();
+            _getProgramBuilderService =
+                getProgramBuilderService;
         }
 
+        public IActionResult Index(long id)
+        {
+            var result = _getProgramBuilderService.Execute(id);
+
+            return View(result);
+        }
         // GET: NutritionProgramBuilder/Details/5
         public ActionResult Details(int id)
         {

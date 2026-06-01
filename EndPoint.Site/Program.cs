@@ -11,6 +11,7 @@ using FitCore.Application.Services.Gyms.Commands.DeleteGym;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
+using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
@@ -174,6 +175,9 @@ builder.Services.AddScoped<IGetCitiesService,
     GetCitiesService>();
 
 //>=====Member=====<
+
+builder.Services.AddScoped<IGetProgramBuilderService, GetProgramBuilderService>();
+
 
 
 

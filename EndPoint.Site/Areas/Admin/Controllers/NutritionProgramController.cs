@@ -148,7 +148,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             };
 
             var result = await _nutritionProgramFacad.AddNutritionProgramService.Execute(request);
-            return Json(result);
+
+
+
+            var programId = result.Data.Id;
+
+            return Json(new
+            {
+                isSuccess = true,
+                message = result.Message,
+                redirectUrl = Url.Action("Index", "NutritionProgramBuilder", new { id = programId })
+            });
         }
 
         //====================================================

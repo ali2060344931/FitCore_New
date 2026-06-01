@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram
 {
-    public class AddNutritionProgramService :
-        IAddNutritionProgramService
+    public class AddNutritionProgramService :        IAddNutritionProgramService
     {
         private readonly IDataBaseContext _context;
 
@@ -23,7 +22,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
             _context = context;
         }
 
-        public async Task<ResultDto> Execute(RequestAddNutritionProgramDto request)
+        public async Task<ResultDto<RequestAddNutritionProgramDto>> Execute(RequestAddNutritionProgramDto request)
         {
             try
             {
@@ -38,10 +37,11 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
                 if (gym == null)
                 {
-                    return new ResultDto()
+                    return new ResultDto<RequestAddNutritionProgramDto>()
                     {
                         IsSuccess = false,
-                        Message = "باشگاه یافت نشد"
+                        Message = "باشگاه یافت نشد",
+                        Data=null
                     };
                 }
 
@@ -56,10 +56,11 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
                 if (member == null)
                 {
-                    return new ResultDto()
+                    return new ResultDto<RequestAddNutritionProgramDto>()
                     {
                         IsSuccess = false,
-                        Message = "عضو یافت نشد"
+                        Message = "عضو یافت نشد",
+                        Data = null
                     };
                 }
 
@@ -76,10 +77,11 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
                 if (isExist)
                 {
-                    return new ResultDto()
+                    return new ResultDto<RequestAddNutritionProgramDto>()
                     {
                         IsSuccess = false,
-                        Message = "برنامه غذایی با این عنوان و برنامه زمانبندی قبلا ثبت شده است"
+                        Message = "برنامه غذایی با این عنوان و برنامه زمانبندی قبلا ثبت شده است",
+                        Data=null
                     };
                 }
 
@@ -117,19 +119,25 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
                 // نتیجه
                 //====================================
 
-                return new ResultDto()
+                return new ResultDto<RequestAddNutritionProgramDto>()
                 {
                     IsSuccess = true,
-                    Message = "برنامه غذایی با موفقیت ثبت شد"
+                    Message = "برنامه غذایی با موفقیت ثبت شد",
+                    Data = new RequestAddNutritionProgramDto
+                    {
+                        Id = nutritionProgram.Id
+                    }
                 };
             }
             catch (DbUpdateException ex)
             {
                 var inner = ex.InnerException?.Message;
-                return new ResultDto
+                return new ResultDto<RequestAddNutritionProgramDto>
                 {
                     IsSuccess = false,
-                    Message = "خطا در ثبت برنامه غذایی: " + inner
+                    Message = "خطا در ثبت برنامه غذایی: " + inner,
+                    Data = null
+                    
                 };
             }
         }
@@ -137,6 +145,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionPr
 
     public class RequestAddNutritionProgramDto
     {
+        public long Id { get; set; }
         public long GymId { get; set; }
 
         public long MemberId { get; set; }

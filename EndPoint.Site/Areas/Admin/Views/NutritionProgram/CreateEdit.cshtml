@@ -264,6 +264,7 @@
         type: "POST",
         url: url,
         data: data,
+        
         success: function (response) {
         if (response.isSuccess) {
         Swal.fire({
@@ -271,7 +272,9 @@
         title: 'موفق',
         text: response.message
         }).then(function () {
-        window.location.href = "/Admin/NutritionProgram";
+        if (response.redirectUrl) {
+        window.location.href = response.redirectUrl;
+        }
         });
         } else {
         Swal.fire({
@@ -280,7 +283,13 @@
         text: response.message
         });
         }
-        },
+        }
+        ,
+
+
+
+
+
         error: function () {
         Swal.fire({
         icon: 'error',
