@@ -1,18 +1,16 @@
 ﻿using FitCore.Application.Contexts;
+using FitCore.Common.Dto;
 
 using Microsoft.EntityFrameworkCore;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
 {
     public interface IGetProgramBuilderService
     {
-        ProgramBuilderDto Execute(long programId);
+        ResultDto<ProgramBuilderDto> Execute(long programId);
     }
     public class GetProgramBuilderService :
     IGetProgramBuilderService
@@ -25,38 +23,43 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
             _context = context;
         }
 
-        public ProgramBuilderDto Execute(long programId)
+
+
+        public ResultDto<ProgramBuilderDto> Execute(long programId)
         {
             var program =
                 _context.NutritionPrograms
+                    .Include(x => x.Member)
+                        .ThenInclude(x => x.AppUser)
 
-                .Include(x => x.Member)
+                    .Include(x => x.ProgramType)
 
-                .Include(x => x.Days)
-                    .ThenInclude(x => x.Meals)
-                        .ThenInclude(x => x.Items)
-                            .ThenInclude(x => x.Food)
+                    .Include(x => x.GoalType)
 
-                .FirstOrDefault(x =>
-                    x.Id == programId);
+                    .Include(x => x.Days)
+                        .ThenInclude(x => x.Meals)
+                            .ThenInclude(x => x.Items)
+                                .ThenInclude(x => x.Food)
+
+                    .FirstOrDefault(x => x.Id == programId);
 
             if (program == null)
             {
                 return null;
             }
 
-            return new ProgramBuilderDto
+
+            var result = new ProgramBuilderDto
             {
+
                 ProgramId = program.Id,
 
-                
 
                 MemberName =
-                    program.Member.AppUser.FullName + " " +
-                    program.Member.AppUser.PhoneNumber,
+                    program.Member.AppUser.FullName + " " + program.Member.AppUser.PhoneNumber,
 
-                ProgramType =
-                    program.ProgramType.ToString(),
+                ProgramType = program.ProgramType.Name,
+                GoalType = program.GoalType.Name,
 
                 StartDate = program.StartDate,
 
@@ -67,7 +70,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
                     .Select(day =>
                         new ProgramDayDto
                         {
-                            DayId = day.Id,
+                            Id = day.Id,
 
                             Title = day.Title,
 
@@ -109,13 +112,20 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
                         })
                     .ToList()
             };
+
+            return new ResultDto<ProgramBuilderDto>
+            {
+                IsSuccess = true,
+                Data = result
+            };
         }
+
     }
     public class ProgramBuilderDto
     {
         public long ProgramId { get; set; }
 
-        public string ProgramTitle { get; set; }
+        public string GoalType { get; set; }
 
         public string MemberName { get; set; }
 
@@ -127,9 +137,11 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
 
         public List<ProgramDayDto> Days { get; set; }
     }
+
+
     public class ProgramDayDto
     {
-        public long DayId { get; set; }
+        public long Id { get; set; }
 
         public string Title { get; set; }
 
@@ -137,6 +149,8 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
 
         public List<ProgramMealDto> Meals { get; set; }
     }
+
+
     public class ProgramMealDto
     {
         public long MealId { get; set; }
@@ -147,6 +161,8 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
 
         public List<ProgramMealItemDto> Foods { get; set; }
     }
+
+
     public class ProgramMealItemDto
     {
         public long MealItemId { get; set; }

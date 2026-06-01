@@ -1,26 +1,676 @@
-﻿<h3>
-    salam
-    @* @Model.ProgramTitle *@
-</h3>
+﻿@using System.Linq
+@model EndPoint.Site.Areas.Admin.Models.NutritionProgramBuilderPageViewModel
 
-@* <div class="card">
-    <div class="card-body">
+@{
+    ViewData["Title"] = "مدیریت برنامه غذایی";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 
-        <strong>عضو:</strong>
-        @Model.MemberName
 
-        <br />
+    var program = Model?.Program;
+    var lookups = Model?.Lookups;
+}
 
-        <strong>نوع:</strong>
-        @Model.ProgramType
-
-        <br />
-
-        <strong>از:</strong>
-        @Model.StartDate
-
-        <strong>تا:</strong>
-        @Model.EndDate
-
+<div class="content-wrapper">
+    <div class="content-header row mb-2">
+        <div class="content-header-left col-md-6 col-12">
+            <h3 class="content-header-title mb-0">مدیریت ساختار برنامه غذایی</h3>
+            <p class="text-muted mt-1 mb-0">ساختار برنامه: روزها ← وعده‌ها ← غذاها</p>
+        </div>
+        <div class="content-header-right col-md-6 col-12 text-md-right text-left">
+            <a asp-area="Admin"
+               asp-controller="NutritionProgram"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                <i class="fa fa-arrow-right"></i>
+                بازگشت
+            </a>
+        </div>
     </div>
-</div> *@
+
+    <div class="content-body">
+        @if (program == null)
+        {
+            <div class="alert alert-danger">
+                اطلاعات برنامه غذایی یافت نشد.
+            </div>
+        }
+        else
+        {
+            <!-- Program Info -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">اطلاعات برنامه غذایی</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label class="font-weight-bold d-block">عضو</label>
+                            <span>@program.MemberName</span>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label class="font-weight-bold d-block">هــدف برنامه</label>
+                            <span>@program.GoalType</span>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label class="font-weight-bold d-block">نوع برنامه</label>
+                            <span>@program.ProgramType</span>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label class="font-weight-bold d-block">تاریخ شروع</label>
+                            <span>@program.StartDate</span>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label class="font-weight-bold d-block">تاریخ پایان</label>
+                            <span>@program.EndDate</span>
+                        </div>
+
+                        @* <div class="col-12 mt-2">
+                            <label class="font-weight-bold d-block">توضیحات</label>
+                            <span>@(string.IsNullOrWhiteSpace(program.Descripti) ? "-" : program.Description)</span>
+                        </div> *@
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="card mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h5 class="mb-1">روزهای برنامه</h5>
+                        <small class="text-muted">
+                            تعداد روزها:
+                            @(program.Days != null ? program.Days.Count : 0)
+                        </small>
+                    </div>
+
+                    <div class="mt-2 mt-md-0">
+                        <button class="btn btn-success"
+                                type="button"
+                                data-toggle="modal"
+                                data-target="#addDayModal">
+                            <i class="fa fa-plus"></i>
+                            افزودن روز جدید
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Days -->
+            @if (program.Days == null || program.Days.Count == 0)
+            {
+                <div class="alert alert-info">
+                    هنوز هیچ روزی برای این برنامه ثبت نشده است.
+                </div>
+            }
+            else
+            {
+                <div id="daysAccordion">
+                    @for (int i = 0; i < program.Days.Count; i++)
+                    {
+                        var day = program.Days[i];
+                        var collapseId = $"collapseDay_{day.Id}";
+                        var headingId = $"headingDay_{day.Id}";
+
+                        <div class="card mb-2">
+                            <div class="card-header" id="@headingId">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <button class="btn btn-link text-left p-0 font-weight-bold"
+                                            data-toggle="collapse"
+                                            data-target="#@collapseId"
+                                            aria-expanded="@(i == 0 ? "true" : "false")"
+                                            aria-controls="@collapseId">
+                                        روز @day.DayNumber
+                                        @if (!string.IsNullOrWhiteSpace(day.Title))
+                                        {
+                                            <span>- @day.Title</span>
+                                        }
+                                    </button>
+
+                                    <div class="mt-2 mt-md-0">
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary"
+                                                data-toggle="modal"
+                                                data-target="#addMealModal"
+                                                data-day-id="@day.Id">
+                                            افزودن وعده ها
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="@collapseId"
+                                 class="collapse @(i == 0 ? "show" : "")"
+                                 aria-labelledby="@headingId"
+                                 data-parent="#daysAccordion">
+                                <div class="card-body">
+                                    @if (day.Meals == null || day.Meals.Count == 0)
+                                    {
+                                        <div class="alert alert-light border">
+                                            برای این روز هنوز وعده‌ای ثبت نشده است.
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @for (int j = 0; j < day.Meals.Count; j++)
+                                        {
+                                            var meal = day.Meals[j];
+
+                                            <div class="card mb-3 border">
+                                                <div class="card-header bg-light">
+                                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                                        <div>
+                                                            <h6 class="mb-1">@meal.Title</h6>
+                                                            <small class="text-muted">
+                                                                نوع وعده:
+                                                                @(string.IsNullOrWhiteSpace(meal.MealType) ? "-" : meal.MealType)
+                                                            </small>
+                                                        </div>
+
+                                                        <div class="mt-2 mt-md-0">
+                                                            <button type="button"
+                                                                    class="btn btn-sm btn-success"
+                                                                    onclick="openAddMealItemModal(@meal.MealId)">
+                                                                <i class="fa fa-plus"></i>
+                                                                افزودن غذا
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-body">
+                                                    @if (meal.Foods == null || meal.Foods.Count == 0)
+                                                    {
+                                                        <div class="alert alert-warning mb-0">
+                                                            هنوز غذایی برای این وعده ثبت نشده است.
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered table-striped table-sm">
+                                                                <thead class="thead-light">
+                                                                    <tr>
+                                                                        <th>غذا</th>
+                                                                        <th>مقدار</th>
+                                                                        <th>واحد</th>
+                                                                        @* <th>کالری</th>
+                                                                        <th>پروتئین</th>
+                                                                        <th>کربوهیدرات</th>
+                                                                        <th>چربی</th> *@
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var food in meal.Foods)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>@food.FoodName</td>
+                                                                            <td>@food.Amount</td>
+                                                                            <td>@food.Unit</td>
+                                                                            @* <td>@food.Calor</td>
+                                                                            <td>@food.Protein</td>
+                                                                            <td>@food.Carbohydrate</td>
+                                                                            <td>@food.Fat</td> *@
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Modals {
+
+    <!-- Add Day Modal -->
+    <div class="modal fade" id="addDayModal" tabindex="-1" role="dialog" aria-labelledby="addDayModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDayModalLabel">افزودن روز جدید</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="بستن">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="addDayForm">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" id="ProgramId" name="NutritionProgramId" value="@program?.ProgramId" />
+
+                        <div class="form-group">
+                            <label for="DayNumber">شماره روز</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="DayNumber"
+                                   name="DayNumber"
+                                   min="1"
+                                   placeholder="مثلاً 1" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DayTitle">عنوان روز</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="DayTitle"
+                                   name="Title"
+                                   placeholder="مثلاً روز تمرینی" />
+                        </div>
+                    </form>
+
+                    <div id="addDayMessage" class="mt-2"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+
+                    <button type="submit" class="btn btn-primary" id="btnSaveDay" form="addDayForm">
+                        <span class="btn-text">ثبت</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Meal Modal -->
+    <div class="modal fade" id="addMealModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">افزودن وعده</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="addMealForm">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="NutritionProgramDayId"
+                               id="AddMeal_NutritionProgramDayId" />
+
+                        <div class="form-group">
+                            <label>نوع وعده</label>
+                            <select class="form-control"
+                                    name="MealTypeId"
+                                    id="AddMeal_MealTypeId"
+                                    required>
+                                <option value="">انتخاب کنید...</option>
+                                @foreach (var mt in Model.Lookups.MealTypes)
+                                {
+                                    <option value="@mt.Id">@mt.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>عنوان</label>
+                            <input class="form-control"
+                                   name="Title"
+                                   id="AddMeal_Title" />
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary" form="addMealForm">ثبت</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Meal Item Modal -->
+    <div class="modal fade" id="addMealItemModal" tabindex="-1" role="dialog" aria-labelledby="addMealItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMealItemModalLabel">افزودن غذای جدید</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="بستن">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="addMealItemForm">
+                        <input type="hidden" id="NutritionMealId" name="NutritionMealId" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="FoodId">غذا</label>
+                                    <select class="form-control select2" id="FoodId" name="FoodId">
+                                        <option value="">انتخاب غذا</option>
+                                        @if (lookups?.Foods != null && lookups.Foods.Count > 0)
+                                        {
+                                            foreach (var food in lookups.Foods)
+                                            {
+                                                <option value="@food.Id">@food.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="Amount">مقدار</label>
+                                    <input type="number"
+                                           step="0.01"
+                                           class="form-control"
+                                           id="Amount"
+                                           name="Amount"
+                                           placeholder="مثلاً 100" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="UnitTypeId">واحد</label>
+                                    <select class="form-control select2" id="UnitTypeId" name="UnitTypeId">
+                                        <option value="">انتخاب واحد</option>
+                                        @if (lookups?.Units != null && lookups.Units.Count > 0)
+                                        {
+                                            foreach (var unit in lookups.Units)
+                                            {
+                                                <option value="@unit.Id">@unit.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="addMealItemMessage" class="mt-2"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveMealItem">
+                        <span class="btn-text">ثبت</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            console.log("Nutrition Builder scripts loaded");
+            console.log("jQuery version:", $.fn.jquery);
+            console.log("Bootstrap modal plugin:", typeof $.fn.modal);
+
+            if ($.fn.select2) {
+                $(".select2").select2({
+                    dir: "rtl",
+                    width: "100%",
+                    language: "fa"
+                });
+            }
+        });
+
+        function openAddMealModal(dayId) {
+            $("#MealDayId").val(dayId);
+            $("#MealTitle").val("");
+            $("#MealType").val("");
+            $("#addMealMessage").html("");
+            $("#addMealModal").modal("show");
+        }
+
+        function openAddMealItemModal(mealId) {
+            $("#NutritionMealId").val(mealId);
+            $("#FoodId").val("").trigger("change");
+            $("#Amount").val("");
+            $("#UnitTypeId").val("").trigger("change");
+            $("#addMealItemMessage").html("");
+            $("#addMealItemModal").modal("show");
+        }
+
+        function setButtonLoading($btn, isLoading, loadingText) {
+            if (isLoading) {
+                $btn.prop("disabled", true);
+                $btn.data("original-text", $btn.find(".btn-text").text());
+                $btn.find(".btn-text").text(loadingText || "در حال ثبت...");
+            } else {
+                $btn.prop("disabled", false);
+                var originalText = $btn.data("original-text") || "ثبت";
+                $btn.find(".btn-text").text(originalText);
+            }
+        }
+
+        function showMessage(containerSelector, type, message) {
+            var html = '<div class="alert alert-' + type + ' mb-0">' + message + '</div>';
+            $(containerSelector).html(html);
+        }
+
+                // ------ افزودن روزها ------
+
+
+        $(document).on('submit', '#addDayForm', function (e) {
+                e.preventDefault();
+
+                var $form = $(this);
+                var $btn = $('#btnSaveDay');
+                var $msg = $('#addDayMessage');
+
+                $msg.removeClass('text-success text-danger').html('');
+                $btn.prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("AddDay", "NutritionProgramBuilder", new { area = "Admin" })',
+                    type: 'POST',
+                    data: $form.serialize(),
+                    success: function (response) {
+                        if (response && response.isSuccess) {
+                            $msg.addClass('text-success').html(response.message || 'روز جدید با موفقیت ثبت شد.');
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 700);
+                        } else {
+                            $msg.addClass('text-danger').html(response.message || 'ثبت روز انجام نشد.');
+                        }
+                    },
+                    error: function (xhr) {
+                        $msg.addClass('text-danger').html('خطا در ارسال اطلاعات.');
+                        console.log(xhr.responseText);
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+
+
+
+
+
+
+
+
+        $(document).on('click', '[data-target="#addMealModal"]', function () {
+            var dayId = $(this).attr('data-day-id');   // یا .data('day-id')
+            console.log('[CLICK] dayId=', dayId, 'btn=', this);
+
+            $('#AddMeal_NutritionProgramDayId').val(dayId);
+
+            console.log('[CLICK] hidden now=', $('#AddMeal_NutritionProgramDayId').val());
+        });
+
+
+
+
+                $(document).on('submit', '#addMealForm', function (e) {
+            console.log('[SUBMIT] hidden=', $('#AddMeal_NutritionProgramDayId').val());
+            console.log('[SUBMIT] serialize=', $(this).serialize());
+        });
+
+
+
+
+
+
+        $('#addMealModal').on('show.bs.modal', function (e) {
+            var button = $(e.relatedTarget);
+            var dayId = button.attr('data-day-id');
+
+            console.log("relatedTarget:", button);
+            console.log("dayId from button:", dayId);
+
+            $('#AddMeal_NutritionProgramDayId').val(dayId);
+
+            console.log("hidden NutritionProgramDayId:", $('#AddMeal_NutritionProgramDayId').val());
+        });
+
+        // ارسال فرم افزودن وعده
+        $(document).on('submit', '#addMealForm', function (e) {
+            e.preventDefault();
+
+            console.log("payload:", $(this).serialize());
+
+            $.ajax({
+                url: '@Url.Action("AddMeal", "NutritionProgramBuilder", new { area = "Admin" })',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (res) {
+                    if (res && res.isSuccess) {
+                        location.reload();
+                    } else {
+                        alert(res.message || 'ثبت وعده انجام نشد');
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText);
+                    alert('خطا در ثبت وعده ها');
+                }
+            });
+        });
+
+        // پاکسازی فرم بعد از بسته شدن مودال
+        $('#addMealModal').on('hidden.bs.modal', function () {
+            $('#AddMeal_NutritionProgramDayId').val('');
+            $('#AddMeal_MealTypeId').val('');
+            $('#AddMeal_Title').val('');
+        });
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        $("#btnSaveMealItem").on("click", function () {
+            var $btn = $(this);
+            var data = {
+                NutritionMealId: $("#NutritionMealId").val(),
+                FoodId: $("#FoodId").val(),
+                Amount: $("#Amount").val(),
+                UnitTypeId: $("#UnitTypeId").val()
+            };
+
+            if (!data.NutritionMealId) {
+                showMessage("#addMealItemMessage", "danger", "شناسه وعده معتبر نیست.");
+                return;
+            }
+
+            if (!data.FoodId) {
+                showMessage("#addMealItemMessage", "danger", "غذا را انتخاب کنید.");
+                return;
+            }
+
+            if (!data.Amount) {
+                showMessage("#addMealItemMessage", "danger", "مقدار را وارد کنید.");
+                return;
+            }
+
+            if (!data.UnitTypeId) {
+                showMessage("#addMealItemMessage", "danger", "واحد را انتخاب کنید.");
+                return;
+            }
+
+            setButtonLoading($btn, true, "در حال ثبت...");
+
+            $.ajax({
+                url: '@Url.Action("AddMealItem", "NutritionProgramBuilder", new { area = "Admin" })',
+                type: 'POST',
+                data: data,
+                success: function (res) {
+                    if (res && res.isSuccess) {
+                        showMessage("#addMealItemMessage", "success", res.message || "غذا با موفقیت ثبت شد.");
+                        setTimeout(function () {
+                            $("#addMealItemModal").modal("hide");
+                            location.reload();
+                        }, 700);
+                    } else {
+                        showMessage("#addMealItemMessage", "danger", (res && res.message) ? res.message : "ثبت غذا ناموفق بود.");
+                    }
+                },
+                error: function (xhr) {
+                    showMessage("#addMealItemMessage", "danger", "خطا در ارتباط با سرور.");
+                    console.error(xhr);
+                },
+                complete: function () {
+                    setButtonLoading($btn, false);
+                }
+            });
+        });
+
+        $('#addDayModal').on('hidden.bs.modal', function () {
+            $("#DayNumber").val("");
+            $("#DayTitle").val("");
+            $("#addDayMessage").html("");
+        });
+
+        $('#addMealModal').on('hidden.bs.modal', function () {
+            $("#MealDayId").val("");
+            $("#MealTitle").val("");
+            $("#MealType").val("");
+            $("#addMealMessage").html("");
+        });
+
+        $('#addMealItemModal').on('hidden.bs.modal', function () {
+            $("#NutritionMealId").val("");
+            $("#FoodId").val("").trigger("change");
+            $("#Amount").val("");
+            $("#UnitTypeId").val("").trigger("change");
+            $("#addMealItemMessage").html("");
+        });
+    </script>
+}

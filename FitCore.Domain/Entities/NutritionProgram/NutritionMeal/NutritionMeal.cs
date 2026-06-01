@@ -39,25 +39,25 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionMeal
         /// <summary>
         /// ترتیب نمایش
         /// </summary>
-        public int SortOrder { get; set; }
+        public int? SortOrder { get; set; }
 
         // Nutrition Summary
         /// <summary>
         /// مجموع کالری
         /// </summary>
-        public decimal TotalCalories { get; set; }
+        public decimal? TotalCalories { get; set; }
         /// <summary>
         /// مجموع پروتئین
         /// </summary>
-        public decimal TotalProtein { get; set; }
+        public decimal? TotalProtein { get; set; }
         /// <summary>
         /// مجموع کربوهیدرات
         /// </summary>
-        public decimal TotalCarbohydrate { get; set; }
+        public decimal? TotalCarbohydrate { get; set; }
         /// <summary>
         /// مجموع چربی
         /// </summary>
-        public decimal TotalFat { get; set; }
+        public decimal? TotalFat { get; set; }
 
         // Navigation
         /// <summary>

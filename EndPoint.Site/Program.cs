@@ -11,6 +11,9 @@ using FitCore.Application.Services.Gyms.Commands.DeleteGym;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealDto;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealItemDto;
+using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionProgramDay;
 using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
 using FitCore.Application.Services.Provinces.Queries;
@@ -150,33 +153,30 @@ builder.Services.AddSingleton<ILoginTokenStore,
 
 // ===== Gym =====
 
-builder.Services.AddScoped<IAddGymService,
-    AddGymService>();
+builder.Services.AddScoped<IAddGymService, AddGymService>();
 
-builder.Services.AddScoped<IDeleteGymService,
-    DeleteGymService>();
+builder.Services.AddScoped<IDeleteGymService, DeleteGymService>();
 
-builder.Services.AddScoped<IEditGymService,
-    EditGymService>();
+builder.Services.AddScoped<IEditGymService, EditGymService>();
 
-builder.Services.AddScoped<IGetGymByIdService,
-    GetGymByIdService>();
+builder.Services.AddScoped<IGetGymByIdService, GetGymByIdService>();
 
-builder.Services.AddScoped<IGetGymsService,
-    GetGymsService>();
+builder.Services.AddScoped<IGetGymsService, GetGymsService>();
 
-builder.Services.AddScoped<ICompleteGymInfoService,
-    CompleteGymInfoService>();
+builder.Services.AddScoped<ICompleteGymInfoService, CompleteGymInfoService>();
 
-builder.Services.AddScoped<IGetProvincesService,
-    GetProvincesService>();
+builder.Services.AddScoped<IGetProvincesService, GetProvincesService>();
 
-builder.Services.AddScoped<IGetCitiesService,
-    GetCitiesService>();
+builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
 
-//>=====Member=====<
 
+
+//<------  ProgramBuilder  -------->
 builder.Services.AddScoped<IGetProgramBuilderService, GetProgramBuilderService>();
+builder.Services.AddScoped<IAddNutritionProgramDayService, AddNutritionProgramDayService>();
+builder.Services.AddScoped<IAddNutritionMealService, AddNutritionMealService>();
+builder.Services.AddScoped<IAddNutritionMealItemService, AddNutritionMealItemService>();
+builder.Services.AddScoped<IGetBuilderLookupService, GetBuilderLookupService>();
 
 
 
