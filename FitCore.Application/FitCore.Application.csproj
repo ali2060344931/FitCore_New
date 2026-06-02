@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Services\Foods\Commands\" />
     <Folder Include="Services\Gyms\Commands\CheangStatus\" />
     <Folder Include="Services\NutritionProgramBuilder\Facad\" />
     <Folder Include="Services\NutritionPrograms\Commands\EditNutritionProgram\" />

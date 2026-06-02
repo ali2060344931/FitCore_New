@@ -39,15 +39,12 @@
         else
         {
 
-            <!-- کارت اصلی با استایل شیک -->
-            <!-- استفاده از کدهای اصلاح‌شده برای تمرکز روی مقادیر -->
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="card-body p-4">
                     <h5 class="card-title text-primary fw-bold mb-4 border-bottom pb-2">اطلاعات برنامه غذایی</h5>
 
                     <div class="d-flex flex-wrap gap-3">
 
-                        @* ساختار هر آیتم *@
                         <div class="badge bg-light text-dark border d-flex align-items-center px-4 py-3 rounded-pill shadow-sm">
                             <span class="text-muted me-2 fw-semibold" style="font-size: 1.1rem;">عضـــو: </span>
                             <span class="text-primary fw-bolder" style="font-size: 1.5rem;">@program.MemberName</span>
@@ -896,6 +893,69 @@
                         }
                     });
                 });
+
+
+         // ۱. تنظیم واحد خودکار هنگام تغییر غذا
+        function loadDefaultUnit(foodId) {
+            if (!foodId) {
+                $('#UnitTypeId').val('').trigger('change');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetFoodDefaultUnit", "NutritionProgramBuilder", new { area = "Admin" })',
+                type: 'GET',
+                data: { foodId: foodId },
+                success: function (response) {
+                    console.log("Response from server:", response);
+
+                    if (response && response.unitId) {
+                        $('#UnitTypeId').val(response.unitId).trigger('change');
+                    } else {
+                        $('#UnitTypeId').val('').trigger('change');
+                    }
+                },
+                error: function (xhr) {
+                    console.log("AJAX Error:", xhr.responseText);
+                }
+            });
+        }
+
+        $(document).on('change', '#FoodId', function () {
+            var foodId = $(this).val();
+            console.log("FoodId selected(change): " + foodId);
+            loadDefaultUnit(foodId);
+        });
+
+        $(document).on('select2:select', '#FoodId', function (e) {
+            var foodId = $(this).val();
+            console.log("FoodId selected(select2): " + foodId);
+            loadDefaultUnit(foodId);
+        });
+
+        // ۲. جلوگیری از ثبت تکراری در سمت کلاینت (UX بهتر)
+        $('#btnSaveMealItem').on('click', function (e) {
+            var foodId = $('#FoodId').val();
+
+            // فرض کنیم در جدول لیست غذاهای هر وعده، هر سطر یک data-food-id دارد
+            // باید در دیتای تیبل چک کنی که آیا این foodId قبلا ثبت شده یا نه
+            var isAlreadyInList = false;
+            $('.meal-item-row').each(function () {
+                if ($(this).data('food-id') == foodId) {
+                    isAlreadyInList = true;
+                }
+            });
+
+            if (isAlreadyInList) {
+                e.preventDefault(); // متوقف کردن فرم
+                alert('خطا: این غذا در این وعده وجود دارد!');
+                return false;
+            }
+        });
+
+
+
+
 
     </script>
 }

@@ -1,6 +1,7 @@
 ﻿using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
+using FitCore.Application.Services.Foods.Queries;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealDto;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealItemDto;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionProgramDay;
@@ -47,6 +48,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IRemoveNutritionDayService _removeNutritionDayService;
         private readonly IEditNutritionDayService _editNutritionDayService;
         private readonly IAutoGenerateNutritionDaysService _autoGenerateNutritionDaysService;
+        private readonly IFoodService _foodService;
+
 
 
         public NutritionProgramBuilderController(
@@ -62,7 +65,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             IEditNutritionMealService editNutritionMealService,
             IRemoveNutritionDayService removeNutritionDayService,
             IEditNutritionDayService editNutritionDayService,
-            IAutoGenerateNutritionDaysService autoGenerateNutritionDaysService
+            IAutoGenerateNutritionDaysService autoGenerateNutritionDaysService,
+            IFoodService foodService
             )
         {
             _getProgramBuilderService = getProgramBuilderService;
@@ -78,6 +82,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _editNutritionDayService = editNutritionDayService;
             _removeNutritionDayService= removeNutritionDayService;
             _autoGenerateNutritionDaysService= autoGenerateNutritionDaysService;
+            _foodService = foodService;
 
         }
 
@@ -187,6 +192,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             var result = _editNutritionMealItemService.Execute(request);
             return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+        }
+
+        [HttpGet]
+        public IActionResult GetFoodDefaultUnit(long foodId)
+        {
+            // اینجا از سرویس خودت استفاده کن که اطلاعات غذا را می‌گیرد
+            var unitId = _foodService.GetDefaultUnitId(foodId);
+            return Json(new { unitId = unitId });
         }
 
 

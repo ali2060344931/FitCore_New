@@ -5,6 +5,7 @@ using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Facads;
+using FitCore.Application.Services.Foods.Queries;
 using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.AddGym;
 using FitCore.Application.Services.Gyms.Commands.DeleteGym;
@@ -175,6 +176,12 @@ builder.Services.AddScoped<ICompleteGymInfoService, CompleteGymInfoService>();
 builder.Services.AddScoped<IGetProvincesService, GetProvincesService>();
 
 builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
+
+
+
+//<------  FoodS  -------->
+builder.Services.AddScoped<IFoodService, FoodService>();
+
 
 
 

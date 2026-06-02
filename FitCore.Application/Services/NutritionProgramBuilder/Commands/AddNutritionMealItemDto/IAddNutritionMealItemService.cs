@@ -26,6 +26,18 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
 
         public ResultDto<long> Execute(AddNutritionMealItemDto request)
         {
+            bool isDuplicate = _context.NutritionMealItems
+        .Any(x => x.NutritionMealId == request.NutritionMealId && x.FoodId == request.FoodId);
+
+            if (isDuplicate)
+            {
+                return new ResultDto<long>
+                {
+                    IsSuccess = false,
+                    Message = "این غذا قبلاً در این وعده ثبت شده است."
+                };
+            }
+
             if (request.NutritionMealId <= 0)
             {
                 return new ResultDto<long>
