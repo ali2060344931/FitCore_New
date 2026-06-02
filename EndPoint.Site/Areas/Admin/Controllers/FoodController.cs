@@ -61,9 +61,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View("CreateEdit", model);
 
             }
-
-
-
             var result = await _foodFacad.AddFoodService.Execute(new CreateFoodDto
             {
                 Title = model.Title,
@@ -77,12 +74,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 IsActive = model.IsActive
             });
 
-            if (!result.IsSuccess)
-            {
-                ModelState.AddModelError("", result.Message ?? "خطا");
-                model = await BuildViewModelAsync(model);
-                return View(model);
-            }
+            //if (!result.IsSuccess)
+            //{
+            //    ModelState.AddModelError("", result.Message ?? "خطا");
+            //    model = await BuildViewModelAsync(model);
+            //    return View(model);
+            //}
 
             return Json(new
             {
@@ -167,12 +164,30 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         }
 
+
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(long id)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string id)
         {
-            var result = await _foodFacad.DeleteFoodService.Execute(id);
-            return Json(new { success = result.IsSuccess, message = result.Message });
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "شناسه ارسال نشده است."
+                });
+            }
+
+            long foodId = SecurityUtils.DecryptId(id);
+
+            var result = await _foodFacad.DeleteFoodService.Execute(foodId);
+
+            return Json(new
+            {
+                isSuccess = result.IsSuccess,
+                message = result.Message
+            });
         }
 
         private async Task<FoodCreateEditViewModel> BuildViewModelAsync(FoodCreateEditViewModel? model = null)
@@ -197,10 +212,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return model;
         }
-
-
-
-
 
         private async Task FillLookupsAsync()
         {

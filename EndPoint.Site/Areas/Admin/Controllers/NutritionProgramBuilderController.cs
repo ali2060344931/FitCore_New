@@ -85,18 +85,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _foodService = foodService;
 
         }
-
-        //public IActionResult Index(long id)
-        //{
-        //    var result = _getProgramBuilderService.Execute(id);
-
-        //    return View(result);
-        //}
-
-
-
-
-
         public IActionResult Index(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -126,8 +114,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return View(vm);
         }
 
-
-
         [HttpPost]
         public JsonResult AddDay(RequestAddNutritionProgramDayDto request)
         {
@@ -135,26 +121,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return Json(result);
         }
-
-
-
-
-        //[HttpPost]
-
-        //public JsonResult AddDay(AddNutritionProgramDayDto request)
-        //{
-        //    var result = _addNutritionProgramDayService.Execute(request);
-        //    return Json(new
-        //    {
-        //        isSuccess = result.IsSuccess,
-        //        message = result.Message,
-        //        data = result.Data
-        //    });
-        //}
-
-
-
-
         
         [HttpPost]
         public JsonResult AddMeal(AddNutritionMealDto request)
@@ -168,10 +134,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             });
         }
 
-
-
-
-
+        [HttpPost]
+        public JsonResult AddMealItem(AddNutritionMealItemDto request)
+        {
+            var result = _addNutritionMealItemService.Execute(request);
+            return Json(new
+            {
+                isSuccess = result.IsSuccess,
+                message = result.Message,
+                data = result.Data
+            });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -202,18 +175,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return Json(new { unitId = unitId });
         }
 
-
-        [HttpPost]
-        public JsonResult AddMealItem(AddNutritionMealItemDto request)
-        {
-            var result = _addNutritionMealItemService.Execute(request);
-            return Json(new
-            {
-                isSuccess = result.IsSuccess,
-                message = result.Message,
-                data = result.Data
-            });
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -255,8 +216,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 message = result.Message
             });
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

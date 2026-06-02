@@ -25,8 +25,8 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
             if (request.NutritionProgramDayId <= 0)
                 return new ResultDto<long> { IsSuccess = false, Message = "روز برنامه نامعتبر است" };
 
-            if (string.IsNullOrWhiteSpace(request.Title))
-                return new ResultDto<long> { IsSuccess = false, Message = "عنوان وعده را وارد کنید" };
+            //if (string.IsNullOrWhiteSpace(request.Title))
+            //    return new ResultDto<long> { IsSuccess = false, Message = "عنوان وعده را وارد کنید" };
 
             if (request.MealTypeId <= 0)
                 return new ResultDto<long> { IsSuccess = false, Message = "نوع وعده را انتخاب کنید" };
@@ -35,18 +35,22 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
             if (!dayExists)
                 return new ResultDto<long> { IsSuccess = false, Message = "روز برنامه یافت نشد" };
 
+
             var mealTypeExists = _context.MealTypes.Any(x => x.Id == request.MealTypeId);
-
-
             if (!mealTypeExists)
                 return new ResultDto<long> { IsSuccess = false, Message = "نوع وعده نامعتبر است" };
+
+            //بررسی تکراری بودن وعده در یک روز
+            var CheackRepid = _context.NutritionMeals.Any(c => c.MealTypeId == request.MealTypeId && c.NutritionProgramDayId == request.NutritionProgramDayId);
+            if (CheackRepid)
+                return new ResultDto<long> { IsSuccess = false, Message = "وعده مورد نظر قبل در این روز ثبت گردید" };
 
             var meal = new NutritionMeal
             {
                 NutritionProgramDayId = request.NutritionProgramDayId,
-                Title = request.Title.Trim(),
+                //Title = request.Title.Trim(),
                 MealTypeId = request.MealTypeId,
-                MealTime= TimeSpan.Parse("08:30")
+                //MealTime= TimeSpan.Parse("08:30")
             };
 
             _context.NutritionMeals.Add(meal);

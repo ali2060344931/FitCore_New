@@ -192,8 +192,16 @@
         data: { Id: id },
         success: function (data) {
         if (data.isSuccess === true) {
-        Swal.fire('موفق!', data.message, 'success')
-        .then(function () { location.reload(); });
+        Swal.fire({
+        title: 'موفق!',
+        text: data.message,
+        icon: 'success',
+        timer: 2000,              // مدت زمان به میلی‌ثانیه (مثلاً 2 ثانیه)
+        timerProgressBar: true,   // نوار پیشرفت زمان
+        showConfirmButton: false  // دکمه تایید نمایش داده نشه
+        }).then(() => {
+        location.reload();
+        });
         } else {
         Swal.fire('هشدار!', data.message, 'warning');
         }

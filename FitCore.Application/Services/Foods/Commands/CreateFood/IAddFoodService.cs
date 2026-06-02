@@ -25,6 +25,47 @@ namespace FitCore.Application.Services.Foods.Commands.CreateFood
 
         public async Task<ResultDto> Execute(CreateFoodDto request)
         {
+
+
+            if (string.IsNullOrWhiteSpace(request.Title))
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "نـــام غذا را وارد نمائید"
+                };
+            }
+
+            if (request.CategoryTypeId==0)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "دسته بندی(گروه) را انتخاب نمائید"
+                };
+            }
+
+
+            if (request.DefaultUnitId==0)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "واحد اندازگیری غذا را انتخاب نمائید"
+                };
+            }
+
+
+            var foodlist =_context.Foods.Any(c=>c.Title == request.Title && c.CategoryTypeId==request.CategoryTypeId);
+            if(foodlist)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "غذای مورد نظر قبلا در این گروه ثبت گردید"
+                };
+
+            }
             var food = new Food
             {
                 Title = request.Title,
@@ -44,7 +85,7 @@ namespace FitCore.Application.Services.Foods.Commands.CreateFood
             return new ResultDto
             {
                 IsSuccess = true,
-                Message = "غذا با موفقیت ثبت شد."
+                Message = "غذا با موفقیت ثبت شد. "+request.Title
             };
         }
     }

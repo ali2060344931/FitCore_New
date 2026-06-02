@@ -295,8 +295,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return BadRequest();
 
             long Id = SecurityUtils.DecryptId(id);
-
-            return Json(_nutritionProgramFacad.DeleteNutritionProgramService.Execute(Id));
+            var result = _nutritionProgramFacad.DeleteNutritionProgramService.Execute(Id);
+            return Json(result);
         }
 
     }

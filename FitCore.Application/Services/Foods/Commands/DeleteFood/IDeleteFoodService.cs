@@ -26,7 +26,19 @@ namespace FitCore.Application.Services.Foods.Commands.DeleteFood
 
         public async Task<ResultDto> Execute(long id)
         {
+            var usedInAnotherTable = await _context.NutritionMealItems.AnyAsync(c => c.FoodId == id);
+
+            if (usedInAnotherTable)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "امکان حذف این غذا وجود ندارد، چون در جداول دیگر استفاده شده است."
+                };
+            }
+
             var food = await _context.Foods.FirstOrDefaultAsync(x => x.Id == id);
+
             if (food == null)
             {
                 return new ResultDto

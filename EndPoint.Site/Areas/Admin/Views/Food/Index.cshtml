@@ -180,6 +180,57 @@
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
+@*     <script>
+        function foodPr(id) {
+        Swal.fire({
+        title: 'حذف برنامه',
+        text: "آیا از حذف برنامه مطمئن هستید؟",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#7cacbe',
+        confirmButtonText: 'بله، حذف شود',
+        cancelButtonText: 'خیر'
+        }).then((result) => {
+        // استفاده از isConfirmed به جای result.value که استانداردتر است
+        if (result.isConfirmed) {
+        $.ajax({
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        type: "POST",
+        url: "/Admin/Food/Delete",
+        data: { Id: id },
+        success: function (data) {
+        if (data.isSuccess === true) {
+        // بخش تغییر یافته در اینجا
+        Swal.fire({
+        title: 'موفق!',
+        text: data.message,
+        icon: 'success',
+        timer: 2000,              // بستن خودکار پس از 2 ثانیه
+        timerProgressBar: true,   // نمایش نوار پیشرفت زمان
+        showConfirmButton: false  // مخفی کردن دکمه تایید برای تجربه کاربری بهتر
+        }).then(() => {
+        location.reload(); // رفرش صفحه پس از بسته شدن خودکار
+        });
+        } else {
+        Swal.fire('هشدار!', data.message, 'warning');
+        }
+        },
+        error: function () {
+        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+        }
+        });
+        }
+        });
+        }
+    </script>
+ *@
+
+
+
+
+
     <script>
         function foodPr(id) {
         Swal.fire({
@@ -197,7 +248,7 @@
         contentType: 'application/x-www-form-urlencoded',
         dataType: 'json',
         type: "POST",
-        url: "/Admin/NutritionProgram/Delete",
+        url: "/Admin/Food/Delete",
         data: { Id: id },
         success: function (data) {
         if (data.isSuccess === true) {
