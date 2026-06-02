@@ -5,6 +5,10 @@ using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Facads;
+using FitCore.Application.Services.Foods.Commands.CreateFood;
+using FitCore.Application.Services.Foods.Commands.DeleteFood;
+using FitCore.Application.Services.Foods.Commands.EditFood;
+using FitCore.Application.Services.Foods.FoodFacad;
 using FitCore.Application.Services.Foods.Queries;
 using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.AddGym;
@@ -181,8 +185,13 @@ builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
 
 //<------  FoodS  -------->
 builder.Services.AddScoped<IFoodService, FoodService>();
-
-
+builder.Services.AddScoped<IFoodFacad, FoodFacad>();
+builder.Services.AddScoped<IAddFoodService, AddFoodService>();
+builder.Services.AddScoped<IEditFoodService, EditFoodService>();
+builder.Services.AddScoped<IDeleteFoodService, DeleteFoodService>();
+builder.Services.AddScoped<IGetFoodsService, GetFoodsService>();
+builder.Services.AddScoped<IGetFoodByIdService, GetFoodByIdService>();
+//builder.Services.AddScoped<IFoodFacad, FoodFacad>();
 
 
 //<------  ProgramBuilder  -------->

@@ -1,0 +1,144 @@
+﻿@using EndPoint.Site.Areas.Admin.Models.Foods
+@using FitCore.Application.ViewModels.Common
+@using FitCore.Common
+@model FoodCreateEditViewModel
+
+@{
+    bool isEdit = Model != null && Model.Id > 0;
+    ViewData["Title"] = isEdit ? "ویرایش غذا" : "ثبت غذای جدید";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="fc-form-container">
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='(isEdit ? "ویرایش غذا" : "ثبت غذای جدید")' />
+
+        <form id="FoodForm">
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+
+            <div class="row">
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Title", Name = "Title", LabelName = "نام غذا", Col = 3, Value = Model.Title }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel { Id = "EnglishTitle", Name = "EnglishTitle", LabelName = "نام انگلیسی", Col = 3, Value = Model.EnglishTitle }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+                         model='new BaseInputViewModel { Id = "DefaultUnitId", Name = "DefaultUnitId", LabelName = "واحد اندازه‌گیری", Col = 2, Items = ViewBag.foodUnitTypes, Value = Model.DefaultUnitId.ToString() }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+                         model='new BaseInputViewModel { Id = "CategoryTypeId", Name = "CategoryTypeId", LabelName = "دسته‌بندی", Col = 2, Items = ViewBag.foodCategoryTypes, Value = Model.CategoryTypeId.ToString() }' />
+
+
+            </div>
+
+            <div class="row mt-3">
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "CaloriesPerUnit", Name = "CaloriesPerUnit", LabelName = "کالری (واحد)", Col = 1, Value = Model.CaloriesPerUnit.ToString() }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "ProteinPerUnit", Name = "ProteinPerUnit", LabelName = "پروتئین", Col = 1, Value = Model.ProteinPerUnit.ToString() }' />
+
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "CarbohydratePerUnit", Name = "CarbohydratePerUnit", LabelName = "کربوهیدرات", Col = 1, Value = Model.CarbohydratePerUnit.ToString() }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "FatPerUnit", Name = "FatPerUnit", LabelName = "چربی", Col = 1, Value = Model.FatPerUnit.ToString() }' />
+
+
+                <div class="col-md-1 mb-3">
+                    <label class="form-label font-weight-bold">وضعیت</label>
+                    <select id="IsActive" name="IsActive" class="form-control">
+                        <option value="true" selected="@(Model.IsActive ? "selected" : null)">فعال</option>
+                        <option value="false" selected="@(!Model.IsActive ? "selected" : null)">غیرفعال</option>
+                    </select>
+                </div>
+            </div>
+
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                     model='new FormButtonsViewModel { SubmitText = isEdit ? "ذخیره تغییرات" : "ثبت غذا", BackUrl = "/Admin/Food", BackText = "انصراف" }' />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+    <script>
+        $(function () {
+
+            $(document).on("click", "#btnSubmit, button[type='submit'], input[type='submit']", function (e) {
+                e.preventDefault();
+
+                const isEdit = @(isEdit ? "true" : "false");
+                const url = isEdit ? "/Admin/Food/Edit" : "/Admin/Food/Create";
+
+                const data = {
+                    Id: parseInt($("#Id").val()) || 0,
+                    Title: $("#Title").val()?.trim(),
+                    EnglishTitle: $("#EnglishTitle").val()?.trim(),
+                    CategoryTypeId: parseInt($("#CategoryTypeId").val()) || 0,
+                    CaloriesPerUnit: parseFloat($("#CaloriesPerUnit").val()) || 0,
+                    ProteinPerUnit: parseFloat($("#ProteinPerUnit").val()) || 0,
+                    CarbohydratePerUnit: parseFloat($("#CarbohydratePerUnit").val()) || 0,
+                    FatPerUnit: parseFloat($("#FatPerUnit").val()) || 0,
+                    DefaultUnitId: parseInt($("#DefaultUnitId").val()) || 0,
+                    IsActive: $("#IsActive").val() === "true"
+
+                };
+
+                        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+
+            success: function (response) {
+
+                if (response && response.isSuccess) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'موفق',
+                        text: response.message || 'عملیات با موفقیت انجام شد',
+                        confirmButtonText: 'ادامه'
+                    }).then(function () {
+
+                        window.location.href =
+                            response.redirectUrl || "/Admin/Food";
+
+                    });
+
+                } else {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'خطا',
+                        text: response?.message || 'خطا در انجام عملیات',
+                        confirmButtonText: 'متوجه شدم'
+                    });
+
+                }
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr.responseText);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطای سیستمی',
+                    text: 'خطا در ارتباط با سرور',
+                    confirmButtonText: 'بستن'
+                });
+
+            }
+        });
+            });
+
+        });
+    </script>
+}

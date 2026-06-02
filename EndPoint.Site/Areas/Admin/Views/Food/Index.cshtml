@@ -1,9 +1,8 @@
 ﻿@using EndPoint.Site.Areas.Admin.Models
-@using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
+@using FitCore.Application.Services.Foods.Queries
 @using FitCore.Common
-
-<!-- برای صفحه بندی لیست -->
-@model ResultGetNutritionProgramsDto
+@* @using static FitCore.Application.Services.Foods.Queries.FoodService *@
+@model ResultGetFoodsDto
 @{
     var pagingVm = new PagingPartialViewModel
     {
@@ -18,7 +17,7 @@
 }
 <!-- برای صفحه بندی لیست -->
 @{
-    ViewData["Title"] = "لیست برنامه غذایی";
+    ViewData["Title"] = "لیست غــذاها";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 
     var searchKey = Context.Request.Query["SearchKey"].ToString();
@@ -30,14 +29,14 @@
     <div class="fc-page-header">
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
-                 model='"لیست بــرنامه های غذایی"' />
+                 model='"لیست غـــذاها"' />
 
         <a asp-area="Admin"
-           asp-controller="Members"
+           asp-controller="Food"
            asp-action="Create"
            class="btn btn-success">
 
-            + ثبت برنامه جدید
+            + ثبت غذای جدید
         </a>
 
     </div>
@@ -60,7 +59,7 @@
         @if (isFiltered)
         {
             <span class="ms-2">
-                (نتایج فیلتر: <strong>@Model.NutritionPrograms.Count</strong>)
+                (نتایج فیلتر: <strong>@Model.Foods.Count</strong>)
             </span>
 
             <a href="/Admin/Members" class="btn btn-warning btn-sm ms-2">
@@ -69,48 +68,58 @@
         }
 
     </div>
-    @if (Model.NutritionPrograms != null && Model.NutritionPrograms.Any())
+    @if (Model.Foods != null && Model.Foods.Any())
     {
         <table class="table table-striped table-hover">
 
             <thead>
                 <tr>
-
-                    <th>نام و نام خانوادگی متقاضی</th>
-                    <th>تلفن همراه</th>
-                    <th>هدف برنامه</th>
-                    <th>نوع برنامه غذایی</th>
-                    <th>تاریخ شروع</th>
-                    <th>تاریخ پایان</th>
-                    <th>فعـــال</th>
-                    <th width="180">عملیات</th>
+                    <th>عنوان غذا</th>
+                    <th>عنوان انگلیسی</th>
+                    <th>دسته‌بندی ماده غذایی</th>
+                    <th>واحد پیش‌فرض</th>
+                    <th>کالری در واحد</th>
+                    <th>پروتئین در واحد</th>
+                    <th>کربوهیدرات در واحد</th>
+                    <th>چربی در واحد</th>
+                    <th>فعال</th>
+                    <th>عملیات</th>
                 </tr>
             </thead>
 
             <tbody>
-                @foreach (var item in Model.NutritionPrograms)
+                @foreach (var item in Model.Foods)
                 {
                     <tr>
                         <td>
-                                <strong style="color:#0d6efd;">@item.MemberName</strong>
+                                <strong style="color:#0d6efd;">@item.Title</strong>
                         </td>
 
                         
                         <td>
-                            @item.MemberMobile
+                            @item.EnglishTitle
                         </td>
 
-                        <td>@item.GoalType</td>
+                        <td>@item.CategoryTypeName</td>
+                        
+                        <td>@item.DefaultUnitName</td>
 
-                        <td>@item.ProgramType</td>
+                        
+                        
+                        <td>@item.CaloriesPerUnit</td>
 
 
                         <td>
-                            @item.StartDate
+                            @item.ProteinPerUnit
                         </td>
                         <td>
-                            @item.EndDate
+                            @item.CaloriesPerUnit
                         </td>
+                        <td>
+                            @item.FatPerUnit
+                        </td>
+
+
                         <td>
                             @(item.IsActive == true ? "بله" : "خیر")
                         </td>
@@ -119,18 +128,18 @@
                         <td>
                             <div class="fc-action-buttons">
                                 
-                                <a class="btn btn-primary btn-sm"
+                                @* <a class="btn btn-primary btn-sm"
                                    asp-area="Admin"
                                    asp-controller="NutritionProgramBuilder"
                                    asp-action="Index"
                                    asp-route-id="@SecurityUtils.EncryptId(item.Id)">
                                     مشاهده فرم برنامه
-                                </a>
+                                </a> *@
 
 
                                 <a class="btn btn-info btn-sm"
                                    asp-area="Admin"
-                                   asp-controller="NutritionProgram"
+                                   asp-controller="Food"
                                    asp-action="Edit"
                                    asp-route-id="@SecurityUtils.EncryptId(item.Id)">
                                     ویرایش
@@ -139,7 +148,7 @@
 
                                 <button type="button"
                                         class="btn btn-danger btn-sm"
-                                        onclick="NutritionProgram('@SecurityUtils.EncryptId(item.Id)')">
+                                        onclick="foodPr('@SecurityUtils.EncryptId(item.Id)')">
                                     حذف
                                 </button>
 
@@ -159,7 +168,7 @@
     else
     {
         <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
-                 model='"هیچ برنامه ای یافت نشد"' />
+                 model='"هیچ غذایی یافت نشد"' />
     }
 
     <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
@@ -172,7 +181,7 @@
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <script>
-        function NutritionProgram(id) {
+        function foodPr(id) {
         Swal.fire({
         title: 'حذف برنامه',
         text: "آیا از حذف برنامه مطمئن هستید؟",

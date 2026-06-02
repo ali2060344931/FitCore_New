@@ -45,52 +45,57 @@
 
                     <div class="d-flex flex-wrap gap-3">
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-4 py-3 rounded-pill shadow-sm">
-                            <span class="text-muted me-2 fw-semibold" style="font-size: 1.1rem;">عضـــو: </span>
-                            <span class="text-primary fw-bolder" style="font-size: 1.5rem;">@program.MemberName</span>
-                        </div>
+                            <div class="badge bg-light text-dark border d-flex align-items-center px-4 py-3 rounded-pill shadow-sm">
+                                <span class="text-muted me-2 fw-semibold" style="font-size: 1.1rem;">عضـــو: </span>
+                                <span class="text-primary fw-bolder" style="font-size: 1.5rem;">@program.MemberName</span>
+                            </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">هدف برنامه: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.GoalType</span>
-                        </div>
+                            <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
+                                <span class="text-muted small me-2">هدف برنامه: </span>
+                                <span class="text-primary fw-bolder fs-5">@program.GoalType</span>
+                            </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">نــوع برنامه: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.ProgramType</span>
-                        </div>
+                            <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
+                                <span class="text-muted small me-2">نــوع برنامه: </span>
+                                <span class="text-primary fw-bolder fs-5">@program.ProgramType</span>
+                            </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">تاریخ شروع: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.StartDate</span>
-                        </div>
+                            <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
+                                <span class="text-muted small me-2">تاریخ شروع: </span>
+                                <span class="text-primary fw-bolder fs-5">@program.StartDate</span>
+                            </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">تاریخ پایان: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.EndDate</span>
-                        </div>
+                            <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
+                                <span class="text-muted small me-2">تاریخ پایان: </span>
+                                <span class="text-primary fw-bolder fs-5">@program.EndDate</span>
+                            </div>
+
+                            <button class="btn btn-bitbucket text-nowrap" type="button" data-toggle="modal" data-target="#addDayModal">
+                                <i class="fa fa-cutlery" aria-hidden="true"></i> <span class="d-none d-md-inline">افزودن غذاها</span>
+                            </button>
 
                     </div>
+
                 </div>
             </div>
 
             <style>
-                        /* تنظیمات اختصاصی برای زیبایی بیشتر */
-                        .rounded-4 {
-                            border-radius: 1rem !important;
-                        }
+                /* تنظیمات اختصاصی برای زیبایی بیشتر */
+                .rounded-4 {
+                    border-radius: 1rem !important;
+                }
 
-                        /* افکت هاور برای تعاملی شدن */
-                        .badge:hover {
-                            background-color: #e9ecef !important;
-                            transition: 0.3s;
-                            cursor: default;
-                        }
+                /* افکت هاور برای تعاملی شدن */
+                .badge:hover {
+                    background-color: #e9ecef !important;
+                    transition: 0.3s;
+                    cursor: default;
+                }
 
-                        /* اطمینان از عدم بیرون زدگی در موبایل */
-                        .d-flex.flex-wrap {
-                            width: 100%;
-                        }
+                /* اطمینان از عدم بیرون زدگی در موبایل */
+                .d-flex.flex-wrap {
+                    width: 100%;
+                }
             </style>
 
 
@@ -112,15 +117,19 @@
 
                     <!-- بخش دکمه‌ها (در یک سطر) -->
                     <div class="d-flex align-items-center" style="gap: 10px;">
+
+
+
                         <button class="btn btn-success text-nowrap" type="button" data-toggle="modal" data-target="#addDayModal">
                             <i class="fa fa-plus"></i> <span class="d-none d-md-inline">افزودن روز جدید</span>
                         </button>
+
 
                         <button class="btn btn-outline-info text-nowrap"
                                 type="button"
                                 id="btnAutoGenerateDays"
                                 data-program-id="@program.ProgramId">
-                            <i class="fa fa-magic"></i> <span class="d-none d-md-inline">افزودن اتوماتیک</span>
+                            <i class="fa fa-magic"></i> <span class="d-none d-md-inline">افزودن روزها اتوماتیک</span>
                         </button>
                     </div>
                 </div>
@@ -159,19 +168,19 @@
                                                 data-toggle="modal"
                                                 data-target="#addMealModal"
                                                 data-day-id="@day.Id">
-                                            افزودن وعده
+                                            <i class="fa fa-plus"></i> افزودن وعده
                                         </button>
 
                                         <button type="button"
                                                 class="btn btn-sm btn-warning"
                                                 onclick="openEditDayModal('@day.Id','@day.DayNumber',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`)">
-                                            ویرایش
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>  ویرایش
                                         </button>
 
                                         <button type="button"
                                                 class="btn btn-sm btn-danger"
                                                 onclick="openDeleteDayModal('@day.Id')">
-                                            حذف
+                                            <i class="fa fa-times" aria-hidden="true"></i>حذف
                                         </button>
                                     </div>
                                 </div>
@@ -207,13 +216,13 @@
                                                             <button type="button"
                                                                     class="btn btn-sm btn-warning"
                                                                     onclick="openEditMealModal('@meal.MealId','@day.Id','@meal.MealTypeId',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.Title ?? ""))`)">
-                                                                ویرایش
+                                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i> ویرایش
                                                             </button>
 
                                                             <button type="button"
                                                                     class="btn btn-sm btn-danger"
                                                                     onclick="openDeleteMealModal('@meal.MealId')">
-                                                                حذف
+                                                                <i class="fa fa-times" aria-hidden="true"></i>حذف
                                                             </button>
                                                         </div>
                                                     </div>
@@ -249,13 +258,13 @@
                                                                             <button type="button"
                                                                                     class="btn btn-sm btn-warning"
                                                                                     onclick="openEditMealItemModal('@food.Id','@meal.MealId','@food.FoodId','@food.Amount','@food.UnitTypeId')">
-                                                                                ویرایش
+                                                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>ویرایش
                                                                             </button>
 
                                                                             <button type="button"
                                                                                     class="btn btn-sm btn-danger"
                                                                                     onclick="openDeleteMealItemModal('@food.Id')">
-                                                                                حذف
+                                                                                <i class="fa fa-times" aria-hidden="true"></i>حذف
                                                                             </button>
                                                                         </td>
 
@@ -275,8 +284,8 @@
                 }
             </div>
         }
-    }
-</div>
+                }
+    </div>
 </div>
 
 @section Modals {
@@ -346,18 +355,18 @@
                         <input type="hidden" name="NutritionProgramDayId" id="AddMeal_NutritionProgramDayId" />
                         <div class="form-group">
                             <label>نوع وعده</label><select class="form-control" name="MealTypeId" id="AddMeal_MealTypeId" required>
-                            <option value="">انتخاب کنید...</option>@foreach (var mt in lookups.MealTypes){
-                            <option value="@mt.Id">@mt.Name</option>
-                        }
-                    </select>
-                </div>
-                <div class="form-group"><label>عنوان</label><input class="form-control" name="Title" id="AddMeal_Title" /></div>
-            </form>
-            <div id="addMealMessage" class="mt-2"></div>
+                                <option value="">انتخاب کنید...</option>@foreach (var mt in lookups.MealTypes){
+                                <option value="@mt.Id">@mt.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group"><label>عنوان</label><input class="form-control" name="Title" id="AddMeal_Title" /></div>
+                </form>
+                <div id="addMealMessage" class="mt-2"></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnSaveMeal" form="addMealForm"><span class="btn-text">ثبت</span></button></div>
         </div>
-        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnSaveMeal" form="addMealForm"><span class="btn-text">ثبت</span></button></div>
     </div>
-</div>
 </div>
 
 <!-- Edit Meal -->
@@ -372,18 +381,18 @@
                     <input type="hidden" name="NutritionProgramDayId" id="EditMeal_NutritionProgramDayId" />
                     <div class="form-group">
                         <label>نوع وعده</label><select class="form-control" name="MealTypeId" id="EditMeal_MealTypeId" required>
-                        <option value="">انتخاب کنید...</option>@foreach (var mt in lookups.MealTypes){
-                        <option value="@mt.Id">@mt.Name</option>
-                    }
-                </select>
+                            <option value="">انتخاب کنید...</option>@foreach (var mt in lookups.MealTypes){
+                            <option value="@mt.Id">@mt.Name</option>
+                                                        }
+                        </select>
+                    </div>
+                    <div class="form-group"><label>عنوان</label><input class="form-control" name="Title" id="EditMeal_Title" /></div>
+                </form>
+                <div id="editMealMessage" class="mt-2"></div>
             </div>
-            <div class="form-group"><label>عنوان</label><input class="form-control" name="Title" id="EditMeal_Title" /></div>
-        </form>
-        <div id="editMealMessage" class="mt-2"></div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnEditMeal" form="editMealForm"><span class="btn-text">ذخیره</span></button></div>
+        </div>
     </div>
-    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnEditMeal" form="editMealForm"><span class="btn-text">ذخیره</span></button></div>
-</div>
-</div>
 </div>
 
 <!-- Delete Meal -->
@@ -417,31 +426,31 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>غذا</label><select class="form-control select2" id="FoodId" name="FoodId">
-                                <option value="">انتخاب غذا</option>@if (lookups?.Foods != null){foreach (var food in lookups.Foods){
-                                <option value="@food.Id">@food.Name</option>
-                            }
-                        }
-                    </select>
-                </div>
+                                    <option value="">انتخاب غذا</option>@if (lookups?.Foods != null){foreach (var food in lookups.Foods){
+                                    <option value="@food.Id">@food.Name</option>
+                                                                        }
+                                                                        }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="Amount" name="Amount" /></div></div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>واحد</label><select class="form-control select2" id="UnitTypeId" name="UnitTypeId">
+                                    <option value="">انتخاب واحد</option>@if (lookups?.Units != null){foreach (var unit in lookups.Units){
+                                    <option value="@unit.Id">@unit.Name</option>
+                                                                        }
+                                                                        }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div id="addMealItemMessage" class="mt-2"></div>
             </div>
-            <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="Amount" name="Amount" /></div></div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label>واحد</label><select class="form-control select2" id="UnitTypeId" name="UnitTypeId">
-                    <option value="">انتخاب واحد</option>@if (lookups?.Units != null){foreach (var unit in lookups.Units){
-                    <option value="@unit.Id">@unit.Name</option>
-                }
-            }
-        </select>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnSaveMealItem" form="addMealItemForm"><span class="btn-text">ثبت</span></button></div>
+        </div>
     </div>
-</div>
-</div>
-</form>
-<div id="addMealItemMessage" class="mt-2"></div>
-</div>
-<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnSaveMealItem" form="addMealItemForm"><span class="btn-text">ثبت</span></button></div>
-</div>
-</div>
 </div>
 
 <!-- Edit Meal Item -->
@@ -458,31 +467,31 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>غذا</label><select class="form-control select2" id="EditMealItem_FoodId" name="FoodId">
-                                <option value="">انتخاب غذا</option>@if (lookups?.Foods != null){foreach (var food in lookups.Foods){
-                                <option value="@food.Id">@food.Name</option>
-                            }
-                        }
-                    </select>
-                </div>
+                                    <option value="">انتخاب غذا</option>@if (lookups?.Foods != null){foreach (var food in lookups.Foods){
+                                    <option value="@food.Id">@food.Name</option>
+                                                                        }
+                                                                        }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="EditMealItem_Amount" name="Amount" /></div></div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>واحد</label><select class="form-control select2" id="EditMealItem_UnitTypeId" name="UnitTypeId">
+                                    <option value="">انتخاب واحد</option>@if (lookups?.Units != null){foreach (var unit in lookups.Units){
+                                    <option value="@unit.Id">@unit.Name</option>
+                                                                        }
+                                                                        }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div id="editMealItemMessage" class="mt-2"></div>
             </div>
-            <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="EditMealItem_Amount" name="Amount" /></div></div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label>واحد</label><select class="form-control select2" id="EditMealItem_UnitTypeId" name="UnitTypeId">
-                    <option value="">انتخاب واحد</option>@if (lookups?.Units != null){foreach (var unit in lookups.Units){
-                    <option value="@unit.Id">@unit.Name</option>
-                }
-            }
-        </select>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnEditMealItem" form="editMealItemForm"><span class="btn-text">ذخیره</span></button></div>
+        </div>
     </div>
-</div>
-</div>
-</form>
-<div id="editMealItemMessage" class="mt-2"></div>
-</div>
-<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button><button type="submit" class="btn btn-primary" id="btnEditMealItem" form="editMealItemForm"><span class="btn-text">ذخیره</span></button></div>
-</div>
-</div>
 </div>
 
 <!-- Delete Meal Item -->
@@ -731,7 +740,7 @@
                     });
                 });
 
-    
+
 
         // 2. ارسال فرم ویرایش با AJAX
         $('#editMealItemForm').on('submit', function (e) {
@@ -755,7 +764,7 @@
             });
         });
 
-        
+
 
                 // ارسال درخواست حذف
                 $('#deleteMealForm').on('submit', function (e) {
