@@ -53689,3 +53689,22 @@ input[type='checkbox'].switch, input[type='radio'].switch {
     font-size: 20px;
     font-weight: bold;
 }
+
+
+
+.sticky-days-toolbar {
+    position: sticky;
+    top: 70px; /* اگر هدر ثابت داری، این را به 70px یا مقدار مناسب تغییر بده */
+    z-index: 1020;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.sticky-content-header {
+    position: sticky;
+    top: 70px; /* اگر هدر/نوبار ثابت داری، مقدارش را بیشتر کن */
+    z-index: 1030;
+    background: #fff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
