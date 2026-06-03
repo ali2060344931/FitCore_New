@@ -25,11 +25,13 @@
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel { Id = "Title", Name = "Title", LabelName = "نام (عنــوان) غذا", Col = 3, Value = Model.Title }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel { Id = "DefaultUnitId", Name = "DefaultUnitId", LabelName = "واحد اندازه‌گیری", Col = 2, Items = ViewBag.foodUnitTypes, Value = Model.DefaultUnitId.ToString() }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel { Id = "CategoryTypeId", Name = "CategoryTypeId", LabelName = "دسته‌بندی(گــروه)", Col = 2, Items = ViewBag.foodCategoryTypes, Value = Model.CategoryTypeId.ToString() }' />
+
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+                         model='new BaseInputViewModel { Id = "DefaultUnitId", Name = "DefaultUnitId", LabelName = "واحد اندازه‌گیری", Col = 2, Items = ViewBag.foodUnitTypes, Value = Model.DefaultUnitId.ToString() }' />
 
                 <!-- برای دکمه‌ها هم حتما یک ستون در نظر بگیر تا در کنار بقیه قرار بگیرند -->
                 <div class="col-md-3">

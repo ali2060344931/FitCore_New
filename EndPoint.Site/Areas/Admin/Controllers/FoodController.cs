@@ -216,11 +216,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private async Task FillLookupsAsync()
         {
             var foodCategoryTypes = await _context.FoodCategoryTypes
-                .OrderBy(x => x.Name)
+                .OrderBy(x => x.Name.Trim())
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
-                    Text = x.Name
+                    Text = x.Name.Trim()
                 })
                 .ToListAsync();
 

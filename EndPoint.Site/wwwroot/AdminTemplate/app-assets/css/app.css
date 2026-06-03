@@ -8515,7 +8515,7 @@ a.bg-base:hover, a.bg-base:focus, button.bg-base:hover, button.bg-base:focus {
 }
 
 .mb-4, .my-4 {
-  margin-bottom : 2.25rem !important;
+  margin-bottom : 0.25rem !important;
 }
 
 .ml-4, .mx-4 {
@@ -46180,7 +46180,7 @@ datetime .form-group {
 .wrapper .content-header {
 
   font-size : 1.6rem;
-  margin-top : 1.5rem;
+  margin-top : 0.25rem;
   margin-bottom : 0.25rem;
   text-transform : capitalize;
   color : #454545;

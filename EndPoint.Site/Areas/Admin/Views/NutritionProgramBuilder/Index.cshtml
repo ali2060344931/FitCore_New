@@ -32,17 +32,51 @@
     <div class="content-header row mb-4 align-items-center">
         <!-- بخش عنوان در سمت راست -->
         <div class="content-header-left col-md-6 col-12">
-            <h3 class="content-header-title mb-1 fw-bold text-dark">مدیریت ساختار برنامه غذایی</h3>
-            <p class="text-muted mb-0 small">
-                <i class="fa fa-info-circle me-1"></i>
-                ساختار برنامه: روزها ← وعده‌ها ← غذاها
-            </p>
+
+            <div class="d-flex align-items-center gap-3 mb-2">
+
+
+                <h3 class="content-header-title mb-0 fw-bold text-dark">مدیریت ساختار برنامه غذایی</h3>
+
+                <p class="text-muted small mb-0">
+                    <i class="fa fa-info-circle me-1"></i>
+                    ساختار برنامه: روزها ← وعده‌ها ← غذاها
+                </p>
+
+            </div>
         </div>
 
         <!-- بخش دکمه بازگشت در سمت چپ (گوشه) -->
         <div class="content-header-right col-md-6 col-12 text-md-end text-start mt-md-0 mt-3">
+            <!-- دکمه بازگشت -->
             <a asp-area="Admin" asp-controller="NutritionProgram" asp-action="Index"
-               class="btn btn-outline-danger btn-sm px-3 shadow-sm rounded-pill">
+               class="btn btn-sm btn-outline-light-green rounded-4 text-nowrap">
+                <i class="fa fa-reply me-1"></i>
+                <span class="d-none d-md-inline">بازگشت به لیست</span>
+            </a>
+
+            <!-- دکمه افزودن غذا -->
+            <a asp-area="Admin" asp-controller="Food" asp-action="Create"
+               class="btn btn-sm btn-outline-light-green rounded-4 text-nowrap"
+               target="_blank"
+               rel="noopener noreferrer">
+                <i class="fa fa-plus me-1" aria-hidden="true"></i>
+                <span class="d-none d-md-inline">افزودن غذاها</span>
+            </a>
+
+            <!-- دکمه بروزرسانی (مرجع شما) -->
+            <button type="button"
+                    class="btn btn-sm btn-outline-light-green rounded-4 text-nowrap"
+                    onclick="location.reload()"
+                    title="بروزرسانی صفحه">
+                <i class="fa fa-refresh me-1" aria-hidden="true"></i>
+                <span class="d-none d-md-inline">بروز رسانی لیست</span>
+            </button>
+
+            
+            
+            @* <a asp-area="Admin" asp-controller="NutritionProgram" asp-action="Index"
+               class="btn btn-outline-light-green text-nowrap">
                 <i class="fa fa-reply me-1"></i>
                 بازگشت به لیست
             </a>
@@ -56,6 +90,13 @@
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 <span class="d-none d-md-inline">افزودن غذاها</span>
             </a>
+            <button type="button"
+                    class="btn btn-outline-light-green text-nowrap"
+                    onclick="location.reload()"
+                    title="بروزرسانی صفحه لیست برنامه ها">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+                <span class="d-none d-md-inline">بروز رسانی</span>
+            </button> *@
 
         </div>
     </div>
@@ -71,35 +112,44 @@
 
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h5 class="card-title text-primary fw-bold mb-4 border-bottom pb-2">اطلاعات برنامه غذایی</h5>
 
-                    <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex align-items-center flex-wrap gap-3">
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-4 py-3 rounded-pill shadow-sm">
-                            <span class="text-muted me-2 fw-semibold" style="font-size: 1.1rem;">عضـــو: </span>
-                            <span class="text-primary fw-bolder" style="font-size: 1.5rem;">@program.MemberName</span>
+                        <!-- عنوان -->
+                        <div class="badge bg-primary text-white d-flex align-items-center px-4 py-2 rounded-pill shadow-sm text-nowrap">
+                            <i class="fa fa-info-circle me-2"></i>
+                            <span class="fw-bold" style="font-size: 1.1rem;">اطلاعات برنامه غذایی: </span>
                         </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">هدف برنامه: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.GoalType</span>
+                        <!-- آیتم‌ها -->
+                        <div class="badge bg-light text-dark border d-flex align-items-center px-4 py-2 rounded-pill shadow-sm text-nowrap">
+                            <span class="text-muted me-2 fw-semibold">
+                                <i class="fa fa-user-o"></i> عضـــو:
+                            </span>
+                            <span class="text-primary fw-bolder fs-6">
+                                @program.MemberName
+                            </span>
                         </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">نــوع برنامه: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.ProgramType</span>
+                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm text-nowrap">
+                            <span class="text-muted small me-2">هدف برنامه:</span>
+                            <span class="text-primary fw-bolder fs-6">@program.GoalType</span>
                         </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">تاریخ شروع: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.StartDate</span>
+                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm text-nowrap">
+                            <span class="text-muted small me-2">نــوع برنامه:</span>
+                            <span class="text-primary fw-bolder fs-6">@program.ProgramType</span>
                         </div>
 
-                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
-                            <span class="text-muted small me-2">تاریخ پایان: </span>
-                            <span class="text-primary fw-bolder fs-5">@program.EndDate</span>
+                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm text-nowrap">
+                            <span class="text-muted small me-2">تاریخ شروع:</span>
+                            <span class="text-primary fw-bolder fs-6">@program.StartDate</span>
                         </div>
 
+                        <div class="badge bg-light text-dark border d-flex align-items-center px-3 py-2 rounded-pill shadow-sm text-nowrap">
+                            <span class="text-muted small me-2">تاریخ پایان:</span>
+                            <span class="text-primary fw-bolder fs-6">@program.EndDate</span>
+                        </div>
 
                     </div>
 
@@ -125,9 +175,43 @@
                         }
             </style>
 
-
-
             <div class="card mb-3">
+                <!-- py-2 و px-3 برای کاهش ارتفاع و عرض کارت -->
+                <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center flex-nowrap">
+
+                    <!-- بخش عنوان با ارتفاع کنترل شده -->
+                    <div class="flex-shrink-0">
+                        <h6 class="mb-0 fw-bold">
+                            روزهای برنامه: 
+                            <span class="badge badge-pill badge-info ml-2" > @(program.Days?.Count ?? 0) روز</span>
+                        </h6>
+                    </div>
+
+                    <!-- فرم مخفی -->
+                    <form id="autoGenerateDaysForm" class="d-none">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="NutritionProgramId" value="@program?.ProgramId" />
+                    </form>
+
+                    <!-- بخش دکمه‌ها: استفاده از btn-sm برای ارتفاع کمتر -->
+                    <div class="d-flex align-items-center gap-2">
+
+                        <button class="btn btn-sm btn-success text-nowrap" type="button" data-toggle="modal" data-target="#addDayModal">
+                            <i class="fa fa-plus"></i> <span class="d-none d-md-inline ms-1">افزودن روزها دستی</span>
+                        </button>
+
+                        <button class="btn btn-sm btn-outline-info text-nowrap"
+                                type="button"
+                                id="btnAutoGenerateDays"
+                                data-program-id="@program.ProgramId">
+                            <i class="fa fa-magic"></i> <span class="d-none d-md-inline ms-1">افزودن روزها اتوماتیک</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            @* <div class="card mb-3">
                 <!-- از flex-nowrap استفاده کردیم تا چیدمان حتما در یک سطر بماند -->
                 <div class="card-body d-flex justify-content-between align-items-center flex-nowrap">
 
@@ -160,7 +244,7 @@
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> *@
 
 
 
@@ -185,7 +269,7 @@
                                     <button class="btn btn-link text-left p-0 font-weight-bold"
                                             data-toggle="collapse"
                                             data-target="#@collapseId"
-                                            aria-expanded="@(i == 0 ? "true" : "false")"
+                                            aria-expanded="false"
                                             aria-controls="@collapseId">
 
                                         <span>روز @ToPersianNumbers(day.DayNumber)</span>
@@ -195,7 +279,6 @@
                                             <span>- @day.Title</span>
                                         }
 
-                                        @* شرط نمایش فقط در صورت وجود وعده *@
                                         @if (day.Meals != null && day.Meals.Count > 0)
                                         {
                                             <span class="badge badge-pill badge-info ml-2">
@@ -216,31 +299,23 @@
                                                 <i class="fa fa-plus"></i> افزودن وعده در روز
                                             </button>
 
-                                            @* <button type="button"
-                                                class="btn btn-sm btn-primary"
-                                                data-toggle="modal"
-                                                data-target="#addMealModal"
-                                                data-day-id="@day.Id">
-                                            <i class="fa fa-plus"></i> افزودن وعده در روز
-                                        </button> *@
-
                                             <button type="button"
                                                     class="btn btn-sm btn-warning"
                                                     onclick="openEditDayModal('@day.Id','@day.DayNumber',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`)">
-                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>  ویرایش
+                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>  ویرایش روز
                                             </button>
 
                                             <button type="button"
                                                     class="btn btn-sm btn-danger"
                                                     onclick="openDeleteDayModal('@day.Id')">
-                                                <i class="fa fa-times" aria-hidden="true"></i> حذف
+                                                <i class="fa fa-times" aria-hidden="true"></i> حذف روز
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div id="@collapseId" class="collapse @(i == 0 ? "show" : "")" aria-labelledby="@headingId" data-parent="#daysAccordion">
+                            <div id="@collapseId" class="collapse" aria-labelledby="@headingId" data-parent="#daysAccordion">
                                 <div class="card-body">
                                     @if (day.Meals == null || day.Meals.Count == 0)
                                     {
@@ -265,7 +340,8 @@
 
                                                             @if (meal.Foods != null && meal.Foods.Count > 0)
                                                             {
-                                                                <span class="badge rounded-pill bg-dark text-warning">
+                                                                @* <span class="badge rounded-pill bg-dark text-warning"> *@
+                                                                <span class="badge badge-pill badge-info ml-2">
                                                                     @ToPersianNumbers(meal.Foods.Count) غذا
                                                                 </span>
                                                             }
@@ -287,21 +363,24 @@
                                                             <div class="mt-2 mt-md-0">
                                                                 
                                                                 <button type="button"
-                                                                        class="btn btn-sm btn-success"
+                                                                        @* class="btn btn-sm btn-success" *@
+                                                                        class="btn rounded-4 text-nowrap"
                                                                         onclick="openAddMealItemModal('@meal.MealId', `@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`, `@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.MealType ?? ""))`)">
                                                                     <i class="fa fa-plus"></i> افزودن غذا در وعده
                                                                 </button>
 
                                                                 <button type="button"
-                                                                        class="btn btn-sm btn-warning"
+                                                                        @* class="btn btn-sm btn-warning" *@
+                                                                        class="btn rounded-4 text-nowrap"
                                                                         onclick="openEditMealModal('@meal.MealId','@day.Id','@meal.MealTypeId',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.Title ?? ""))`)">
-                                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> ویرایش
+                                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> ویرایش وعده
                                                                 </button>
 
                                                                 <button type="button"
-                                                                        class="btn btn-sm btn-danger"
+                                                                        @* class="btn btn-sm btn-danger" *@
+                                                                        class="btn rounded-4 text-nowrap"
                                                                         onclick="openDeleteMealModal('@meal.MealId')">
-                                                                    <i class="fa fa-times" aria-hidden="true"></i> حذف
+                                                                    <i class="fa fa-times" aria-hidden="true"></i> حذف وعده
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -319,33 +398,50 @@
                                                             <table class="table table-bordered table-striped table-sm">
                                                                 <thead class="thead-light">
                                                                     <tr>
-                                                                        <th>غذا</th>
-                                                                        <th>مقدار</th>
+
+                                                                        <th style="width:200px;">عملیات</th>
+
+                                                                        <th style="width:200px;">نام/عنوان غــذا</th>
+                                                                        <th style="width:100px;">مقدار/تعداد</th>
                                                                         <th>واحد</th>
-                                                                        <th style="width:190px;">عملیات</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach (var food in meal.Foods)
                                                                     {
                                                                         <tr>
-                                                                            <td>@food.FoodName</td>
-                                                                            <td>@food.Amount</td>
-                                                                            <td>@food.Unit</td>
+
 
                                                                             <td>
+                                                                                @* <a class="btn rounded-4 text-nowrap"
+                                                                                   asp-controller="Food"
+                                                                                   asp-action="index"
+                                                                                   target="_blank"
+                                                                                   rel="noopener noreferrer">
+                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                    <span class="d-none d-md-inline">بروز رسانی اطلاعات صفحه</span>
+                                                                                </a> *@
+
+
+
+
                                                                                 <button type="button"
                                                                                         class="btn btn-sm btn-warning"
                                                                                         onclick="openEditMealItemModal('@food.Id','@meal.MealId','@food.FoodId','@food.Amount','@food.UnitTypeId')">
-                                                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> ویرایش
+                                                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> ویرایش غذا
                                                                                 </button>
 
                                                                                 <button type="button"
                                                                                         class="btn btn-sm btn-danger"
                                                                                         onclick="openDeleteMealItemModal('@food.Id')">
-                                                                                    <i class="fa fa-times" aria-hidden="true"></i> حذف
+                                                                                    <i class="fa fa-times" aria-hidden="true"></i> حذف غذا
                                                                                 </button>
                                                                             </td>
+
+                                                                            <td>@food.FoodName</td>
+                                                                            <td>@food.Amount</td>
+                                                                            <td>@food.Unit</td>
+
 
                                                                         </tr>
                                                                     }
@@ -522,14 +618,6 @@
                 </h5>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-
-@*             <div class="modal-header">
-                <h5 class="modal-title">افزودن غذای جدید</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
- *@
-            
-
             <div class="modal-body">
                 <form id="addMealItemForm">
                     @Html.AntiForgeryToken()
@@ -641,6 +729,7 @@
         var mealItemAdded = false;
         var mealAdded = false;
 
+
         $(document).ready(function () {
             if ($.fn.select2) {
                 $('.select2').select2({ dir: 'rtl', width: '100%', language: 'fa' });
@@ -701,12 +790,6 @@
                 }
             });
         }
-
-
-
-
-
-
 
         function openEditDayModal(id, dayNumber, title) {
             $('#EditDay_Id').val(id);
@@ -893,24 +976,6 @@
             $('#deleteDayMessage').html('');
         });
 
-        // $('#addMealModal').on('hidden.bs.modal', function () {
-
-        //     $('#addMealForm')[0].reset();
-
-        //     $('#addMealMessage').html('');
-
-        //     $('#addMealDayTitle').text('');
-
-        //     if (mealAdded) {
-
-        //         mealAdded = false;
-
-        //         location.reload();
-        //     }
-        // });
-
-
-
 
         $('#editMealModal').on('hidden.bs.modal', function () {
             $('#editMealForm')[0].reset();
@@ -937,6 +1002,8 @@
                 location.reload();
             }
         });
+
+
 
         $('#editMealItemModal').on('hidden.bs.modal', function () {
             $('#editMealItemForm')[0].reset();
