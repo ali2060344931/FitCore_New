@@ -47,6 +47,7 @@ namespace FitCore.Domain.Entities.Members
         public string Description { get; set; }
         //public ICollection<NutritionProgram.NutritionProgram.NutritionProgram> NutritionPrograms { get; set; }
     }
+
     public enum Gender
     {
         Male = 1,

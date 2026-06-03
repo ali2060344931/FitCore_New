@@ -48,7 +48,9 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
             int rowCount =
                 await nutritionPrograms.CountAsync();
-
+            
+            
+            
             var result =
                 await nutritionPrograms
                 .OrderByDescending(x => x.Id)
@@ -57,8 +59,6 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 .Select(x => new GetNutritionProgramsDto
                 {
                     Id = x.Id,
-
-                    //Title = x.Title,
 
                     GoalType = x.GoalType.Name,
                     ProgramType = x.ProgramType.Name,
@@ -69,7 +69,9 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
                     EndDate = x.EndDate,
 
-                    IsActive = x.IsActive
+                    IsActive = x.IsActive,
+                    CountProgramBuilder= _context.NutritionProgramDays.Count(c => c.NutritionProgramId == x.Id)
+
                 })
                 .ToListAsync();
 

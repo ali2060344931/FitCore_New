@@ -9,6 +9,8 @@ namespace FitCore.Application.Services.Member.Queries
         public string Mobile { get; set; }
         public Gender? Gender { get; set; }
         public string BirthDate { get; set; }
+
+        public int countNutritionProg { get; set; }
     }
 
 

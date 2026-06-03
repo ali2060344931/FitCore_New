@@ -53708,3 +53708,29 @@ input[type='checkbox'].switch, input[type='radio'].switch {
     padding-bottom: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
+
+/* تنظیمات اختصاصی برای زیبایی بیشتر */
+.rounded-4 {
+    border-radius: 1rem !important;
+}
+
+/* افکت هاور برای تعاملی شدن */
+.badge:hover {
+    background-color: #e9ecef !important;
+    transition: 0.3s;
+    cursor: default;
+}
+
+/* اطمینان از عدم بیرون زدگی در موبایل */
+.d-flex.flex-wrap {
+    width: 100%;
+}
+
+
+
+
+.count-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+    vertical-align: middle;
+}

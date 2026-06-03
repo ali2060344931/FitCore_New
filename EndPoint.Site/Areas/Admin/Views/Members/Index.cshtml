@@ -73,6 +73,7 @@
                     <th>تلفن همراه</th>
                     <th>جنسیت</th>
                     <th>تاریخ تولد</th>
+                    <th>تعداد برنامه<br />غذایی ثبت شده</th>
                     <th width="180">عملیات</th>
                 </tr>
             </thead>
@@ -94,18 +95,23 @@
                         <td>
                             @(item.BirthDate == default ? "---" : item.BirthDate)
                         </td>
+                        <td>
+                            <span class="badge rounded-pill bg-success ms-1">
+                                @(@item.countNutritionProg)
+                            </span>
+
+                        </td>
 
                         <td>
                             <div class="fc-action-buttons">
-
                                 <a class="btn btn-primary btn-sm"
                                    asp-area="Admin"
                                    asp-controller="NutritionProgram"
                                    asp-action="Create"
                                    asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                    <i class="fa fa-th-list" aria-hidden="true"></i>
                                     ثبت برنامه غذایی
                                 </a>
-
 
                                 <a class="btn btn-info btn-sm"
                                    asp-area="Admin"

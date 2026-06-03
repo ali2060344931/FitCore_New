@@ -2,6 +2,7 @@
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
+using FitCore.Application.Services.Members.Queries.ReportMembers;
 using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Commands.DeleteNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
@@ -24,13 +25,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly INutritionProgramFacad _nutritionProgramFacad;
         private readonly IDataBaseContext _context;
-        //private readonly IDeleteNutritionProgramService _deleteNutritionProgramService ;
+        private readonly IReportMembersService _reportMembersService ;
 
 
         public NutritionProgramController(
             INutritionProgramFacad nutritionProgramFacad,
-            IDataBaseContext context)
+            IDataBaseContext context,
+            IReportMembersService reportMembersService)
         {
+            _reportMembersService= reportMembersService;
             _nutritionProgramFacad = nutritionProgramFacad;
             _context = context;
         }
@@ -296,6 +299,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             long Id = SecurityUtils.DecryptId(id);
             var result = _nutritionProgramFacad.DeleteNutritionProgramService.Execute(Id);
+            return Json(result);
+        }
+
+        public IActionResult Report(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            long Id = SecurityUtils.DecryptId(id);
+            
+            var result = _reportMembersService.Execute(Id);
             return Json(result);
         }
 

@@ -1,0 +1,52 @@
+﻿@using FitCore.Application.Services.Members.Queries.ReportMembers
+@model MemberReportDto
+@{
+    ViewData["Title"] = "گزارش سفارش‌ها";
+}
+
+<h2>گزارش سفارش‌ها</h2>
+
+<form method="get" asp-action="Orders">
+    <div>
+        <label>از تاریخ:</label>
+        <input type="date" name="fromDate" />
+    </div>
+
+    <div>
+        <label>تا تاریخ:</label>
+        <input type="date" name="toDate" />
+    </div>
+
+    <div>
+        <label>وضعیت:</label>
+        <input type="text" name="status" />
+    </div>
+
+    <button type="submit">نمایش گزارش</button>
+</form>
+
+<hr />
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>شناسه</th>
+            <th>نام مشتری</th>
+            <th>تاریخ سفارش</th>
+            <th>مبلغ کل</th>
+            <th>وضعیت</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.CustomerName</td>
+                <td>@item.OrderDate.ToString("yyyy/MM/dd")</td>
+                <td>@item.TotalAmount.ToString("N0")</td>
+                <td>@item.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>

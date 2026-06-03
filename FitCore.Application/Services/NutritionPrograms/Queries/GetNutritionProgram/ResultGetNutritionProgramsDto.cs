@@ -39,6 +39,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
         public string EndDate { get; set; }
 
         public bool IsActive { get; set; }
+        public int CountProgramBuilder { get; set; }
     }
 
     public class RequestGetNutritionProgramsDto

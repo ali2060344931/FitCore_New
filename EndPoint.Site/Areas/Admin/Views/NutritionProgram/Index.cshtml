@@ -83,6 +83,7 @@
                     <th>تاریخ شروع</th>
                     <th>تاریخ پایان</th>
                     <th>فعـــال</th>
+                    <th>تعداد روز ثبتی</th>
                     <th width="180">عملیات</th>
                 </tr>
             </thead>
@@ -115,16 +116,30 @@
                             @(item.IsActive == true ? "بله" : "خیر")
                         </td>
 
+                        <td>
+                            <span class="badge rounded-sm border-success ms-1">
+                                @(item.CountProgramBuilder)
+                            </span>
+
+                        </td>
 
                         <td>
                             <div class="fc-action-buttons">
                                 
+                                @* <a class="btn btn-primary btn-sm"
+                                   asp-area="Admin"
+                                   asp-controller="NutritionProgramBuilder"
+                                   asp-action="Index"
+                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                    <i class="fa fa-th-list" aria-hidden="true"></i>  مشاهده و ثبت برنامه غذایی - تعداد: @(item.CountProgramBuilder)
+                                </a> *@
                                 <a class="btn btn-primary btn-sm"
                                    asp-area="Admin"
                                    asp-controller="NutritionProgramBuilder"
                                    asp-action="Index"
                                    asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                    <i class="fa fa-th-list" aria-hidden="true"></i> مشاهده و ثبت برنامه غذایی
+                                    <i class="fa fa-th-list" aria-hidden="true"></i>
+                                    مشاهده و ثبت برنامه غذایی
                                 </a>
 
 
