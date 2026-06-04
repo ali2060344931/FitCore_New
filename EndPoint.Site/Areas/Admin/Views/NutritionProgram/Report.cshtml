@@ -5,8 +5,12 @@
 }
 
 <h2>گزارش سفارش‌ها</h2>
-
-<form method="get" asp-action="Orders">
+<div class="print-btn">
+    <button onclick="window.print()">
+        چاپ گزارش
+    </button>
+</div>
+<form method="get" asp-action="report">
     <div>
         <label>از تاریخ:</label>
         <input type="date" name="fromDate" />

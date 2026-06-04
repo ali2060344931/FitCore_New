@@ -1,0 +1,660 @@
+﻿/* =====================================
+   CORE & RESET
+===================================== */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6e8efb;
+    --text-main: #495057;
+}
+
+/* =====================================
+   HEADER & STICKY ELEMENTS
+===================================== */
+.header-main {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 999999;
+    background: #ffffff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+#headerSpacer {
+    width: 100%;
+}
+
+.sticky-content-header {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.92) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    padding: 10px 0;
+}
+
+.sticky-days-toolbar {
+    position: sticky;
+    top: 70px;
+    z-index: 1020;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* =====================================
+   LAYOUT & CONTAINERS
+===================================== */
+.page-content-wrapper {
+    margin-top: 150px;
+    padding: 20px;
+}
+
+.fc-card, .fc-form-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.section-group {
+    background: #ffffff;
+    border: 2px solid #e1e8ed;
+    border-radius: 20px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.section-title {
+    display: inline-block;
+    padding: 6px 18px;
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+/* =====================================
+   BUTTONS & ACTIONS
+===================================== */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 10px 0;
+}
+
+.custom-btn {
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #383838 !important;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(110, 142, 251, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 200px;
+}
+
+    .custom-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        color: #fff;
+    }
+
+.btn-modern {
+    padding: 6px 16px !important;
+    border-radius: 50px !important;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+/* =====================================
+   TABLES & NUTRITION CARDS
+===================================== */
+.nutrition-food-table {
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 0.84rem;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    width: 100%;
+}
+
+    .nutrition-food-table thead th {
+        background: #f1f5f9;
+        color: #6c757d;
+        font-weight: 800;
+        border: none !important;
+        padding: 15px !important;
+    }
+
+    .nutrition-food-table tbody tr {
+        background-color: #fff;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+        .nutrition-food-table tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            background: #f8fafc;
+        }
+
+.food-name-cell {
+    font-size: 1.1rem;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+}
+
+/* =====================================
+   BADGES & UTILS
+===================================== */
+.count-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+    vertical-align: middle;
+}
+
+.day-count-badge {
+    background: #d1f7df;
+    color: #146c43;
+    border: 1px solid #b7efcb;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 50px;
+}
+
+.structure-badge {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 0.72rem;
+    border-radius: 50px;
+    padding: 0.35rem 0.7rem;
+}
+
+    .structure-badge.active {
+        background: #eef4ff;
+        color: var(--primary-color);
+        border-color: #cfe2ff;
+    }
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+@media (max-width: 991px) {
+    .program-meta-wrapper {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .program-main-title {
+        font-size: 0.85rem;
+    }
+
+    .program-meta-item {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .structure-badge, .day-count-badge {
+        font-size: 0.68rem;
+    }
+}
+
+/* Text helpers */
+.countdown-text {
+    color: red;
+}
+
+.countdown-text-bl {
+    color: midnightblue;
+}
+
+.form-account {
+    direction: rtl;
+    text-align: right;
+}
+
+
+/*---------------*/
+/* ✅ هدر همیشه بالا بماند */
+.sticky-program-header {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: rgba(255,255,255,.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #eef1f4;
+}
+
+/* جلوگیری از شکستن ردیف */
+.program-header-row {
+    scrollbar-width: thin;
+}
+
+/* آیکون */
+.program-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13,110,253,.1);
+    color: #0d6efd;
+    font-size: 1rem;
+}
+
+/* عنوان */
+.program-main-title {
+    font-weight: 800;
+    font-size: .95rem;
+    color: #1f2937;
+}
+
+/* badge روز */
+.day-count-badge {
+    background: #d1f7df;
+    color: #146c43;
+    border: 1px solid #b7efcb;
+    font-size: .72rem;
+    padding: .35rem .7rem;
+    border-radius: 50px;
+}
+
+/* breadcrumb */
+.structure-badge {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: .7rem;
+    border-radius: 50px;
+    padding: .35rem .7rem;
+}
+
+    .structure-badge.active {
+        background: #eef4ff;
+        color: #0d6efd;
+        border-color: #cfe2ff;
+    }
+
+.breadcrumb-arrow {
+    font-size: .8rem;
+    color: #9ca3af;
+}
+
+/* ✅ باکس‌های اطلاعات برنامه */
+.program-meta-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background: #f8fafc;
+    border: 1px solid #e9edf2;
+    border-radius: 12px;
+    padding: .4rem .8rem;
+    min-width: 110px;
+    white-space: nowrap;
+    transition: .2s ease;
+}
+
+    .program-meta-box:hover {
+        background: #eef4ff;
+        border-color: #cfe2ff;
+    }
+
+.meta-label {
+    font-size: .65rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.meta-value {
+    font-size: .75rem;
+    font-weight: 800;
+    color: #0d6efd;
+}
+
+/* ✅ موبایل */
+@media(max-width:768px) {
+
+    .program-main-title {
+        font-size: .85rem;
+    }
+
+    .program-meta-box {
+        padding: .35rem .7rem;
+        min-width: auto;
+    }
+
+    .meta-value {
+        font-size: .7rem;
+    }
+}
+/*999999999999999999*/
+
+
+
+/* اگر navbar دارید */
+body {
+    overflow-x: hidden;
+}
+
+/* مطمئن شو هیچ parent ای overflow ندارد */
+.container,
+.main-content,
+.content-wrapper {
+    overflow: visible !important;
+}
+
+
+.main-content {
+    overflow: visible !important;
+}
+
+.program-header-sticky-wrapper {
+    position: sticky;
+    top: 60px;
+    z-index: 1000;
+    background: #fff;
+}
+/*+++++++++++----------+++++++*/
+
+.program-meta-container {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+/* ✅ هر آیتم */
+.program-meta-item {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .35rem .8rem;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 50px; /* کپسولی */
+    white-space: nowrap;
+    transition: all .2s ease;
+    font-size: .75rem;
+}
+
+    /* افکت hover ظریف */
+    .program-meta-item:hover {
+        background: #eef4ff;
+        border-color: #cfe2ff;
+        transform: translateY(-1px);
+    }
+
+/* بل */
+.meta-label {
+    color: #6b7280;
+    font-weight: 600;
+    font-size: .7rem;
+}
+
+/* ✅ مقدار */
+.meta-value {
+    color: #0d6efd;
+    font-weight: 800;
+    font-size: .78rem;
+}
+
+/* موبایل */
+@media(max-width:768px) {
+    .program-meta-item {
+        padding: .3rem .7rem;
+        font-size: .7rem;
+    }
+}
+
+/*55555555555555555555*/
+.nutrition-meal-header {
+    background: #ffffff;
+}
+
+/* ردیف اصلی */
+.meal-header-row {
+    min-height: 42px;
+}
+
+/* آیکون وعده */
+.meal-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: .85rem;
+}
+
+/* لیبل */
+.meal-label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+/* نوع وعده */
+.meal-type-highlight {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* تعداد غذا */
+.meal-count-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #059669;
+    white-space: nowrap;
+}
+
+/* دکمه‌ها */
+.meal-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s ease;
+    padding: 0;
+}
+
+    .meal-btn:hover {
+        transform: translateY(-1px);
+    }
+
+/* رنگ‌های ملایم اختصاصی */
+.meal-btn-add:hover {
+    background: #e0f2fe;
+    border-color: #bae6fd;
+    color: #0284c7;
+}
+
+.meal-btn-edit:hover {
+    background: #fef3c7;
+    border-color: #fde68a;
+    color: #b45309;
+}
+
+.meal-btn-delete:hover {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+/*333333333333333333*/
+.app-sidebar .navigation li a {
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all .2s;
+}
+
+    .app-sidebar .navigation li a:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+
+.app-sidebar .navigation li.active a {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+
+/* برای نمایش برجسته و خوانای نام غذا */
+.food-name-cell {
+    font-size: 1.1rem !important; /* کمی بزرگتر از متن عادی */
+    font-weight: 700 !important; /* وزن بولد قوی‌تر */
+    color: #1e293b !important; /* رنگ خاکستری بسیار تیره و مدرن */
+    letter-spacing: -0.2px; /* بهبود خوانایی در فونت‌های فارسی */
+}
+
+
+/*44444444444444444444*/
+
+/* تنظیم جدول برای جمع شدن به سمت راست و کاهش عرض ستون‌ها */
+.nutrition-food-table {
+    width: auto !important; /* اجازه می‌دهد جدول به اندازه محتوا کوچک شود */
+    margin-right: 0 !important; /* چسبیدن کامل به سمت راست در حالت RTL */
+    margin-left: auto; /* جلوگیری از کشیده شدن به سمت چپ */
+}
+
+    /* کاهش Padding سلول‌ها برای فشرده‌تر شدن */
+    .nutrition-food-table th,
+    .nutrition-food-table td {
+        padding: 6px 12px !important; /* فشرده کردن فضای داخلی */
+        vertical-align: middle;
+    }
+
+        /* فیکس کردن عرض ستون دکمه‌ها تا بیش از حد پهن نشود */
+        .nutrition-food-table td:first-child {
+            width: 100px; /* تنظیم دقیق برای فضای دکمه‌ها */
+        }
+
+    /* استایل دهی به هدینگ‌ها برای جمع شدن */
+    .nutrition-food-table thead th {
+        padding-right: 12px !important;
+        padding-left: 12px !important;
+    }
+
+
+/* تنظیم فونت وعده برای خوانایی بهتر */
+.meal-type-highlight {
+    font-size: 2rem !important; /* کمی بزرگتر از سایز استاندارد */
+    font-weight: 600 !important; /* وزن بیشتر برای تأکید */
+    color:   deeppink !important; /* رنگ خاکستری تیره و شیک */
+}
+
+/* استایل کادر بیضی (Pill Tag) برای نوع وعده */
+.meal-type-highlight {
+    font-size: 0.95rem !important; /* سایز مناسب برای داخل کادر */
+    font-weight: 600 !important;
+    color: black !important; /* رنگ متن خاکستری تیره */
+    /* استایل بیضی */
+    background-color: lightpink; /* پس‌زمینه خاکستری بسیار ملایم */
+    padding: 4px 18px !important; /* فاصله داخلی برای شکل گرفتن بیضی */
+    border-radius: 50px !important; /* ایجاد فرم بیضی کامل */
+    border: 1px solid #e2e8f0; /* حاشیه بسیار ظریف برای عمق دادن */
+    /* تنظیمات نمایش */
+    display: inline-flex; /* برای بهتر قرار گرفتن متن در وسط */
+    align-items: center;
+    line-height: 1; /* جلوگیری از بزرگ شدن بیضی */
+}
+
+/* نمایش برجسته مقدارهای متا (مثل نام عضو) */
+.meta-value-Fullmamu {
+    font-size: 1.0rem !important; /* بزرگ‌تر و خواناتر */
+    font-weight: 700 !important; /* بولد حرفه‌ای */
+    color: maroon !important; /* تیره و لوکس */
+    letter-spacing: -0.3px; /* بهبود خوانایی فونت فارسی */
+    line-height: 1.4;
+}
+
+
+/* لیبل "روز" */
+.day-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #475569;
+    margin-left: 6px;
+}
+
+
+
+.day-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #475569;
+    margin-left: 6px;
+}
+.text-center-count {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #475569;
+    margin-left: 6px;
+}
+
+.day-number-badge {
+    width: 38px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #334155;
+    background: #eef2ff;
+    border: 1px solid #e0e7ff;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+/* استایل اختصاصی برای نمایش بزرگتر و حرفه‌ای مقدار */
+.amount-badge {
+    font-size: 1.1rem !important; /* بزرگتر و خواناتر */
+    padding: 0.4rem 0.8rem !important; /* تنظیم فاصله داخلی متناسب با سایز جدید */
+    font-weight: 700 !important; /* ضخامت بیشتر برای خوانایی بهتر */
+    border-radius: 8px !important; /* گوشه‌های نرم و مدرن */
+    vertical-align: middle; /* تراز دقیق در کنار سایر متن‌ها */
+    letter-spacing: -0.2px; /* فشرده‌سازی جزئی برای زیبایی */
+}
+
+.day-count-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
