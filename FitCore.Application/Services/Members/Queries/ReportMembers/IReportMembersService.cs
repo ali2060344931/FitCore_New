@@ -83,7 +83,7 @@ namespace FitCore.Application.Services.Members.Queries.ReportMembers
             {
                 IsSuccess = true,
 
-                Data = members,
+                //Data = members,
             };
         }
     }

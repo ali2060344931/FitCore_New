@@ -1,5 +1,5 @@
-﻿@using FitCore.Application.Services.Members.Queries.ReportMembers
-@model MemberReportDto
+﻿@using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
+@model ResultGetNutritionProgramsDto
 @{
     ViewData["Title"] = "گزارش سفارش‌ها";
 }
@@ -38,14 +38,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.NutritionPrograms)
         {
             <tr>
                 <td>@item.Id</td>
-                <td>@item.CustomerName</td>
-                <td>@item.OrderDate.ToString("yyyy/MM/dd")</td>
-                <td>@item.TotalAmount.ToString("N0")</td>
-                <td>@item.Status</td>
+                <td>@item.MemberName</td>
+                <td>@item.MemberMobile</td>
+                <td>@item.ProgramType</td>
+                <td>@item.StartDate</td>
             </tr>
         }
     </tbody>

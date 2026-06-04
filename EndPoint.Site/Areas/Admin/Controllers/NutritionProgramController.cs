@@ -25,15 +25,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly INutritionProgramFacad _nutritionProgramFacad;
         private readonly IDataBaseContext _context;
-        private readonly IReportMembersService _reportMembersService ;
+        //private readonly IReportMembersService _reportMembersService ;
 
 
         public NutritionProgramController(
             INutritionProgramFacad nutritionProgramFacad,
-            IDataBaseContext context,
-            IReportMembersService reportMembersService)
+            IDataBaseContext context
+            /*IReportMembersService reportMembersService*/)
         {
-            _reportMembersService= reportMembersService;
+            //_reportMembersService= reportMembersService;
             _nutritionProgramFacad = nutritionProgramFacad;
             _context = context;
         }
@@ -302,15 +302,26 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return Json(result);
         }
 
-        public IActionResult Report(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest();
 
-            long Id = SecurityUtils.DecryptId(id);
-            
-            var result = _reportMembersService.Execute(Id);
-            return Json(result);
+        public async Task<IActionResult> Report(int page = 1, int PageSize = 20, string SearchKey = "")
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdValue))
+                return Unauthorized();
+
+            var appUserId = long.Parse(userIdValue);
+
+            var request = new RequestGetNutritionProgramsDto
+            {
+                AppUserId = appUserId,
+                Page = page,
+                PageSize = PageSize,
+                SearchKey = SearchKey
+            };
+
+            var result = await _nutritionProgramFacad.GetNutritionProgramsService.Execute(request);
+            return View(result);
         }
 
     }
