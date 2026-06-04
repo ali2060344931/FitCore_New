@@ -637,7 +637,7 @@ body {
     font-size: 1rem;
     font-weight: 700;
     color: #334155;
-    background: #eef2ff;
+    background: #BFB9B5;
     border: 1px solid #e0e7ff;
     border-radius: 50%;
     line-height: 1;
@@ -657,4 +657,55 @@ body {
     font-size: 1rem;
     font-weight: 700;
     color: #0f172a;
+}
+/* باکس هدر روز - آبی آسمانی ملایم */
+.day-header-box {
+    background: #e0f2fe !important; /* آبی آسمانی ملایم */
+    border: 1px solid #bae6fd !important; /* بوردر ظریف */
+    border-radius: 12px !important; /* گوشه‌های گرد */
+    padding: 8px 16px !important; /* فضای داخلی استاندارد */
+    margin-bottom: 12px !important;
+    transition: all 0.2s ease;
+}
+
+    .day-header-box:hover {
+        background: #dbeafe !important; /* تغییر رنگ ملایم هنگام هاور */
+    }
+
+    /* اصلاحات تکمیلی جهت هماهنگی */
+    .day-header-box .btn-outline-facebook,
+    .day-header-box .btn-outline-google,
+    .day-header-box .btn-outline-danger {
+        background: rgba(255, 255, 255, 0.5) !important; /* دکمه‌های شیشه‌ای روی پس‌زمینه */
+    }
+
+/* آیکن فلش باز و بسته شدن روز */
+
+.day-collapse-icon {
+    font-size: 1.2rem; /* بزرگتر شدن آیکن */
+    color: darkred !important; /* آبی مدرن */
+    margin-right: 15px; /* فاصله از متن */
+    transition: transform 0.25s ease, color 0.2s ease;
+}
+
+/* هنگام باز شدن collapse */
+.nutrition-day-toggle:not(.collapsed) .day-collapse-icon {
+    transform: rotate(180deg);
+    color: #0369a1 !important; /* آبی تیره‌تر هنگام باز شدن */
+}
+.day-title-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #AB3D53;
+}
+.meta-icon {
+    font-size: 0.9rem;
+    color: #6b7280; /* خاکستری مدرن */
+    margin-left: 6px; /* چون RTL هستیم */
+    vertical-align: middle;
+}
+
+.meta-label {
+    font-weight: 500;
+    color: #374151;
 }

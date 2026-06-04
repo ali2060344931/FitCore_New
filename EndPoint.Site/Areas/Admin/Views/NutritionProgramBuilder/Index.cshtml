@@ -69,27 +69,27 @@
                     <div class="program-meta-container d-flex align-items-center gap-2 flex-wrap">
 
                         <div class="program-meta-item">
-                            <span class="meta-label">عضــو:</span>
-                            <span class="meta-value-Fullmamu">@program.MemberName</span>
+                            <i class="fa fa-user meta-icon"></i>
+                            <span class="meta-label">عضــو:</span>                            <span class="meta-value-Fullmamu">@program.MemberName</span>
                         </div>
 
                         <div class="program-meta-item">
-                            <span class="meta-label">هدف</span>
+                            <span class="meta-label">هــدف:</span>
                             <span class="meta-value">@program.GoalType</span>
                         </div>
 
                         <div class="program-meta-item">
-                            <span class="meta-label">نوع</span>
+                            <span class="meta-label">نوع برنامه:</span>
                             <span class="meta-value">@program.ProgramType</span>
                         </div>
 
                         <div class="program-meta-item">
-                            <span class="meta-label">شروع</span>
+                            <span class="meta-label">شروع:</span>
                             <span class="meta-value">@program.StartDate</span>
                         </div>
 
                         <div class="program-meta-item">
-                            <span class="meta-label">پایان</span>
+                            <span class="meta-label">پایان:</span>
                             <span class="meta-value">@program.EndDate</span>
                         </div>
 
@@ -177,33 +177,30 @@
                         <div class="card nutrition-day-card mb-2 border-0 shadow-sm rounded-4 overflow-hidden">
 
                             <!-- Day Header -->
-                            <div class="d-flex align-items-center flex-nowrap gap-2">
+                            <div class="d-flex align-items-center flex-nowrap gap-2 day-header-box">
 
                                 <!-- Day Actions -->
                                 <div class="day-actions d-flex align-items-center gap-1 flex-shrink-0">
 
                                     <button type="button"
-                                            @* class="btn btn-sm btn-primary rounded-pill px-3 py-1 text-nowrap action-btn" *@
-                                            class="btn btn-sm btn-outline-facebook rounded-pill mt-2"
+                                            class="btn btn-sm btn-outline-facebook rounded-pill"
                                             data-toggle="modal"
                                             data-target="#addMealModal"
                                             data-day-id="@day.Id"
                                             data-day-title="@day.Title">
                                         <i class="fa fa-plus"></i>
-                                        <span class="d-none d-md-inline ms-1">افزودن وعده در روز</span>
+                                        <span class="d-none d-md-inline ms-1">افزودن وعده</span>
                                     </button>
 
                                     <button type="button"
-                                            @* class="btn btn-sm btn-warning rounded-pill px-3 py-1 text-nowrap action-btn" *@
-                                            class="btn btn-sm btn-outline-google rounded-pill mt-2"
+                                            class="btn btn-sm btn-outline-google rounded-pill"
                                             onclick="openEditDayModal('@day.Id','@day.DayNumber',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`)">
                                         <i class="fa fa-pencil-square-o"></i>
                                         <span class="d-none d-md-inline ms-1">ویرایش روز</span>
                                     </button>
 
                                     <button type="button"
-                                            @* class="btn btn-sm btn-danger rounded-pill px-3 py-1 text-nowrap action-btn" *@
-                                            class="btn btn-sm btn-outline-danger rounded-pill mt-2"
+                                            class="btn btn-sm btn-outline-danger rounded-pill"
                                             onclick="openDeleteDayModal('@day.Id',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`)">
                                         <i class="fa fa-times"></i>
                                         <span class="d-none d-md-inline ms-1">حذف روز</span>
@@ -211,37 +208,31 @@
 
                                 </div>
 
-                                <!-- Day Info -->
-                                <button class="btn btn-link nutrition-day-toggle text-decoration-none p-0 font-weight-bold d-flex align-items-center gap-2 text-nowrap"
+                                <!-- Day Info Toggle -->
+                                <button class="btn btn-link nutrition-day-toggle text-decoration-none p-0 font-weight-bold d-flex align-items-center gap-2 text-nowrap collapsed"
                                         data-toggle="collapse"
                                         data-target="#@collapseId"
                                         aria-expanded="false"
                                         aria-controls="@collapseId">
 
                                     <span class="day-label">روز</span>
-                                    <span class="day-number-badge">
-                                        @ToPersianNumbers(day.DayNumber)
-                                    </span>
-
+                                    <span class="day-number-badge">@ToPersianNumbers(day.DayNumber)</span>
 
                                     @if (!string.IsNullOrWhiteSpace(day.Title))
                                     {
-                                        <span class="day-title-text">
-                                            @day.Title
-                                        </span>
+                                        <span class="day-title-text ">@day.Title</span>
                                     }
-
+                                    
                                     @if (day.Meals != null && day.Meals.Count > 0)
                                     {
                                         <span class="badge bg-info text-white px-2 py-1 rounded-pill meal-count-badge"
                                               data-toggle="tooltip"
-                                              title="در این روز شامل @ToPersianNumbers(day.Meals.Count) وعده غــذایی ثبت می‌باشد">
+                                              title="در این روز @ToPersianNumbers(day.Meals.Count) وعده غــذایی ثبت شده است">
                                             @ToPersianNumbers(day.Meals.Count) وعده
                                         </span>
                                     }
 
                                     <i class="fa fa-chevron-down text-muted day-collapse-icon"></i>
-
                                 </button>
 
                             </div>
@@ -266,13 +257,6 @@
                                                     <h6 class="fw-bold">برای این روز هیچ وعده‌ای ثبت نشده!</h6>
                                                 </div>
 
-                                                <!-- دکمه دعوت به عمل -->
-                                                @* <button type="button"
-                                                        class="btn btn-sm btn-outline-danger rounded-pill mt-2"
-                                                        onclick="openAddMealModal('@day.Id')">
-                                                    <!-- تابعی که برای افزودن داری -->
-                                                    <i class="fa fa-plus me-1"></i> افزودن اولین وعده
-                                                </button> *@
                                                 <button type="button"
                                                         class="btn btn-sm btn-outline-facebook rounded-pill mt-2"
                                                         data-toggle="modal"
@@ -365,6 +349,13 @@
                                                                     </span>
                                                                 }
 
+                                                                <span class="meal-label"
+                                                                      data-bs-toggle="tooltip"
+                                                                      title="  روز: @(day.Title)">
+                                                                    @(day.Title)
+                                                                </span>
+                                                                
+
                                                             </div>
 
                                                         </div>
@@ -429,56 +420,50 @@
                                                             <table class="table table-sm align-middle nutrition-food-table">
                                                                 <thead class="text-uppercase text-nowrap">
                                                                     <tr>
-                                                                        <th class="ps-3">عملیات</th>
+                                                                        <th style="width: 50px;">ردیف</th> <!-- عرض ستون را ثابت کردیم برای مرتب شدن -->
                                                                         <th>نام/عنوان غــذا</th>
                                                                         <th class="text-center">مقدار</th>
                                                                         <th>واحد</th>
+                                                                        <th class="ps-3">عملیات</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
+                                                                    @{
+                                                                        int counter = 1;
+                                                                    }
+                                                                    <!-- مقداردهی اولیه شمارنده -->
                                                                     @foreach (var food in meal.Foods)
                                                                     {
                                                                         <tr>
-                                                                            <!-- ستون عملیات: nowrap برای جلوگیری از شکستن دکمه‌ها -->
-                                                                            <td class="text-nowrap ps-3">
-                                                                                <div class="d-flex align-items-center gap-1">
+                                                                            <!-- ستون ردیف -->
+                                                                            <td class="text-center fw-bold text-muted">@counter</td>
 
-
-                                                                                    <button type="button"
-                                                                                            class="btn btn-sm btn-outline-warning btn-modern"
-                                                                                            onclick="openEditMealItemModal('@food.Id','@meal.MealId','@food.FoodId','@food.Amount','@food.UnitTypeId','@food.FoodName')">
-                                                                                        ویرایش
-                                                                                    </button>
-
-                                                                                    <button type="button"
-                                                                                            class="btn btn-sm btn-outline-danger btn-modern"
-                                                                                            onclick="openDeleteMealItemModal('@food.Id','@food.FoodName')">
-                                                                                        حذف
-                                                                                    </button>
-
-                                                                                  @*   <button type="button" class="btn btn-sm btn-outline-warning btn-modern">ویرایش</button>
-                                                                                    <button type="button" class="btn btn-sm btn-outline-danger btn-modern">حذف</button> *@
-                                                                                </div>
-                                                                            </td>
-
-                                                                            <!-- ستون نام: بدون nowrap تا اگر نام غذا طولانی بود، فقط همین ستون کش بیاید -->
                                                                             <td class="food-name-cell text-nowrap">
                                                                                 @food.FoodName
                                                                             </td>
 
-                                                                            <!-- ستون مقدار -->
                                                                             <td class="text-center text-nowrap">
                                                                                 <span class="badge bg-light text-dark border amount-badge">@food.Amount</span>
                                                                             </td>
-
-                                                                            <!-- ستون واحد -->
 
                                                                             <td class="food-name-cell text-nowrap">
                                                                                 @food.Unit
                                                                             </td>
 
-                                                                            
+                                                                            <td class="text-nowrap ps-3">
+                                                                                <div class="d-flex align-items-center gap-1">
+                                                                                    <button type="button" class="btn btn-sm btn-outline-warning btn-modern"
+                                                                                            onclick="openEditMealItemModal('@food.Id','@meal.MealId','@food.FoodId','@food.Amount','@food.UnitTypeId','@food.FoodName')">
+                                                                                        ویرایش
+                                                                                    </button>
+                                                                                    <button type="button" class="btn btn-sm btn-outline-danger btn-modern"
+                                                                                            onclick="openDeleteMealItemModal('@food.Id','@food.FoodName')">
+                                                                                        حذف
+                                                                                    </button>
+                                                                                </div>
+                                                                            </td>
                                                                         </tr>
+                                                                        counter++; // افزایش شمارنده در هر تکرار
                                                                     }
                                                                 </tbody>
                                                             </table>

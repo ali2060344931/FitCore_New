@@ -3,6 +3,7 @@
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Services.Members.Queries.ReportMembers;
+using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Commands.DeleteNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 
 using System.Linq;
 using System.Security.Claims;
@@ -26,23 +28,24 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly INutritionProgramFacad _nutritionProgramFacad;
         private readonly IDataBaseContext _context;
         //private readonly IReportMembersService _reportMembersService ;
-
+        private readonly IGetNutritionProgramPdfService _pdfService;
 
         public NutritionProgramController(
             INutritionProgramFacad nutritionProgramFacad,
-            IDataBaseContext context
+            IDataBaseContext context, IGetNutritionProgramPdfService pdfService
             /*IReportMembersService reportMembersService*/)
         {
             //_reportMembersService= reportMembersService;
             _nutritionProgramFacad = nutritionProgramFacad;
             _context = context;
+            _pdfService = pdfService;
         }
 
         //====================================================
         // لیست برنامه های غذایی
         //====================================================
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1,int PageSize=20, string SearchKey = "")
+        public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -303,25 +306,22 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
 
-        public async Task<IActionResult> Report(int page = 1, int PageSize = 20, string SearchKey = "")
+        [HttpGet]
+        public IActionResult PrintProgram(string id, [FromServices] IGetNutritionProgramPdfService service)
         {
-            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
 
-            if (string.IsNullOrWhiteSpace(userIdValue))
-                return Unauthorized();
+            long Id = SecurityUtils.DecryptId(id);
 
-            var appUserId = long.Parse(userIdValue);
 
-            var request = new RequestGetNutritionProgramsDto
-            {
-                AppUserId = appUserId,
-                Page = page,
-                PageSize = PageSize,
-                SearchKey = SearchKey
-            };
+            //var result = service.Execute(Id);
 
-            var result = await _nutritionProgramFacad.GetNutritionProgramsService.Execute(request);
-            return View(result);
+            var pdfBytes = _pdfService.Execute(Id);
+            //if (!result.IsSuccess)
+            //    return NotFound();
+
+            return File(pdfBytes, "application/pdf", "NutritionProgram.pdf");
         }
 
     }

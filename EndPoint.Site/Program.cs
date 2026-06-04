@@ -27,6 +27,7 @@ using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutrit
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionMeal;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionMealItem;
 using FitCore.Application.Services.NutritionProgramBuilder.Queries;
+using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
@@ -49,7 +50,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using QuestPDF.Drawing;
+using QuestPDF.Infrastructure;
+
 using System;
+using System.IO;
 
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
@@ -207,8 +212,7 @@ builder.Services.AddScoped<IEditNutritionMealService, EditNutritionMealService>(
 builder.Services.AddScoped<IRemoveNutritionDayService, RemoveNutritionDayService>();
 builder.Services.AddScoped<IEditNutritionDayService, EditNutritionDayService>();
 builder.Services.AddScoped<IAutoGenerateNutritionDaysService, AutoGenerateNutritionDaysService>();
-
-
+builder.Services.AddScoped<IGetNutritionProgramPdfService, GetNutritionProgramPdfService>();
 
 
 //===== Facad =====
@@ -288,6 +292,10 @@ else
     app.UseHsts();
 }
 
+QuestPDF.Settings.License = LicenseType.Community;
+
+FontManager.RegisterFont(File.OpenRead("wwwroot/fonts/Vazir-Regular.ttf"));
+FontManager.RegisterFont(File.OpenRead("wwwroot/fonts/Vazir-Bold.ttf"));
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

@@ -126,13 +126,6 @@
                         <td>
                             <div class="fc-action-buttons">
                                 
-                                @* <a class="btn btn-primary btn-sm"
-                                   asp-area="Admin"
-                                   asp-controller="NutritionProgramBuilder"
-                                   asp-action="Index"
-                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                    <i class="fa fa-th-list" aria-hidden="true"></i>  مشاهده و ثبت برنامه غذایی - تعداد: @(item.CountProgramBuilder)
-                                </a> *@
                                 <a class="btn btn-primary btn-sm"
                                    asp-area="Admin"
                                    asp-controller="NutritionProgramBuilder"
@@ -143,6 +136,13 @@
                                 </a>
 
 
+                                <a class="btn btn-info btn-sm"
+                                   asp-area="Admin"
+                                   asp-controller="NutritionProgram"
+                                   asp-action="PrintProgram"
+                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                    <i class="fa fa-pencil-square" aria-hidden="true"></i> گزارش
+                                </a>
                                 <a class="btn btn-info btn-sm"
                                    asp-area="Admin"
                                    asp-controller="NutritionProgram"
