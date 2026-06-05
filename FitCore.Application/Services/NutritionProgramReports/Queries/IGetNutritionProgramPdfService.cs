@@ -44,7 +44,9 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
             var program = _context.NutritionPrograms
                 .Include(x => x.Member)
                     .ThenInclude(x => x.AppUser)
+                .Include(x => x.Gym)
                 .Include(x => x.ProgramType)
+                .Include(x => x.GoalType)
                 .Include(x => x.Days)
                     .ThenInclude(d => d.Meals)
                         .ThenInclude(m => m.MealType)
@@ -100,9 +102,15 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                         col.Item().Text("برنامه غذایی اختصاصی")
                             .FontSize(20)
                             .Bold()
-                            .FontColor(primaryColor);
+                            .FontColor(primaryColor).AlignCenter();
+                        //
+                        col.Item().Text($"نام باشگاه: {program.Gym.Name}")
+                            .FontSize(16)
+                            .Bold()
+                            .FontColor(primaryColor).AlignCenter();
 
-                        col.Item().Text($"عضو: {program.Member?.AppUser?.FullName ?? "-"} | نوع: {program.ProgramType?.Name ?? "-"}");
+                        col.Item().Text($"عضو: {program.Member?. AppUser?. FullName ?? "-"} | نوع برنامه: {program.ProgramType?.Name ?? "-"} | هدف برنامه: {program.GoalType.Name ?? "-"}").AlignCenter();
+                        col.Item().Text($"تاریخ شروع: {program.StartDate} | تاریخ پایان: {program.StartDate }").AlignCenter();
                     });
 
                     // بدنه - راست‌چین
@@ -145,13 +153,14 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                     table.ColumnsDefinition(columns =>
                                                     {
                                                         columns.ConstantColumn(30);//ردیف
-                                                        columns.RelativeColumn(3); // غذا
+                                                        columns.RelativeColumn(1); // غذا
                                                         columns.RelativeColumn(1); // مقدار
-                                                        columns.RelativeColumn(1); // واححد
-                                                        columns.RelativeColumn(1); // چربی
-                                                        columns.RelativeColumn(1); // کربوهیدرات
-                                                        columns.RelativeColumn(1); // پروتئین
-                                                        columns.RelativeColumn(1); // کالری
+                                                        columns.RelativeColumn(1); // واحد
+                                                        columns.RelativeColumn(2); // توضیحات
+                                                        //columns.RelativeColumn(1); // چربی
+                                                        //columns.RelativeColumn(1); // کربوهیدرات
+                                                        //columns.RelativeColumn(1); // پروتئین
+                                                        //columns.RelativeColumn(1); // کالری
 
                                                     });
 
@@ -161,10 +170,11 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                         header.Cell().Element(CellStyleR).Text("غذا");
                                                         header.Cell().Element(CellStyleR).Text("مقدار");
                                                         header.Cell().Element(CellStyleR).Text("واحد");
-                                                        header.Cell().Element(CellStyleR).Text("چربی");
-                                                        header.Cell().Element(CellStyleR).Text("کربوهیدرات");
-                                                        header.Cell().Element(CellStyleR).Text("پروتئین");
-                                                        header.Cell().Element(CellStyleR).Text("کالری");
+                                                        header.Cell().Element(CellStyleR).Text("توضیحات");
+                                                        //header.Cell().Element(CellStyleR).Text("چربی");
+                                                        //header.Cell().Element(CellStyleR).Text("کربوهیدرات");
+                                                        //header.Cell().Element(CellStyleR).Text("پروتئین");
+                                                        //header.Cell().Element(CellStyleR).Text("کالری");
 
                                                     });
                                                     int rowNumber = 1;
@@ -174,18 +184,19 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                         table.Cell().Element(CellStyle).Text(item.Food?.Title ?? "-").FontSize(11).SemiBold();
                                                         table.Cell().Element(CellBody).Text($"{item.Amount:0.##} ");
                                                         table.Cell().Element(CellBodyU).Text($"{item.UnitType?.Name}");
-                                                        table.Cell().Element(CellBody).Text(item.Fat.ToString("0.##"));
-                                                        table.Cell().Element(CellBody).Text(item.Carbohydrate.ToString("0.##")).FontSize(10).SemiBold();
-                                                        table.Cell().Element(CellBody).Text(item.Protein.ToString("0.##"));
-                                                        table.Cell().Element(CellBody).Text(item.Calories.ToString("0.##"));
+                                                        table.Cell().Element(CellBodyU).Text($"{item.Description}");
+                                                        //table.Cell().Element(CellBody).Text(item.Fat.ToString("0.##"));
+                                                        //table.Cell().Element(CellBody).Text(item.Carbohydrate.ToString("0.##")).FontSize(10).SemiBold();
+                                                        //table.Cell().Element(CellBody).Text(item.Protein.ToString("0.##"));
+                                                        //table.Cell().Element(CellBody).Text(item.Calories.ToString("0.##"));
                                                         rowNumber++;
                                                     }
 
-                                                    table.Cell().ColumnSpan(4).Element(CellStyle).Text("جمع");
-                                                    table.Cell().Element(CellStyle).Text(totalFat.ToString("0.##"));
-                                                    table.Cell().Element(CellStyle).Text(totalCarbs.ToString("0.##"));
-                                                    table.Cell().Element(CellStyle).Text(totalProtein.ToString("0.##"));
-                                                    table.Cell().Element(CellStyle).Text(totalCalories.ToString("0.##"));
+                                                    //table.Cell().ColumnSpan(4).Element(CellStyle).Text("جمع");
+                                                    //table.Cell().Element(CellStyle).Text(totalFat.ToString("0.##"));
+                                                    //table.Cell().Element(CellStyle).Text(totalCarbs.ToString("0.##"));
+                                                    //table.Cell().Element(CellStyle).Text(totalProtein.ToString("0.##"));
+                                                    //table.Cell().Element(CellStyle).Text(totalCalories.ToString("0.##"));
                                                     
                                                 });
                                             });
@@ -201,6 +212,8 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                         text.CurrentPageNumber();
                         text.Span(" از ");
                         text.TotalPages();
+
+                        
                     });
                 });
             }).GeneratePdf();

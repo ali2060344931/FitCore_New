@@ -32,7 +32,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.EditNutr
             item.FoodId = request.FoodId;
             item.Amount = request.Amount;
             item.UnitTypeId = request.UnitTypeId;
-
+            item.Description= request.Description;
             _context.SaveChanges();
 
             return new ResultDto { IsSuccess = true, Message = "با موفقیت ویرایش شد" };
@@ -45,5 +45,6 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.EditNutr
         public long FoodId { get; set; }
         public decimal Amount { get; set; }
         public int UnitTypeId { get; set; }
+        public string Description { get; set; }
     }
 }

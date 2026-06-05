@@ -1,5 +1,7 @@
 ﻿using FitCore.Domain.Entities.NutritionProgram.Food;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
+using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
+using FitCore.Persistence.Common;
 using FitCore.Persistence.Contexts;
 
 using Microsoft.EntityFrameworkCore;
@@ -19,21 +21,39 @@ namespace FitCore.Persistence.Seed
         public async Task SeedAsync(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<DataBaseContext>();
-
-            // اگر قبلاً داده‌ها وارد شده‌اند، تکراری وارد نکن
-            if (await context.Set<MealType>().AnyAsync())
-                return;
-
-            context.Set<MealType>().AddRange(
+            var goalTypes = new List<MealType>
+            {
                 new MealType { Name = "صبحانه" },
                 new MealType { Name = "میان‌وعده صبح" },
                 new MealType { Name = "ناهار" },
                 new MealType { Name = "میان‌وعده عصر" },
                 new MealType { Name = "شام" },
-                new MealType { Name = "قبل از خواب" }
+                new MealType { Name = "قبل از خواب" },
+                new MealType { Name = "قبل از تمرین" },
+                new MealType { Name = "بعد از تمرین" }            };
+
+            await context.SeedIfNotExists(
+                goalTypes,
+                goal => x => x.Name == goal.Name
             );
 
-            await context.SaveChangesAsync(default);
+            //var context = serviceProvider.GetRequiredService<DataBaseContext>();
+            //// اگر قبلاً داده‌ها وارد شده‌اند، تکراری وارد نکن
+            //if (await context.Set<MealType>().AnyAsync())
+            //    return;
+
+            //context.Set<MealType>().AddRange(
+            //    new MealType { Name = "صبحانه" },
+            //    new MealType { Name = "میان‌وعده صبح" },
+            //    new MealType { Name = "ناهار" },
+            //    new MealType { Name = "میان‌وعده عصر" },
+            //    new MealType { Name = "شام" },
+            //    new MealType { Name = "قبل از خواب" },
+            //    new MealType { Name = "قبل از تمرین" },
+            //    new MealType { Name = "بعد از تمرین" }
+            //);
+
+            //await context.SaveChangesAsync(default);
         }
     }
 

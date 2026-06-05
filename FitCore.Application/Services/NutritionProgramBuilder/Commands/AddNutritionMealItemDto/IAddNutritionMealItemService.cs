@@ -111,7 +111,8 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
                 NutritionMealId = request.NutritionMealId,
                 FoodId = request.FoodId,
                 Amount = request.Amount,
-                UnitTypeId = request.UnitTypeId
+                UnitTypeId = request.UnitTypeId,
+                Description=request.Description
             };
 
             _context.NutritionMealItems.Add(item);
@@ -132,5 +133,6 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
         public long FoodId { get; set; }
         public decimal Amount { get; set; }
         public int UnitTypeId { get; set; }
+        public string Description { get; set; }
     }
 }

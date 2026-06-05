@@ -1,5 +1,6 @@
 ﻿using FitCore.Domain.Entities.NutritionProgram.Food;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
+using FitCore.Persistence.Common;
 using FitCore.Persistence.Contexts;
 
 using Microsoft.EntityFrameworkCore;
@@ -19,18 +20,17 @@ namespace FitCore.Persistence.Seed
         public async Task SeedAsync(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<DataBaseContext>();
-
-            // اگر قبلاً داده‌ها وارد شده‌اند، تکراری وارد نکن
-            if (await context.Set<NutritionProgramType>().AnyAsync())
-                return;
-
-            context.Set<NutritionProgramType>().AddRange(
+            
+            var goalTypes = new List<NutritionProgramType>
+            {
                 new NutritionProgramType {Name = "روزانه" },
                 new NutritionProgramType { Name = "هفتگی" },
                 new NutritionProgramType { Name = "ماهانه" }
+            };
+            await context.SeedIfNotExists(
+                goalTypes,
+                goal => x => x.Name == goal.Name
             );
-
-            await context.SaveChangesAsync(default);
         }
     }
 

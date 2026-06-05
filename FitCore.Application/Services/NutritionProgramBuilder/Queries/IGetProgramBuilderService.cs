@@ -78,7 +78,9 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
                                         FoodName = item.Food?.Title ?? "",
                                         Amount = item.Amount,
                                         UnitTypeId = item.UnitTypeId, // ✅ فیلد جدید
-                                        Unit = item.UnitType?.Name ?? ""
+                                        Unit = item.UnitType?.Name ?? "",
+                                        Description= item.Description,
+                                        
                                     })
                                     .ToList() ?? new List<ProgramMealItemDto>()
                             })
@@ -133,6 +135,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
         public decimal Amount { get; set; }
         public long UnitTypeId { get; set; }   // ✅ اضافه شده
         public string Unit { get; set; }
+        public string Description { get; set; }
     }
 
     #endregion

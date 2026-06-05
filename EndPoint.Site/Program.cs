@@ -244,8 +244,8 @@ builder.Services.AddScoped<IEditMemberService, EditMemberService>();
 builder.Services.AddScoped<IRemoveMemberService, RemoveMemberService>();
 
 
-
-
+builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 
 builder.Services.AddScoped<RegisterUserService>();
@@ -263,6 +263,8 @@ builder.Services.AddScoped<
 #region MVC
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
+
 
 #endregion
 
@@ -305,6 +307,9 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.MapControllers();
+
+
 
 #endregion
 

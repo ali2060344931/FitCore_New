@@ -456,6 +456,11 @@ body {
     font-weight: 600;
     color: #6b7280;
 }
+.meal-label-date {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #492B99;
+}
 
 /* نوع وعده */
 .meal-type-highlight {
@@ -709,3 +714,70 @@ body {
     font-weight: 500;
     color: #374151;
 }
+
+.nutrition-food-table td.food-description-cell {
+    font-size: 12px !important;
+    color: #6c757d;
+}
+
+/*4444444444444444*/
+.content-wrapper {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.program-header-sticky-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.content-body {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+    .page-content-wrapper.builder-wrapper {
+        margin-top: 0 !important;
+    }
+/*------------------*/
+.fc-action-buttons {
+    display: flex;
+    flex-wrap: nowrap; /* این باعث می‌شود در دسکتاپ کنار هم بمانند */
+    gap: 5px; /* فاصله بین دکمه‌ها */
+    align-items: center; /* تراز عمودی وسط */
+}
+
+/* برای موبایل */
+@media (max-width: 576px) {
+    .fc-action-buttons {
+        flex-wrap: wrap; /* در موبایل اگر جا کم بود، دکمه‌ها زیر هم می‌روند */
+    }
+}
+
+/*****************/
+.fc-action-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    align-items: center;
+}
+
+    .fc-action-buttons .fc-btn-action {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+@media (max-width: 576px) {
+    .fc-action-buttons {
+        flex-wrap: wrap;
+    }
+
+        .fc-action-buttons .fc-btn-action {
+            width: 100%;
+        }
+
+    .fc-actions-col {
+        width: auto !important;
+    }
+}
+
