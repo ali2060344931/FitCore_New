@@ -106,47 +106,45 @@
                             <div class="dropdown">
                                 <button class="btn btn-secondary btn-sm dropdown-toggle"
                                         type="button"
-                                        data-bs-toggle="dropdown"
-                                        data-bs-boundary="viewport">
+                                        id="memberActions_@item.Id"
+                                        data-toggle="dropdown"
+                                        data-boundary="viewport"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
                                     عملیات
                                 </button>
 
-                                <ul class="dropdown-menu dropdown-menu-end text-end">
+                                <div class="dropdown-menu dropdown-menu-right text-right"
+                                     aria-labelledby="memberActions_@item.Id">
 
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="NutritionProgram"
-                                           asp-action="Create"
-                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                            <i class="fa fa-th-list"></i>
-                                            ثبت برنامه غذایی
-                                        </a>
-                                    </li>
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="NutritionProgram"
+                                       asp-action="Create"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                        <i class="fa fa-th-list"></i>
+                                        ثبت برنامه غذایی
+                                    </a>
 
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="Members"
-                                           asp-action="Edit"
-                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                            <i class="fa fa-pencil-square-o"></i>
-                                            ویرایش
-                                        </a>
-                                    </li>
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="Members"
+                                       asp-action="Edit"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        ویرایش
+                                    </a>
 
-                                    <li><hr class="dropdown-divider"></li>
+                                    <div class="dropdown-divider"></div>
 
-                                    <li>
-                                        <button type="button"
-                                                class="dropdown-item text-danger"
-                                                onclick="DeleteMember(@item.Id)">
-                                            <i class="fa fa-times"></i>
-                                            حذف
-                                        </button>
-                                    </li>
+                                    <button type="button"
+                                            class="dropdown-item text-danger"
+                                            onclick="DeleteMember(@item.Id)">
+                                        <i class="fa fa-times"></i>
+                                        حذف
+                                    </button>
 
-                                </ul>
+                                </div>
                             </div>
 
                         </td>
@@ -182,7 +180,7 @@
 {
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
-    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    @* <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script> *@
     <script>
         function DeleteMember(id) {
         Swal.fire({

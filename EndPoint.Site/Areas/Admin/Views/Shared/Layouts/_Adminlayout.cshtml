@@ -34,11 +34,11 @@
     <link rel="stylesheet" href="~/css/FitCorecss.css" />
 
     <link rel="stylesheet" href="~/css/admin-ui-modern.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/lib/bootstrap4/css/bootstrap.min.css" /> *@
 
 </head>
 
-<body data-col="2-columns" class="2-columns">
-
+<body data-col="2-columns" class="2-columns" dir="rtl">
     <div class="wrapper">
 
 
@@ -358,7 +358,15 @@
     <script src="~/lib/select2/js/select2.min.js"></script>
 
     <script src="~/lib/select2/js/i18n/fa.js"></script>
+    
 
+    <script src="~/lib/jquery/jquery/jquery.min.js"></script>
+    @* <script src="~/lib/popper/popper.min.js"></script> *@
+    <script src="~/app-assets/vendors/js/core/popper.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/css/bootstrap.min.css"></script>
+    @* <script src="~/lib/bootstrap4/js/bootstrap.min.js"></script> *@
+    
 
     @RenderSection("Scripts", false)
 
