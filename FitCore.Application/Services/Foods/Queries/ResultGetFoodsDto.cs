@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using FitCore.Application.Services.NutritionProgramBuilder.Queries;
+
+using System.Collections.Generic;
 
 namespace FitCore.Application.Services.Foods.Queries
 {

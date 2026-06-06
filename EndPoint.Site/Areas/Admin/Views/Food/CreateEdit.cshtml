@@ -17,30 +17,23 @@
         <form id="FoodForm">
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
 
-
-
-            <!-- اضافه کردن کلاس align-items-end برای تراز کردن دکمه‌ها با ورودی‌ها -->
             <div class="row align-items-end">
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel { Id = "Title", Name = "Title", LabelName = "نام (عنــوان) غذا", Col = 3, Value = Model.Title }' />
 
-
+                <!-- Select2 برای این دو فیلد اعمال خواهد شد -->
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel { Id = "CategoryTypeId", Name = "CategoryTypeId", LabelName = "دسته‌بندی(گــروه)", Col = 2, Items = ViewBag.foodCategoryTypes, Value = Model.CategoryTypeId.ToString() }' />
-
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel { Id = "DefaultUnitId", Name = "DefaultUnitId", LabelName = "واحد اندازه‌گیری", Col = 2, Items = ViewBag.foodUnitTypes, Value = Model.DefaultUnitId.ToString() }' />
 
-                <!-- برای دکمه‌ها هم حتما یک ستون در نظر بگیر تا در کنار بقیه قرار بگیرند -->
                 <div class="col-md-3">
                     <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
                              model='new FormButtonsViewModel { SubmitText = isEdit ? "ذخیره تغییرات" : "ثبت غذا", BackUrl = "/Admin/Food", BackText = "انصراف و بازگشت" }' />
                 </div>
-
             </div>
-
 
             <fieldset class="custom-groupbox mt-3">
                 <legend>اطلاعات تکمیلی</legend>
@@ -70,52 +63,30 @@
                     </div>
                 </div>
             </fieldset>
-
-
-
-
-            @* <div class="row mt-3">
-
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-                         model='new BaseInputViewModel { Id = "EnglishTitle", Name = "EnglishTitle", LabelName = "نام انگلیسی", Col = 3, Value = Model.EnglishTitle }' />
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "CaloriesPerUnit", Name = "CaloriesPerUnit", LabelName = "کالری (واحد)", Col = 1, Value = Model.CaloriesPerUnit.ToString() }' />
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "ProteinPerUnit", Name = "ProteinPerUnit", LabelName = "پروتئین", Col = 1, Value = Model.ProteinPerUnit.ToString() }' />
-
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "CarbohydratePerUnit", Name = "CarbohydratePerUnit", LabelName = "کربوهیدرات", Col = 1, Value = Model.CarbohydratePerUnit.ToString() }' />
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "FatPerUnit", Name = "FatPerUnit", LabelName = "چربی", Col = 1, Value = Model.FatPerUnit.ToString() }' />
-
-
-                <div class="col-md-1 mb-3">
-                    <label class="form-label font-weight-bold">وضعیت</label>
-                    <select id="IsActive" name="IsActive" class="form-control">
-                        <option value="true" selected="@(Model.IsActive ? "selected" : null)">فعال</option>
-                        <option value="false" selected="@(!Model.IsActive ? "selected" : null)">غیرفعال</option>
-                    </select>
-                </div>
-            </div> *@
-
         </form>
     </div>
 </div>
 
 @section Scripts {
-
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <script>
-        $(function () {
-        // --- بخش اول: فوکوس هنگام لود شدن اولیه صفحه ---
-        // فرض بر این است که می‌خواهیم روی فیلد Title فوکوس کنیم
+        // تابع اختصاصی برای Select2 خارج از مودال
+        function initSelect2(selector) {
+        $(selector).select2({
+        dir: 'rtl',
+        width: '100%',
+        language: 'fa',
+        theme: "bootstrap4"
+        });
+        }
+
+        $(document).ready(function () {
+        // فعال‌سازی Select2 برای کامبوباکس‌ها
+        initSelect2('#CategoryTypeId');
+        initSelect2('#DefaultUnitId');
+
         $("#Title").focus();
 
         $(document).on("click", "#btnSubmit, button[type='submit'], input[type='submit']", function (e) {
@@ -152,14 +123,7 @@
         if (isEdit) {
         window.location.href = "/Admin/Food/index";
         } else {
-        // --- بخش دوم: آماده‌سازی برای ورود داده جدید ---
-        // اگر صفحه را ریفرش می‌کنی:
         window.location.reload();
-
-        // نکته فنی: اگر به جای ریفرش، فرم را با کد خالی می‌کردی (بدون تغییر URL)،
-        // باید اینجا مجدداً متد فوکوس را صدا می‌زدی:
-        // $("form")[0].reset();
-        // $("#Title").focus();
         }
         });
         } else {
@@ -169,7 +133,6 @@
         text: response?.message || 'خطا در انجام عملیات',
         confirmButtonText: 'متوجه شدم'
         }).then(() => {
-        // اختیاری: اگر خطایی در فیلد خاصی بود، فوکوس را روی آن ببر
         $("#Title").focus().select();
         });
         }
@@ -187,81 +150,4 @@
         });
         });
     </script>
-
-
-
-    @* <script>
-        $(function () {
-
-        $(document).on("click", "#btnSubmit, button[type='submit'], input[type='submit']", function (e) {
-        e.preventDefault();
-
-        const isEdit = @(isEdit ? "true" : "false");
-        const url = isEdit ? "/Admin/Food/Edit" : "/Admin/Food/Create";
-
-        const data = {
-        Id: parseInt($("#Id").val()) || 0,
-        Title: $("#Title").val()?.trim(),
-        EnglishTitle: $("#EnglishTitle").val()?.trim(),
-        CategoryTypeId: parseInt($("#CategoryTypeId").val()) || 0,
-        CaloriesPerUnit: parseFloat($("#CaloriesPerUnit").val()) || 0,
-        ProteinPerUnit: parseFloat($("#ProteinPerUnit").val()) || 0,
-        CarbohydratePerUnit: parseFloat($("#CarbohydratePerUnit").val()) || 0,
-        FatPerUnit: parseFloat($("#FatPerUnit").val()) || 0,
-        DefaultUnitId: parseInt($("#DefaultUnitId").val()) || 0,
-        IsActive: $("#IsActive").val() === "true"
-
-        };
-
-        $.ajax({
-        type: "POST",
-        url: url,
-        data: data,
-
-        success: function (response) {
-
-        if (response && response.isSuccess) {
-
-        Swal.fire({
-        icon: 'success',
-        title: 'موفق',
-        text: response.message || 'عملیات با موفقیت انجام شد',
-        confirmButtonText: 'ادامه'
-        }).then(function () {
-
-        // window.location.href =
-        //     response.redirectUrl || "/Admin/Food/create";
-        // window.location.href = "/Admin/Food/create";
-        const url = isEdit ? window.location.href = "/Admin/Food/index" : window.location.href = "/Admin/Food/create";
-        });
-
-        } else {
-
-        Swal.fire({
-        icon: 'warning',
-        title: 'خطا',
-        text: response?.message || 'خطا در انجام عملیات',
-        confirmButtonText: 'متوجه شدم'
-        });
-
-        }
-        },
-
-        error: function (xhr) {
-
-        console.log(xhr.responseText);
-
-        Swal.fire({
-        icon: 'error',
-        title: 'خطای سیستمی',
-        text: 'خطا در ارتباط با سرور',
-        confirmButtonText: 'بستن'
-        });
-
-        }
-        });
-        });
-
-        });
-    </script> *@
 }

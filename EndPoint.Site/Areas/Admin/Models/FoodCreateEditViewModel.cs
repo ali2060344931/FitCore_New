@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using FitCore.Application.Services.NutritionProgramBuilder.Queries;
+
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 using System.Collections.Generic;
 
@@ -19,5 +21,7 @@ namespace EndPoint.Site.Areas.Admin.Models.Foods
 
         public List<SelectListItem> CategoryTypes { get; set; } = new();
         public List<SelectListItem> DefaultUnits { get; set; } = new();
+        public BuilderLookupDto Lookups { get; set; } = new();
+
     }
 }

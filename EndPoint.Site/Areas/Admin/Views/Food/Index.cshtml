@@ -1,8 +1,13 @@
 ﻿@using EndPoint.Site.Areas.Admin.Models
 @using FitCore.Application.Services.Foods.Queries
 @using FitCore.Common
-@* @using static FitCore.Application.Services.Foods.Queries.FoodService *@
+@using System.Linq
+
 @model ResultGetFoodsDto
+@* @model EndPoint.Site.Areas.Admin.Models.NutritionProgramBuilderPageViewModel *@
+
+
+
 @{
     var pagingVm = new PagingPartialViewModel
     {
@@ -22,6 +27,7 @@
 
     var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+
 }
 
 <div class="container-fluid mt-4">
