@@ -1,0 +1,102 @@
+﻿@using FitCore.Application.Services.Members.Queries
+@using FitCore.Application.ViewModels.Common
+@using FitCore.Common
+@model RequestAddMemberBodyMeasurementDto
+
+@{
+    ViewData["Title"] = "ثبت اندازه‌های بدنی";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="fc-form-container">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"ثبت اندازه‌های بدنی"' />
+
+        <form id="AddBodyMeasurementForm">
+            <input type="hidden" name="MemberId" value="@Model.MemberId" />
+
+            <div class="row">
+                <!-- فیلدهای Readonly -->
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel { Id = "FullName", Name = "FullName", LabelName = "نام عضو", Col = 6, Value = Model?.FullNaame, Disabled = true }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Mobile", Name = "Mobile", LabelName = "موبایل", Col = 6, Value = Model?.Mobile, Disabled = true }' />
+
+                <!-- تاریخ و اندازه‌ها -->
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+                         model='new BaseInputViewModel { Id = "RecordDate", Name = "RecordDate", LabelName = "تاریخ ثبت", Col = 6 }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Weight", Name = "Weight", LabelName = "وزن (kg)", Col = 6 }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Height", Name = "Height", LabelName = "قد (cm)", Col = 6 }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "BodyFatPercentage", Name = "BodyFatPercentage", LabelName = "درصد چربی (%)", Col = 6 }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Waist", Name = "Waist", LabelName = "دور کمر (cm)", Col = 4 }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Hip", Name = "Hip", LabelName = "دور باسن (cm)", Col = 4 }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Chest", Name = "Chest", LabelName = "دور سینه (cm)", Col = 4 }' />
+            </div>
+
+            <div class="mt-3">
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                         model='new FormButtonsViewModel { SubmitText = "ذخیره اندازه‌ها", BackUrl = "/Admin/Members", BackText = "بازگشت" }' />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+    <link href="~/lib/persian-datepicker/persian-datepicker.min.css" rel="stylesheet" />
+    <script src="~/lib/persian-datepicker/persian-date.min.js"></script>
+    <script src="~/lib/persian-datepicker/persian-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+        // 1. مقداردهی تقویم
+        $("#RecordDate").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        observer: true
+        });
+
+        // 2. هندل کردن ارسال فرم
+        $("#AddBodyMeasurementForm").on("submit", function (e) {
+        e.preventDefault();
+        var btn = $(this).find("button[type='submit']");
+
+        $.ajax({
+        url: '/Admin/MemberProfile/AddBodyMeasurement',
+        type: 'POST',
+        data: $(this).serialize(),
+        beforeSend: function () {
+        btn.prop("disabled", true).text("در حال ذخیره...");
+        },
+        success: function (result) {
+        if (result.isSuccess) {
+        Swal.fire('موفق!', result.message, 'success');
+        } else {
+        Swal.fire('هشدار!', result.message, 'warning');
+        }
+        },
+        complete: function () {
+        btn.prop("disabled", false).text("ذخیره اندازه‌ها");
+        }
+        });
+        });
+        });
+    </script>
+}

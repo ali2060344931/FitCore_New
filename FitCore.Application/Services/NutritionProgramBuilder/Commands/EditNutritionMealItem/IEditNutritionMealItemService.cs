@@ -35,7 +35,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.EditNutr
             item.Description= request.Description;
             _context.SaveChanges();
 
-            return new ResultDto { IsSuccess = true, Message = "با موفقیت ویرایش شد کاربر محترم" };
+            return new ResultDto { IsSuccess = true, Message = "اطلاعات غدای مورد نظر با موفقیت ویرایش شد." };
         }
     }
 

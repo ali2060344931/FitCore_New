@@ -54,6 +54,9 @@ namespace FitCore.Persistence.Contexts
         public DbSet<GoalType> GetGoalTypes { get; set; }
         public DbSet<NutritionProgramDay> NutritionProgramDays { get; set; }
         //===============
+        public DbSet<MemberBodyMeasurement> memberBodyMeasurements { get; set; }
+        public DbSet<ExperienceLevel> experiences { get; set; }
+        public DbSet<ActivityLevel> activityLevels { get; set; }
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)

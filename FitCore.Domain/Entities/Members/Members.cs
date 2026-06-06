@@ -1,5 +1,4 @@
 ﻿using FitCore.Domain.Entities.Commons;
-using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using FitCore.Domain.Entities.Users;
 
 using System;
@@ -18,11 +17,9 @@ namespace FitCore.Domain.Entities.Members
 
 
         [DisplayName("جنسیت")]
-        //public int? GenderId { get; set; }
         public Gender Gender { get; set; }
 
         [DisplayName("تاریخ تولد")]
-        // اگر تاریخ تولد قرار است اجباری باشد، Required را اضافه کنید
         public string BirthDate { get; set; }
 
         [DisplayName("تاریخ شروع عضویت")]
@@ -31,13 +28,31 @@ namespace FitCore.Domain.Entities.Members
         [DisplayName("تاریخ پایان عضویت")]
         public string MembershipEndDate { get; set; }
 
-        [DisplayName("قد (cm)")]
-        [Range(0, 300, ErrorMessage = "قد باید بین ۰ تا ۳۰۰ سانتی‌متر باشد.")]
-        public decimal? Height { get; set; }
 
-        [DisplayName("وزن (kg)")]
-        [Range(0, 500, ErrorMessage = "وزن باید بین ۰ تا ۵۰۰ کیلوگرم باشد.")]
-        public decimal? Weight { get; set; }
+        public int? ActivityLevelId { get; set; }
+
+        [DisplayName("سطح فعالیت بدنی")]
+        public ActivityLevel ActivityLevel { get; set; }
+
+        public int? ExperienceLevelId { get; set; }
+        [DisplayName("سطح تجربه تمرینی")]
+        public ExperienceLevel ExperienceLevel { get; set; }
+
+
+        [DisplayName("حساسیت‌های غذایی")]
+        [MaxLength(500)]
+        public string FoodAllergies { get; set; }
+
+
+        [DisplayName("بیماری‌ها / شرایط پزشکی")]
+        [MaxLength(500)]
+        public string MedicalConditions { get; set; }
+
+
+        [DisplayName("سوابق آسیب‌دیدگی")]
+        [MaxLength(500)]
+        public string Injuries { get; set; }
+
 
         [DisplayName("وضعیت عضویت")]
         public bool IsActive { get; set; } = true;
@@ -45,12 +60,79 @@ namespace FitCore.Domain.Entities.Members
         [DisplayName("توضیحات")]
         [MaxLength(500, ErrorMessage = "توضیحات نباید بیشتر از ۵۰۰ کاراکتر باشد.")]
         public string Description { get; set; }
-        //public ICollection<NutritionProgram.NutritionProgram.NutritionProgram> NutritionPrograms { get; set; }
+        public ICollection<MemberBodyMeasurement> memberBodyMeasurements { get; set; }
     }
 
     public enum Gender
     {
         Male = 1,
         Female = 2
+    }
+
+
+    /// <summary>
+    /// اندازه‌گیری‌های دوره‌ای بدن عضو
+    /// </summary>
+    public class MemberBodyMeasurement : BaseEntity
+    {
+        [DisplayName("عضو باشگاه")]
+        public long MemberId { get; set; }
+
+        public Member Member { get; set; }
+
+
+        [DisplayName("تاریخ ثبت اندازه‌گیری")]
+        public string RecordDate { get; set; }
+
+
+        [DisplayName("وزن (کیلوگرم)")]
+        [Range(0, 500)]
+        public decimal? Weight { get; set; }
+
+        [DisplayName("قد (سانتی‌متر)")]
+        [Range(50, 250)]
+        public decimal? Height { get; set; }
+
+        [DisplayName("درصد چربی بدن")]
+        [Range(0, 100)]
+        public decimal? BodyFatPercentage { get; set; }
+
+
+        [DisplayName("دور کمر (سانتی‌متر)")]
+        [Range(0, 300)]
+        public decimal? Waist { get; set; }
+
+
+        [DisplayName("دور باسن (سانتی‌متر)")]
+        [Range(0, 300)]
+        public decimal? Hip { get; set; }
+
+
+        [DisplayName("دور سینه (سانتی‌متر)")]
+        [Range(0, 300)]
+        public decimal? Chest { get; set; }
+    }
+
+
+    /// <summary>
+    /// سطح فعالیت بدنی روزانه فرد
+    /// </summary>
+    public class ActivityLevel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public ICollection<Member> members { get; set; }
+
+    }
+
+    /// <summary>
+    /// سطح تجربه تمرینی فرد
+    /// </summary>
+    public class ExperienceLevel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public ICollection<Member> members { get; set; }
+
     }
 }

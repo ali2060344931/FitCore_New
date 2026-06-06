@@ -817,3 +817,28 @@ body {
 element.style {
     border-radius:30px;
 }
+/*55555555555555*/
+/*33333333333333*/
+#stepMobile .form-account-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#mobile {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#stepMobile .form-row-account {
+    display: flex;
+    justify-content: center;
+}
+
+#stepMobile .helper-row {
+    justify-content: center;
+    text-align: center;
+}

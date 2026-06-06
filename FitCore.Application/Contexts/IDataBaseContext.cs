@@ -32,6 +32,9 @@ namespace FitCore.Application.Contexts
         DatabaseFacade Database { get; }
 
         DbSet<AppUser> Users { get; set; }
+        DbSet<MemberBodyMeasurement> memberBodyMeasurements { get; set; }
+        DbSet<ExperienceLevel> experiences { get; set; }
+        DbSet<ActivityLevel> activityLevels { get; set; }
 
         DbSet<IdentityRole<long>> Roles { get; set; }
 

@@ -1,0 +1,134 @@
+﻿@using FitCore.Application.ViewModels.Common
+@using FitCore.Common
+@using FitCore.Common.Dto
+@model FitCore.Application.Services.Members.Queries.GetMemberCompleteInfoDto
+
+@{
+    ViewData["Title"] = "تکمیل اطلاعات عضو";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="fc-form-container">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"تکمیل اطلاعات عضو"' />
+
+        <form id="CompleteInfoForm">
+            <input type="hidden" name="Id" value="@Model?.Id" />
+
+            <div class="row">
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel { Id = "FullName", Name = "FullName", LabelName = "نام کامل", Col = 3, Value = Model?.FullName, Disabled = true }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel { Id = "Mobile", Name = "Mobile", LabelName = "موبایل", Col = 3, Value = Model?.Mobile, Disabled = true }' />
+
+                <div class="col-md-1 mb-3">
+                    <label asp-for="Gender" class="form-label font-weight-bold">جنسیت@* @Html.DisplayNameFor(m => m.Gender) *@</label>
+                    <select class="form-control" id="Gender" asp-for="Gender">
+                        <option value="1">مرد</option>
+                        <option value="2">زن</option>
+                    </select>
+                </div>
+
+                @* توجه: آیدی‌هایی که اینجا تعریف می‌کنیم، در اسکریپت پایین به آن‌ها متصل می‌شویم *@
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+                         model='new BaseInputViewModel { Id = "BirthDate", Name = "BirthDate", LabelName = "تاریخ تولد", Col = 2, Value = Model?.BirthDate }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+                         model='new BaseInputViewModel { Id = "MembershipStartDate", Name = "MembershipStartDate", LabelName = "تاریخ شروع عضویت", Col = 2, Value = Model?.MembershipStartDate }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+                         model='new BaseInputViewModel { Id = "MembershipEndDate", Name = "MembershipEndDate", LabelName = "تاریخ پایان عضویت", Col = 2, Value = Model?.MembershipEndDate }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+                         model='new BaseInputViewModel { Id = "ActivityLevelId", Name = "ActivityLevelId", LabelName = "سطح فعالیت بدنی", Col = 3, Items = ViewBag.ActivityLevels, Value = Model?.ActivityLevelId?.ToString() }' />
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
+                         model='new BaseInputViewModel { Id = "ExperienceLevelId", Name = "ExperienceLevelId", LabelName = "سطح تجربه تمرینی", Col = 3, Items = ViewBag.ExperienceLevels, Value = Model?.ExperienceLevelId?.ToString() }' />
+            </div>
+
+            <fieldset class="custom-groupbox mt-3">
+                <legend>اطلاعات پزشکی و توضیحات</legend>
+                <div class="row">
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+                             model='new BaseInputViewModel { Id = "FoodAllergies", Name = "FoodAllergies", LabelName = "حساسیت‌های غذایی", Col = 6, Value = Model?.FoodAllergies }' />
+
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+                             model='new BaseInputViewModel { Id = "MedicalConditions", Name = "MedicalConditions", LabelName = "بیماری‌ها / شرایط پزشکی", Col = 6, Value = Model?.MedicalConditions }' />
+
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+                             model='new BaseInputViewModel { Id = "Injuries", Name = "Injuries", LabelName = "سوابق آسیب‌دیدگی", Col = 6, Value = Model?.Injuries }' />
+
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+                             model='new BaseInputViewModel { Id = "Description", Name = "Description", LabelName = "توضیحات", Col = 6, Value = Model?.Description }' />
+
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_CheckboxInput.cshtml"
+                             model='new BaseInputViewModel { Id = "IsActive", Name = "IsActive", LabelName = "عضویت فعال", Col = 2, Value = Model == null || Model.IsActive ? "true" : "false" }' />
+
+                    <div class="col-md-3">
+                        @* نکته: آیدی btnSave را به پارشیال اضافه کردیم یا می‌توانید در اسکریپت به دکمه داخل فرم اشاره کنید *@
+                        <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                                 model='new FormButtonsViewModel { SubmitText = "ذخیره اطلاعات", BackUrl = "/Admin/Members", BackText = "بازگشت" }' />
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+    <link href="~/lib/persian-datepicker/persian-datepicker.min.css" rel="stylesheet" />
+    <script src="~/lib/persian-datepicker/persian-date.min.js"></script>
+    <script src="~/lib/persian-datepicker/persian-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+        // 1. مقداردهی تقویم‌های شمسی
+        const datePickerConfig = {
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+        initialValue: true,
+        observer: true,
+        calendar: { persian: { locale: 'fa' } }
+        };
+
+        $("#BirthDate, #MembershipStartDate, #MembershipEndDate").persianDatepicker(datePickerConfig);
+
+        // 2. هندل کردن ارسال فرم
+        $("#CompleteInfoForm").on("submit", function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var btn = form.find("button[type='submit']");
+        var formData = form.serialize();
+
+        $.ajax({
+        url: '/Admin/MemberProfile/CompleteInfo',
+        type: 'POST',
+        data: formData,
+        beforeSend: function () {
+        btn.prop("disabled", true).text("در حال ذخیره...");
+        },
+        success: function (result) {
+        if (result.isSuccess) {
+        Swal.fire('موفق!', result.message, 'success');
+        } else {
+        Swal.fire('هشدار!', result.message, 'warning');
+        }
+        },
+        error: function () {
+        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+        },
+        complete: function () {
+        btn.prop("disabled", false).text("ذخیره اطلاعات");
+        }
+        });
+        });
+        });
+    </script>
+}

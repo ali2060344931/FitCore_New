@@ -187,6 +187,13 @@ builder.Services.AddScoped<IGetProvincesService, GetProvincesService>();
 builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
 
 
+builder.Services.AddScoped<IAddOrUpdateMemberService, AddOrUpdateMemberService>();
+builder.Services.AddScoped<IGetMemberByAppUserIdService, GetMemberByAppUserIdService>();
+builder.Services.AddScoped<IGetMemberByIdService, GetMemberByIdService>();
+builder.Services.AddScoped<IAddMemberBodyMeasurementService, AddMemberBodyMeasurementService>();
+builder.Services.AddScoped<IEditMemberBodyMeasurementService, EditMemberBodyMeasurementService>();
+
+
 
 //<------  FoodS  -------->
 builder.Services.AddScoped<IFoodService, FoodService>();

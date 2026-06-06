@@ -20,6 +20,8 @@ public static class SeederRunner
             new MealTypeSeeder(),
             new NutritionProgramTypeSeeder(),
             new GoalTypeSeeder(),
+            new ActivityLevelSeeder(),
+            new ExperienceLevelSeeder(),
         };
 
         foreach (var seeder in seeders)
