@@ -41,19 +41,19 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionMealItem
         /// <summary>
         /// کالری
         /// </summary>
-        public decimal Calories { get; set; }
+        public decimal? Calories { get; set; } = 0;
         /// <summary>
         /// پروتئین
         /// </summary>
-        public decimal Protein { get; set; }
+        public decimal? Protein { get; set; } = 0;
         /// <summary>
         /// کربوهیدرات
         /// </summary>
-        public decimal Carbohydrate { get; set; }
+        public decimal? Carbohydrate { get; set; } = 0;
         /// <summary>
         /// چربی
         /// </summary>
-        public decimal Fat { get; set; }
+        public decimal? Fat { get; set; } = 0;
 
         // Navigation
         /// <summary>

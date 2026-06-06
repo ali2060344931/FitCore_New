@@ -43,7 +43,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
             //بررسی تکراری بودن وعده در یک روز
             var CheackRepid = _context.NutritionMeals.Any(c => c.MealTypeId == request.MealTypeId && c.NutritionProgramDayId == request.NutritionProgramDayId);
             if (CheackRepid)
-                return new ResultDto<long> { IsSuccess = false, Message = "وعده مورد نظر قبل در این روز ثبت گردید" };
+                return new ResultDto<long> { IsSuccess = false, Message = "وعده مورد نظر قبل در این روز ثبت گردید." };
 
             var meal = new NutritionMeal
             {
@@ -59,7 +59,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
             return new ResultDto<long>
             {
                 IsSuccess = true,
-                Message = "وعده جدید با موفقیت ثبت شد",
+                Message = "وعده جدید با موفقیت ثبت شد. می توانید وعده دیگری را هم اضافه نمائید.",
                 Data = meal.Id
             };
         }

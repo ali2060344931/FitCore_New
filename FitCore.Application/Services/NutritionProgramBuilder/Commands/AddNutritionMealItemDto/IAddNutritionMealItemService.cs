@@ -121,7 +121,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutri
             return new ResultDto<long>
             {
                 IsSuccess = true,
-                Message = "آیتم غذایی با موفقیت ثبت شد",
+                Message = "آیتم غذایی با موفقیت ثبت شد."+'\n'+ "غذای بعدی را هم میتوانید اضافه نمائید",
                 Data = item.Id
             };
         }

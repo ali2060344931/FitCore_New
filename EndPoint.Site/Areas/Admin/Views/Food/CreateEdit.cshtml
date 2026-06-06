@@ -73,14 +73,39 @@
 
     <script>
         // تابع اختصاصی برای Select2 خارج از مودال
-        function initSelect2(selector) {
-        $(selector).select2({
-        dir: 'rtl',
-        width: '100%',
-        language: 'fa',
-        theme: "bootstrap4"
-        });
+        // function initSelect2(selector) {
+        // $(selector).select2({
+        // dir: 'rtl',
+        // width: '100%',
+        // language: 'fa',
+        // theme: "bootstrap4"
+        // });
+        // }
+
+                function initSelect2(selector, options = {}) {
+            const $el = $(selector);
+
+            if (!$el.length) {
+                return;
+            }
+
+            if ($el.hasClass('select2-hidden-accessible')) {
+                $el.select2('destroy');
+            }
+
+            $el.select2({
+                dir: 'rtl',
+                width: '100%',
+                language: 'fa',
+                theme: 'bootstrap4',
+                placeholder: 'انتخاب کنید',
+                allowClear: true,
+                ...options
+            });
         }
+
+
+
 
         $(document).ready(function () {
         // فعال‌سازی Select2 برای کامبوباکس‌ها

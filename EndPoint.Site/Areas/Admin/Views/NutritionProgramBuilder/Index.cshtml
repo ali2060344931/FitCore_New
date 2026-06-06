@@ -36,7 +36,7 @@
     <div class="program-header-sticky-wrapper">
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body py-3 px-3">
-                
+
                 <!-- ردیف اطلاعات اصلی -->
                 <div class="program-header-row d-flex flex-column flex-lg-row
                     justify-content-between align-items-start
@@ -269,10 +269,10 @@
                                                     <i class="fa fa-plus me-1"></i> افزودن اولین وعده
                                                 </button>
 
-                                            
-                                            
-                                            
-                                            
+
+
+
+
                                             </div>
                                         </div>
                                     }
@@ -343,7 +343,7 @@
                                                                     نوع وعده :
                                                                 </span>
 
-                                                                
+
                                                                 <span class="meal-label-date"
                                                                       data-bs-toggle="tooltip"
                                                                       title="  روز: @(day.Title)">
@@ -367,7 +367,7 @@
                                                                 }
 
 
-                                                                
+
                                                             </div>
 
                                                         </div>
@@ -411,8 +411,8 @@
                                                                 <button type="button"
                                                                         class="btn btn-sm btn-outline-danger rounded-pill mt-3"
                                                                         onclick="openAddMealItemModal('@meal.MealId',
-                                                                    `@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`,
-                                                                    `@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.MealType ?? ""))`)">
+                                                                                                                                                                    `@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`,
+                                                                                                                                                                    `@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.MealType ?? ""))`)">
 
                                                                     <i class="fa fa-plus me-1"></i>
                                                                     افزودن اولین غذا
@@ -541,140 +541,140 @@
 
                     <h5 class="modal-title">
                         ویرایش روز:   <small class="swal2-textarea countdown-timer mt-1">
-                        <span id="EditDay_Title" class="countdown-text"></span>
-                    </small>
+                            <span id="EditDay_Title" class="countdown-text"></span>
+                        </small>
 
-                </h5>
+                    </h5>
 
 
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDayForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="EditDay_Id" name="Id" />
+                        <div class="form-group"><label>شماره روز</label><input type="number" class="form-control" id="EditDay_DayNumber" name="DayNumber" min="1" /></div>
+                        <div class="form-group"><label>عنوان روز</label><input type="text" class="form-control" id="EditDay_Title_txt" name="Title" /></div>
+                    </form>
+                    <div id="editDayMessage" class="mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="btnEditDay" form="editDayForm"><span class="btn-text">ذخیره</span></button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="editDayForm">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="EditDay_Id" name="Id" />
-                    <div class="form-group"><label>شماره روز</label><input type="number" class="form-control" id="EditDay_DayNumber" name="DayNumber" min="1" /></div>
-                    <div class="form-group"><label>عنوان روز</label><input type="text" class="form-control" id="EditDay_Title_txt" name="Title" /></div>
+        </div>
+    </div>
+
+    <!-- Delete Day -->
+    <div class="modal fade" id="deleteDayModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+
+                        حــذف روز:   <small class="swal2-textarea countdown-timer mt-1">
+                            <span id="DeleteDay_Title" class="countdown-text"></span>
+                        </small>
+
+                    </h5>
+
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="deleteDayForm">@Html.AntiForgeryToken()<input type="hidden" id="DeleteDay_Id" name="Id" /></form>
+                    <div class="alert alert-warning mb-0">آیا از حذف این روز مطمئن هستید؟</div>
+                    <div id="deleteDayMessage" class="mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger" id="btnDeleteDay" form="deleteDayForm"><span class="btn-text">حذف</span></button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Meal -->
+    <div class="modal fade" id="addMealModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        افزودن وعده:   <small class="swal2-textarea countdown-timer mt-1">
+                            <span id="addMealDayTitle" class="countdown-text"></span>
+                        </small>
+
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMealForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="NutritionProgramDayId" id="AddMeal_NutritionProgramDayId" />
+                        <div class="form-group">
+                            <label>نوع وعده</label>
+                            <select class="form-control" name="MealTypeId" id="AddMeal_MealTypeId" required>
+                                <option value="">انتخاب کنید...</option>
+                                @foreach (var mt in lookups.MealTypes)
+                                {
+                                    <option value="@mt.Id">@mt.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>عنوان</label>
+                            <input class="form-control" name="Title" id="AddMeal_Title" />
+                        </div>
+                    </form>
+                    <div id="addMealMessage" class="mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveMeal" form="addMealForm">
+                        <span class="btn-text">ثبت</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Meal -->
+    <div class="modal fade" id="editMealModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        ویرایش وعده:   <small class="swal2-textarea countdown-timer mt-1">
+                            <span id="EditMealmealType" class="countdown-text"></span>
+                        </small>
+
+                    </h5>
+
+
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMealForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" id="EditMeal_Id" />
+                        <input type="hidden" name="NutritionProgramDayId" id="EditMeal_NutritionProgramDayId" />
+                        <div class="form-group">
+                            <label>نوع وعده</label><select class="form-control" name="MealTypeId" id="EditMeal_MealTypeId" required>
+                                <option value="">انتخاب کنید...</option>@foreach (var mt in lookups.MealTypes){
+                                <option value="@mt.Id">@mt.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group"><label>عنوان</label><input class="form-control" name="Title" id="EditMeal_Title" /></div>
                 </form>
-                <div id="editDayMessage" class="mt-2"></div>
+                <div id="editMealMessage" class="mt-2"></div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" id="btnEditDay" form="editDayForm"><span class="btn-text">ذخیره</span></button>
+                <button type="submit" class="btn btn-primary" id="btnEditMeal" form="editMealForm"><span class="btn-text">ذخیره</span></button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Delete Day -->
-<div class="modal fade" id="deleteDayModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-
-                    حــذف روز:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="DeleteDay_Title" class="countdown-text"></span>
-                </small>
-
-            </h5>
-
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="deleteDayForm">@Html.AntiForgeryToken()<input type="hidden" id="DeleteDay_Id" name="Id" /></form>
-            <div class="alert alert-warning mb-0">آیا از حذف این روز مطمئن هستید؟</div>
-            <div id="deleteDayMessage" class="mt-2"></div>
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-danger" id="btnDeleteDay" form="deleteDayForm"><span class="btn-text">حذف</span></button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button>
-        </div>
-    </div>
-</div>
-</div>
-
-<!-- Add Meal -->
-<div class="modal fade" id="addMealModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    افزودن وعده:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="addMealDayTitle" class="countdown-text"></span>
-                </small>
-
-            </h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="addMealForm">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="NutritionProgramDayId" id="AddMeal_NutritionProgramDayId" />
-                <div class="form-group">
-                    <label>نوع وعده</label>
-                    <select class="form-control" name="MealTypeId" id="AddMeal_MealTypeId" required>
-                        <option value="">انتخاب کنید...</option>
-                        @foreach (var mt in lookups.MealTypes)
-                        {
-                            <option value="@mt.Id">@mt.Name</option>
-                        }
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>عنوان</label>
-                    <input class="form-control" name="Title" id="AddMeal_Title" />
-                </div>
-            </form>
-            <div id="addMealMessage" class="mt-2"></div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
-            <button type="submit" class="btn btn-primary" id="btnSaveMeal" form="addMealForm">
-                <span class="btn-text">ثبت</span>
-            </button>
-        </div>
-    </div>
-</div>
-</div>
-
-<!-- Edit Meal -->
-<div class="modal fade" id="editMealModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    ویرایش وعده:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="EditMealmealType" class="countdown-text"></span>
-                </small>
-
-            </h5>
-
-
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="editMealForm">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="Id" id="EditMeal_Id" />
-                <input type="hidden" name="NutritionProgramDayId" id="EditMeal_NutritionProgramDayId" />
-                <div class="form-group">
-                    <label>نوع وعده</label><select class="form-control" name="MealTypeId" id="EditMeal_MealTypeId" required>
-                    <option value="">انتخاب کنید...</option>@foreach (var mt in lookups.MealTypes){
-                    <option value="@mt.Id">@mt.Name</option>
-                }
-            </select>
-        </div>
-        <div class="form-group"><label>عنوان</label><input class="form-control" name="Title" id="EditMeal_Title" /></div>
-    </form>
-    <div id="editMealMessage" class="mt-2"></div>
-</div>
-<div class="modal-footer">
-    <button type="submit" class="btn btn-primary" id="btnEditMeal" form="editMealForm"><span class="btn-text">ذخیره</span></button>
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
-</div>
-</div>
-</div>
 </div>
 
 <!-- Delete Meal -->
@@ -684,23 +684,23 @@
             <div class="modal-header">
                 <h5 class="modal-title">
                     حــذف وعده:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="DeleteMeallTitle" class="countdown-text"></span>
-                </small>
+                        <span id="DeleteMeallTitle" class="countdown-text"></span>
+                    </small>
 
-            </h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="deleteMealForm">@Html.AntiForgeryToken()<input type="hidden" id="DeleteMeal_Id" name="Id" /></form>
-            <div class="alert alert-warning mb-0">آیا از حذف این وعده مطمئن هستید؟</div>
-            <div id="deleteMealMessage" class="mt-2"></div>
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-danger" id="btnDeleteMeal" form="deleteMealForm"><span class="btn-text">حذف</span></button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteMealForm">@Html.AntiForgeryToken()<input type="hidden" id="DeleteMeal_Id" name="Id" /></form>
+                <div class="alert alert-warning mb-0">آیا از حذف این وعده مطمئن هستید؟</div>
+                <div id="deleteMealMessage" class="mt-2"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger" id="btnDeleteMeal" form="deleteMealForm"><span class="btn-text">حذف</span></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <!-- Add Meal Item -->
@@ -711,69 +711,69 @@
                 <h5 class="modal-title">
 
                     افزودن غذا:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="addMealItemDayTitle" class="countdown-text"></span>
-                    <span id="DeleteDay_Title" class="countdown-text"> (</span>
-                    <span id="addMealItemMealTitle" class="countdown-text-bl"></span>
-                    <span id="DeleteDay_Title" class="countdown-text">)</span>
+                        <span id="addMealItemDayTitle" class="countdown-text"></span>
+                        <span id="DeleteDay_Title" class="countdown-text"> (</span>
+                        <span id="addMealItemMealTitle" class="countdown-text-bl"></span>
+                        <span id="DeleteDay_Title" class="countdown-text">)</span>
 
-                </small>
+                    </small>
 
-            </h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="addMealItemForm">
-                @Html.AntiForgeryToken()
-                <input type="hidden" id="NutritionMealId" name="NutritionMealId" />
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>غذا</label>
-                            <div class="d-flex">
-                                <select class="form-control select2" id="FoodId" name="FoodId" style="width: 100%;">
-                                    <option value="">انتخاب غذا</option>
-                                    @if (lookups?.Foods != null)
-                                    {
-                                        foreach (var food in lookups.Foods)
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addMealItemForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="NutritionMealId" name="NutritionMealId" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>غذا</label>
+                                <div class="d-flex">
+                                    <select class="form-control select2" id="FoodId" name="FoodId" style="width: 100%;">
+                                        <option value="">انتخاب غذا</option>
+                                        @if (lookups?.Foods != null)
                                         {
-                                            <option value="@food.Id">@food.Name</option>
+                                            foreach (var food in lookups.Foods)
+                                            {
+                                                <option value="@food.Id">@food.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="Amount" name="Amount" /></div></div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>واحد</label>
+                                <select class="form-control select2" id="UnitTypeId" name="UnitTypeId">
+                                    <option value="">انتخاب واحد</option>
+                                    @if (lookups?.Units != null)
+                                    {
+                                        foreach (var unit in lookups.Units)
+                                        {
+                                            <option value="@unit.Id">@unit.Name</option>
                                         }
                                     }
                                 </select>
                             </div>
                         </div>
                     </div>
+                    @* توضیحات *@
+                    <div class="form-group"><label>توضیحات</label><input type="text" class="form-control" name="Description" Id="MealItemDescription" /></div>
 
-                    <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="Amount" name="Amount" /></div></div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>واحد</label>
-                            <select class="form-control select2" id="UnitTypeId" name="UnitTypeId">
-                                <option value="">انتخاب واحد</option>
-                                @if (lookups?.Units != null)
-                                {
-                                    foreach (var unit in lookups.Units)
-                                    {
-                                        <option value="@unit.Id">@unit.Name</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                @* توضیحات *@
-                <div class="form-group"><label>توضیحات</label><input type="text" class="form-control" name="Description" Id="MealItemDescription" /></div>
+                </form>
+                <div id="addMealItemMessage" class="mt-2"></div>
+            </div>
+            <div class="modal-footer">
 
-            </form>
-            <div id="addMealItemMessage" class="mt-2"></div>
-        </div>
-        <div class="modal-footer">
-
-            <button type="submit" class="btn btn-primary" id="btnSaveMealItem" form="addMealItemForm"><span class="btn-text">ثبت</span></button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                <button type="submit" class="btn btn-primary" id="btnSaveMealItem" form="addMealItemForm"><span class="btn-text">ثبت</span></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <!-- Edit Meal Item -->
@@ -784,55 +784,55 @@
                 <h5 class="modal-title">
 
                     ویرایش غذای وعده:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="EditFoodName" class="countdown-text"></span>
-                </small>
+                        <span id="EditFoodName" class="countdown-text"></span>
+                    </small>
 
-            </h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="editMealItemForm">
-                @Html.AntiForgeryToken()
-                <input type="hidden" id="EditMealItem_Id" name="Id" />
-                <input type="hidden" id="EditMealItem_NutritionMealId" name="NutritionMealId" />
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>غذا</label>
-                            <select class="form-control select2" id="EditMealItem_FoodId" name="FoodId">
-                                <option value="">انتخاب غذا</option>@if (lookups?.Foods != null){foreach (var food in lookups.Foods){
-                                <option value="@food.Id">@food.Name</option>
-                            }
-                        }
-                    </select>
-
-                </div>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="EditMealItem_Amount" name="Amount" /></div></div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label>واحد</label><select class="form-control select2" id="EditMealItem_UnitTypeId" name="UnitTypeId">
-                    <option value="">انتخاب واحد</option>@if (lookups?.Units != null){foreach (var unit in lookups.Units){
-                    <option value="@unit.Id">@unit.Name</option>
-                }
-            }
-        </select>
+            <div class="modal-body">
+                <form id="editMealItemForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="EditMealItem_Id" name="Id" />
+                    <input type="hidden" id="EditMealItem_NutritionMealId" name="NutritionMealId" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>غذا</label>
+                                <select class="form-control select2" id="EditMealItem_FoodId" name="FoodId">
+                                    <option value="">انتخاب غذا</option>@if (lookups?.Foods != null){foreach (var food in lookups.Foods){
+                                    <option value="@food.Id">@food.Name</option>
+                                                                        }
+                                                                        }
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3"><div class="form-group"><label>مقدار</label><input type="number" step="0.01" class="form-control" id="EditMealItem_Amount" name="Amount" /></div></div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>واحد</label><select class="form-control select2" id="EditMealItem_UnitTypeId" name="UnitTypeId">
+                                    <option value="">انتخاب واحد</option>@if (lookups?.Units != null){foreach (var unit in lookups.Units){
+                                    <option value="@unit.Id">@unit.Name</option>
+                                                                        }
+                                                                        }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* توضیحات *@
+                    <div class="form-group"><label>توضیحات</label><input type="text" class="form-control" name="Description" id="MealEditItemDescription" /></div>
+
+                </form>
+                <div id="editMealItemMessage" class="mt-2"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" id="btnEditMealItem" form="editMealItemForm"><span class="btn-text">ذخیره</span></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+            </div>
+        </div>
     </div>
-</div>
-</div>
-
-@* توضیحات *@
-<div class="form-group"><label>توضیحات</label><input type="text" class="form-control" name="Description" id="MealEditItemDescription" /></div>
-
-</form>
-<div id="editMealItemMessage" class="mt-2"></div>
-</div>
-<div class="modal-footer">
-    <button type="submit" class="btn btn-primary" id="btnEditMealItem" form="editMealItemForm"><span class="btn-text">ذخیره</span></button>
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
-</div>
-</div>
-</div>
 </div>
 
 <!-- Delete Meal Item -->
@@ -843,230 +843,236 @@
 
                 <h5 class="modal-title">
                     حذف غذای وعده:   <small class="swal2-textarea countdown-timer mt-1">
-                    <span id="DeleteFoodName" class="countdown-text"></span>
-                </small>
-            </h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <span id="DeleteFoodName" class="countdown-text"></span>
+                    </small>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteMealItemForm">@Html.AntiForgeryToken()<input type="hidden" id="DeleteMealItem_Id" name="Id" /></form>
+                <div class="alert alert-warning mb-0">آیا از حذف این آیتم مطمئن هستید؟</div>
+                <div id="deleteMealItemMessage" class="mt-2"></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button><button type="submit" class="btn btn-danger" id="btnDeleteMealItem" form="deleteMealItemForm"><span class="btn-text">حذف</span></button></div>
         </div>
-        <div class="modal-body">
-            <form id="deleteMealItemForm">@Html.AntiForgeryToken()<input type="hidden" id="DeleteMealItem_Id" name="Id" /></form>
-            <div class="alert alert-warning mb-0">آیا از حذف این آیتم مطمئن هستید؟</div>
-            <div id="deleteMealItemMessage" class="mt-2"></div>
-        </div>
-        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button><button type="submit" class="btn btn-danger" id="btnDeleteMealItem" form="deleteMealItemForm"><span class="btn-text">حذف</span></button></div>
     </div>
-</div>
 </div>
 }
 
 
 @section Scripts {
     <script>
-        console.log('Meal Saved');
-        var mealItemAdded = false;
-        var mealAdded = false;
 
-        function setButtonLoading($btn, isLoading, text) {
-            if (isLoading) {
-                $btn.prop('disabled', true);
-                $btn.data('original-text', $btn.find('.btn-text').text());
-                $btn.find('.btn-text').text(text || 'در حال ثبت...');
-            } else {
-                $btn.prop('disabled', false);
-                $btn.find('.btn-text').text($btn.data('original-text') || 'ثبت');
-            }
-        }
+                      var mealItemAdded = false;
+                      var mealAdded = false;
 
-        function showMessage(selector, type, message) {
-            $(selector).html('<div class="alert alert-' + type + ' mb-0">' + message + '</div>');
-        }
+                      function setButtonLoading($btn, isLoading, text) {
+                          if (isLoading) {
+                              $btn.prop('disabled', true);
+                              $btn.data('original-text', $btn.find('.btn-text').text());
+                              $btn.find('.btn-text').text(text || 'در حال ثبت...');
+                          } else {
+                              $btn.prop('disabled', false);
+                              $btn.find('.btn-text').text($btn.data('original-text') || 'ثبت');
+                          }
+                      }
 
-        function postForm(formSelector, buttonSelector, messageSelector, url, options) {
-            options = options || {};
+                      function showMessage(selector, type, message) {
+                          $(selector).html('<div class="alert alert-' + type + ' mb-0">' + message + '</div>');
+                      }
 
-            var reloadOnSuccess = options.reloadOnSuccess !== undefined ? options.reloadOnSuccess : true;
-            var onSuccess = options.onSuccess || null;
+                      function postForm(formSelector, buttonSelector, messageSelector, url, options) {
+                          options = options || {};
 
-            var $form = $(formSelector);
-            var $btn = $(buttonSelector);
+                          var reloadOnSuccess = options.reloadOnSuccess !== undefined ? options.reloadOnSuccess : true;
+                          var onSuccess = options.onSuccess || null;
 
-            setButtonLoading($btn, true, 'در حال انجام...');
+                          var $form = $(formSelector);
+                          var $btn = $(buttonSelector);
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: $form.serialize(),
-                success: function (res) {
-                    if (res && res.isSuccess) {
-                        showMessage(messageSelector, 'success', res.message || 'عملیات با موفقیت انجام شد.');
+                          setButtonLoading($btn, true, 'در حال انجام...');
 
-                        if (typeof onSuccess === 'function') {
-                            onSuccess(res, $form);
-                        }
+                          $.ajax({
+                              url: url,
+                              type: 'POST',
+                              data: $form.serialize(),
+                              success: function (res) {
+                                  if (res && res.isSuccess) {
+                                      showMessage(messageSelector, 'success', res.message || 'عملیات با موفقیت انجام شد.');
 
-                        if (reloadOnSuccess) {
-                            setTimeout(function () { location.reload(); }, 700);
-                        }
-                    } else {
-                        showMessage(messageSelector, 'danger', (res && res.message) ? res.message : 'عملیات انجام نشد.');
-                    }
-                },
-                error: function (xhr) {
-                    showMessage(messageSelector, 'danger', 'خطا در ارتباط با سرور.');
-                    console.log(xhr.responseText);
-                },
-                complete: function () {
-                    setButtonLoading($btn, false);
-                }
-            });
-        }
+                                      if (typeof onSuccess === 'function') {
+                                          onSuccess(res, $form);
+                                      }
 
-        function openEditDayModal(id, dayNumber, Title) {
-            $('#EditDay_Id').val(id);
-            $('#EditDay_DayNumber').val(dayNumber);
-            $('#EditDay_Title').text(Title || '');
-            $('#EditDay_Title_txt').val(Title || '');
+                                      if (reloadOnSuccess) {
+                                          setTimeout(function () { location.reload(); }, 700);
+                                      }
+                                  } else {
+                                      showMessage(messageSelector, 'danger', (res && res.message) ? res.message : 'عملیات انجام نشد.');
+                                  }
+                              },
+                              error: function (xhr) {
+                                  showMessage(messageSelector, 'danger', 'خطا در ارتباط با سرور.');
+                                  console.log(xhr.responseText);
+                              },
+                              complete: function () {
+                                  setButtonLoading($btn, false);
+                              }
+                          });
+                      }
 
-            $('#editDayMessage').html('');
-            $('#editDayModal').modal('show');
-        }
+                      function openEditDayModal(id, dayNumber, Title) {
+                          $('#EditDay_Id').val(id);
+                          $('#EditDay_DayNumber').val(dayNumber);
+                          $('#EditDay_Title').text(Title || '');
+                          $('#EditDay_Title_txt').val(Title || '');
 
-        function openDeleteDayModal(id,Title) {
-            $('#DeleteDay_Id').val(id);
-            $('#DeleteDay_Title').text(Title || '');
+                          $('#editDayMessage').html('');
+                          $('#editDayModal').modal('show');
+                      }
 
-            $('#deleteDayMessage').html('');
-            $('#deleteDayModal').modal('show');
-        }
+                      function openDeleteDayModal(id,Title) {
+                          $('#DeleteDay_Id').val(id);
+                          $('#DeleteDay_Title').text(Title || '');
 
-        function openEditMealModal(id, dayId, mealTypeId, Title,TitleM,mealType) {
-            $('#EditMeal_Id').val(id);
-            $('#EditMeal_NutritionProgramDayId').val(dayId);
-            $('#EditMeal_MealTypeId').val(mealTypeId).trigger('change');
-            $('#EditMealmealType').text(mealType || '');
-            $('#editMealMessage').html('');
-            $('#editMealModal').modal('show');
-        }
+                          $('#deleteDayMessage').html('');
+                          $('#deleteDayModal').modal('show');
+                      }
 
-        function openDeleteMealModal(id,mealTitle) {
-            $('#DeleteMeal_Id').val(id);
-            $('#DeleteMeallTitle').text(mealTitle || '');
+                      function openEditMealModal(id, dayId, mealTypeId, Title,TitleM,mealType) {
+                          $('#EditMeal_Id').val(id);
+                          $('#EditMeal_NutritionProgramDayId').val(dayId);
+                          $('#EditMeal_MealTypeId').val(mealTypeId).trigger('change');
+                          $('#EditMealmealType').text(mealType || '');
+                          $('#editMealMessage').html('');
+                          $('#editMealModal').modal('show');
+                      }
 
-            $('#deleteMealMessage').html('');
-            $('#deleteMealModal').modal('show');
-        }
+                      function openDeleteMealModal(id,mealTitle) {
+                          $('#DeleteMeal_Id').val(id);
+                          $('#DeleteMeallTitle').text(mealTitle || '');
 
-        function openAddMealItemModal(mealId, dayTitle, mealTitle) {
-            $('#NutritionMealId').val(mealId);
-            $('#addMealItemDayTitle').text(dayTitle || '');
-            $('#addMealItemMealTitle').text(mealTitle || '');
-            $('#FoodId').val('').trigger('change');
-            $('#Amount').val('');
-            $('#UnitTypeId').val('').trigger('change');
-            $('#addMealItemMessage').html('');
-            $('#addMealItemModal').modal('show');
-            $('#MealItemDescription').val('');
-        }
+                          $('#deleteMealMessage').html('');
+                          $('#deleteMealModal').modal('show');
+                      }
 
-        function openEditMealItemModal(id, mealId, foodId, amount, unitTypeId,FoodName,Descriotion) {
-            $('#EditMealItem_Id').val(id);
+                      function openAddMealItemModal(mealId, dayTitle, mealTitle) {
+                          $('#NutritionMealId').val(mealId);
+                          $('#addMealItemDayTitle').text(dayTitle || '');
+                          $('#addMealItemMealTitle').text(mealTitle || '');
+                          $('#FoodId').val('').trigger('change');
+                          $('#Amount').val('');
+                          $('#UnitTypeId').val('').trigger('change');
+                          $('#addMealItemMessage').html('');
+                          $('#addMealItemModal').modal('show');
+                          $('#MealItemDescription').val('');
+                      }
 
-            @* ------my code------ *@
-            $('#EditFoodName').text(FoodName || '');
+                      function openEditMealItemModal(id, mealId, foodId, amount, unitTypeId,FoodName,Descriotion) {
+                          $('#EditMealItem_Id').val(id);
 
-            @* ------------ *@
+                          @* ------my code------ *@
+                          $('#EditFoodName').text(FoodName || '');
 
-
-            
-            $('#EditMealItem_NutritionMealId').val(mealId);
-            $('#EditMealItem_FoodId').val(foodId).trigger('change');
-            $('#EditMealItem_Amount').val(amount);
-            $('#MealEditItemDescription').val(Descriotion || '');
-            $('#EditMealItem_UnitTypeId').val(unitTypeId).trigger('change');
-            $('#editMealItemMessage').html('');
-            $('#editMealItemModal').modal('show');
-        }
-
-        function openDeleteMealItemModal(id,FoodName) {
-            $('#DeleteMealItem_Id').val(id);
-
-            @* ------my code------ *@
-            $('#DeleteFoodName').text(FoodName || '');
-
-            @* ------------ *@
-
-            $('#deleteMealItemMessage').html('');
-            $('#deleteMealItemModal').modal('show');
-        }
-
-        $(document).on('click', '[data-target="#addMealModal"]', function () {
-            $('#AddMeal_NutritionProgramDayId').val($(this).attr('data-day-id'));
-            $('#addMealDayTitle').text($(this).attr('data-day-title') || '');
-            $('#addMealMessage').html('');
-        });
-
-        $(document).on('submit', '#addDayForm', function (e) {
-            e.preventDefault();
-            postForm('#addDayForm', '#btnSaveDay', '#addDayMessage', '@Url.Action("AddDay", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
-
-        $(document).on('submit', '#editDayForm', function (e) {
-            e.preventDefault();
-            postForm('#editDayForm', '#btnEditDay', '#editDayMessage', '@Url.Action("EditDay", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
-
-        $(document).on('submit', '#deleteDayForm', function (e) {
-            e.preventDefault();
-            postForm('#deleteDayForm', '#btnDeleteDay', '#deleteDayMessage', '@Url.Action("DeleteDay", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
-
-        $(document).on('submit', '#addMealForm', function (e) {
-
-            e.preventDefault();
-
-            postForm(
-                '#addMealForm',
-                '#btnSaveMeal',
-                '#addMealMessage',
-                '@Url.Action("AddMeal", "NutritionProgramBuilder", new { area = "Admin" })',
-                {
-                    reloadOnSuccess: false,
-
-                    onSuccess: function () {
-
-                        mealAdded = true;
-
-                        var dayId =
-                            $('#AddMeal_NutritionProgramDayId').val();
-
-                        $('#addMealForm')[0].reset();
-
-                        $('#AddMeal_NutritionProgramDayId')
-                            .val(dayId);
-
-                        $('#AddMeal_MealTypeId').val('');
-
-                        $('#AddMeal_Title').val('');
-
-                        $('#AddMeal_MealTypeId').focus();
-                    }
-                });
-        });
-
-
-        $(document).on('submit', '#editMealForm', function (e) {
-            e.preventDefault();
-            postForm('#editMealForm', '#btnEditMeal', '#editMealMessage', '@Url.Action("EditMeal", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
-
-        $(document).on('submit', '#deleteMealForm', function (e) {
-            e.preventDefault();
-            postForm('#deleteMealForm', '#btnDeleteMeal', '#deleteMealMessage', '@Url.Action("DeleteMeal", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
+                          @* ------------ *@
 
 
 
-        $(document).on('submit', '#addMealItemForm', function (e) {
+                          $('#EditMealItem_NutritionMealId').val(mealId);
+                          $('#EditMealItem_FoodId').val(foodId).trigger('change');
+                          $('#EditMealItem_Amount').val(amount);
+                          $('#MealEditItemDescription').val(Descriotion || '');
+                          $('#EditMealItem_UnitTypeId').val(unitTypeId).trigger('change');
+                          $('#editMealItemMessage').html('');
+                          $('#editMealItemModal').modal('show');
+                      }
+
+                      function openDeleteMealItemModal(id,FoodName) {
+                          $('#DeleteMealItem_Id').val(id);
+
+                          @* ------my code------ *@
+                          $('#DeleteFoodName').text(FoodName || '');
+
+                          @* ------------ *@
+
+                          $('#deleteMealItemMessage').html('');
+                          $('#deleteMealItemModal').modal('show');
+                      }
+
+                      $(document).on('click', '[data-target="#addMealModal"]', function () {
+                          $('#AddMeal_NutritionProgramDayId').val($(this).attr('data-day-id'));
+                          $('#addMealDayTitle').text($(this).attr('data-day-title') || '');
+                          $('#addMealMessage').html('');
+                      });
+
+                      $(document).on('submit', '#addDayForm', function (e) {
+                          e.preventDefault();
+                          postForm('#addDayForm', '#btnSaveDay', '#addDayMessage', '@Url.Action("AddDay", "NutritionProgramBuilder", new { area = "Admin" })');
+                      });
+
+                      $(document).on('submit', '#editDayForm', function (e) {
+                          e.preventDefault();
+                          postForm('#editDayForm', '#btnEditDay', '#editDayMessage', '@Url.Action("EditDay", "NutritionProgramBuilder", new { area = "Admin" })');
+                      });
+
+                      $(document).on('submit', '#deleteDayForm', function (e) {
+                          e.preventDefault();
+                          postForm('#deleteDayForm', '#btnDeleteDay', '#deleteDayMessage', '@Url.Action("DeleteDay", "NutritionProgramBuilder", new { area = "Admin" })');
+                      });
+
+                      $(document).on('submit', '#addMealForm', function (e) {
+
+                          e.preventDefault();
+
+                          postForm(
+                              '#addMealForm',
+                              '#btnSaveMeal',
+                              '#addMealMessage',
+                              '@Url.Action("AddMeal", "NutritionProgramBuilder", new { area = "Admin" })',
+                              {
+                                  reloadOnSuccess: false,
+
+                                  onSuccess: function () {
+
+                                      mealAdded = true;
+
+                                      var dayId =
+                                          $('#AddMeal_NutritionProgramDayId').val();
+
+                                      $('#addMealForm')[0].reset();
+
+                                      $('#AddMeal_NutritionProgramDayId')
+                                          .val(dayId);
+
+                                      $('#AddMeal_MealTypeId').val('');
+
+                                      $('#AddMeal_Title').val('');
+
+                                      $('#AddMeal_MealTypeId').focus();
+                                  }
+                              });
+                      });
+
+
+                      $(document).on('submit', '#editMealForm', function (e) {
+                          e.preventDefault();
+                          postForm('#editMealForm', '#btnEditMeal', '#editMealMessage', '@Url.Action("EditMeal", "NutritionProgramBuilder", new { area = "Admin" })');
+                      });
+
+                      $(document).on('submit', '#deleteMealForm', function (e) {
+                          e.preventDefault();
+                          postForm('#deleteMealForm', '#btnDeleteMeal', '#deleteMealMessage', '@Url.Action("DeleteMeal", "NutritionProgramBuilder", new { area = "Admin" })');
+                      });
+
+
+
+
+
+              @*-------------------- addMealItemForm ---------------*@
+
+
+
+         $(document).on('submit', '#addMealItemForm', function (e) {
             e.preventDefault();
 
             $('#MealItemDescription').val(
@@ -1080,15 +1086,35 @@
                 '@Url.Action("AddMealItem", "NutritionProgramBuilder", new { area = "Admin" })',
                 {
                     reloadOnSuccess: false,
-                    onSuccess: function () {
+
+                    onSuccess: function (res, $form) {
+
                         mealItemAdded = true;
 
+                        var nutritionMealId = $('#NutritionMealId').val();
+                        var dayTitle = $('#addMealItemDayTitle').text();
+                        var mealTitle = $('#addMealItemMealTitle').text();
+
                         $('#addMealItemForm')[0].reset();
+
+                        $('#NutritionMealId').val(nutritionMealId);
+                        $('#addMealItemDayTitle').text(dayTitle);
+                        $('#addMealItemMealTitle').text(mealTitle);
+
                         $('#FoodId').val('').trigger('change');
+                        $('#Amount').val('');
                         $('#UnitTypeId').val('').trigger('change');
                         $('#MealItemDescription').val('');
-                        $('#addMealItemForm input[name="MealId"]').val($('#MealId').val());
-                        $('#FoodId').focus();
+
+                        showMessage(
+                            '#addMealItemMessage',
+                            'success',
+                            res.message || 'آیتم با موفقیت ثبت شد. می‌توانید آیتم بعدی را وارد کنید.'
+                        );
+
+                        setTimeout(function () {
+                            $('#FoodId').focus();
+                        }, 200);
                     }
                 }
             );
@@ -1096,72 +1122,15 @@
 
 
 
+        $(document).on('hidden.bs.modal', '#addMealItemModal', function () {
 
-        $('#addMealItemModal').on('hidden.bs.modal', function () {
-            $('#addMealItemForm')[0].reset();
-            $('#FoodId').val('').trigger('change');
-            $('#UnitTypeId').val('').trigger('change');
-            $('#addMealItemMessage').html('');
-
-            if (mealItemAdded) {
-                mealItemAdded = false;
-                location.reload();
-            }
-        });
-
-
-
-        $(document).on('submit', '#editMealItemForm', function (e) {
-            e.preventDefault();
-            postForm('#editMealItemForm', '#btnEditMealItem', '#editMealItemMessage', '@Url.Action("EditMealItem", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
-
-        $(document).on('submit', '#deleteMealItemForm', function (e) {
-            e.preventDefault();
-            postForm('#deleteMealItemForm', '#btnDeleteMealItem', '#deleteMealItemMessage', '@Url.Action("DeleteMealItem", "NutritionProgramBuilder", new { area = "Admin" })');
-        });
-
-        $('#addDayModal').on('hidden.bs.modal', function () {
-            $('#addDayForm')[0].reset();
-            $('#addDayMessage').html('');
-        });
-
-        $('#editDayModal').on('hidden.bs.modal', function () {
-            $('#editDayForm')[0].reset();
-            $('#editDayMessage').html('');
-            $('#EditDay_Title').text('')
-            $('#EditDay_Title_txt').text('')
-
-        });
-
-        $('#deleteDayModal').on('hidden.bs.modal', function () {
-            $('#deleteDayForm')[0].reset();
-            $('#deleteDayMessage').html('');
-            $('#DeleteDay_Title').text('');
-        });
-
-
-        $('#editMealModal').on('hidden.bs.modal', function () {
-            $('#editMealForm')[0].reset();
-            $('#editMealMessage').html('');
-            $('#EditMealmealType').text('');
-
-        });
-
-        $('#deleteMealModal').on('hidden.bs.modal', function () {
-            $('#deleteMealForm')[0].reset();
-            $('#deleteMealMessage').html('');
-            $('#DeleteMeallTitle').text('');
-
-        });
-
-        $('#addMealItemModal').on('hidden.bs.modal', function () {
             $('#addMealItemForm')[0].reset();
             $('#NutritionMealId').val('');
             $('#FoodId').val('').trigger('change');
             $('#Amount').val('');
             $('#UnitTypeId').val('').trigger('change');
             $('#MealItemDescription').val('');
+
             $('#addMealItemMessage').html('');
             $('#addMealItemDayTitle').text('');
             $('#addMealItemMealTitle').text('');
@@ -1171,249 +1140,350 @@
                 location.reload();
             }
         });
-
-
-
-        $('#editMealItemModal').on('hidden.bs.modal', function () {
-            $('#editMealItemForm')[0].reset();
-            $('#EditMealItem_FoodId').val('').trigger('change');
-            $('#EditMealItem_UnitTypeId').val('').trigger('change');
-            $('#editMealItemMessage').html('');
-            $('#EditFoodName').text('');
-            $('#MealEditItemDescription').val('');
-
-
-        });
-
-        $('#deleteMealItemModal').on('hidden.bs.modal', function () {
-            $('#deleteMealItemForm')[0].reset();
-            $('#deleteMealItemMessage').html('');
-            $('#DeleteFoodName').text('');
-
-        });
-
-        $(document).on('click', '#btnAutoGenerateDays', function () {
-            var $btn = $(this);
-            var originalText = $btn.html();
-
-            if (!confirm('آیا مطمئن هستید که روزهای برنامه به‌صورت اتوماتیک ایجاد شوند؟')) {
-                return;
-            }
-
-            $btn.prop('disabled', true);
-            $btn.html('<i class="fa fa-spinner fa-spin"></i> در حال ایجاد روزها...');
-
-            $.ajax({
-                url: '@Url.Action("AutoGenerateDays", "NutritionProgramBuilder", new { area = "Admin" })',
-                type: 'POST',
-                data: $('#autoGenerateDaysForm').serialize(),
-                success: function (response) {
-                    if (response && response.isSuccess) {
-                        alert(response.message || 'روزها با موفقیت ایجاد شدند.');
-                        location.reload();
-                    } else {
-                        alert((response && response.message) ? response.message : 'عملیات انجام نشد.');
-                    }
-                },
-                    error: function (xhr) {
-        console.log("Status:", xhr.status);
-        console.log("Response:", xhr.responseText);
-        alert("خطا در ارتباط با سرور");
-                },
-                complete: function () {
-                    $btn.prop('disabled', false);
-                    $btn.html(originalText);
-                }
-            });
-        });
-
-        function loadDefaultUnit(foodId) {
-            if (!foodId) {
-                $('#UnitTypeId').val('').trigger('change');
-                return;
-            }
-
-            $.ajax({
-                url: '@Url.Action("GetFoodDefaultUnit", "NutritionProgramBuilder", new { area = "Admin" })',
-                type: 'GET',
-                data: { foodId: foodId },
-                success: function (response) {
-                    console.log("Response from server:", response);
-
-                    if (response && response.unitId) {
-                        $('#UnitTypeId').val(response.unitId).trigger('change');
-                    } else {
-                        $('#UnitTypeId').val('').trigger('change');
-                    }
-                },
-                error: function (xhr) {
-                    console.log("AJAX Error:", xhr.responseText);
-                }
-            });
-        }
-
-        $(document).on('change', '#FoodId', function () {
-            var foodId = $(this).val();
-            console.log("FoodId selected(change): " + foodId);
-            loadDefaultUnit(foodId);
-        });
-
-        $(document).on('select2:select', '#FoodId', function () {
-            var foodId = $(this).val();
-            console.log("FoodId selected(select2): " + foodId);
-            loadDefaultUnit(foodId);
-        });
-
-        $('#btnSaveMealItem').on('click', function (e) {
-            var foodId = $('#FoodId').val();
-
-            var isAlreadyInList = false;
-            $('.meal-item-row').each(function () {
-                if ($(this).data('food-id') == foodId) {
-                    isAlreadyInList = true;
-                }
-            });
-
-            if (isAlreadyInList) {
-                e.preventDefault();
-                alert('خطا: این غذا در این وعده وجود دارد!');
-                return false;
-            }
-        });
-
-
-            $(document).on('click',
-        '#addMealModal .close, #addMealModal .btn-secondary',
-        function () {
-
-            if (mealAdded) {
-                location.reload();
-            }
-        });
+                                  @*-------------------- addMealItemForm ---------------*@
 
 
 
 
 
-                document.addEventListener("DOMContentLoaded", function () {
 
-            const STORAGE_KEY = "nutrition_open_day";
+                       $(document).on('submit', '#editMealItemForm', function (e) {
+                          e.preventDefault();
+                          postForm('#editMealItemForm', '#btnEditMealItem', '#editMealItemMessage',
+                          '@Url.Action("EditMealItem", "NutritionProgramBuilder", new { area = "Admin" })',
+                          {
 
-            // وقتی collapse باز شد
-            $('.collapse').on('shown.bs.collapse', function () {
-                localStorage.setItem(STORAGE_KEY, this.id);
-            });
+                              reloadOnSuccess: false, // غیرفعال کردن رفرش خودکار Ajax
+                              onSuccess: function() {
+                                         console.log("Ali asghar1");
+                                  editMealItemUpdated = true;
+                              }
 
-            // وقتی collapse بسته شد
-            $('.collapse').on('hidden.bs.collapse', function () {
-                const openId = localStorage.getItem(STORAGE_KEY);
-                if (openId === this.id) {
-                    localStorage.removeItem(STORAGE_KEY);
-                }
-            });
+                          });
+                      });
 
-            // بعد از reload بررسی کن کدام collapse باید باز شود
-            const savedCollapse = localStorage.getItem(STORAGE_KEY);
 
-            if (savedCollapse) {
-                const element = document.getElementById(savedCollapse);
-                if (element) {
-                    $(element).collapse('show');
-                }
-            }
-
-        });
+                      $(document).on('submit', '#deleteMealItemForm', function (e) {
+                          e.preventDefault();
+                          postForm('#deleteMealItemForm', '#btnDeleteMealItem', '#deleteMealItemMessage', '@Url.Action("DeleteMealItem", "NutritionProgramBuilder", new { area = "Admin" })');
+                      });
 
 
 
-                document.addEventListener("DOMContentLoaded", function () {
-
-            const DAY_KEY = "nutrition_open_day";
-            const MEAL_KEY = "nutrition_open_meal";
-
-            // ذخیره collapse های باز
-            $('.collapse').on('shown.bs.collapse', function () {
-
-                const id = this.id;
-
-                if (id.startsWith("collapseDay")) {
-                    localStorage.setItem(DAY_KEY, id);
-                }
-
-                if (id.startsWith("collapseMeal")) {
-                    localStorage.setItem(MEAL_KEY, id);
-                }
-
-            });
-
-            // بازگردانی collapse ها بعد از reload
-            const savedDay = localStorage.getItem(DAY_KEY);
-            const savedMeal = localStorage.getItem(MEAL_KEY);
-
-            if (savedDay) {
-                const dayEl = document.getElementById(savedDay);
-                if (dayEl) {
-                    $(dayEl).collapse('show');
-
-                    // اسکرول نرم به همان بخش
-                    setTimeout(() => {
-                        dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 300);
-                }
-            }
-
-            if (savedMeal) {
-                const mealEl = document.getElementById(savedMeal);
-                if (mealEl) {
-                    $(mealEl).collapse('show');
-
-                    setTimeout(() => {
-                        mealEl.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }, 400);
-                }
-            }
-
-        });
 
 
-                $(function () {
-            $('[data-toggle="tooltip"]').tooltip({
-                container: 'body'
-            });
-        });
+                      $('#addDayModal').on('hidden.bs.modal', function () {
+                          $('#addDayForm')[0].reset();
+                          $('#addDayMessage').html('');
+                      });
 
-        
+                      $('#editDayModal').on('hidden.bs.modal', function () {
+                          $('#editDayForm')[0].reset();
+                          $('#editDayMessage').html('');
+                          $('#EditDay_Title').text('')
+                          $('#EditDay_Title_txt').text('')
 
-        // مربوط به کمبوباکس کمبوباکس جستجو
-                function initSelect2(selector, modalId) {
+                      });
+
+                      $('#deleteDayModal').on('hidden.bs.modal', function () {
+                          $('#deleteDayForm')[0].reset();
+                          $('#deleteDayMessage').html('');
+                          $('#DeleteDay_Title').text('');
+                      });
+
+
+                      $('#editMealModal').on('hidden.bs.modal', function () {
+                          $('#editMealForm')[0].reset();
+                          $('#editMealMessage').html('');
+                          $('#EditMealmealType').text('');
+
+                      });
+
+                      $('#deleteMealModal').on('hidden.bs.modal', function () {
+                          $('#deleteMealForm')[0].reset();
+                          $('#deleteMealMessage').html('');
+                          $('#DeleteMeallTitle').text('');
+
+                      });
+
+
+
+
+
+                      @* mycode *@
+                      $('#editMealItemModal').on('hidden.bs.modal', function () {
+                          $('#editMealItemForm')[0].reset();
+                          $('#EditMealItem_FoodId').val('').trigger('change');
+                          $('#EditMealItem_UnitTypeId').val('').trigger('change');
+                          $('#editMealItemMessage').html('');
+                          $('#EditFoodName').text('');
+                          $('#MealEditItemDescription').val('');
+
+                                     if (typeof editMealItemUpdated !== 'undefined' && editMealItemUpdated) {
+
+                                         editMealItemUpdated = false;
+                             location.reload();
+                         }
+                      });
+
+                      $('#deleteMealItemModal').on('hidden.bs.modal', function () {
+                          $('#deleteMealItemForm')[0].reset();
+                          $('#deleteMealItemMessage').html('');
+                          $('#DeleteFoodName').text('');
+
+                      });
+
+                      $(document).on('click', '#btnAutoGenerateDays', function () {
+                          var $btn = $(this);
+                          var originalText = $btn.html();
+
+                          if (!confirm('آیا مطمئن هستید که روزهای برنامه به‌صورت اتوماتیک ایجاد شوند؟')) {
+                              return;
+                          }
+
+                          $btn.prop('disabled', true);
+                          $btn.html('<i class="fa fa-spinner fa-spin"></i> در حال ایجاد روزها...');
+
+                          $.ajax({
+                              url: '@Url.Action("AutoGenerateDays", "NutritionProgramBuilder", new { area = "Admin" })',
+                              type: 'POST',
+                              data: $('#autoGenerateDaysForm').serialize(),
+                              success: function (response) {
+                                  if (response && response.isSuccess) {
+                                      alert(response.message || 'روزها با موفقیت ایجاد شدند.');
+                                      location.reload();
+                                  } else {
+                                      alert((response && response.message) ? response.message : 'عملیات انجام نشد.');
+                                  }
+                              },
+                                  error: function (xhr) {
+                      console.log("Status:", xhr.status);
+                      console.log("Response:", xhr.responseText);
+                      alert("خطا در ارتباط با سرور");
+                              },
+                              complete: function () {
+                                  $btn.prop('disabled', false);
+                                  $btn.html(originalText);
+                              }
+                          });
+                      });
+
+                      function loadDefaultUnit(foodId) {
+                          if (!foodId) {
+                              $('#UnitTypeId').val('').trigger('change');
+                              return;
+                          }
+
+                          $.ajax({
+                              url: '@Url.Action("GetFoodDefaultUnit", "NutritionProgramBuilder", new { area = "Admin" })',
+                              type: 'GET',
+                              data: { foodId: foodId },
+                              success: function (response) {
+                                  console.log("Response from server:", response);
+
+                                  if (response && response.unitId) {
+                                      $('#UnitTypeId').val(response.unitId).trigger('change');
+                                  } else {
+                                      $('#UnitTypeId').val('').trigger('change');
+                                  }
+                              },
+                              error: function (xhr) {
+                                  console.log("AJAX Error:", xhr.responseText);
+                              }
+                          });
+                      }
+
+                      $(document).on('change', '#FoodId', function () {
+                          var foodId = $(this).val();
+                          console.log("FoodId selected(change): " + foodId);
+                          loadDefaultUnit(foodId);
+                      });
+
+                      $(document).on('select2:select', '#FoodId', function () {
+                          var foodId = $(this).val();
+                          console.log("FoodId selected(select2): " + foodId);
+                          loadDefaultUnit(foodId);
+                      });
+
+                      $('#btnSaveMealItem').on('click', function (e) {
+                          var foodId = $('#FoodId').val();
+
+                          var isAlreadyInList = false;
+                          $('.meal-item-row').each(function () {
+                              if ($(this).data('food-id') == foodId) {
+                                  isAlreadyInList = true;
+                              }
+                          });
+
+                          if (isAlreadyInList) {
+                              e.preventDefault();
+                              alert('خطا: این غذا در این وعده وجود دارد!');
+                              return false;
+                          }
+                      });
+
+
+                          $(document).on('click',
+                      '#addMealModal .close, #addMealModal .btn-secondary',
+                      function () {
+
+                          if (mealAdded) {
+                              location.reload();
+                          }
+                      });
+
+
+
+
+
+                              document.addEventListener("DOMContentLoaded", function () {
+
+                          const STORAGE_KEY = "nutrition_open_day";
+
+                          // وقتی collapse باز شد
+                          $('.collapse').on('shown.bs.collapse', function () {
+                              localStorage.setItem(STORAGE_KEY, this.id);
+                          });
+
+                          // وقتی collapse بسته شد
+                          $('.collapse').on('hidden.bs.collapse', function () {
+                              const openId = localStorage.getItem(STORAGE_KEY);
+                              if (openId === this.id) {
+                                  localStorage.removeItem(STORAGE_KEY);
+                              }
+                          });
+
+                          // بعد از reload بررسی کن کدام collapse باید باز شود
+                          const savedCollapse = localStorage.getItem(STORAGE_KEY);
+
+                          if (savedCollapse) {
+                              const element = document.getElementById(savedCollapse);
+                              if (element) {
+                                  $(element).collapse('show');
+                              }
+                          }
+
+                      });
+
+
+
+                              document.addEventListener("DOMContentLoaded", function () {
+
+                          const DAY_KEY = "nutrition_open_day";
+                          const MEAL_KEY = "nutrition_open_meal";
+
+                          // ذخیره collapse های باز
+                          $('.collapse').on('shown.bs.collapse', function () {
+
+                              const id = this.id;
+
+                              if (id.startsWith("collapseDay")) {
+                                  localStorage.setItem(DAY_KEY, id);
+                              }
+
+                              if (id.startsWith("collapseMeal")) {
+                                  localStorage.setItem(MEAL_KEY, id);
+                              }
+
+                          });
+
+                          // بازگردانی collapse ها بعد از reload
+                          const savedDay = localStorage.getItem(DAY_KEY);
+                          const savedMeal = localStorage.getItem(MEAL_KEY);
+
+                          if (savedDay) {
+                              const dayEl = document.getElementById(savedDay);
+                              if (dayEl) {
+                                  $(dayEl).collapse('show');
+
+                                  // اسکرول نرم به همان بخش
+                                  setTimeout(() => {
+                                      dayEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                                  }, 300);
+                              }
+                          }
+
+                          if (savedMeal) {
+                              const mealEl = document.getElementById(savedMeal);
+                              if (mealEl) {
+                                  $(mealEl).collapse('show');
+
+                                  setTimeout(() => {
+                                      mealEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }, 400);
+                              }
+                          }
+
+                      });
+
+
+                              $(function () {
+                          $('[data-toggle="tooltip"]').tooltip({
+                              container: 'body'
+                          });
+                      });
+
+
+
+                      // مربوط به کمبوباکس کمبوباکس جستجو
+                      @*         function initSelect2(selector, modalId) {
+                          const $el = $(selector);
+
+                          if ($el.hasClass('select2-hidden-accessible')) {
+                              $el.select2('destroy');
+                          }
+
+                          $el.select2({
+                              dir: 'rtl',
+                              width: '100%',
+                              language: 'fa',
+                              dropdownParent: $(modalId),
+                              theme: "bootstrap4"
+                          });
+                      }
+ *@
+
+         function initSelect2(selector, modalId = null) {
+
             const $el = $(selector);
 
             if ($el.hasClass('select2-hidden-accessible')) {
                 $el.select2('destroy');
             }
 
-            $el.select2({
+            let options = {
                 dir: 'rtl',
                 width: '100%',
                 language: 'fa',
-                dropdownParent: $(modalId),
-                theme: "bootstrap4"
-            });
+                theme: 'bootstrap4',
+                placeholder: 'انتخاب کنید',
+                allowClear: true
+            };
+
+            if (modalId) {
+                options.dropdownParent = $(modalId);
+            }
+
+            $el.select2(options);
         }
 
-        $(document).ready(function () {
 
-            $('#addMealItemModal').on('shown.bs.modal', function () {
-                initSelect2('#FoodId', '#addMealItemModal');
-                initSelect2('#UnitTypeId', '#addMealItemModal');
-            });
 
-            $('#editMealItemModal').on('shown.bs.modal', function () {
-                initSelect2('#EditMealItem_FoodId', '#editMealItemModal');
-                initSelect2('#EditMealItem_UnitTypeId', '#editMealItemModal');
-            });
 
-        });
+
+                      $(document).ready(function () {
+
+                          $('#addMealItemModal').on('shown.bs.modal', function () {
+                              initSelect2('#FoodId', '#addMealItemModal');
+                              initSelect2('#UnitTypeId', '#addMealItemModal');
+                          });
+
+                          $('#editMealItemModal').on('shown.bs.modal', function () {
+                              initSelect2('#EditMealItem_FoodId', '#editMealItemModal');
+                              initSelect2('#EditMealItem_UnitTypeId', '#editMealItemModal');
+                          });
+
+                      });
 
     </script>
 }
