@@ -28,6 +28,9 @@ namespace FitCore.Domain.Entities.Members
         [DisplayName("تاریخ پایان عضویت")]
         public string MembershipEndDate { get; set; }
 
+        [DisplayName("قد (سانتی‌متر)")]
+        [Range(50, 250)]
+        public decimal? Height { get; set; }
 
         public int? ActivityLevelId { get; set; }
 
@@ -89,9 +92,9 @@ namespace FitCore.Domain.Entities.Members
         [Range(0, 500)]
         public decimal? Weight { get; set; }
 
-        [DisplayName("قد (سانتی‌متر)")]
-        [Range(50, 250)]
-        public decimal? Height { get; set; }
+        //[DisplayName("قد (سانتی‌متر)")]
+        //[Range(50, 250)]
+        //public decimal? Height { get; set; }
 
         [DisplayName("درصد چربی بدن")]
         [Range(0, 100)]

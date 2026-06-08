@@ -4,7 +4,7 @@
 @model GetMemberByIdDto
 
 @{
-   string caption = "ویرایش اعضاء باشگاه";
+    string caption = "ویرایش اعضاء باشگاه";
     ViewData["Title"] = caption;
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
@@ -43,11 +43,11 @@
              Value = ((int)Model.Gender).ToString(), // مقدار فعلی جنسیت جهت انتخاب خودکار در ویرایش
              Col = 1,
              Items = new List<SelectListItem>
-{
-new SelectListItem { Value = "1", Text = "مرد" },
-new SelectListItem { Value = "2", Text = "زن" }
-}
-}' />
+         {
+         new SelectListItem { Value = "1", Text = "مرد" },
+         new SelectListItem { Value = "2", Text = "زن" }
+         }
+         }' />
 
 
 
@@ -107,10 +107,7 @@ new SelectListItem { Value = "2", Text = "زن" }
         autoClose: true,
         initialValue: false,
         observer: true,
-        calendar: {
-        persian: {
-        locale: 'fa'
-        }
+        calendar: {persian:{ locale: 'fa'}
         }
         });
 

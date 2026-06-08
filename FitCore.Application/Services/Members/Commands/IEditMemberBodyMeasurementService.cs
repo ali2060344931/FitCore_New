@@ -32,7 +32,7 @@ namespace FitCore.Application.Services.Members.Commands
 
             entity.RecordDate = request.RecordDate;
             entity.Weight = request.Weight;
-            entity.Height = request.Height;
+            
             entity.BodyFatPercentage = request.BodyFatPercentage;
             entity.Waist = request.Waist;
             entity.Hip = request.Hip;

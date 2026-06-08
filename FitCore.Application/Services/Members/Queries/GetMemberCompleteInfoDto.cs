@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FitCore.Domain.Entities.Members;
+
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitCore.Application.Services.Members.Queries
 {
@@ -10,13 +9,21 @@ namespace FitCore.Application.Services.Members.Queries
     {
         public long Id { get; set; }
         public long AppUserId { get; set; }
+        [Display(Name = "نام و نام خانوادگی")]
 
         public string FullName { get; set; }
-        public string Mobile { get; set; }
+        [Display(Name = "تلفن همراه")]
 
-        public string Gender { get; set; }
+        public string Mobile { get; set; }
+        [Display(Name = "جنسیت")]
+        public Gender Gender { get; set; }
+        [Display(Name = "تاریخ تولد")]
         public string BirthDate { get; set; }
+        [Display(Name = "تاریخ شروع عضویت")]
+
         public string MembershipStartDate { get; set; }
+        [Display(Name = "تاریخ پابان عضویت")]
+
         public string MembershipEndDate { get; set; }
 
         public int? ActivityLevelId { get; set; }
@@ -30,5 +37,9 @@ namespace FitCore.Application.Services.Members.Queries
         public string Injuries { get; set; }
         public bool IsActive { get; set; }
         public string Description { get; set; }
+        public decimal? Height { get; set; }
+
     }
+
+
 }

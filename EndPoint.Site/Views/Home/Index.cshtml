@@ -21,11 +21,18 @@
                         </a>
                     }
 
+                    @if (User.IsMember())
+                    {
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="custom-btn">
+                            <i class="fa fa-pencil-square-o btn-icon-lg"></i> تنظیمات پروفایل
+                        </a>
+                    }
 
 
-                    <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
+
+                    @* <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
                         <i class="fa fa-list-alt btn-icon-lg"></i> تنظیمات پروفایل
-                    </button>
+                    </button> *@
 
 
 @*                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">

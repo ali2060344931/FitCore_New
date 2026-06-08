@@ -26,12 +26,21 @@ namespace FitCore.Application.Services.Members.Commands
 
         public ResultDto Execute(RequestAddMemberBodyMeasurementDto request)
         {
+            if(string.IsNullOrWhiteSpace(request.RecordDate)  )
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "تاریخ ثبت را وارد نمائید"
+                };
+
+            }
+
             var entity = new MemberBodyMeasurement
             {
                 MemberId = request.MemberId,
                 RecordDate = request.RecordDate,
                 Weight = request.Weight,
-                Height = request.Height,
                 BodyFatPercentage = request.BodyFatPercentage,
                 Waist = request.Waist,
                 Hip = request.Hip,

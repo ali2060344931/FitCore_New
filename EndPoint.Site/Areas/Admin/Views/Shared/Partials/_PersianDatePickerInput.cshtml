@@ -5,6 +5,40 @@
         @Model.LabelName
     </label>
 
+    <div class="input-group">
+        @* کادر ورودی *@
+        <input type="text"
+               id="@Model.Id"
+               name="@Model.Name"
+               class="form-control"
+               placeholder="@Model.Placeholder"
+               value="@Model.Value"
+               readonly
+               style="background-color: #fff; cursor: default; border-left: none;" />
+
+        @* نمایش آیکون *@
+        <div class="input-group-append">
+            <span class="input-group-text" style="background-color: #fff; border-left: none;">
+                <i class="fa fa-calendar text-muted"></i>
+            </span>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+@* @model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+<div class="col-md-@Model.Col fc-input-group">
+    <label for="@Model.Id" class="form-label font-weight-bold">
+        @Model.LabelName
+    </label>
+
     <input type="text"
            id="@Model.Id"
            name="@Model.Name"
@@ -14,3 +48,70 @@
            readonly
            style="background-color: #fff; cursor: pointer;" />
 </div>
+ *@
+
+
+@* @model FitCore.Application.ViewModels.Common.BaseInputViewModel
+
+@{
+    var persianId = Model.Id + "_Persian";
+}
+
+<div class="col-md-@Model.Col mb-3">
+
+    <label class="form-label fw-bold">
+        @Model.LabelName
+    </label>
+
+    <input type="text"
+           id="@persianId"
+           class="form-control fc-persian-date"
+           placeholder="@Model.Placeholder"
+           value="@Model.Value"
+           autocomplete="off" />
+
+    <input type="hidden"
+           id="@Model.Id"
+           name="@Model.Name"
+           value="@Model.Value" />
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        var persianInput = $("#@persianId");
+        var hiddenInput = $("#@Model.Id");
+
+        if (persianInput.data('datepicker')) {
+            return;
+        }
+
+        persianInput.persianDatepicker({
+
+            format: 'YYYY/MM/DD',
+
+            autoClose: true,
+
+            initialValue: false,
+
+            observer: true,
+
+            calendar: {
+                persian: {
+                    locale: 'fa'
+                }
+            },
+
+            onSelect: function () {
+
+                hiddenInput.val(
+                    persianInput.val()
+                );
+            }
+        });
+
+    });
+
+</script> *@

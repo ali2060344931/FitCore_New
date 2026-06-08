@@ -33,17 +33,19 @@ namespace FitCore.Application.Services.Members.Commands
                 member = new Domain.Entities.Members.Member
                 {
                     AppUserId = request.AppUserId,
-                    Gender = request.Gender == "Male" ? Gender.Male : Gender.Female,
+                    Gender = request.Gender,
                     BirthDate = request.BirthDate,
-                    MembershipStartDate = request.MembershipStartDate,
-                    MembershipEndDate = request.MembershipEndDate,
+                    //MembershipStartDate = request.MembershipStartDate,
+                    //MembershipEndDate = request.MembershipEndDate,
                     ActivityLevelId = request.ActivityLevelId,
                     ExperienceLevelId = request.ExperienceLevelId,
                     FoodAllergies = request.FoodAllergies,
                     MedicalConditions = request.MedicalConditions,
                     Injuries = request.Injuries,
                     IsActive = request.IsActive,
-                    Description = request.Description
+                    Description = request.Description,
+                    Height=request.Height,
+                    
                 };
 
                 _context.Members.Add(member);
@@ -56,10 +58,10 @@ namespace FitCore.Application.Services.Members.Commands
                 };
             }
 
-            member.Gender = request.Gender == "Male" ? Gender.Male : Gender.Female;
+            member.Gender = request.Gender;
             member.BirthDate = request.BirthDate;
-            member.MembershipStartDate = request.MembershipStartDate;
-            member.MembershipEndDate = request.MembershipEndDate;
+            //member.MembershipStartDate = request.MembershipStartDate;
+            //member.MembershipEndDate = request.MembershipEndDate;
             member.ActivityLevelId = request.ActivityLevelId;
             member.ExperienceLevelId = request.ExperienceLevelId;
             member.FoodAllergies = request.FoodAllergies;
@@ -67,6 +69,7 @@ namespace FitCore.Application.Services.Members.Commands
             member.Injuries = request.Injuries;
             member.IsActive = request.IsActive;
             member.Description = request.Description;
+            member.Height= request.Height;
 
             _context.SaveChanges();
 

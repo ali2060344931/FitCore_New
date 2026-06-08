@@ -1,5 +1,8 @@
-﻿using System;
+﻿using FitCore.Domain.Entities.Members;
+
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -14,7 +17,7 @@ namespace FitCore.Application.Services.Members.Queries.ReportMembers
         [Required]
         public long AppUserId { get; set; }
 
-        public string Gender { get; set; }
+        public Gender Gender { get; set; }
 
         public string BirthDate { get; set; }
         public string MembershipStartDate { get; set; }
@@ -36,5 +39,9 @@ namespace FitCore.Application.Services.Members.Queries.ReportMembers
 
         [MaxLength(500)]
         public string Description { get; set; }
+        
+        [Range(50, 250)]
+        public decimal? Height { get; set; }
+
     }
 }

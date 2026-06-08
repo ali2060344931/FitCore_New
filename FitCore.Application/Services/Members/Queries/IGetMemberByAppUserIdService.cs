@@ -40,7 +40,7 @@ namespace FitCore.Application.Services.Members.Queries
                 AppUserId = member.AppUserId,
                 FullName = member.AppUser?.FullName,
                 Mobile = member.AppUser?.PhoneNumber,
-                Gender = member.Gender.ToString(),
+                Gender = member.Gender,
                 BirthDate = member.BirthDate,
                 MembershipStartDate = member.MembershipStartDate,
                 MembershipEndDate = member.MembershipEndDate,
@@ -52,7 +52,9 @@ namespace FitCore.Application.Services.Members.Queries
                 MedicalConditions = member.MedicalConditions,
                 Injuries = member.Injuries,
                 IsActive = member.IsActive,
-                Description = member.Description
+                Description = member.Description,
+                Height= member.Height,
+                
             };
         }
     }

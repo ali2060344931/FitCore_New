@@ -8,6 +8,7 @@ namespace FitCore.Application.ViewModels.Common
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        
         public string LabelName { get; set; }
         public string Placeholder { get; set; }
         public string Value { get; set; }

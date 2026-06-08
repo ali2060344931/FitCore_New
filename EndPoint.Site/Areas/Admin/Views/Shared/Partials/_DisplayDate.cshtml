@@ -1,0 +1,23 @@
+﻿@* @model string
+<div class="form-group">
+    <label class="d-block">@ViewBag.Label</label>
+    <div class="alert alert-secondary p-2 mb-0">
+        <i class="fa fa-calendar ml-1"></i>
+        @(Model ?? "تاریخ ثبت نشده")
+    </div>
+</div> *@
+
+@model string
+@{
+    var label = ViewData["Label"]?.ToString() ?? "تاریخ";
+}
+
+<div class="form-group">
+    <label class="font-weight-bold d-block mb-1 text-muted">@label</label>
+    <div class="d-flex align-items-center px-3 py-2 border rounded-lg bg-light shadow-sm">
+        <i class="fa fa-calendar ml-2 text-primary"></i>
+        <span class="font-weight-medium">
+            @(string.IsNullOrEmpty(Model) ? "تعیین نشده" : Model)
+        </span>
+    </div>
+</div>

@@ -17,8 +17,6 @@
 
     <link rel="shortcut icon" type="image/png" href="~/AdminTemplate/app-assets/img/ico/favicon-32.png">
 
-    @* <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.003/Vazirmatn-font-face.css" rel="stylesheet"> *@
-
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
 
     <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/feather/style.min.css">
@@ -131,24 +129,42 @@
                                     </li>
 
                                 }
+                                @if (User.IsAdmin())
+                                {
+                                    <li>
+                                        <a href="~/admin/Members/index" class="menu-item">
+                                            لیست اعضاء باشگاه
+                                        </a>
+                                    </li>
 
-                                <li>
-                                    <a href="~/admin/Members/index" class="menu-item">
-                                        لیست اعضاء باشگاه
-                                    </a>
-                                </li>
+                                    <li>
+                                        <a href="~/admin/NutritionProgram/index" class="menu-item">
+                                            لیست برنامه غذایی
+                                        </a>
+                                    </li>
 
-                                <li>
-                                    <a href="~/admin/NutritionProgram/index" class="menu-item">
-                                        لیست برنامه غذایی
-                                    </a>
-                                </li>
+                                    <li>
+                                        <a href="~/admin/Food/index" class="menu-item">
+                                            لیست غــذاها
+                                        </a>
+                                    </li>
+                                }
+                                @if (User.IsMember())
+                                {
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="MemberProfile"
+                                           asp-action="CompleteInfo"
+                                           asp-route-id="111">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            پروفایل من
+                                        </a>
+                                    
+                                    
+                                    </li>
+                                }
 
-                                <li>
-                                    <a href="~/admin/Food/index" class="menu-item">
-                                        لیست غــذاها
-                                    </a>
-                                </li>
 
                             </ul>
 
@@ -354,13 +370,13 @@
 
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <script src="~/lib/jquery/jquery/jquery.min.js"></script> 
+    <script src="~/lib/jquery/jquery/jquery.min.js"></script>
     <script src="~/lib/popper/popper.min.js"></script>
-     <script src="~/lib/bootstrap/dist/css/bootstrap.min.css"></script>
+    <script src="~/lib/bootstrap/dist/css/bootstrap.min.css"></script>
 
     <script src="~/lib/select2/js/select2.min.js"></script>
     <script src="~/lib/select2/js/i18n/fa.js"></script>
-    
+
     <script src="~/app-assets/vendors/js/core/popper.min.js"></script>
 
     <link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
