@@ -203,7 +203,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 MemberId = item.MemberId,
                 ProgramTypeId = item.ProgramTypeId,
                 GoalTypeId = item.GoalTypeId,
-                //Title = item.Title,
                 Description = item.Description,
                 StartDate = item.StartDate,
                 EndDate = item.EndDate,

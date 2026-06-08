@@ -12,7 +12,7 @@
     <div class="fc-form-container">
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
-                 model='"تکمیل اطلاعات عضو"' />
+                 model='"تکمیل اطلاعات پروفایل"' />
 
         <form id="CompleteInfoForm">
             <input type="hidden" name="Id" value="@Model?.Id" />
@@ -53,8 +53,8 @@
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
                          model="Model?.MembershipStartDate"
                          view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ شروع عضویت" } }' />
-                
-                         <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
                          model="Model?.MembershipEndDate"
                          view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ پایان عضویت" } }' />
 
@@ -64,7 +64,7 @@
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel { Id = "ExperienceLevelId", Name = "ExperienceLevelId", LabelName = "سطح تجربه تمرینی", Col = 3, Items = ViewBag.ExperienceLevels, Value = Model?.ExperienceLevelId?.ToString() }' />
-                
+
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel { Id = "Height", Name = "Height", LabelName = "قد (cm)", Col = 2, Value = Model?.Height.ToString() }' />
 </div>
@@ -135,7 +135,7 @@
         initialValue: false,
         observer: true,
         initialValueType: 'persian',
-        calendar: { persian: { locale: 'en' } 
+        calendar: { persian: { locale: 'en' }
         }
         };
 
@@ -144,10 +144,6 @@
         // 2. هندل کردن ارسال فرم
         $("#CompleteInfoForm").on("submit", function (e) {
         e.preventDefault();
-
-        // convertPersianToGregorian("#BirthDate");
-        // convertPersianToGregorian("#MembershipStartDate");
-        // convertPersianToGregorian("#MembershipEndDate");
 
 
 
@@ -162,12 +158,25 @@
         beforeSend: function () {
         btn.prop("disabled", true).text("در حال ذخیره...");
         },
-        success: function (result) {
+        success: function (result)
+        {
         if (result.isSuccess) {
-        Swal.fire('موفق!', result.message, 'success');
+        Swal.fire('موفق!', result.message, 'success').then(() => {
+        window.location.href = '/Admin'; // یا مسیر دلخواه
+        });
         } else {
         Swal.fire('هشدار!', result.message, 'warning');
         }
+        // if (result.isSuccess)
+        // {
+        // Swal.fire('موفق!', result.message, 'success');
+
+
+        // }
+        // else
+        // {
+        // Swal.fire('هشدار!', result.message, 'warning');
+        // }
         },
         error: function () {
         Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');

@@ -1,14 +1,20 @@
 ﻿using FitCore.Application.Contexts;
+using FitCore.Application.Services.Foods.Queries;
+using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.Members.Queries.ReportMembers;
+using FitCore.Common;
 using FitCore.Domain.Entities.Members;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
+using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 {
@@ -20,20 +26,28 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
         private readonly IGetMemberByAppUserIdService _getMemberByAppUserIdService;
         private readonly IAddMemberBodyMeasurementService _addMemberBodyMeasurementService;
         private readonly IEditMemberBodyMeasurementService _editMemberBodyMeasurementService;
+        private readonly IGetMemberBodyMeasurementsService _getMemberBodyMeasurementsService;
+        private readonly IRemoveBodyMeasurementService _removeBodyMeasurementService;
         private readonly IDataBaseContext _context;
         public MemberProfileController(
             IAddOrUpdateMemberService addOrUpdateMemberService,
             IGetMemberByAppUserIdService getMemberByAppUserIdService,
             IAddMemberBodyMeasurementService addMemberBodyMeasurementService,
             IEditMemberBodyMeasurementService editMemberBodyMeasurementService,
-            IDataBaseContext context)
+            IDataBaseContext context,
+            IGetMemberBodyMeasurementsService getMemberBodyMeasurementsService,
+            IRemoveBodyMeasurementService removeBodyMeasurementService)
         {
             _addOrUpdateMemberService = addOrUpdateMemberService;
             _getMemberByAppUserIdService = getMemberByAppUserIdService;
             _addMemberBodyMeasurementService = addMemberBodyMeasurementService;
             _editMemberBodyMeasurementService = editMemberBodyMeasurementService;
             _context = context;
+            _getMemberBodyMeasurementsService = getMemberBodyMeasurementsService;
+            _removeBodyMeasurementService = removeBodyMeasurementService;
         }
+        
+        
         [HttpGet]
         public IActionResult CompleteInfo()
         {
@@ -65,7 +79,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
                     IsActive = x.IsActive,
                     FoodAllergies = x.FoodAllergies,
                     MedicalConditions = x.MedicalConditions,
-                    Height=x.Height,
+                    Height = x.Height,
 
                 }).FirstOrDefault();
 
@@ -96,7 +110,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 
 
         [HttpGet]
-        public IActionResult AddBodyMeasurement()
+        public IActionResult AddBodyMeasurement000()
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -113,11 +127,76 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             {
                 MemberId = memberId
             };
-            ViewBag.FullName=_context.Users.Where(c=>c.Id == appUserId).FirstOrDefault().FullName;
-            ViewBag.Mobile=_context.Users.Where(c=>c.Id == appUserId).FirstOrDefault().PhoneNumber;
-            
+            ViewBag.FullName = _context.Users.Where(c => c.Id == appUserId).FirstOrDefault().FullName;
+            ViewBag.Mobile = _context.Users.Where(c => c.Id == appUserId).FirstOrDefault().PhoneNumber;
+
             return View(model);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> BodyMeasurement(string  Id, string SearchKey, int page = 1, int pageSize = 10)
+        {
+            var id = SecurityUtils.DecryptId(Id);
+            
+            var memberId=_context.Members.Where(c=>c.AppUserId == id).FirstOrDefault().Id;
+            
+            var request = new RequestGetMemberBodyMeasurementsDto
+            {
+                MemberId = memberId,
+                Page = page,
+                PageSize = pageSize,
+                SearchKey = SearchKey
+            };
+
+            var result = await _getMemberBodyMeasurementsService.Execute(request);
+            var q= _context.Users.Where(c => c.Id == id).FirstOrDefault();
+            ViewBag.FullName_Mobile = q.FullName + " - " + q.PhoneNumber;
+            ViewBag.MemberId = memberId;
+
+            return View(result);
+        }
+
+
+
+        
+
+        [HttpGet]
+        public IActionResult AddBodyMeasurement(string? memberId)
+        {
+            long id;
+
+            if (!string.IsNullOrEmpty(memberId))
+            {
+                id = SecurityUtils.DecryptId(memberId);
+            }
+            else
+            {
+                var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(userIdValue))
+                {
+                    return Unauthorized();
+                }
+
+                var appUserId = long.Parse(userIdValue);
+                id = _context.Members.FirstOrDefault(c => c.AppUserId == appUserId).Id;
+            }
+
+            var member = _context.Members.FirstOrDefault(c => c.Id == id);
+            var user = _context.Users.FirstOrDefault(c => c.Id == member.AppUserId);
+
+            var model = new RequestAddMemberBodyMeasurementDto
+            {
+                MemberId = id
+            };
+
+            ViewBag.FullName = user.FullName;
+            ViewBag.Mobile = user.PhoneNumber;
+
+            return View("CreateEditBodyMeasurement", model);
+        }
+
 
         [HttpPost]
         public IActionResult AddBodyMeasurement(RequestAddMemberBodyMeasurementDto request)
@@ -128,10 +207,89 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditBodyMeasurement(RequestEditMemberBodyMeasurementDto request)
+        public IActionResult deleteMeasurement(string Id)
         {
-            var result = _editMemberBodyMeasurementService.Execute(request);
+            var id = SecurityUtils.DecryptId(Id);
+
+            var result = _removeBodyMeasurementService.Execute(id);
+
             return Json(result);
         }
+
+        [HttpGet]
+        public IActionResult EditBodyMeasurement(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            long recordId;
+
+            try
+            {
+                recordId = SecurityUtils.DecryptId(id);
+            }
+            catch
+            {
+                return BadRequest("شناسه نامعتبر است.");
+            }
+
+            var record = _context.memberBodyMeasurements
+                .Include(x => x.Member)
+                .ThenInclude(x => x.AppUser)
+                .FirstOrDefault(x => x.Id == recordId);
+
+            if (record == null)
+                return NotFound();
+
+            // پر کردن اطلاعات عضو برای نمایش readonly
+            ViewBag.FullName = record.Member?.AppUser?.FullName ?? "-";
+            ViewBag.Mobile = record.Member?.AppUser?.PhoneNumber ?? "-";
+
+            // مپ به مدل CreateEdit
+            var model = new RequestAddMemberBodyMeasurementDto
+            {
+                Id = record.Id,
+                MemberId = record.MemberId,
+                RecordDate = record.RecordDate,
+                Weight = record.Weight,
+                BodyFatPercentage = record.BodyFatPercentage,
+                Waist = record.Waist,
+                Hip = record.Hip,
+                Chest = record.Chest
+            };
+
+            return View("CreateEditBodyMeasurement", model);
+        }
+
+        [HttpPost]
+        public IActionResult EditBodyMeasurement(RequestEditMemberBodyMeasurementDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "اطلاعات ورودی معتبر نیست."
+                });
+            }
+
+            var result = _editMemberBodyMeasurementService.Execute(request);
+
+            if (!result.IsSuccess)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = result.Message
+                });
+            }
+
+            return Json(new
+            {
+                isSuccess = true,
+                message = result.Message
+            });
+        }
+
     }
 }

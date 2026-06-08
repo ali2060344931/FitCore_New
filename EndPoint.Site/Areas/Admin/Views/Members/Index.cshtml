@@ -125,6 +125,14 @@
                                         <i class="fa fa-th-list"></i>
                                         ثبت برنامه غذایی
                                     </a>
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="MemberProfile"
+                                       asp-action="BodyMeasurement"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                        <i class="fa fa-th-list"></i>
+                                        لیست وضعیت جسمانی
+                                    </a>
 
                                     <a class="dropdown-item"
                                        asp-area="Admin"

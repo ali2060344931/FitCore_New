@@ -36,6 +36,17 @@ namespace FitCore.Application.Services.Members.Commands
 
             }
 
+            var q=_context.memberBodyMeasurements.Any(c=>c.RecordDate==request.RecordDate && c.MemberId==request.MemberId);
+            if (q)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "در این تاریخ قبلا اطلاعات ثبت گردید."
+                };
+            }
+
+
             var entity = new MemberBodyMeasurement
             {
                 MemberId = request.MemberId,

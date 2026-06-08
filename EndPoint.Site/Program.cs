@@ -193,6 +193,9 @@ builder.Services.AddScoped<IGetMemberByIdService, GetMemberByIdService>();
 builder.Services.AddScoped<IAddMemberBodyMeasurementService, AddMemberBodyMeasurementService>();
 builder.Services.AddScoped<IEditMemberBodyMeasurementService, EditMemberBodyMeasurementService>();
 
+builder.Services.AddScoped<IGetMemberBodyMeasurementsService, GetMemberBodyMeasurementsService>();
+builder.Services.AddScoped<IRemoveBodyMeasurementService, RemoveBodyMeasurementService>();
+
 
 
 //<------  FoodS  -------->

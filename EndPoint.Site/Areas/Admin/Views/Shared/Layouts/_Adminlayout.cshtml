@@ -1,9 +1,15 @@
-﻿@using FitCore.Common
+﻿@using System.Security.Claims
+@using FitCore.Common
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
 }
-
+@{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var encryptedUserId = string.IsNullOrEmpty(userId)
+        ? ""
+        : SecurityUtils.EncryptId(long.Parse(userId));
+}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl" class="loading">
 
@@ -156,12 +162,21 @@
                                            asp-area="Admin"
                                            asp-controller="MemberProfile"
                                            asp-action="CompleteInfo"
-                                           asp-route-id="111">
+                                           asp-route-id="؟؟؟؟">
                                             <i class="fa fa-pencil-square-o"></i>
                                             پروفایل من
                                         </a>
-                                    
-                                    
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="MemberProfile"
+                                           asp-action="BodyMeasurement"
+                                           asp-route-id="@encryptedUserId">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            لیست اطلاعات جسمانی
+                                        </a>
                                     </li>
                                 }
 

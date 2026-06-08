@@ -9,6 +9,7 @@ namespace FitCore.Application.Services.Members.Queries
 {
     public class RequestAddMemberBodyMeasurementDto
     {
+        public long Id { get; set; }
         public long MemberId { get; set; }
 
         [Required]
@@ -17,7 +18,6 @@ namespace FitCore.Application.Services.Members.Queries
         public string Mobile { get; set; }
 
         public decimal? Weight { get; set; }
-        //public decimal? Height { get; set; }
         public decimal? BodyFatPercentage { get; set; }
         public decimal? Waist { get; set; }
         public decimal? Hip { get; set; }

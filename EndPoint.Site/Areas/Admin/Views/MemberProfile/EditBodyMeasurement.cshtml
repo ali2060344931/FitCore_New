@@ -4,7 +4,7 @@
 @model RequestAddMemberBodyMeasurementDto
 
 @{
-    ViewData["Title"] = "ثبت اندازه‌های بدنی";
+    ViewData["Title"] = "ویرایش اندازه‌های بدنی";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
@@ -12,9 +12,9 @@
     <div class="fc-form-container">
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
-                 model='"ثبت اندازه‌های بدنی"' />
+                 model='"ویرایش اندازه‌های جسمانی"' />
 
-        <form id="AddBodyMeasurementForm">
+        <form id="EditBodyMeasurementForm">
             <input type="hidden" name="MemberId" value="@Model.MemberId" />
 
             <div class="row">
@@ -27,25 +27,25 @@
 
                 <!-- تاریخ و اندازه‌ها -->
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
-                         model='new BaseInputViewModel { Id = "RecordDate", Name = "RecordDate", LabelName = "تاریخ ثبت", Col = 2 }' />
+                         model='new BaseInputViewModel { Id = "RecordDate", Name = "RecordDate", LabelName = "تاریخ ثبت", Col = 2,Value=Model.RecordDate }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "Weight", Name = "Weight", LabelName = "وزن (kg)", Col = 2 }' />
+                         model='new BaseInputViewModel { Id = "Weight", Name = "Weight", LabelName = "وزن (kg)", Col = 2,Value=Model.Weight.ToString() }' />
 
                 @* <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel { Id = "Height", Name = "Height", LabelName = "قد (cm)", Col = 6 }' /> *@
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "BodyFatPercentage", Name = "BodyFatPercentage", LabelName = "درصد چربی (%)", Col = 2 }' />
+                         model='new BaseInputViewModel { Id = "BodyFatPercentage", Name = "BodyFatPercentage", LabelName = "درصد چربی (%)", Col = 2, Value = Model.BodyFatPercentage.ToString()}' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "Waist", Name = "Waist", LabelName = "دور کمر (cm)", Col = 2 }' />
+                         model='new BaseInputViewModel { Id = "Waist", Name = "Waist", LabelName = "دور کمر (cm)", Col = 2, Value = Model.Waist.ToString() }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "Hip", Name = "Hip", LabelName = "دور باسن (cm)", Col = 2 }' />
+                         model='new BaseInputViewModel { Id = "Hip", Name = "Hip", LabelName = "دور باسن (cm)", Col = 2, Value = Model.Hip.ToString() }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "Chest", Name = "Chest", LabelName = "دور سینه (cm)", Col = 2 }' />
+                         model='new BaseInputViewModel { Id = "Chest", Name = "Chest", LabelName = "دور سینه (cm)", Col = 2, Value = Model.Chest.ToString() }' />
             </div>
 
             <div class="mt-3">
@@ -75,13 +75,13 @@
         calendar: { persian: { locale: 'en' }}
         });
 
-       // 2. هندل کردن ارسال فرم
-        $("#AddBodyMeasurementForm").on("submit", function (e) {
+        // 2. هندل کردن ارسال فرم
+        $("#EditBodyMeasurementForm").on("submit", function (e) {
         e.preventDefault();
         var btn = $(this).find("button[type='submit']");
 
         $.ajax({
-        url: '/Admin/MemberProfile/AddBodyMeasurement',
+        url: '/Admin/MemberProfile/EditBodyMeasurement',
         type: 'POST',
         data: $(this).serialize(),
         beforeSend: function () {

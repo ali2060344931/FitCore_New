@@ -1,12 +1,9 @@
 ﻿using FitCore.Application.Contexts;
-using FitCore.Common.Dto;
 
 using Microsoft.EntityFrameworkCore;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.Foods.Queries
@@ -36,10 +33,10 @@ namespace FitCore.Application.Services.Foods.Queries
             {
                 query = query.Where(x =>
                     x.Title.Contains(request.SearchKey) ||
-                    x.EnglishTitle.Contains(request.SearchKey)||
-                    x.CategoryType.Name.Contains(request.SearchKey)||
+                    x.EnglishTitle.Contains(request.SearchKey) ||
+                    x.CategoryType.Name.Contains(request.SearchKey) ||
                     x.DefaultUnit.Name.Contains(request.SearchKey)
-                   
+
                     );
             }
 
@@ -63,10 +60,10 @@ namespace FitCore.Application.Services.Foods.Queries
                     DefaultUnitId = x.DefaultUnitId,
                     DefaultUnitName = x.DefaultUnit.Name,
                     IsActive = x.IsActive
-                }).OrderBy(c=>c.Title)
+                }).OrderBy(c => c.Title)
                 .ToListAsync();
 
-            return  new ResultGetFoodsDto
+            return new ResultGetFoodsDto
             {
                 Foods = foods,
 
