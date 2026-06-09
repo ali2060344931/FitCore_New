@@ -30,6 +30,13 @@ namespace FitCore.Application.Services.Member.Queries
         // اگر تاریخ تولد قرار است اجباری باشد، Required را اضافه کنید
         // [Required(ErrorMessage = "تاریخ تولد الزامی است.")]
         public string BirthDate { get; set; }
+
+        public string MembershipStartDate { get; set; }
+
+        public string MembershipEndDate { get; set; }
+
+
+
     }
 
 

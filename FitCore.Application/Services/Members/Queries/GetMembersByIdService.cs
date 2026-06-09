@@ -40,8 +40,10 @@ namespace FitCore.Application.Services.Members.Queries
                     Id = id,
                     FullName = user.FullName,
                     BirthDate = q.BirthDate,
-                    //Gender = q.Gender,
-                    Mobile = user.PhoneNumber
+                    Gender = q.Gender,
+                    Mobile = user.PhoneNumber,
+                    MembershipEndDate=q.MembershipEndDate,
+                    MembershipStartDate=q.MembershipStartDate
                 },
 
                 IsSuccess = true

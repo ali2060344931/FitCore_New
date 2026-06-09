@@ -12,7 +12,7 @@ namespace FitCore.Application.ViewModels.Common
         public string LabelName { get; set; }
         public string Placeholder { get; set; }
         public string Value { get; set; }
-        public int Col { get; set; } = 12;
+        public double Col { get; set; } = 12;
 
         public string ValidationMessage { get; set; }
 

@@ -1,4 +1,6 @@
-﻿using FitCore.Application.Contexts;
+﻿using EndPoint.Site.Areas.Admin.Models.Member;
+
+using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Services.Gyms.Commands.EditGym;
@@ -62,7 +64,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View("CreateEdit", new MemberCreateEditViewModel());
         }
 
         [HttpPost]
@@ -87,15 +89,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             if (q.Data == null) return NotFound();
 
-            var qq = new GetMemberByIdDto
+            var qq = new MemberCreateEditViewModel
             {
                 Id = decryptedId,
                 FullName = q.Data.FullName,
                 Mobile = q.Data.Mobile,
                 BirthDate = q.Data.BirthDate,
                 Gender = q.Data.Gender,
+                MembershipStartDate = q.Data.MembershipStartDate,
+                MembershipEndDate = q.Data.MembershipEndDate,
             };
-            return View(qq);
+            return View("CreateEdit", qq);
         }
 
 

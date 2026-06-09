@@ -44,6 +44,8 @@ namespace FitCore.Application.Services.Members.Commands
                 user.PasswordHash = request.Mobile;
                 member.Gender = request.Gender;
                 member.BirthDate = request.BirthDate;
+                member.MembershipStartDate=request.MembershipStartDate;
+                member.MembershipEndDate=request.MembershipEndDate;
                 member.UpdateTime = DateTime.Now;
 
                  _context.SaveChanges();

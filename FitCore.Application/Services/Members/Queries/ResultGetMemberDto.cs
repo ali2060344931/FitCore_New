@@ -1,5 +1,7 @@
 ﻿using FitCore.Domain.Entities.Members;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace FitCore.Application.Services.Member.Queries
 {
     public class ResultGetMemberDto
@@ -9,8 +11,11 @@ namespace FitCore.Application.Services.Member.Queries
         public string Mobile { get; set; }
         public Gender? Gender { get; set; }
         public string BirthDate { get; set; }
-
         public int countNutritionProg { get; set; }
+        public string MembershipStartDate { get; set; }
+
+        public string MembershipEndDate { get; set; }
+
     }
 
 

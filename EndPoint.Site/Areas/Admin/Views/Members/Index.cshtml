@@ -1,7 +1,20 @@
-﻿@using FitCore.Application.Services.Member.Queries
+﻿@using EndPoint.Site.Areas.Admin.Models
+@using FitCore.Application.Services.Member.Queries
 @using FitCore.Common
 @using FitCore.Domain.Entities.Members
+
 @model ResultGetMembersDto
+
+@{
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        PageQueryKey = "page",
+        PageSizeQueryKey = "PageSize"
+    };
+}
 
 @{
     ViewData["Title"] = "اعضای باشگاه";
@@ -9,8 +22,6 @@
 
     var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
-
-
 }
 
 <div class="container-fluid mt-4">
@@ -31,11 +42,7 @@
 
     </div>
 
-
-
-
-
-    <!-- Search Box -->
+    <!-- Search -->
     <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
              model="searchKey" />
 
@@ -45,10 +52,7 @@
     <div class="mb-3">
 
         تعداد کل اعضا :
-
-        <strong>
-            @Model.RowCount
-        </strong>
+        <strong>@Model.RowCount</strong>
 
         @if (isFiltered)
         {
@@ -65,28 +69,41 @@
 
     @if (Model.Members != null && Model.Members.Any())
     {
+
         <table class="table table-striped table-hover">
 
             <thead>
                 <tr>
+
+                    <!-- ردیف اول -->
                     <th>نام و نام خانوادگی</th>
                     <th>تلفن همراه</th>
                     <th>جنسیت</th>
+
+                    <!-- ردیف دوم -->
                     <th>تاریخ تولد</th>
-                    <th>تعداد برنامه<br />غذایی ثبت شده</th>
+                    <th>تعداد برنامه غذایی</th>
+
                     <th width="180">عملیات</th>
+
                 </tr>
             </thead>
 
             <tbody>
+
                 @foreach (var item in Model.Members)
                 {
                     <tr>
+
                         <td>
+                            <i class="fa fa-user"></i>
                             <strong>@item.FullName</strong>
                         </td>
 
-                        <td>@item.Mobile</td>
+                        <td>
+                            <i class="fa fa-mobile"></i>
+                            @item.Mobile
+                        </td>
 
                         <td>
                             @(item.Gender == Gender.Male ? "مرد" : "زن")
@@ -95,15 +112,17 @@
                         <td>
                             @(item.BirthDate == default ? "---" : item.BirthDate)
                         </td>
-                        <td>
-                            <span class="badge rounded-pill bg-success ms-1">
-                                @(@item.countNutritionProg)
-                            </span>
 
+                        <td>
+                            <span class="badge rounded-pill bg-success">
+                                @item.countNutritionProg
+                            </span>
                         </td>
 
                         <td>
+
                             <div class="dropdown">
+
                                 <button class="btn btn-secondary btn-sm dropdown-toggle"
                                         type="button"
                                         id="memberActions_@item.Id"
@@ -111,7 +130,9 @@
                                         data-boundary="viewport"
                                         aria-haspopup="true"
                                         aria-expanded="false">
+
                                     عملیات
+
                                 </button>
 
                                 <div class="dropdown-menu dropdown-menu-right text-right"
@@ -122,15 +143,21 @@
                                        asp-controller="NutritionProgram"
                                        asp-action="Create"
                                        asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+
                                         <i class="fa fa-th-list"></i>
                                         ثبت برنامه غذایی
+                                        <span class="badge rounded-pill bg-success">
+                                            @item.countNutritionProg
+                                        </span>
                                     </a>
+
                                     <a class="dropdown-item"
                                        asp-area="Admin"
                                        asp-controller="MemberProfile"
                                        asp-action="BodyMeasurement"
                                        asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                        <i class="fa fa-th-list"></i>
+
+                                        <i class="fa fa-heartbeat"></i>
                                         لیست وضعیت جسمانی
                                     </a>
 
@@ -139,6 +166,7 @@
                                        asp-controller="Members"
                                        asp-action="Edit"
                                        asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+
                                         <i class="fa fa-pencil-square-o"></i>
                                         ویرایش
                                     </a>
@@ -148,31 +176,29 @@
                                     <button type="button"
                                             class="dropdown-item text-danger"
                                             onclick="DeleteMember(@item.Id)">
+
                                         <i class="fa fa-times"></i>
                                         حذف
+
                                     </button>
 
                                 </div>
+
                             </div>
 
                         </td>
+
                     </tr>
                 }
+
             </tbody>
 
         </table>
 
-        <div class="mt-3">
-            <span class="ml-3">
-                تعداد نمایش داده شده :
-                <strong>@Model.Rows</strong>
-            </span>
+        <!-- Pagination -->
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml"
+                 model="pagingVm" />
 
-            <span class="ml-3">
-                کل اعضا :
-                <strong>@Model.RowCount</strong>
-            </span>
-        </div>
     }
     else
     {
@@ -184,13 +210,17 @@
 
 </div>
 
+
 @section Scripts
 {
+
     <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
-    @* <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script> *@
+
     <script>
+
         function DeleteMember(id) {
+
         Swal.fire({
         title: 'حذف عضو',
         text: "آیا از حذف عضو مطمئن هستید؟",
@@ -200,28 +230,59 @@
         cancelButtonColor: '#7cacbe',
         confirmButtonText: 'بله، حذف شود',
         cancelButtonText: 'خیر'
+
         }).then((result) => {
+
         if (result.value) {
+
         $.ajax({
+
         contentType: 'application/x-www-form-urlencoded',
         dataType: 'json',
         type: "POST",
         url: "/Admin/Members/Delete",
         data: { Id: id },
+
         success: function (data) {
+
         if (data.isSuccess === true) {
-        Swal.fire('موفق!', data.message, 'success')
-        .then(function () { location.reload(); });
+
+        Swal.fire({
+        title: 'موفق!',
+        text: data.message,
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false
+
+        }).then(() => {
+
+        location.reload();
+
+        });
+
         } else {
+
         Swal.fire('هشدار!', data.message, 'warning');
+
         }
+
         },
+
         error: function () {
+
         Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+
         }
+
         });
+
         }
+
         });
+
         }
+
     </script>
+
 }

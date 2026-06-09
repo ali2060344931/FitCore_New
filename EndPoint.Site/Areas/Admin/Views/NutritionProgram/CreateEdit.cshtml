@@ -206,26 +206,44 @@
         $("#EndDate").val(endStr).trigger("change");
         }
 
+
+        // const datePickerConfig = {
+        // format: 'YYYY/MM/DD',
+        // autoClose: true,
+        // initialValue: false,
+        // observer: true,
+        // initialValueType: 'persian',
+        // calendar: { persian: { locale: 'en' }
+        // }
+        // };
+
+
+
         // Initialize StartDate picker فقط یک بار
         $("#StartDate").persianDatepicker({
         format: 'YYYY/MM/DD',
         autoClose: true,
-        initialValue: false,
+        initialValue: true,
         initialValueType: 'persian',
         observer: true,
+        // calendar: { persian: { locale: 'en' },
         onSelect: function () {
         syncEndDate();
         }
         });
 
         // Initialize EndDate picker فقط یک بار
+        
         $("#EndDate").persianDatepicker({
         format: 'YYYY/MM/DD',
         autoClose: true,
         initialValue: false,
         observer: true,
         initialValueType: 'persian',
+        // calendar: { persian: { locale: 'en' },
+
         });
+
 
         // تغییر نوع برنامه
         $("#ProgramTypeId").on("change", function () {

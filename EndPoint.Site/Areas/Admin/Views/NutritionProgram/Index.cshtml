@@ -32,13 +32,13 @@
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
                  model='"لیست بــرنامه های غذایی اعضاء"' />
 
-        <a asp-area="Admin"
+        @* <a asp-area="Admin"
            asp-controller="Members"
            asp-action="Create"
            class="btn btn-success">
 
-            + ثبت برنامه جدید
-        </a>
+            +  ثبت برنامه جدید تستی
+        </a> *@
 
     </div>
 
@@ -172,63 +172,7 @@
                                 </div>
                             </div>
 
-                            @* <div class="dropdown">
-                                <button class="btn btn-secondary btn-sm dropdown-toggle"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        data-bs-boundary="viewport">
-                                    عملیات
-                                </button>
-
-                                <ul class="dropdown-menu dropdown-menu-end text-end">
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="NutritionProgramBuilder"
-                                           asp-action="Index"
-                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                            <i class="fa fa-th-list"></i>
-                                            مشاهده و ثبت برنامه غذایی
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="NutritionProgram"
-                                           asp-action="PrintProgram"
-                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                            <i class="fa fa-print"></i>
-                                            گزارش
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="NutritionProgram"
-                                           asp-action="Edit"
-                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                            <i class="fa fa-pencil-square-o"></i>
-                                            ویرایش
-                                        </a>
-                                    </li>
-
-                                    <li><hr class="dropdown-divider"></li>
-
-                                    <li>
-                                        <button type="button"
-                                                class="dropdown-item text-danger"
-                                                onclick="NutritionProgram('@SecurityUtils.EncryptId(item.Id)')">
-                                            <i class="fa fa-times"></i>
-                                            حذف
-                                        </button>
-                                    </li>
-
-                                </ul>
-                            </div> *@
-
+                            
                         </td>
                     </tr>
                 }
@@ -238,6 +182,8 @@
             
 
         </table>
+
+
         <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
     }
     else

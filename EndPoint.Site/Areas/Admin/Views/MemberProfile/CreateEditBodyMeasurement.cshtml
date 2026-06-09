@@ -1,5 +1,7 @@
 ﻿@using FitCore.Application.Services.Members.Queries
 @using FitCore.Application.ViewModels.Common
+@using FitCore.Common
+@using System.Security.Claims
 @model RequestAddMemberBodyMeasurementDto
 
 @{
@@ -8,6 +10,16 @@
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
+@{
+
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var encryptedUserId = string.IsNullOrEmpty(userId)
+        ? ""
+        : SecurityUtils.EncryptId(long.Parse(userId));
+
+
+    // var encryptedMemberId = SecurityUtils.EncryptId(Model.Id);
+}
 <div class="container-fluid mt-4">
     <div class="fc-form-container">
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
@@ -42,9 +54,22 @@
                          model='new BaseInputViewModel { Id = "Chest", Name = "Chest", LabelName = "دور سینه (cm)", Col = 2, Value = Model.Chest.ToString() }' />
             </div>
 
+            
+            
             <div class="mt-3">
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
-                         model='new FormButtonsViewModel { SubmitText = isEdit ? "ذخیره تغییرات" : "ثبت اندازه‌ها", BackUrl = "/Admin/Members", BackText = "بازگشت" }' />
+                @* <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                         model='new FormButtonsViewModel { SubmitText = isEdit ? "ذخیره تغییرات" : "ثبت اندازه‌ها", BackUrl = "/Admin/MemberProfile/BodyMeasurement", BackText = "بازگشت" }' /> *@
+                
+                         <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
+                         model='new FormButtonsViewModel
+                         {
+                             SubmitText = isEdit ? "ذخیره تغییرات" : "ثبت اندازه‌ها",
+                             BackUrl = "/Admin/MemberProfile/BodyMeasurement/" + encryptedUserId,
+                             BackText = "بازگشت"
+                         }' />
+
+
+
             </div>
         </form>
     </div>
@@ -94,7 +119,7 @@
                     success: function (result) {
                         if (result.isSuccess) {
                             Swal.fire('موفق!', result.message, 'success').then(() => {
-                                window.location.href = '/Admin'; // یا مسیر دلخواه
+                               window.location.href = "/Admin/MemberProfile/BodyMeasurement/@encryptedUserId";
                             });
                         } else {
                             Swal.fire('هشدار!', result.message, 'warning');

@@ -148,6 +148,8 @@ namespace FitCore.Application.Services.Member.Queries
 
                     Gender = x.Member != null
                         ? x.Member.Gender : Gender.Male,
+                    MembershipStartDate = x.Member?.MembershipStartDate,
+                    MembershipEndDate = x.Member?.MembershipEndDate,
                     
                     
                     countNutritionProg=_context.NutritionPrograms.Count(c=>c.MemberId==_context.Members.Where(p=>p.AppUserId==x.Id).FirstOrDefault().Id),

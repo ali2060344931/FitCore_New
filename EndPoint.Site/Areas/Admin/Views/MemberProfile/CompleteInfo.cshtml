@@ -45,11 +45,6 @@
                          }' />
 
 
-@* <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
-         model='new BaseInputViewModel { Id = "MembershipStartDate", Name = "MembershipStartDate", LabelName = "تاریخ شروع عضویت", Col = 2, Value = Model?.MembershipStartDate, ReadOnly = true }' /> *@
-                @* <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
-                         model='new BaseInputViewModel { Id = "MembershipEndDate", Name = "MembershipEndDate", LabelName = "تاریخ پایان عضویت", Col = 2, Value = Model?.MembershipEndDate }' /> *@
-
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
                          model="Model?.MembershipStartDate"
                          view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ شروع عضویت" } }' />
@@ -90,7 +85,7 @@
                     <div class="col-md-3">
                         @* نکته: آیدی btnSave را به پارشیال اضافه کردیم یا می‌توانید در اسکریپت به دکمه داخل فرم اشاره کنید *@
                         <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
-                                 model='new FormButtonsViewModel { SubmitText = "ذخیره اطلاعات", BackUrl = "/Admin/Members", BackText = "بازگشت" }' />
+                                 model='new FormButtonsViewModel { SubmitText = "ذخیره اطلاعات", BackUrl = "/Admin", BackText = "بازگشت" }' />
                     </div>
                 </div>
             </fieldset>
