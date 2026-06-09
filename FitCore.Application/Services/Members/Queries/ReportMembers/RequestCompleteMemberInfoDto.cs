@@ -16,7 +16,11 @@ namespace FitCore.Application.Services.Members.Queries.ReportMembers
 
         [Required]
         public long AppUserId { get; set; }
+        
+        public string FullName { get; set; }
+        public string Mobile { get; set; }
 
+                
         public Gender Gender { get; set; }
 
         public string BirthDate { get; set; }

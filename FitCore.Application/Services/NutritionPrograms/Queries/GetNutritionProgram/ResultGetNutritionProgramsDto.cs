@@ -51,5 +51,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
         public int PageSize { get; set; } = 10;
 
         public long AppUserId { get; set; }
+        public bool IsAdmin { get; set; }
+
     }
 }

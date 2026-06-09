@@ -75,9 +75,12 @@
 
             <thead>
                 <tr>
-
-                    <th>نام و نام خانوادگی متقاضی</th>
-                    <th>تلفن همراه</th>
+                    @if(User.IsAdmin())
+                    {
+                        <th>نام و نام خانوادگی متقاضی</th>
+                        <th>تلفن همراه</th>
+                    }
+                    
                     <th>هدف برنامه</th>
                     <th>نوع برنامه غذایی</th>
                     <th>تاریخ شروع</th>
@@ -93,15 +96,20 @@
                 @foreach (var item in Model.NutritionPrograms)
                 {
                     <tr>
-                        <td>
-                            <i class="fa fa-user-o"></i>
-                            <strong style="color:#520A0A;">@item.MemberName</strong>
-                        </td>
 
-                        <td>
-                            <i class="fa fa-mobile"></i>
-                            @item.MemberMobile
-                        </td>
+                        @if (User.IsAdmin())
+                        {
+                            <td>
+                                <i class="fa fa-user-o"></i>
+                                <strong style="color:#520A0A;">@item.MemberName</strong>
+                            </td>
+
+                            <td>
+                                <i class="fa fa-mobile"></i>
+                                @item.MemberMobile
+                            </td>
+
+                        }
 
                         <td>@item.GoalType</td>
                         <td>@item.ProgramType</td>
@@ -132,15 +140,36 @@
 
                                 <div class="dropdown-menu dropdown-menu-right text-right"
                                      aria-labelledby="nutritionProgramActions_@item.Id">
+                                    @if (User.IsAdmin())
+                                    {
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="NutritionProgramBuilder"
+                                           asp-action="Index"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-th-list"></i>
+                                            مشاهده و ثبت برنامه غذایی
+                                        </a>
 
-                                    <a class="dropdown-item"
-                                       asp-area="Admin"
-                                       asp-controller="NutritionProgramBuilder"
-                                       asp-action="Index"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                        <i class="fa fa-th-list"></i>
-                                        مشاهده و ثبت برنامه غذایی
-                                    </a>
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="NutritionProgram"
+                                           asp-action="Edit"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            ویرایش
+                                        </a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <button type="button"
+                                                class="dropdown-item text-danger"
+                                                onclick="NutritionProgram('@SecurityUtils.EncryptId(item.Id)')">
+                                            <i class="fa fa-times"></i>
+                                            حذف
+                                        </button>
+
+                                    }
 
                                     <a class="dropdown-item"
                                        asp-area="Admin"
@@ -151,23 +180,7 @@
                                         گزارش
                                     </a>
 
-                                    <a class="dropdown-item"
-                                       asp-area="Admin"
-                                       asp-controller="NutritionProgram"
-                                       asp-action="Edit"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                        <i class="fa fa-pencil-square-o"></i>
-                                        ویرایش
-                                    </a>
 
-                                    <div class="dropdown-divider"></div>
-
-                                    <button type="button"
-                                            class="dropdown-item text-danger"
-                                            onclick="NutritionProgram('@SecurityUtils.EncryptId(item.Id)')">
-                                        <i class="fa fa-times"></i>
-                                        حذف
-                                    </button>
 
                                 </div>
                             </div>

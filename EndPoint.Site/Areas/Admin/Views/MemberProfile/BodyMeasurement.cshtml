@@ -63,8 +63,6 @@
                 + ثبت اندازه جدید
             </a>
         }
-
-
     </div>
 
     <!-- Search -->
@@ -109,20 +107,16 @@
                 <tr>
                     <th>تاریخ ثبت</th>
                     <th>وزن (kg)</th>
-                    <th>درصد چربی</th>
-                    <th>دور کمر</th>
-                    <th>دور باسن</th>
-                    <th>دور سینه</th>
+                    <th> درصد چربی %</th>
+                    <th>دور کمر (cm)</th>
+                    <th>دور باسن (cm)</th>
+                    <th>دور سینه (cm)</th>
                     @if (User.IsMember())
                     {
                         <th>عملیات</th>
                     }
-
-                    
-                    
                 </tr>
             </thead>
-
             <tbody>
 
                 @foreach (var item in Model.Measurements)
@@ -149,36 +143,73 @@
                         {
                             <td>
 
-                            <div class="fc-action-buttons">
+                                <div class="fc-action-buttons">
 
-                                <a class="btn btn-info btn-sm"
-                                   asp-area="Admin"
-                                   asp-controller="MemberProfile"
-                                   asp-action="EditBodyMeasurement"
-                                   asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                    ویرایش
-                                </a>
+                                    <a class="btn btn-info btn-sm"
+                                       asp-area="Admin"
+                                       asp-controller="MemberProfile"
+                                       asp-action="EditBodyMeasurement"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                        ویرایش
+                                    </a>
 
-                                <button type="button"
-                                        class="btn btn-danger btn-sm"
-                                        onclick="deleteMeasurement('@SecurityUtils.EncryptId(item.Id)')">
-                                    حذف
-                                </button>
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="deleteMeasurement('@SecurityUtils.EncryptId(item.Id)')">
+                                        حذف
+                                    </button>
 
-                            </div>
+                                </div>
 
-                        </td>
-                        
+                            </td>
                         }
-
-
-
-
-
                     </tr>
                 }
 
             </tbody>
+            <tfoot>
+                <tr style="background-color: #f1f3f5;">
+                    <td class="fw-bold text-dark align-middle">
+                        میانگین
+                    </td>
+
+                    <td class="align-middle">
+                        <span class="avg-box">
+                            @(Convert.ToDecimal(Model.Measurements.Average(x => x.Weight ?? 0)).ToString("0.##"))
+                        </span>
+                    </td>
+
+                    <td class="align-middle">
+                        <span class="avg-box">
+                            @(Convert.ToDecimal(Model.Measurements.Average(x => x.BodyFatPercentage ?? 0)).ToString("0.##"))
+                        </span>
+                    </td>
+
+                    <td class="align-middle">
+                        <span class="avg-box">
+                            @(Convert.ToDecimal(Model.Measurements.Average(x => x.Waist ?? 0)).ToString("0.##"))
+                        </span>
+                    </td>
+
+                    <td class="align-middle">
+                        <span class="avg-box">
+                            @(Convert.ToDecimal(Model.Measurements.Average(x => x.Hip ?? 0)).ToString("0.##"))
+                        </span>
+                    </td>
+
+                    <td class="align-middle">
+                        <span class="avg-box">
+                            @(Convert.ToDecimal(Model.Measurements.Average(x => x.Chest ?? 0)).ToString("0.##"))
+                        </span>
+                    </td>
+
+                    @if (User.IsMember())
+                    {
+                        <td></td>
+                    }
+                </tr>
+            </tfoot>
+
 
         </table>
 

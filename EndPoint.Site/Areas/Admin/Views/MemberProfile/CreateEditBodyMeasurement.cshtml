@@ -29,12 +29,17 @@
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
             <input type="hidden" id="MemberId" name="MemberId" value="@Model.MemberId" />
 
+            <!-- سطر اول: نام و موبایل -->
             <div class="row">
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel { Id = "FullName", Name = "FullName", LabelName = "نام عضو", Col = 4, Value = ViewBag.FullName, Disabled = true }' />
+
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel { Id = "Mobile", Name = "Mobile", LabelName = "موبایل", Col = 2, Value = ViewBag.Mobile, Disabled = true }' />
+            </div>
 
+            <!-- سطر دوم: تاریخ ثبت، وزن، درصد چربی -->
+            <div class="row">
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
                          model='new BaseInputViewModel { Id = "RecordDate", Name = "RecordDate", LabelName = "تاریخ ثبت", Col = 2, Value = Model.RecordDate }' />
 
@@ -43,7 +48,10 @@
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel { Id = "BodyFatPercentage", Name = "BodyFatPercentage", LabelName = "درصد چربی (%)", Col = 2, Value = Model.BodyFatPercentage.ToString() }' />
+            </div>
 
+            <!-- سطر سوم: دور کمر، دور باسن، دور سینه -->
+            <div class="row">
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel { Id = "Waist", Name = "Waist", LabelName = "دور کمر (cm)", Col = 2, Value = Model.Waist.ToString() }' />
 
@@ -51,7 +59,7 @@
                          model='new BaseInputViewModel { Id = "Hip", Name = "Hip", LabelName = "دور باسن (cm)", Col = 2, Value = Model.Hip.ToString() }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel { Id = "Chest", Name = "Chest", LabelName = "دور سینه (cm)", Col = 2, Value = Model.Chest.ToString() }' />
+                         model='new BaseInputViewModel { Id = "Chest", Name = "Chest", LabelName = "دور سینه (cm)", Col =2, Value = Model.Chest.ToString() }' />
             </div>
 
             

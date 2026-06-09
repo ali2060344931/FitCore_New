@@ -8,6 +8,7 @@ using FitCore.Application.Services.NutritionPrograms.Commands.AddNutritionProgra
 using FitCore.Application.Services.NutritionPrograms.Commands.DeleteNutritionProgram;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
 using FitCore.Common;
+using FitCore.Common.Roles;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,11 +45,55 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //====================================================
         // لیست برنامه های غذایی
         //====================================================
+
+        /*
+        public async Task<IActionResult> Index(
+    long? userId,
+    int page = 1,
+    int pageSize = 20,
+    string searchKey = "")
+        {
+            var currentUserIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(currentUserIdValue))
+                return Unauthorized();
+
+            var currentUserId = long.Parse(currentUserIdValue);
+
+            long targetUserId;
+
+            if (User.IsInRole(UserRoles.Admin))
+            {
+                targetUserId = userId ?? currentUserId;
+            }
+            else
+            {
+                targetUserId = currentUserId;
+            }
+
+            var request = new RequestGetNutritionProgramsDto
+            {
+                AppUserId = targetUserId,
+                Page = page,
+                PageSize = pageSize,
+                SearchKey = searchKey
+            };
+
+            var result = await _nutritionProgramFacad
+                .GetNutritionProgramsService
+                .Execute(request);
+
+            return View(result);
+        }
+        */
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
         {
-            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var isAdmin =User.IsAdmin() ;
+            
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
             if (string.IsNullOrWhiteSpace(userIdValue))
                 return Unauthorized();
 
@@ -59,12 +104,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 AppUserId = appUserId,
                 Page = page,
                 PageSize = PageSize,
-                SearchKey = SearchKey
+                SearchKey = SearchKey,
+                IsAdmin = isAdmin
             };
 
             var result = await _nutritionProgramFacad.GetNutritionProgramsService.Execute(request);
             return View(result);
         }
+       
+
+
 
         //====================================================
         // Create - GET

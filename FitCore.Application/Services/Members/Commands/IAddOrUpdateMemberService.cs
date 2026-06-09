@@ -1,5 +1,6 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Application.Services.Members.Queries.ReportMembers;
+using FitCore.Common;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Members;
 
@@ -27,11 +28,20 @@ namespace FitCore.Application.Services.Members.Commands
         public ResultDto Execute(RequestCompleteMemberInfoDto request)
         {
             var member = _context.Members.FirstOrDefault(x => x.AppUserId == request.AppUserId);
-
+                var user = _context.Users.Where(c => c.Id == request.AppUserId).First();
+            if(!CheckValidMobile.IsValidMobile(request.Mobile))
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "شماره موبایل وارد شده صیحیح نمی باشد."
+                };
+            }
             if (member == null)
             {
                 member = new Domain.Entities.Members.Member
                 {
+                    
                     AppUserId = request.AppUserId,
                     Gender = request.Gender,
                     BirthDate = request.BirthDate,
@@ -47,6 +57,8 @@ namespace FitCore.Application.Services.Members.Commands
                     Height=request.Height,
                     
                 };
+                user.FullName=request.FullName;
+                user.PhoneNumber = request.Mobile;
 
                 _context.Members.Add(member);
                 _context.SaveChanges();
@@ -58,6 +70,8 @@ namespace FitCore.Application.Services.Members.Commands
                 };
             }
 
+            user.FullName = request.FullName;
+            user.PhoneNumber = request.Mobile;
             member.Gender = request.Gender;
             member.BirthDate = request.BirthDate;
             //member.MembershipStartDate = request.MembershipStartDate;

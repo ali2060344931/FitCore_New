@@ -10,6 +10,11 @@
 
 <div class="container-fluid mt-4">
     <div class="fc-form-container">
+       
+        <input type="hidden"
+               id="MembershipEndDate"
+               value="@Model?.MembershipEndDate" />
+
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
                  model='"تکمیل اطلاعات پروفایل"' />
@@ -19,10 +24,10 @@
 
             <div class="row">
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-                         model='new BaseInputViewModel { Id = "FullName", Name = "FullName", LabelName = Html.DisplayNameFor(m => m.FullName), Col = 3, Value = Model?.FullName, Disabled = true }' />
+                         model='new BaseInputViewModel { Id = "FullName", Name = "FullName", LabelName = Html.DisplayNameFor(m => m.FullName), Col = 3, Value = Model?.FullName, Disabled = false }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
-                         model='new BaseInputViewModel { Id = "Mobile", Name = "Mobile", LabelName = Html.DisplayNameFor(m => m.Mobile), Col = 3, Value = Model?.Mobile, Disabled = true }' />
+                         model='new BaseInputViewModel { Id = "Mobile", Name = "Mobile", LabelName = Html.DisplayNameFor(m => m.Mobile), Col = 2, Value = Model?.Mobile, Disabled = false }' />
 
                 <div class="col-md-1 mb-3">
                     <label asp-for="Gender" class="form-label font-weight-bold">@Html.DisplayNameFor(m => m.Gender)</label>
@@ -45,13 +50,28 @@
                          }' />
 
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
-                         model="Model?.MembershipStartDate"
-                         view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ شروع عضویت" } }' />
+<partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
+         model="Model?.MembershipStartDate"
+         view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ شروع عضویت" } }' />
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
                          model="Model?.MembershipEndDate"
                          view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ پایان عضویت" } }' />
+
+
+@* <div class="col-md-2 mb-3">
+                    <label class="form-label font-weight-bold">مدت اعتبار عضویت</label>
+                    <input type="text" id="MembershipValidity" class="form-control bg-light fw-bold" readonly />
+                </div> *@
+
+<div class="col-md-2 mb-3">
+                    <label class="form-label font-weight-bold">مدت اعتبار عضویت</label>
+                    <!-- کلاس text-center به اینجا اضافه شد -->
+                    <input type="text" id="MembershipValidity" class="form-control bg-light fw-bold text-center" readonly />
+                </div>
+
+
+
 
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
@@ -79,9 +99,9 @@
                     <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
                              model='new BaseInputViewModel { Id = "Description", Name = "Description", LabelName = "توضیحات", Col = 6, Value = Model?.Description }' />
 
-                    <partial name="~/Areas/Admin/Views/Shared/Partials/_CheckboxInput.cshtml"
+                    @*                     <partial name="~/Areas/Admin/Views/Shared/Partials/_CheckboxInput.cshtml"
                              model='new BaseInputViewModel { Id = "IsActive", Name = "IsActive", LabelName = "عضویت فعال", Col = 2, Value = Model == null || Model.IsActive ? "true" : "false" }' />
-
+ *@
                     <div class="col-md-3">
                         @* نکته: آیدی btnSave را به پارشیال اضافه کردیم یا می‌توانید در اسکریپت به دکمه داخل فرم اشاره کنید *@
                         <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
@@ -162,16 +182,6 @@
         } else {
         Swal.fire('هشدار!', result.message, 'warning');
         }
-        // if (result.isSuccess)
-        // {
-        // Swal.fire('موفق!', result.message, 'success');
-
-
-        // }
-        // else
-        // {
-        // Swal.fire('هشدار!', result.message, 'warning');
-        // }
         },
         error: function () {
         Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
@@ -181,6 +191,87 @@
         }
         });
         });
+        });
+
+        // ....................
+        function setMembershipValidityStyle(isExpired) {
+        var $input = $("#MembershipValidity");
+
+        $input.removeClass("bg-success bg-danger text-white");
+
+        if (isExpired) {
+        $input.addClass("bg-danger text-white");
+        } else {
+        $input.addClass("bg-success text-white");
+        }
+        }
+
+        function calculateMembershipValidity() {
+
+        var endDateValue = $("#MembershipEndDate").val();
+
+        if (!endDateValue) {
+        $("#MembershipValidity").val("");
+        $("#MembershipValidity").removeClass("bg-success bg-danger text-white");
+        return;
+        }
+
+        // انتظار فرمت: 1405/12/29
+        var parts = endDateValue.split("/");
+
+        if (parts.length !== 3) {
+        $("#MembershipValidity").val("تاریخ نامعتبر");
+        setMembershipValidityStyle(true);
+        return;
+        }
+
+        var endYear = parseInt(parts[0], 10);
+        var endMonth = parseInt(parts[1], 10);
+        var endDay = parseInt(parts[2], 10);
+
+        if (isNaN(endYear) || isNaN(endMonth) || isNaN(endDay)) {
+        $("#MembershipValidity").val("تاریخ نامعتبر");
+        setMembershipValidityStyle(true);
+        return;
+        }
+
+        // ساخت درست تاریخ شمسی
+        var endDate = new persianDate([endYear, endMonth, endDay]);
+
+        // تاریخ امروز شمسی
+        var today = new persianDate();
+
+        var diffMs = endDate.valueOf() - today.valueOf();
+
+        if (diffMs <= 0) {
+        $("#MembershipValidity").val("منقضی شده");
+        setMembershipValidityStyle(true);
+        return;
+        }
+
+        // اختلاف تقریبی بر حسب روز
+        var diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        var years = Math.floor(diffDays / 365);
+        diffDays %= 365;
+
+        var months = Math.floor(diffDays / 30);
+        var days = diffDays % 30;
+
+        var result = "";
+
+        if (years > 0) result += years + " سال ";
+        if (months > 0) result += months + " ماه ";
+        if (days > 0) result += days + " روز";
+
+        result = result.trim();
+
+        $("#MembershipValidity").val(result || "امروز");
+        setMembershipValidityStyle(false);
+        }
+
+        $(document).ready(function () {
+        calculateMembershipValidity();
         });
     </script>
 }

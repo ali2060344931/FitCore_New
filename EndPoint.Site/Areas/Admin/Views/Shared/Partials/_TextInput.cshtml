@@ -12,7 +12,8 @@
            id="@Model.Id"
            name="@Model.Name"
            value="@Model.Value"
-           class="form-control"
+           @* class="form-control @(Model.ReadOnly ? "text-center fw-bold" : "")" *@
+           class="form-control text-center"
            placeholder="@Model.Placeholder"
     @(Model.ReadOnly ? "readonly" : "")
     @(Model.Disabled ? "disabled" : "") />
