@@ -2,8 +2,44 @@
 @using FitCore.Application.Services.Member.Queries
 @using FitCore.Common
 @using FitCore.Domain.Entities.Members
+@using System.Globalization
 
 @model ResultGetMembersDto
+
+@functions {
+
+@functions{
+
+    public int GetRemainDays(string persianDate)
+    {
+        if (string.IsNullOrEmpty(persianDate))
+            return 0;
+
+        try
+        {
+            var parts = persianDate.Split('/');
+
+            int year = int.Parse(parts[0]);
+            int month = int.Parse(parts[1]);
+            int day = int.Parse(parts[2]);
+
+            PersianCalendar pc = new PersianCalendar();
+
+            DateTime endDate = pc.ToDateTime(year, month, day, 0, 0, 0, 0);
+
+            int days = (endDate.Date - DateTime.Now.Date).Days;
+
+            return days; // دیگر منفی را صفر نمی‌کنیم
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+}
+
+}
 
 @{
     var pagingVm = new PagingPartialViewModel
@@ -26,7 +62,6 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="fc-page-header">
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
@@ -42,11 +77,9 @@
 
     </div>
 
-    <!-- Search -->
     <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
              model="searchKey" />
 
-    <!-- Card -->
     <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
 
     <div class="mb-3">
@@ -75,14 +108,14 @@
             <thead>
                 <tr>
 
-                    <!-- ردیف اول -->
                     <th>نام و نام خانوادگی</th>
                     <th>تلفن همراه</th>
                     <th>جنسیت</th>
 
-                    <!-- ردیف دوم -->
                     <th>تاریخ تولد</th>
-                    <th>تعداد برنامه غذایی</th>
+                    <th>تاریخ شروع عضویت</th>
+                    <th>تاریخ پایان عضویت</th>
+                    <th>مدت زمان اعتبار</th>
 
                     <th width="180">عملیات</th>
 
@@ -93,6 +126,9 @@
 
                 @foreach (var item in Model.Members)
                 {
+
+                    var remainDays = GetRemainDays(item.MembershipEndDate);
+
                     <tr>
 
                         <td>
@@ -114,10 +150,28 @@
                         </td>
 
                         <td>
-                            <span class="badge rounded-pill bg-success">
-                                @item.countNutritionProg
-                            </span>
+                            @(item.MembershipStartDate == default ? "---" : item.MembershipStartDate)
                         </td>
+
+                        <td>
+                            @(item.MembershipEndDate == default ? "---" : item.MembershipEndDate)
+                        </td>
+                        <td>
+                            @if (remainDays >= 0)
+                            {
+                                <span class="badge rounded-pill bg-success">
+                                    @remainDays روز
+                                    </span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill bg-danger">
+                                    @remainDays روز
+                                    </span>
+                            }
+                        </td>
+
+                       
 
                         <td>
 
@@ -195,7 +249,6 @@
 
         </table>
 
-        <!-- Pagination -->
         <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml"
                  model="pagingVm" />
 
@@ -209,80 +262,3 @@
     <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
 
 </div>
-
-
-@section Scripts
-{
-
-    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
-
-    <script>
-
-        function DeleteMember(id) {
-
-        Swal.fire({
-        title: 'حذف عضو',
-        text: "آیا از حذف عضو مطمئن هستید؟",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#7cacbe',
-        confirmButtonText: 'بله، حذف شود',
-        cancelButtonText: 'خیر'
-
-        }).then((result) => {
-
-        if (result.value) {
-
-        $.ajax({
-
-        contentType: 'application/x-www-form-urlencoded',
-        dataType: 'json',
-        type: "POST",
-        url: "/Admin/Members/Delete",
-        data: { Id: id },
-
-        success: function (data) {
-
-        if (data.isSuccess === true) {
-
-        Swal.fire({
-        title: 'موفق!',
-        text: data.message,
-        icon: 'success',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false
-
-        }).then(() => {
-
-        location.reload();
-
-        });
-
-        } else {
-
-        Swal.fire('هشدار!', data.message, 'warning');
-
-        }
-
-        },
-
-        error: function () {
-
-        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
-
-        }
-
-        });
-
-        }
-
-        });
-
-        }
-
-    </script>
-
-}
