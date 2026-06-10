@@ -86,7 +86,6 @@
                     <th>تاریخ شروع</th>
                     <th>تاریخ پایان</th>
                     <th>فعـــال</th>
-                    <th>تعداد روز ثبتی</th>
                     <th width="180">عملیات</th>
                 </tr>
             </thead>
@@ -120,11 +119,6 @@
                             @(item.IsActive ? "بله" : "خیر")
                         </td>
 
-                        <td>
-                            <span class="badge rounded-sm border-success">
-                                @item.CountProgramBuilder
-                            </span>
-                        </td>
 
                         <td>
                             <div class="dropdown">
@@ -149,6 +143,11 @@
                                            asp-route-id="@SecurityUtils.EncryptId(item.Id)">
                                             <i class="fa fa-th-list"></i>
                                             مشاهده و ثبت برنامه غذایی
+                                            <span class="badge rounded-pill bg-success"
+                                                  title="تعداد روزهای ثبت شده برنامه غذایی: @item.CountProgramBuilder">
+                                                @item.CountProgramBuilder
+                                            </span>
+
                                         </a>
 
                                         <a class="dropdown-item"
@@ -179,23 +178,14 @@
                                         <i class="fa fa-print"></i>
                                         گزارش
                                     </a>
-
-
-
                                 </div>
                             </div>
-
-                            
                         </td>
                     </tr>
                 }
             </tbody>
 
-            
-            
-
         </table>
-
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
     }
@@ -213,8 +203,6 @@
 {
     <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
-    @* <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script> *@
-
     <script>
         function NutritionProgram(id) {
         Swal.fire({

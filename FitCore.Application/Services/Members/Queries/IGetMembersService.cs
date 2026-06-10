@@ -153,6 +153,7 @@ namespace FitCore.Application.Services.Member.Queries
                     
                     
                     countNutritionProg=_context.NutritionPrograms.Count(c=>c.MemberId==_context.Members.Where(p=>p.AppUserId==x.Id).FirstOrDefault().Id),
+                    countBodyMeasurement=_context.memberBodyMeasurements.Count(c=>c.MemberId==_context.Members.Where(p=>p.AppUserId==x.Id).FirstOrDefault().Id),
                 })
                 .ToList();
 

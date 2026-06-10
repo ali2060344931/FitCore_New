@@ -72,7 +72,7 @@
            asp-action="Create"
            class="btn btn-success">
 
-            + ثبت اعضاء جدید
+            + ثبت عضو جدید
         </a>
 
     </div>
@@ -200,9 +200,11 @@
 
                                         <i class="fa fa-th-list"></i>
                                         ثبت برنامه غذایی
-                                        <span class="badge rounded-pill bg-success">
+                                        <span class="badge rounded-pill bg-success"
+                                              title="تعداد برنامه های ثبت شده غذایی: @item.countNutritionProg">
                                             @item.countNutritionProg
                                         </span>
+
                                     </a>
 
                                     <a class="dropdown-item"
@@ -213,6 +215,10 @@
 
                                         <i class="fa fa-heartbeat"></i>
                                         لیست وضعیت جسمانی
+                                        <span class="badge rounded-pill badge-grey"
+                                              title="تعداد وضعیت جسمانی: @item.countBodyMeasurement">
+                                            @item.countBodyMeasurement
+                                        </span>
                                     </a>
 
                                     <a class="dropdown-item"
