@@ -176,6 +176,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
                 Website = gym.Website,
 
+                ProvincesId = gym.ProvinceId,
+
                 CitiesId = gym.CitiesId,
 
                 Address = gym.Address,
@@ -207,10 +209,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             if (gym.CitiesId != null)
             {
+                
+
                 provinceId = _dataBaseContext.Cities
                     .Where(c => c.Id == gym.CitiesId)
                     .Select(c => c.ProvincesId)
                     .FirstOrDefault();
+
+               
+                model.ProvincesId = provinceId;
+
             }
 
             // استان ها

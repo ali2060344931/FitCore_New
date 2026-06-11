@@ -1,3 +1,4 @@
+
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
@@ -33,8 +34,6 @@ using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
-using FitCore.Application.Services.Users.Commands.LoginUser;
-using FitCore.Application.Services.Users.Commands.LogoutUser;
 using FitCore.Common.Roles;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
@@ -123,8 +122,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 #region FluentValidation
 
-builder.Services
-    .AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+//builder.Services
+//    .AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
 builder.Services
     .AddFluentValidationAutoValidation();
@@ -157,9 +156,9 @@ builder.Services.AddScoped<IGetSetings, GetSetingService>();
 
 builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 
-builder.Services.AddScoped<ILoginUserService, LoginUserService>();
+//builder.Services.AddScoped<ILoginUserService, LoginUserService>();
 
-builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
+//builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
 
 builder.Services.AddScoped<ISmsService, SmsService>();
 

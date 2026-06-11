@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "ورود";
     Layout = null;
 }
 
@@ -8,135 +8,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ورود</title>
-
+    <title>ورود | FitCore</title>
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
     <link rel="stylesheet" href="~/css/FitCorecss.css">
-
+    <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
 </head>
-
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-lg">
+            <div class="col-lg-6 col-md-8 col-xs-12 mx-auto">
                 <section class="page-account-box">
-                    <div class="col-lg-6 col-md-8 col-xs-12 mx-auto">
-                        <div class="ds-userlogin">
+                    <div class="ds-userlogin">
+                        <a href="#" class="account-box-logo">FitCore</a>
+                        <div class="account-box">
+                            <div class="account-box-headline">
+                                <a href="#" class="login-ds active"><span class="title">ورود</span></a>
+                                <a href="~/admin/Auth/Register" class="register-ds"><span class="title">ثبت نام</span></a>
+                            </div>
 
-                            <a href="#" class="account-box-logo">FitCore</a>
+                            <div class="account-box-content">
+                                <!-- مرحله 1: دریافت شماره موبایل -->
+                                <div id="stepMobile">
+                                    <h4>ورود به حساب کاربری</h4>
+                                    <div class="form-account-title"><label>شماره موبایل</label></div>
+                                    <input type="text" id="mobile" class="number-email-input" placeholder="09xxxxxxxxx">
 
-                            <div class="account-box">
-                                <div class="account-box-headline">
-                                    <a href="#" class="login-ds active">
-                                        <span class="title">ورود</span>
-                                        <span class="sub-title">ورود به باشگاه</span>
-                                    </a>
-
-                                    <a href="~/admin/Auth/Register" class="register-ds">
-                                        <span class="title">ثبت نام</span>
-                                        <span class="sub-title">ایجاد حساب</span>
-                                    </a>
-                                </div>
-
-                                <div class="Login-to-account mt-4">
-                                    <div class="account-box-content">
-                                        <h4>ورود با شماره موبایل</h4>
-
-                                        <div class="form-account text-right">
-
-                                            <!-- Step 1: Mobile -->
-                                            <div id="stepMobile">
-                                                <label>شماره موبایل</label>
-
-                                                <div class="form-account-title">
-                                                    <input type="text"
-                                                           class="number-email-input"
-                                                           id="mobile"
-                                                           inputmode="numeric"
-                                                           autocomplete="tel" />
-                                                </div>
-
-                                                <div class="form-row-account">
-                                                    <button id="btnSendOtp"
-                                                            type="button"
-                                                            onclick="SendOtp()"
-                                                            class="btn btn-primary btn-login">
-                                                        ارسال کد
-                                                    </button>
-                                                </div>
-
-                                                <div class="helper-row otp-meta">
-                                                    <span class="muted">مثال: <span class="pill">09123456789</span></span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Step 2: OTP -->
-                                            <div id="otpSection" style="display:none;">
-                                                <hr />
-
-                                                <div class="helper-row otp-meta">
-                                                    <span class="muted">
-                                                        کد به شماره
-                                                        <b id="mobilePreview"></b>
-                                                        ارسال شد.
-                                                    </span>
-
-                                                    <a class="muted" onclick="EditMobile()">ویرایش شماره</a>
-                                                </div>
-
-                                                <div class="form-account-title">
-                                                    <label>کد تایید</label>
-                                                    <input type="text"
-                                                           class="number-email-input"
-                                                           id="code"
-                                                           inputmode="numeric"
-                                                           autocomplete="one-time-code" />
-                                                </div>
-
-                                                <div class="form-row-account">
-                                                    <button id="btnVerifyOtp"
-                                                            type="button"
-                                                            onclick="VerifyOtp()"
-                                                            class="btn btn-success btn-login">
-                                                        تایید و ورود
-                                                    </button>
-                                                </div>
-
-                                                <div class="helper-row otp-meta">
-                                                    <span id="resendInfo" class="muted"></span>
-                                                    <a id="btnResend"
-                                                       class="muted"
-                                                       onclick="ResendOtp()"
-                                                       style="display:none;">
-                                                        ارسال مجدد کد
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <!-- Step 3: Gym selection -->
-                                            <div id="gymSelectionBox" style="display:none; margin-top:20px; border-top:1px solid #ccc; padding-top:15px;">
-                                                <div class="form-account-title">
-                                                    <label>انتخاب باشگاه</label>
-                                                    <select id="gymSelect" class="number-email-input" style="width:100%;padding:10px;"></select>
-                                                </div>
-
-                                                <div class="form-row-account">
-                                                    <button id="btnCompleteLogin"
-                                                            type="button"
-                                                            onclick="CompleteLogin()"
-                                                            class="btn btn-info btn-login">
-                                                        ورود به پنل
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <input type="hidden" id="loginToken" />
-
+                                    <div class="row mt-3">
+                                        <div class="col-6">
+                                            <button onclick="SendOtp()" class="btn btn-primary btn-login w-100">ارسال کد تایید</button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button onclick="showPasswordSection()" class="btn btn-outline-primary btn-login w-100">ورود با رمز</button>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- مرحله 2 (الف): ورود با رمز عبور -->
+                                <div id="stepPassword" style="display:none;">
+                                    <h4>ورود با رمز عبور</h4>
+                                    <p>شماره موبایل: <b class="user-mobile-label"></b></p>
+                                    <div class="form-account-title"><label>رمز عبور</label></div>
+                                    <input type="password" id="loginPassword" class="number-email-input">
+                                    <button onclick="LoginWithPassword()" class="btn btn-primary btn-login w-100 mt-3">تایید و ورود</button>
+                                    <button onclick="EditMobile()" class="btn btn-link w-100 mt-2">تغییر شماره موبایل</button>
+                                </div>
+
+                                <!-- مرحله 2 (ب): ورود با کد تایید (OTP) -->
+                                <div id="stepVerify" style="display:none;">
+                                    <h4>تایید کد ارسال شده</h4>
+                                    <p>کد تایید برای شماره <b class="user-mobile-label"></b> ارسال شد.</p>
+                                    <div class="form-account-title"><label>کد ۵ رقمی</label></div>
+                                    <input type="text" id="code" class="number-email-input text-center" style="letter-spacing: 10px;" placeholder="-----">
+                                    <button onclick="VerifyOtp()" class="btn btn-success btn-login w-100 mt-3">بررسی کد</button>
+                                    <button onclick="EditMobile()" class="btn btn-link w-100 mt-2">تغییر شماره یا روش ورود</button>
+                                </div>
+
+                                <!-- مرحله 3: انتخاب باشگاه (فقط برای کاربران چند باشگاهی) -->
+                                <div id="gymSelectionBox" style="display:none;">
+                                    <h4>انتخاب باشگاه</h4>
+                                    <p>شما در چند باشگاه عضو هستید، یکی را انتخاب کنید:</p>
+                                    <div class="form-account-title"><label>لیست باشگاه‌ها</label></div>
+                                    <select id="gymSelect" class="form-control mb-3"></select>
+                                    <input type="hidden" id="hdnLoginToken" />
+                                    <button onclick="CompleteLogin()" class="btn btn-info btn-login w-100">ورود نهایی</button>
                                 </div>
                             </div>
                         </div>
@@ -145,239 +82,86 @@
             </div>
         </div>
     </div>
+
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        // متغیر کمکی برای نگهداری موبایل در تمام مراحل
+        function getMobile() { return $("#mobile").val(); }
+
+        function showPasswordSection() {
+            var m = getMobile();
+            if (!m) { Swal.fire('خطا', 'لطفا ابتدا شماره موبایل را وارد کنید', 'warning'); return; }
+            $(".user-mobile-label").text(m);
+            $("#stepMobile").hide();
+            $("#stepPassword").show();
+        }
+
+        function EditMobile() {
+            $("#stepPassword, #stepVerify, #gymSelectionBox").hide();
+            $("#stepMobile").show();
+        }
+
+        // ۱. ارسال OTP
+        function SendOtp() {
+            var mobile = getMobile();
+            if (!mobile) { Swal.fire('خطا', 'شماره موبایل الزامی است', 'error'); return; }
+
+            $.post("/Admin/Auth/SendOtpLogin", { mobile: mobile }, function (res) {
+                if (res.isSuccess) {
+                    $(".user-mobile-label").text(mobile);
+                    $("#stepMobile").hide();
+                    $("#stepVerify").show();
+                } else { Swal.fire('خطا', res.message, 'error'); }
+            });
+        }
+
+        // ۲. تایید OTP
+        function VerifyOtp() {
+            $.post("/Admin/Auth/VerifyOtp", { mobile: getMobile(), code: $("#code").val() }, function (res) {
+                if (res.isSuccess) {
+                    processLoginResponse(res);
+                } else { Swal.fire('خطا', res.message, 'error'); }
+            });
+        }
+
+        // ۳. ورود با پسورد (نیاز به اکشن در بک‌اند دارد)
+        function LoginWithPassword() {
+            $.post("/Admin/Auth/LoginWithPassword", { Mobile: getMobile(), Password: $("#loginPassword").val() }, function (res) {
+                if (res.isSuccess) {
+                    processLoginResponse(res);
+                } else { Swal.fire('خطا', res.message, 'error'); }
+            });
+        }
+
+        // تابع مشترک برای مدیریت پاسخ لاگین (باشگاه یا ریدایرکت)
+        function processLoginResponse(res) {
+            if (res.needGymSelection) {
+                $("#stepVerify, #stepPassword").hide();
+                $("#gymSelectionBox").show();
+                $("#hdnLoginToken").val(res.loginToken); // توکن را برای مرحله آخر ذخیره می‌کنیم
+                $("#gymSelect").empty();
+                res.gyms.forEach(g => {
+                    $("#gymSelect").append(new Option(g.name, g.id));
+                });
+            } else {
+                window.location.href = "/Admin/Home/Index";
+            }
+        }
+
+        // ۴. انتخاب نهایی باشگاه
+        function CompleteLogin() {
+            var dto = {
+                LoginToken: $("#hdnLoginToken").val(),
+                GymId: $("#gymSelect").val()
+            };
+            $.post("/Admin/Auth/CompleteLogin", dto, function (res) {
+                if (res.isSuccess) {
+                    window.location.href = "/Admin/Home/Index";
+                } else { Swal.fire('خطا', res.message, 'error'); }
+            });
+        }
+    </script>
 </body>
-
-<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
-<script src="~/SiteTemplate/assets/js/main.js"></script>
-
-<link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-<script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
 </html>
-
-<script>
-    var OTP_RESEND_SECONDS = 60;
-    var resendRemaining = 0;
-    var resendTimerId = null;
-
-    function setBtnLoading(btnId, isLoading, loadingText) {
-    var $btn = $("#" + btnId);
-
-    if (!$btn.length) return;
-
-    if (isLoading) {
-    if (!$btn.data("old-text")) {
-    $btn.data("old-text", $btn.html());
-    }
-    $btn.prop("disabled", true).html(loadingText || "در حال انجام...");
-    } else {
-    $btn.prop("disabled", false);
-    if ($btn.data("old-text")) {
-    $btn.html($btn.data("old-text"));
-    }
-    }
-    }
-
-    function stopResendTimer() {
-    if (resendTimerId) {
-    clearInterval(resendTimerId);
-    resendTimerId = null;
-    }
-    }
-
-    function startResendTimer() {
-    stopResendTimer();
-
-    resendRemaining = OTP_RESEND_SECONDS;
-    $("#btnResend").hide();
-    $("#resendInfo").text("ارسال مجدد تا " + resendRemaining + " ثانیه دیگر");
-
-    resendTimerId = setInterval(function () {
-    resendRemaining--;
-
-    if (resendRemaining > 0) {
-    $("#resendInfo").text("ارسال مجدد تا " + resendRemaining + " ثانیه دیگر");
-    } else {
-    stopResendTimer();
-    $("#resendInfo").text("");
-    $("#btnResend").show();
-    }
-    }, 1000);
-    }
-
-    function showOtpSection() {
-    $("#otpSection").show();
-    $("#stepMobile").hide();
-    $("#gymSelectionBox").hide();
-
-    $("#mobilePreview").text($("#mobile").val().trim());
-    $("#code").val("").focus();
-
-    startResendTimer();
-    setBtnLoading("btnSendOtp", false);
-    }
-
-    function EditMobile() {
-    stopResendTimer();
-    $("#otpSection").hide();
-    $("#gymSelectionBox").hide();
-    $("#stepMobile").show();
-    $("#code").val("");
-    $("#loginToken").val("");
-
-    setBtnLoading("btnSendOtp", false);
-    $("#mobile").focus();
-    }
-
-    function normalizeMobile(value) {
-    if (!value) return "";
-    value = value.trim();
-
-    if (value.startsWith("+98")) {
-    return "0" + value.substring(3);
-    }
-
-    if (value.startsWith("98") && value.length === 12) {
-    return "0" + value.substring(2);
-    }
-
-    return value;
-    }
-
-
-
-    function SendOtp() {
-    var mobile = normalizeMobile($("#mobile").val());
-
-    $("#mobile").val(mobile);
-
-    if (!/^09\d{9}$/.test(mobile)) {
-    swal.fire('خطا!', 'شماره موبایل معتبر نیست.', 'warning');
-    return;
-    }
-
-    setBtnLoading("btnSendOtp", true, "در حال ارسال...");
-
-    $.ajax({
-    type: "POST",
-    url: "/admin/Auth/SendOtpLogin",
-    dataType: "json",
-    data: { mobile: mobile },
-    success: function (data) {
-    if (data.isSuccess === true) {
-    swal.fire(
-        'موفق!',
-        data.message,
-        'success',
-   
-    );
-    showOtpSection();
-    } else {
-    swal.fire('خطا!', data.message, 'warning');
-    setBtnLoading("btnSendOtp", false);
-    }
-    },
-    error: function () {
-    swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-    setBtnLoading("btnSendOtp", false);
-    }
-    });
-    }
-
-    function ResendOtp() {
-    SendOtp();
-    }
-
-    function VerifyOtp() {
-    var mobile = $("#mobile").val().trim();
-    var code = $("#code").val().trim();
-
-    if (!code) {
-    swal.fire('خطا!', 'لطفاً کد تایید را وارد کنید.', 'warning');
-    return;
-    }
-
-    setBtnLoading("btnVerifyOtp", true, "در حال تایید...");
-
-    $.ajax({
-    type: "POST",
-    url: "/admin/Auth/VerifyOtp",
-    dataType: "json",
-    data: { mobile: mobile, code: code },
-    success: function (data) {
-    if (data.isSuccess) {
-    if (data.needGymSelection) {
-    $("#loginToken").val(data.loginToken);
-
-    var gymSelect = $("#gymSelect").empty();
-    gymSelect.append(new Option("-- انتخاب کنید --", ""));
-
-    $.each(data.gyms, function (i, g) {
-    gymSelect.append(new Option(g.name, g.id));
-    });
-
-    $("#otpSection").hide();
-    $("#gymSelectionBox").show();
-
-    swal.fire('انتخاب باشگاه', 'لطفاً باشگاه مورد نظر را انتخاب کنید.', 'info');
-    } else {
-    window.location.href = "/";
-    }
-    } else {
-    swal.fire('خطا!', data.message, 'warning');
-    setBtnLoading("btnVerifyOtp", false);
-    }
-    },
-    error: function () {
-    swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-    setBtnLoading("btnVerifyOtp", false);
-    }
-    });
-    }
-
-    function CompleteLogin() {
-    var gymId = $("#gymSelect").val();
-    var loginToken = $("#loginToken").val();
-
-    if (!gymId) {
-    swal.fire('خطا!', 'لطفاً باشگاه را انتخاب کنید.', 'warning');
-    return;
-    }
-
-    setBtnLoading("btnCompleteLogin", true, "در حال ورود...");
-
-    $.ajax({
-    type: "POST",
-    url: "/admin/Auth/CompleteLogin",
-    dataType: "json",
-    data: { loginToken: loginToken, gymId: gymId },
-    success: function (data) {
-    if (data.isSuccess) {
-    window.location.href = "/";
-    } else {
-    swal.fire('خطا!', data.message, 'warning');
-    setBtnLoading("btnCompleteLogin", false);
-    }
-    },
-    error: function () {
-    swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-    setBtnLoading("btnCompleteLogin", false);
-    }
-    });
-    }
-
-    $(document).ready(function () {
-    var $mobile = $("#mobile");
-
-    $mobile.on("input", function () {
-    var v = $(this).val().trim();
-    if (v.startsWith("+98")) {
-    $(this).val("0" + v.substring(3));
-    } else if (v.startsWith("98") && v.length === 12) {
-    $(this).val("0" + v.substring(2));
-    }
-    });
-    });
-</script>
-
-

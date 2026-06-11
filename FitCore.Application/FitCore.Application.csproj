@@ -26,6 +26,8 @@
     <Folder Include="Services\NutritionPrograms\Queries\GetNutritionProgramById\" />
     <Folder Include="Services\Setings\Commands\" />
     <Folder Include="Services\SmsService\Queries\" />
+    <Folder Include="Services\Users\" />
+    <Folder Include="Validators\" />
   </ItemGroup>
 
 </Project>

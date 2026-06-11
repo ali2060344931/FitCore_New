@@ -1,5 +1,4 @@
-﻿using FitCore.Application.Services.Users.Commands.LoginUser;
-using FitCore.Common.Dto;
+﻿using FitCore.Common.Dto;
 
 using System.Threading;
 using System.Threading.Tasks;

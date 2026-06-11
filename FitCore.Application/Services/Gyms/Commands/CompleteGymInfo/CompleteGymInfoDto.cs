@@ -30,6 +30,9 @@ namespace FitCore.Application.Services.Gyms.Commands.EditGym
             [Display(Name = "وب سایت")]
             public string Website { get; set; }
 
+            [Display(Name = "استان")]
+            public int? ProvincesId { get; set; }
+
             [Display(Name = "شهر")]
             public int? CitiesId { get; set; }
 
