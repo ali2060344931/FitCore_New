@@ -31,7 +31,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly RegisterUserService _registerUserService;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RegisterUserViewModel _context;
-        private readonly UserManager<AppUser> _userManager; // اضافه شد
+
 
         private readonly IDataBaseContext _db; // تغییر نام به _db برای خوانایی
 
@@ -40,15 +40,13 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             VerifyOtpService verifyOtpService,
             RegisterUserService registerUserService,
             IDataBaseContext db, // تزریق دیتابیس بجای ViewModel
-            SignInManager<AppUser> signInManager,
-            UserManager<AppUser> userManager)
+            SignInManager<AppUser> signInManager)
         {
             _sendOtpService = sendOtpService;
             _verifyOtpService = verifyOtpService;
             _registerUserService = registerUserService;
             _signInManager = signInManager;
             _db = db; // انتساب به دیتابیس
-            _userManager = userManager;
         }
 
 
@@ -145,28 +143,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //    return RedirectToAction("Login", "Auth");
         //}
 
-
-
-        [HttpPost]
-        public async Task<IActionResult> LoginWithPassword(string mobile, string password)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Mobile == mobile);
-
-            if (user == null)
-                return Json(new { isSuccess = false, message = "کاربری با این شماره یافت نشد." });
-
-            var result = await _signInManager.CheckPasswordSignInAsync(
-                user,
-                password,
-                lockoutOnFailure: false);
-
-            if (!result.Succeeded)
-                return Json(new { isSuccess = false, message = "رمز عبور اشتباه است." });
-
-            await _signInManager.SignInAsync(user, isPersistent: true);
-
-            return Json(new { isSuccess = true });
-        }
 
 
 

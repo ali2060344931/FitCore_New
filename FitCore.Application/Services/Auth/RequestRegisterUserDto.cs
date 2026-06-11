@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FitCore.Domain.Entities.Gyms;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,13 +17,14 @@ namespace FitCore.Application.Services.Auth
         [Required(ErrorMessage = "رمز عبور الزامی است")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        public string RePassword { get; set; } // .......فیلد جدید
 
         [Required(ErrorMessage = "تکرار رمز عبور الزامی است")]
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "رمز عبور و تکرار آن برابر نیستند")]
-        public string RePassword { get; set; } // فیلد جدید
 
         public string Code { get; set; } // کد OTP
         public long GymId { get; set; }
+        public Gym gym { get; set; }
     }
 }

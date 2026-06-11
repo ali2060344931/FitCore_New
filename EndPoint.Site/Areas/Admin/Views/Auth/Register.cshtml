@@ -1,4 +1,4 @@
-﻿@using FitCore.Application.Services.Auth
+﻿﻿@using FitCore.Application.Services.Auth
 @model RegisterUserViewModel
 
 @{
@@ -44,39 +44,6 @@
                                                 <div class="form-account-title">
                                                     <label>شماره موبایل</label>
                                                     <input type="text" class="number-email-input" id="mobile" inputmode="numeric" />
-                                                </div>
-                                                @* <div class="form-account-title">
-                                                    <label>رمز عبور</label>
-                                                    <input type="text" class="number-email-input" id="Password" inputmode="numeric" />
-                                                </div>
-                                                <div class="form-account-title">
-                                                    <label>تکرار رمز عبور</label>
-                                                    <input type="text" class="number-email-input" id="RePassword" inputmode="numeric" />
-                                                </div> *@
-
-
-                                                <partial name="~/Areas/Admin/Views/Shared/Partials/_PasswordInput.cshtml"
-                                                         model='new BaseInputViewModel { Id = "Password", Name = "Password", LabelName = "رمز عبور", Col = 6, Value = Model.Password }' />
-
-                                                <partial name="~/Areas/Admin/Views/Shared/Partials/_PasswordInput.cshtml"
-                                                         model='new BaseInputViewModel { Id = "RePassword", Name = "RePassword", LabelName = "تکرار رمز عبور", Col = 6, Value = Model.RePassword }' />
-
-
-                                                @* <div class="row">
-                                                    <div class="col-md-6">
-                                                        @await Html.PartialAsync("Partials/_PasswordInput", new {
-                                                        Label = "رمز عبور",
-                                                                                                                Name = "Password",
-                                                                                                                Placeholder = "حداقل ۶ کاراکتر"
-                                                                                                                })
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        @await Html.PartialAsync("Partials/_PasswordInput", new {
-                                                                                                                Label = "تکرار رمز عبور",
-                                                                                                                Name = "RePassword",
-                                                                                                                Placeholder = "رمز عبور را دوباره وارد کنید"
-                                                                                                                })
-                                                    </div> *@
                                                 </div>
                                                 <div class="form-account-title">
                                                     <label>انتخاب باشگاه</label>
@@ -215,7 +182,6 @@
     function RegisterUser() {
     var code = $("#code").val();
     var mobile = $("#mobile").val(); // نیاز به موبایل برای ارسال به سرور
-    var password = $("#password").val(); // دریافت پسورد
 
     // اعتبارسنجی کد تایید
     if (!code || code.trim().length === 0) {
@@ -228,7 +194,6 @@
     fullName: $("#fullname").val(), // نام و نام خانوادگی همچنان لازم است
     mobile: mobile,
     code: code,
-     password: password, // ارسال پسورد
     gymId: $("#gymId").val() // شناسه باشگاه نیز لازم است
     }, function (data) {
     if (data.isSuccess) {
@@ -248,7 +213,5 @@
 
     // اختیاری: اگر می‌خواهید وقتی صفحه لود می‌شود، دکمه ارسال کد غیرفعال باشد تا زمانی که اطلاعات وارد شوند،
     // می‌توانید منطقی به این بخش اضافه کنید. فعلاً فرض بر این است که دکمه فعال است.
-
-
 
 </script>
