@@ -1,4 +1,3 @@
-
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
@@ -30,6 +29,9 @@ using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutrit
 using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
+using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
+using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
+using FitCore.Application.Services.Exercises.ExerciseFacad;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
@@ -228,6 +230,12 @@ builder.Services.AddScoped<IGetNutritionProgramPdfService, GetNutritionProgramPd
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
 builder.Services.AddScoped<INutritionProgramFacad, NutritionProgramFacad>();
 //===== Facad =====
+
+//===== Facad - Training Program Module =====
+builder.Services.AddScoped<ITrainingProgramFacad, TrainingProgramFacad>();
+builder.Services.AddScoped<ITrainingProgramBuilderFacad, TrainingProgramBuilderFacad>();
+builder.Services.AddScoped<IExerciseFacad, ExerciseFacad>();
+//===== Facad - Training Program Module =====
 
 
 

@@ -22,6 +22,14 @@ public static class SeederRunner
             new GoalTypeSeeder(),
             new ActivityLevelSeeder(),
             new ExperienceLevelSeeder(),
+
+            // Training Program Module
+            new TrainingProgramTypeSeeder(),
+            new TrainingGoalTypeSeeder(),
+            new TrainingDayTypeSeeder(),
+            new MuscleGroupSeeder(),
+            new EquipmentTypeSeeder(),
+            new ExerciseDifficultyLevelSeeder(),
         };
 
         foreach (var seeder in seeders)

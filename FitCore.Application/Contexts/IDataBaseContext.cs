@@ -7,6 +7,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
+using FitCore.Domain.Entities.TrainingProgram;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Identity;
@@ -53,6 +54,20 @@ namespace FitCore.Application.Contexts
         public DbSet<GoalType> GetGoalTypes { get; set; }
         public DbSet<NutritionProgramDay> NutritionProgramDays { get; set; }
         //===============
+
+
+        //-------------  TrainingPrograms Start-------------
+        public DbSet<TrainingProgram> TrainingPrograms { get; set; }
+        public DbSet<TrainingProgramType> TrainingProgramTypes { get; set; }
+        public DbSet<TrainingGoalType> TrainingGoalTypes { get; set; }
+        public DbSet<TrainingDay> TrainingDays { get; set; }
+        public DbSet<TrainingDayType> TrainingDayTypes { get; set; }
+        public DbSet<TrainingExerciseItem> TrainingExerciseItems { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
+        public DbSet<MuscleGroup> MuscleGroups { get; set; }
+        public DbSet<EquipmentType> EquipmentTypes { get; set; }
+        public DbSet<ExerciseDifficultyLevel> ExerciseDifficultyLevels { get; set; }
+        //-------------  TrainingPrograms End-------------
 
         int SaveChanges();
 

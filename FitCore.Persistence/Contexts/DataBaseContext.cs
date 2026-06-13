@@ -8,6 +8,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
+using FitCore.Domain.Entities.TrainingProgram;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Identity;
@@ -57,6 +58,19 @@ namespace FitCore.Persistence.Contexts
         public DbSet<MemberBodyMeasurement> memberBodyMeasurements { get; set; }
         public DbSet<ExperienceLevel> experiences { get; set; }
         public DbSet<ActivityLevel> activityLevels { get; set; }
+
+        //===============TrainingProgram
+        public DbSet<TrainingProgram> TrainingPrograms { get; set; }
+        public DbSet<TrainingProgramType> TrainingProgramTypes { get; set; }
+        public DbSet<TrainingGoalType> TrainingGoalTypes { get; set; }
+        public DbSet<TrainingDay> TrainingDays { get; set; }
+        public DbSet<TrainingDayType> TrainingDayTypes { get; set; }
+        public DbSet<TrainingExerciseItem> TrainingExerciseItems { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
+        public DbSet<MuscleGroup> MuscleGroups { get; set; }
+        public DbSet<EquipmentType> EquipmentTypes { get; set; }
+        public DbSet<ExerciseDifficultyLevel> ExerciseDifficultyLevels { get; set; }
+        //===============
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
@@ -174,6 +188,91 @@ namespace FitCore.Persistence.Contexts
 
             });
             //*************
+
+            // ---------- TrainingProgram ----------
+            modelBuilder.Entity<FitCore.Domain.Entities.TrainingProgram.TrainingProgram>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.Member)
+                      .WithMany()
+                      .HasForeignKey(x => x.MemberId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.Gym)
+                      .WithMany()
+                      .HasForeignKey(x => x.GymId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.CreatedByUser)
+                      .WithMany()
+                      .HasForeignKey(x => x.CreatedByUserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.TrainingProgramType)
+                      .WithMany(x => x.TrainingPrograms)
+                      .HasForeignKey(x => x.TrainingProgramTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.TrainingGoalType)
+                      .WithMany(x => x.TrainingPrograms)
+                      .HasForeignKey(x => x.TrainingGoalTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ---------- TrainingDay ----------
+            modelBuilder.Entity<TrainingDay>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.TrainingProgram)
+                      .WithMany(x => x.Days)
+                      .HasForeignKey(x => x.TrainingProgramId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.DayType)
+                      .WithMany(x => x.TrainingDays)
+                      .HasForeignKey(x => x.DayTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ---------- TrainingExerciseItem ----------
+            modelBuilder.Entity<TrainingExerciseItem>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.TrainingDay)
+                      .WithMany(x => x.ExerciseItems)
+                      .HasForeignKey(x => x.TrainingDayId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.Exercise)
+                      .WithMany(x => x.ExerciseItems)
+                      .HasForeignKey(x => x.ExerciseId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ---------- Exercise ----------
+            modelBuilder.Entity<Exercise>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.PrimaryMuscleGroup)
+                      .WithMany(x => x.Exercises)
+                      .HasForeignKey(x => x.PrimaryMuscleGroupId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.EquipmentType)
+                      .WithMany(x => x.Exercises)
+                      .HasForeignKey(x => x.EquipmentTypeId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.DifficultyLevel)
+                      .WithMany(x => x.Exercises)
+                      .HasForeignKey(x => x.DifficultyLevelId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+            //*************TrainingProgram
 
         }
 
