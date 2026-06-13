@@ -150,10 +150,11 @@ namespace FitCore.Application.Services.Member.Queries
                         ? x.Member.Gender : Gender.Male,
                     MembershipStartDate = x.Member?.MembershipStartDate,
                     MembershipEndDate = x.Member?.MembershipEndDate,
-                    
-                    
-                    countNutritionProg=_context.NutritionPrograms.Count(c=>c.MemberId==_context.Members.Where(p=>p.AppUserId==x.Id).FirstOrDefault().Id),
-                    countBodyMeasurement=_context.memberBodyMeasurements.Count(c=>c.MemberId==_context.Members.Where(p=>p.AppUserId==x.Id).FirstOrDefault().Id),
+
+
+                    countNutritionProg = _context.NutritionPrograms.Count(c => c.MemberId == _context.Members.Where(p => p.AppUserId == x.Id).FirstOrDefault().Id),
+                    countTrainingProg = _context.TrainingPrograms.Count(c => c.MemberId == _context.Members.Where(p => p.AppUserId == x.Id).FirstOrDefault().Id),
+                    countBodyMeasurement = _context.memberBodyMeasurements.Count(c => c.MemberId == _context.Members.Where(p => p.AppUserId == x.Id).FirstOrDefault().Id),
                 })
                 .ToList();
 

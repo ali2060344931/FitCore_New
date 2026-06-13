@@ -27,13 +27,15 @@ namespace FitCore.Application.Services.Exercises.Commands.AddExercise
             try
             {
                 //====================================
-                // بررسی تکراری نبودن نام حرکت
+                // بررسی تکراری نبودن نام حرکت (در همان باشگاه یا سراسری)
                 //====================================
 
                 bool isExist =
                     await _context.Exercises
                     .AnyAsync(x =>
-                        x.Name == request.Name && !x.IsRemoved);
+                        x.Name == request.Name &&
+                        x.GymId == request.GymId &&
+                        !x.IsRemoved);
 
                 if (isExist)
                 {
@@ -52,6 +54,7 @@ namespace FitCore.Application.Services.Exercises.Commands.AddExercise
                 Exercise exercise =
                     new Exercise()
                     {
+                        GymId = request.GymId,
                         Name = request.Name,
                         EnglishName = request.EnglishName,
                         Description = request.Description,
@@ -103,6 +106,12 @@ namespace FitCore.Application.Services.Exercises.Commands.AddExercise
     public class RequestAddExerciseDto
     {
         public long Id { get; set; }
+
+        /// <summary>
+        /// شناسه باشگاه. مقدار null یعنی حرکت سراسری (مشترک) است
+        /// و فقط توسط مدیر کل (SuperAdmin) قابل ثبت است.
+        /// </summary>
+        public long? GymId { get; set; }
 
         [DisplayName("نام حرکت")]
         [Required(ErrorMessage = "نام حرکت الزامی است")]

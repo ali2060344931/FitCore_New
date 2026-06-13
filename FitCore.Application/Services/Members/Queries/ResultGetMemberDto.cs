@@ -12,10 +12,12 @@ namespace FitCore.Application.Services.Member.Queries
         public Gender? Gender { get; set; }
         public string BirthDate { get; set; }
         public int countNutritionProg { get; set; }
+        public int countTrainingProg { get; set; }
         public int countBodyMeasurement { get; set; }
         public string MembershipStartDate { get; set; }
 
         public string MembershipEndDate { get; set; }
+
 
     }
 

@@ -7,6 +7,7 @@ using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingD
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingExercise;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveTrainingDay;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveTrainingExercise;
+using FitCore.Application.Services.TrainingProgramBuilder.Commands.ReorderTrainingExercises;
 
 namespace FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad
 {
@@ -54,5 +55,11 @@ namespace FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBui
         public IRemoveTrainingExerciseService RemoveTrainingExerciseService =>
             _removeTrainingExerciseService ??=
             new RemoveTrainingExerciseService(_context);
+
+        //Exercise - Reorder
+        private IReorderTrainingExercisesService _reorderTrainingExercisesService;
+        public IReorderTrainingExercisesService ReorderTrainingExercisesService =>
+            _reorderTrainingExercisesService ??=
+            new ReorderTrainingExercisesService(_context);
     }
 }

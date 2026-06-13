@@ -41,6 +41,16 @@ namespace FitCore.Application.Services.Exercises.Queries
         public string ImagePath { get; set; }
 
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// آیا این حرکت سراسری (مشترک بین همه باشگاه‌ها) است؟
+        /// </summary>
+        public bool IsGlobal { get; set; }
+
+        /// <summary>
+        /// نام باشگاه صاحب حرکت (در صورتی که سراسری نباشد)
+        /// </summary>
+        public string GymName { get; set; }
     }
 
     public class GetExercisesRequestDto
@@ -54,6 +64,18 @@ namespace FitCore.Application.Services.Exercises.Queries
         public int Page { get; set; } = 1;
 
         public int PageSize { get; set; } = 10;
+
+        /// <summary>
+        /// شناسه باشگاه کاربر جاری (مدیر باشگاه).
+        /// اگر IsAdmin = true باشد، این مقدار نادیده گرفته می‌شود.
+        /// </summary>
+        public long? GymId { get; set; }
+
+        /// <summary>
+        /// آیا کاربر جاری مدیر کل (SuperAdmin) است؟
+        /// در این صورت همه حرکات (همه باشگاه‌ها + سراسری) قابل مشاهده است.
+        /// </summary>
+        public bool IsAdmin { get; set; }
     }
 
     public class GetExercisesService : IGetExercisesService
@@ -74,7 +96,22 @@ namespace FitCore.Application.Services.Exercises.Queries
                 .Include(x => x.PrimaryMuscleGroup)
                 .Include(x => x.EquipmentType)
                 .Include(x => x.DifficultyLevel)
+                .Include(x => x.Gym)
                 .AsQueryable();
+
+            //====================================
+            // فیلتر باشگاه
+            //====================================
+            // مدیر کل (SuperAdmin): همه حرکات (همه باشگاه‌ها + سراسری)
+            // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری (GymId == null)
+
+            if (!request.IsAdmin)
+            {
+                exercises =
+                    exercises.Where(x =>
+                        x.GymId == null ||
+                        x.GymId == request.GymId);
+            }
 
             //====================================
             // فیلتر جستجو
@@ -125,7 +162,9 @@ namespace FitCore.Application.Services.Exercises.Queries
                     EquipmentType = x.EquipmentType.Name,
                     DifficultyLevel = x.DifficultyLevel.Name,
                     ImagePath = x.ImagePath,
-                    IsActive = x.IsActive
+                    IsActive = x.IsActive,
+                    IsGlobal = x.GymId == null,
+                    GymName = x.Gym != null ? x.Gym.Name : null
                 })
                 .ToListAsync();
 

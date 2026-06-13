@@ -1,4 +1,5 @@
 ﻿using FitCore.Domain.Entities.Commons;
+using FitCore.Domain.Entities.Gyms;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,14 @@ namespace FitCore.Domain.Entities.TrainingProgram
     /// </summary>
     public class Exercise : BaseEntity
     {
+        /// <summary>
+        /// شناسه باشگاه صاحب این حرکت.
+        /// مقدار null به معنای حرکت سراسری (مشترک بین همه باشگاه‌ها) است
+        /// که توسط مدیر کل (SuperAdmin) ثبت می‌شود.
+        /// </summary>
+        public long? GymId { get; set; }
+        public Gym Gym { get; set; }
+
         /// <summary>
         /// نام حرکت (فارسی)
         /// </summary>

@@ -1,4 +1,4 @@
-﻿using EndPoint.Site.Areas.Admin.Models;
+using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;

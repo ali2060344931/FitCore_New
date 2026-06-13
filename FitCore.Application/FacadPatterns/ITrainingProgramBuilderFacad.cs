@@ -1,4 +1,5 @@
 ﻿using FitCore.Application.Interfaces.ITrainingProgram;
+using FitCore.Application.Services.TrainingProgramBuilder.Commands.ReorderTrainingExercises;
 
 namespace FitCore.Application.FacadPatterns
 {
@@ -15,5 +16,6 @@ namespace FitCore.Application.FacadPatterns
         IEditTrainingExerciseService EditTrainingExerciseService { get; }
 
         IRemoveTrainingExerciseService RemoveTrainingExerciseService { get; }
+        IReorderTrainingExercisesService ReorderTrainingExercisesService { get; }
     }
 }

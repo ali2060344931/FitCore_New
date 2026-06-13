@@ -4,6 +4,7 @@ using FitCore.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitCore.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260613124203_InitTrainingProgramNew")]
+    partial class InitTrainingProgramNew
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -748,9 +751,6 @@ namespace FitCore.Persistence.Migrations
                     b.Property<int>("EquipmentTypeId")
                         .HasColumnType("int");
 
-                    b.Property<long?>("GymId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("ImagePath")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -787,8 +787,6 @@ namespace FitCore.Persistence.Migrations
                     b.HasIndex("DifficultyLevelId");
 
                     b.HasIndex("EquipmentTypeId");
-
-                    b.HasIndex("GymId");
 
                     b.HasIndex("PrimaryMuscleGroupId");
 
@@ -1488,11 +1486,6 @@ namespace FitCore.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
-                        .WithMany()
-                        .HasForeignKey("GymId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("FitCore.Domain.Entities.TrainingProgram.MuscleGroup", "PrimaryMuscleGroup")
                         .WithMany("Exercises")
                         .HasForeignKey("PrimaryMuscleGroupId")
@@ -1502,8 +1495,6 @@ namespace FitCore.Persistence.Migrations
                     b.Navigation("DifficultyLevel");
 
                     b.Navigation("EquipmentType");
-
-                    b.Navigation("Gym");
 
                     b.Navigation("PrimaryMuscleGroup");
                 });

@@ -1,4 +1,4 @@
-﻿using EndPoint.Site.Areas.Admin.Models;
+using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
@@ -8,11 +8,16 @@ using FitCore.Application.Services.Exercises.Queries;
 using FitCore.Common;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+using System;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
@@ -23,13 +28,56 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly IExerciseFacad _exerciseFacad;
         private readonly IDataBaseContext _context;
+        private readonly IWebHostEnvironment _env;
 
         public ExerciseController(
             IExerciseFacad exerciseFacad,
-            IDataBaseContext context)
+            IDataBaseContext context,
+            IWebHostEnvironment env)
         {
             _exerciseFacad = exerciseFacad;
             _context = context;
+            _env = env;
+        }
+
+        //====================================================
+        // مسیر و نام پوشه ذخیره تصاویر حرکات
+        //====================================================
+        private const string ExerciseImagesFolder = "uploads/exercises";
+
+        // پسوندهای مجاز برای آپلود تصویر
+        private static readonly string[] AllowedExtensions =
+            { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+
+        // حداکثر حجم مجاز فایل (2 مگابایت)
+        private const long MaxFileSizeBytes = 2 * 1024 * 1024;
+
+        //====================================================
+        // تشخیص باشگاه و سطح دسترسی کاربر جاری
+        //====================================================
+        private async Task<(long? GymId, bool IsAdmin)> GetCurrentUserGymContextAsync()
+        {
+            bool isAdmin = User.IsAdmin();
+
+            if (isAdmin)
+            {
+                // مدیر کل: به همه حرکات دسترسی دارد
+                return (null, true);
+            }
+
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdValue))
+                return (null, false);
+
+            var appUserId = long.Parse(userIdValue);
+
+            var gymId = await _context.Users
+                .Where(x => x.Id == appUserId)
+                .Select(x => x.GymId)
+                .FirstOrDefaultAsync();
+
+            return (gymId, false);
         }
 
         //====================================================
@@ -38,11 +86,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
         {
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
             var request = new GetExercisesRequestDto
             {
                 Page = page,
                 PageSize = PageSize,
-                SearchKey = SearchKey
+                SearchKey = SearchKey,
+                GymId = gymId,
+                IsAdmin = isAdmin
             };
 
             var result = await _exerciseFacad.GetExercisesService.Execute(request);
@@ -57,6 +109,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         public async Task<IActionResult> Create()
         {
             await FillLookupsAsync();
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            // اگر مدیر کل باشد و GymId ارسال نکند، حرکت سراسری ثبت می‌شود
+            ViewBag.IsGlobalExercise = isAdmin;
+            ViewBag.CurrentGymId = gymId;
 
             var model = new ExerciseCreateEditViewModel
             {
@@ -81,8 +139,13 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 });
             }
 
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
             var request = new RequestAddExerciseDto
             {
+                // مدیر باشگاه: همیشه GymId خودش
+                // مدیر کل: حرکت سراسری (GymId = null) ثبت می‌کند
+                GymId = isAdmin ? null : gymId,
                 Name = model.Name,
                 EnglishName = model.EnglishName,
                 Description = model.Description,
@@ -120,6 +183,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             if (item == null)
                 return NotFound();
+
+            //====================================
+            // بررسی دسترسی: مدیر باشگاه فقط حرکات باشگاه خودش را ویرایش می‌کند
+            //====================================
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            if (!isAdmin && item.GymId != gymId)
+            {
+                return Forbid();
+            }
 
             await FillLookupsAsync();
 
@@ -169,7 +243,47 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 IsActive = model.IsActive
             };
 
+            //====================================
+            // در صورت تغییر تصویر، تصویر قبلی حذف شود
+            //====================================
+
+            var existing = await _context.Exercises
+                .FirstOrDefaultAsync(x => x.Id == model.Id);
+
+            if (existing == null)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "حرکت تمرینی یافت نشد"
+                });
+            }
+
+            //====================================
+            // بررسی دسترسی: مدیر باشگاه فقط حرکات باشگاه خودش را ویرایش می‌کند
+            //====================================
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            if (!isAdmin && existing.GymId != gymId)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "شما اجازه ویرایش این حرکت را ندارید"
+                });
+            }
+
+            string previousImagePath = existing.ImagePath;
+
             var result = await _exerciseFacad.EditExerciseService.Execute(request);
+
+            if (result.IsSuccess &&
+                !string.IsNullOrWhiteSpace(previousImagePath) &&
+                !string.Equals(previousImagePath, model.ImagePath, System.StringComparison.OrdinalIgnoreCase))
+            {
+                DeleteImageFile(previousImagePath);
+            }
 
             return Json(new
             {
@@ -189,8 +303,161 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return BadRequest();
 
             long Id = SecurityUtils.DecryptId(id);
+
+            var existing = await _context.Exercises
+                .FirstOrDefaultAsync(x => x.Id == Id);
+
+            if (existing == null)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "حرکت تمرینی یافت نشد"
+                });
+            }
+
+            //====================================
+            // بررسی دسترسی: مدیر باشگاه فقط حرکات باشگاه خودش را حذف می‌کند
+            //====================================
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            if (!isAdmin && existing.GymId != gymId)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "شما اجازه حذف این حرکت را ندارید"
+                });
+            }
+
             var result = await _exerciseFacad.DeleteExerciseService.Execute(Id);
+
+            if (result.IsSuccess)
+            {
+                DeleteImageFile(existing.ImagePath);
+            }
+
             return Json(result);
+        }
+
+        //====================================================
+        // آپلود تصویر حرکت (AJAX) - بازمی‌گرداند مسیر نسبی فایل
+        //====================================================
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "هیچ فایلی انتخاب نشده است"
+                });
+            }
+
+            //====================================
+            // بررسی حجم فایل
+            //====================================
+
+            if (file.Length > MaxFileSizeBytes)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "حجم فایل نباید بیشتر از 2 مگابایت باشد"
+                });
+            }
+
+            //====================================
+            // بررسی پسوند فایل
+            //====================================
+
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (string.IsNullOrWhiteSpace(extension) || !AllowedExtensions.Contains(extension))
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "فرمت فایل مجاز نیست. فرمت‌های مجاز: jpg, jpeg, png, webp, gif"
+                });
+            }
+
+            try
+            {
+                //====================================
+                // ساخت پوشه در صورت عدم وجود
+                //====================================
+
+                var uploadsRoot = Path.Combine(_env.WebRootPath, ExerciseImagesFolder);
+
+                if (!Directory.Exists(uploadsRoot))
+                {
+                    Directory.CreateDirectory(uploadsRoot);
+                }
+
+                //====================================
+                // تولید نام یکتا برای فایل
+                //====================================
+
+                var fileName = $"{Guid.NewGuid():N}{extension}";
+                var filePath = Path.Combine(uploadsRoot, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                //====================================
+                // مسیر نسبی برای ذخیره در دیتابیس / نمایش
+                //====================================
+
+                var relativePath = $"/{ExerciseImagesFolder}/{fileName}";
+
+                return Json(new
+                {
+                    isSuccess = true,
+                    message = "تصویر با موفقیت آپلود شد",
+                    imagePath = relativePath
+                });
+            }
+            catch
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "خطا در ذخیره فایل تصویر"
+                });
+            }
+        }
+
+        //====================================================
+        // حذف فایل تصویر از روی دیسک (در صورت وجود)
+        //====================================================
+        private void DeleteImageFile(string imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+                return;
+
+            // فقط تصاویر آپلودشده در پوشه حرکات حذف می‌شوند
+            if (!imagePath.Replace("\\", "/").Contains($"/{ExerciseImagesFolder}/"))
+                return;
+
+            var relativePath = imagePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
+            var fullPath = Path.Combine(_env.WebRootPath, relativePath);
+
+            try
+            {
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+            }
+            catch
+            {
+                // عدم توانایی در حذف فایل فیزیکی نباید عملیات اصلی را با شکست مواجه کند
+            }
         }
 
         //====================================================

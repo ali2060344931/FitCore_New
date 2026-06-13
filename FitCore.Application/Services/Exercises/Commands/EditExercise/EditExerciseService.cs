@@ -41,14 +41,16 @@ namespace FitCore.Application.Services.Exercises.Commands.EditExercise
                 }
 
                 //====================================
-                // بررسی تکراری نبودن نام حرکت
+                // بررسی تکراری نبودن نام حرکت (در همان باشگاه یا سراسری)
                 //====================================
 
                 bool isExist =
                     await _context.Exercises
                     .AnyAsync(x =>
                         x.Id != request.Id &&
-                        x.Name == request.Name && !x.IsRemoved);
+                        x.Name == request.Name &&
+                        x.GymId == exercise.GymId &&
+                        !x.IsRemoved);
 
                 if (isExist)
                 {

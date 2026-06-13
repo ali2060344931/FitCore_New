@@ -1,4 +1,4 @@
-﻿using EndPoint.Site.Areas.Admin.Models;
+using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
@@ -160,6 +162,21 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         //====================================================
+        // تغییر ترتیب حرکات (Drag & Drop)
+        //====================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReorderExercises([FromBody] List<FitCore.Application.Services.TrainingProgramBuilder.Commands.ReorderTrainingExercises.ReorderItemDto> items)
+        {
+            var result = await _builderFacad.ReorderTrainingExercisesService.Execute(items);
+            return Json(new
+            {
+                isSuccess = result.IsSuccess,
+                message = result.Message
+            });
+        }
+
+        //====================================================
         // Lookups
         //====================================================
         private async Task<System.Collections.Generic.List<SelectListItem>> GetDayTypesSelectListAsync()
@@ -178,19 +195,64 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         private async Task<System.Collections.Generic.List<SelectListItem>> GetExercisesSelectListAsync()
         {
-            var exercises = await _context.Exercises
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            var exercisesQuery = _context.Exercises
                 .Where(x => x.IsActive && !x.IsRemoved)
                 .Include(x => x.PrimaryMuscleGroup)
+                .AsQueryable();
+
+            //====================================
+            // فیلتر باشگاه:
+            // مدیر کل: همه حرکات
+            // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری
+            //====================================
+
+            if (!isAdmin)
+            {
+                exercisesQuery = exercisesQuery
+                    .Where(x => x.GymId == null || x.GymId == gymId);
+            }
+
+            var exercises = await exercisesQuery
                 .OrderBy(x => x.PrimaryMuscleGroup.Name)
                 .ThenBy(x => x.Name)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
-                    Text = x.PrimaryMuscleGroup.Name + " - " + x.Name
+                    Text = x.PrimaryMuscleGroup.Name + " - " + x.Name +
+                           (x.GymId == null ? " (سراسری)" : "")
                 })
                 .ToListAsync();
 
             return exercises;
+        }
+
+        //====================================================
+        // تشخیص باشگاه و سطح دسترسی کاربر جاری
+        //====================================================
+        private async Task<(long? GymId, bool IsAdmin)> GetCurrentUserGymContextAsync()
+        {
+            bool isAdmin = User.IsAdmin();
+
+            if (isAdmin)
+            {
+                return (null, true);
+            }
+
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdValue))
+                return (null, false);
+
+            var appUserId = long.Parse(userIdValue);
+
+            var gymId = await _context.Users
+                .Where(x => x.Id == appUserId)
+                .Select(x => x.GymId)
+                .FirstOrDefaultAsync();
+
+            return (gymId, false);
         }
     }
 }

@@ -257,6 +257,11 @@ namespace FitCore.Persistence.Contexts
             {
                 entity.HasQueryFilter(x => !x.IsRemoved);
 
+                entity.HasOne(x => x.Gym)
+                      .WithMany()
+                      .HasForeignKey(x => x.GymId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
                 entity.HasOne(x => x.PrimaryMuscleGroup)
                       .WithMany(x => x.Exercises)
                       .HasForeignKey(x => x.PrimaryMuscleGroupId)
