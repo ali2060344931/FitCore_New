@@ -6,7 +6,7 @@
         @Model.LabelName
     </label>
 
-    <select id="@Model.Id"
+  @*   <select id="@Model.Id"
             name="@Model.Name"
             class="form-control text-center">
         @foreach (var item in Model.Items)
@@ -15,6 +15,17 @@
                 @item.Text
             </option>
         }
+    </select> *@
+    <select id="@Model.Id"
+            name="@Model.Name"
+            class="form-control text-center">
+        @foreach (var item in Model.Items)
+        {
+            // در اینجا از (bool) استفاده می‌کنیم. اگر true باشد، ویژگی selected اعمال می‌شود.
+            // اگر false باشد، کلاً ویژگی حذف می‌شود.
+            <option value="@item.Value" selected="@(item.Value == Model.Value)">
+                @item.Text
+            </option>
+        }
     </select>
-
 </div>

@@ -49,27 +49,22 @@
 
                                             <!-- Step 1: Mobile -->
                                             <div id="stepMobile">
-                                                <label>شماره موبایل</label>
+                                                <label for="mobile">شماره موبایل</label>
 
-                                                <div class="form-account-title">
+                                                <div class="mobile-row-container">
                                                     <input type="text"
                                                            class="number-email-input"
                                                            id="mobile"
+                                                           placeholder="مثــال: 09123456789"
                                                            inputmode="numeric"
                                                            autocomplete="tel" />
-                                                </div>
 
-                                                <div class="form-row-account">
                                                     <button id="btnSendOtp"
                                                             type="button"
                                                             onclick="SendOtp()"
                                                             class="btn btn-primary btn-login">
                                                         ارسال کد
                                                     </button>
-                                                </div>
-
-                                                <div class="helper-row otp-meta">
-                                                    <span class="muted">مثال: <span class="pill">09123456789</span></span>
                                                 </div>
                                             </div>
 

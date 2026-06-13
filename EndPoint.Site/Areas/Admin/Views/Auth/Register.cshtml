@@ -34,20 +34,29 @@
                                 <div class="Login-to-account mt-4">
                                     <div class="account-box-content">
                                         <h4>ثبت نام کاربر جدید</h4>
+                                        
+                                        
+
+
                                         <div class="form-account text-right">
 
-                                            <div id="registrationForm">
-                                                <div class="form-account-title">
-                                                    <label>نام و نام خانوادگی</label>
-                                                    <input type="text" class="number-email-input" id="fullname" dir="rtl" style="text-align:right;" />
+                                            <div id="registrationForm" class="registration-form">
+                                                <!-- نام و نام خانوادگی -->
+                                                <div class="form-group">
+                                                    <label for="fullname">نام و نام خانوادگی</label>
+                                                    <input type="text" class="form-control" id="fullname" placeholder="نام و نام خانوادگی خود را وارد کنید" />
                                                 </div>
-                                                <div class="form-account-title">
-                                                    <label>شماره موبایل</label>
-                                                    <input type="text" class="number-email-input" id="mobile" inputmode="numeric" />
+
+                                                <!-- شماره موبایل -->
+                                                <div class="form-group">
+                                                    <label for="mobile">شماره موبایل</label>
+                                                    <input type="text" class="form-control" id="mobile" inputmode="numeric" placeholder="مثال: 091234567890" />
                                                 </div>
-                                                <div class="form-account-title">
-                                                    <label>انتخاب باشگاه</label>
-                                                    <select id="gymId" class="number-email-input">
+
+                                                <!-- انتخاب باشگاه -->
+                                                <div class="form-group">
+                                                    <label for="gymId">انتخاب باشگاه</label>
+                                                    <select id="gymId" class="form-control">
                                                         <option value="">-- انتخاب کنید --</option>
                                                         @foreach (var gym in Model.Gyms)
                                                         {
@@ -55,8 +64,17 @@
                                                         }
                                                     </select>
                                                 </div>
-                                                <div class="form-row-account"><button id="btnSendOtp" onclick="SendOtp()" class="btn btn-primary btn-login">ارسال کد تایید</button></div>
+
+                                                <!-- دکمه ارسال -->
+                                                <div class="form-group-actions">
+                                                    <button id="btnSendOtp" type="button" onclick="SendOtp()" class="btn btn-primary btn-submit">
+                                                        ارسال کد تایید
+                                                    </button>
+                                                </div>
                                             </div>
+
+
+
 
                                             <div id="otpSection" style="display:none;">
                                                 <hr />
