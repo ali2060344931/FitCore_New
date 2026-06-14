@@ -40,27 +40,33 @@
                              Col = 4
                          }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "TrainingProgramTypeId",
-                             Name = "TrainingProgramTypeId",
-                             LabelName = "نوع برنامه تمرینی",
-                             Col = 2,
-                             Items = ViewBag.TrainingProgramTypes,
-                             Value = Model.TrainingProgramTypeId.ToString()
-                         }' />
+                <div class="col-md-2 fc-input-group">
+                    <label class="form-label">نوع برنامه تمرینی</label>
+                    <select id="TrainingProgramTypeId" name="TrainingProgramTypeId"
+                            class="form-control js-select2">
+                        @foreach (var item in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.TrainingProgramTypes)
+                        {
+                            <option value="@item.Value"
+                                    selected="@(item.Value == Model.TrainingProgramTypeId.ToString())">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "TrainingGoalTypeId",
-                             Name = "TrainingGoalTypeId",
-                             LabelName = "هدف تمرینی",
-                             Col = 2,
-                             Items = ViewBag.TrainingGoalTypes,
-                             Value = Model.TrainingGoalTypeId.ToString()
-                         }' />
+                <div class="col-md-2 fc-input-group">
+                    <label class="form-label">هدف تمرینی</label>
+                    <select id="TrainingGoalTypeId" name="TrainingGoalTypeId"
+                            class="form-control js-select2">
+                        @foreach (var item in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.TrainingGoalTypes)
+                        {
+                            <option value="@item.Value"
+                                    selected="@(item.Value == Model.TrainingGoalTypeId.ToString())">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel
@@ -156,6 +162,19 @@
 
     <script>
         $(document).ready(function () {
+
+            // ===== راه‌اندازی Select2 برای کمبوباکس‌های جستجوپذیر =====
+            $('.js-select2').each(function () {
+                $(this).select2({
+                    dir: 'rtl',
+                    width: '100%',
+                    language: 'fa',
+                    theme: 'bootstrap4',
+                    placeholder: 'انتخاب کنید...',
+                    allowClear: true
+                });
+            });
+            // ===========================================================
 
             // تبدیل ارقام فارسی/عربی به انگلیسی
             function toEnglishDigits(str) {

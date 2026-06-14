@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Contexts;
+using FitCore.Application.Contexts;
 using FitCore.Application.Interfaces.ITrainingProgram;
 using FitCore.Common.Dto;
 
@@ -75,6 +75,12 @@ namespace FitCore.Application.Services.Exercises.Commands.EditExercise
                     exercise.ImagePath = request.ImagePath;
                 }
 
+                // به‌روزرسانی GymId فقط اگر کاربر مجاز باشد (کنترلر قبلاً بررسی کرده)
+                if (request.UpdateGymId)
+                {
+                    exercise.GymId = request.GymId;
+                }
+
                 exercise.IsActive = request.IsActive;
                 exercise.UpdateTime = DateTime.Now;
 
@@ -137,5 +143,13 @@ namespace FitCore.Application.Services.Exercises.Commands.EditExercise
         public string ImagePath { get; set; }
 
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// آیا GymId تغییر کرده و باید به‌روز شود؟
+        /// فقط توسط مدیر کل قابل تغییر است.
+        /// </summary>
+        public bool UpdateGymId { get; set; } = false;
+
+        public long? GymId { get; set; }
     }
 }

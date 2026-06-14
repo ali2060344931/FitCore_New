@@ -345,7 +345,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>نوع روز</label>
-                                <select class="form-control" name="DayTypeId" required>
+                                <select class="form-control js-select2-modal" name="DayTypeId" id="AddDay_DayTypeId" required>
                                     <option value="">انتخاب کنید...</option>
                                     @foreach (var dt in Model.DayTypes)
                                     {
@@ -404,7 +404,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>نوع روز</label>
-                                <select class="form-control" id="EditDay_DayTypeId" name="DayTypeId" required>
+                                <select class="form-control js-select2-modal" id="EditDay_DayTypeId" name="DayTypeId" required>
                                     <option value="">انتخاب کنید...</option>
                                     @foreach (var dt in Model.DayTypes)
                                     {
@@ -483,7 +483,7 @@
 
                         <div class="form-group">
                             <label>حرکت تمرینی</label>
-                            <select class="form-control" name="ExerciseId" id="AddExercise_ExerciseId" required>
+                            <select class="form-control js-select2-modal" name="ExerciseId" id="AddExercise_ExerciseId" required>
                                 <option value="">انتخاب کنید...</option>
                                 @foreach (var ex in Model.Exercises)
                                 {
@@ -543,7 +543,7 @@
 
                         <div class="form-group">
                             <label>حرکت تمرینی</label>
-                            <select class="form-control" name="ExerciseId" id="EditExercise_ExerciseId" required>
+                            <select class="form-control js-select2-modal" name="ExerciseId" id="EditExercise_ExerciseId" required>
                                 <option value="">انتخاب کنید...</option>
                                 @foreach (var ex in Model.Exercises)
                                 {
@@ -611,6 +611,7 @@
 
 }
 
+
 @section Scripts {
 
     <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
@@ -620,6 +621,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 
     <script>
+
+        //====================================================
+        // توابع کمکی
+        //====================================================
 
         function setButtonLoading($btn, isLoading, text) {
             if (isLoading) {
@@ -638,7 +643,6 @@
 
         function postForm(formSelector, buttonSelector, messageSelector, url, options) {
             options = options || {};
-
             var reloadOnSuccess = options.reloadOnSuccess !== undefined ? options.reloadOnSuccess : true;
             var onSuccess = options.onSuccess || null;
 
@@ -654,11 +658,9 @@
                 success: function (res) {
                     if (res && res.isSuccess) {
                         showMessage(messageSelector, 'success', res.message || 'عملیات با موفقیت انجام شد.');
-
                         if (typeof onSuccess === 'function') {
                             onSuccess(res, $form);
                         }
-
                         if (reloadOnSuccess) {
                             setTimeout(function () { location.reload(); }, 700);
                         }
@@ -677,17 +679,47 @@
         }
 
         //====================================================
-        // روز تمرینی
+        // Select2 — راه‌اندازی در مودال‌ها
+        //====================================================
+
+        function initSelect2InModal(selector, modalSelector, currentVal) {
+            var $el = $(selector);
+
+            // در صورتی که قبلاً init شده، destroy و دوباره init
+            if ($el.hasClass('select2-hidden-accessible')) {
+                $el.select2('destroy');
+            }
+
+            $el.select2({
+                dir: 'rtl',
+                width: '100%',
+                language: 'fa',
+                theme: 'bootstrap4',
+                placeholder: 'جستجو و انتخاب کنید...',
+                allowClear: true,
+                dropdownParent: $(modalSelector)
+            });
+
+            // اعمال مقدار انتخابی (برای حالت ویرایش)
+            if (currentVal) {
+                $el.val(currentVal).trigger('change');
+            }
+        }
+
+        //====================================================
+        // روز تمرینی — مودال افزودن
         //====================================================
 
         function openEditDayModal(id, dayNumber, dayTypeId, durationMinutes, title, description) {
             $('#EditDay_Id').val(id);
             $('#EditDay_DayNumber').val(dayNumber);
-            $('#EditDay_DayTypeId').val(dayTypeId).trigger('change');
             $('#EditDay_DurationMinutes').val(durationMinutes && durationMinutes !== 'undefined' ? durationMinutes : '');
             $('#EditDay_Title').text(title || '');
             $('#EditDay_Title_txt').val(title || '');
             $('#EditDay_Description').val(description || '');
+
+            // ذخیره مقدار نوع روز برای اعمال بعد از init
+            $('#EditDay_DayTypeId').attr('data-current-val', dayTypeId);
 
             $('#editDayMessage').html('');
             $('#editDayModal').modal('show');
@@ -696,10 +728,55 @@
         function openDeleteDayModal(id, title) {
             $('#DeleteDay_Id').val(id);
             $('#DeleteDay_Title').text(title || '');
-
             $('#deleteDayMessage').html('');
             $('#deleteDayModal').modal('show');
         }
+
+        //====================================================
+        // حرکات تمرینی — مودال‌های افزودن/ویرایش/حذف
+        //====================================================
+
+        function openAddExerciseModal(dayId, dayTitle) {
+            $('#AddExercise_TrainingDayId').val(dayId);
+            $('#addExerciseDayTitle').text(dayTitle || '');
+
+            $('#addExerciseForm')[0].reset();
+            $('#AddExercise_TrainingDayId').val(dayId);
+
+            // ریست Select2 اگر قبلاً init شده
+            if ($('#AddExercise_ExerciseId').hasClass('select2-hidden-accessible')) {
+                $('#AddExercise_ExerciseId').val('').trigger('change');
+            }
+
+            $('#addExerciseMessage').html('');
+            $('#addExerciseModal').modal('show');
+        }
+
+        function openEditExerciseModal(id, dayId, exerciseId, sets, reps, weightKg, restSeconds, coachNote) {
+            $('#EditExercise_Id').val(id);
+            $('#EditExercise_Sets').val(sets !== 'undefined' ? sets : '');
+            $('#EditExercise_Reps').val(reps || '');
+            $('#EditExercise_WeightKg').val(weightKg !== 'undefined' ? weightKg : '');
+            $('#EditExercise_RestSeconds').val(restSeconds !== 'undefined' ? restSeconds : '');
+            $('#EditExercise_CoachNote').val(coachNote || '');
+
+            // ذخیره مقدار حرکت برای اعمال بعد از init
+            $('#EditExercise_ExerciseId').attr('data-current-val', exerciseId);
+
+            $('#editExerciseMessage').html('');
+            $('#editExerciseModal').modal('show');
+        }
+
+        function openDeleteExerciseModal(id, exerciseName) {
+            $('#DeleteExercise_Id').val(id);
+            $('#DeleteExercise_Title').text(exerciseName || '');
+            $('#deleteExerciseMessage').html('');
+            $('#deleteExerciseModal').modal('show');
+        }
+
+        //====================================================
+        // Submit handler ها
+        //====================================================
 
         $(document).on('submit', '#addDayForm', function (e) {
             e.preventDefault();
@@ -715,43 +792,6 @@
             e.preventDefault();
             postForm('#deleteDayForm', '#btnDeleteDay', '#deleteDayMessage', '@Url.Action("DeleteDay", "TrainingProgramBuilder", new { area = "Admin" })');
         });
-
-        //====================================================
-        // حرکات تمرینی
-        //====================================================
-
-        function openAddExerciseModal(dayId, dayTitle) {
-            $('#AddExercise_TrainingDayId').val(dayId);
-            $('#addExerciseDayTitle').text(dayTitle || '');
-
-            // ریست فرم
-            $('#addExerciseForm')[0].reset();
-            $('#AddExercise_TrainingDayId').val(dayId);
-
-            $('#addExerciseMessage').html('');
-            $('#addExerciseModal').modal('show');
-        }
-
-        function openEditExerciseModal(id, dayId, exerciseId, sets, reps, weightKg, restSeconds, coachNote) {
-            $('#EditExercise_Id').val(id);
-            $('#EditExercise_ExerciseId').val(exerciseId).trigger('change');
-            $('#EditExercise_Sets').val(sets !== 'undefined' ? sets : '');
-            $('#EditExercise_Reps').val(reps || '');
-            $('#EditExercise_WeightKg').val(weightKg !== 'undefined' ? weightKg : '');
-            $('#EditExercise_RestSeconds').val(restSeconds !== 'undefined' ? restSeconds : '');
-            $('#EditExercise_CoachNote').val(coachNote || '');
-
-            $('#editExerciseMessage').html('');
-            $('#editExerciseModal').modal('show');
-        }
-
-        function openDeleteExerciseModal(id, exerciseName) {
-            $('#DeleteExercise_Id').val(id);
-            $('#DeleteExercise_Title').text(exerciseName || '');
-
-            $('#deleteExerciseMessage').html('');
-            $('#deleteExerciseModal').modal('show');
-        }
 
         $(document).on('submit', '#addExerciseForm', function (e) {
             e.preventDefault();
@@ -769,6 +809,36 @@
         });
 
         //====================================================
+        // Select2 — رویداد باز شدن هر مودال
+        //====================================================
+
+        $(document).ready(function () {
+
+            // مودال افزودن روز
+            $('#addDayModal').on('shown.bs.modal', function () {
+                initSelect2InModal('#AddDay_DayTypeId', '#addDayModal', null);
+            });
+
+            // مودال ویرایش روز
+            $('#editDayModal').on('shown.bs.modal', function () {
+                var val = $('#EditDay_DayTypeId').attr('data-current-val');
+                initSelect2InModal('#EditDay_DayTypeId', '#editDayModal', val);
+            });
+
+            // مودال افزودن حرکت
+            $('#addExerciseModal').on('shown.bs.modal', function () {
+                initSelect2InModal('#AddExercise_ExerciseId', '#addExerciseModal', null);
+            });
+
+            // مودال ویرایش حرکت
+            $('#editExerciseModal').on('shown.bs.modal', function () {
+                var val = $('#EditExercise_ExerciseId').attr('data-current-val');
+                initSelect2InModal('#EditExercise_ExerciseId', '#editExerciseModal', val);
+            });
+
+        });
+
+        //====================================================
         // Drag & Drop ترتیب حرکات هر روز
         //====================================================
 
@@ -781,7 +851,6 @@
                     animation: 150,
                     onEnd: function (evt) {
 
-                        // ساخت آرایه شناسه‌ها بر اساس ترتیب جدید
                         var items = [];
                         tbody.querySelectorAll('tr[data-item-id]').forEach(function (row, index) {
                             items.push({
@@ -790,7 +859,6 @@
                             });
                         });
 
-                        // ارسال ترتیب جدید به سرور
                         $.ajax({
                             url: '@Url.Action("ReorderExercises", "TrainingProgramBuilder", new { area = "Admin" })',
                             type: 'POST',
@@ -809,7 +877,6 @@
                             }
                         });
 
-                        // به‌روزرسانی شماره ردیف‌ها در نمایش
                         tbody.querySelectorAll('tr[data-item-id]').forEach(function (row, index) {
                             row.querySelector('td:nth-child(2)').innerText = (index + 1);
                         });

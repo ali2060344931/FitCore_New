@@ -57,7 +57,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //====================================================
         private async Task<(long? GymId, bool IsAdmin)> GetCurrentUserGymContextAsync()
         {
-            bool isAdmin = User.IsAdmin();
+            bool isAdmin = User.IsSuperAdmin();
 
             if (isAdmin)
             {
@@ -112,13 +112,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
 
-            // اگر مدیر کل باشد و GymId ارسال نکند، حرکت سراسری ثبت می‌شود
-            ViewBag.IsGlobalExercise = isAdmin;
+            // چک‌باکس سراسری فقط برای مدیر کل (SuperAdmin/Admin) نمایش داده می‌شود
+            ViewBag.IsSuperAdmin = isAdmin;
             ViewBag.CurrentGymId = gymId;
 
             var model = new ExerciseCreateEditViewModel
             {
-                IsActive = true
+                IsActive = true,
+                IsGlobal = false
             };
 
             return View("CreateEdit", model);
@@ -141,11 +142,24 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
 
+            // تعیین GymId:
+            // - مدیر باشگاه (Admin): همیشه GymId خودش
+            // - مدیر کل (SuperAdmin): اگر IsGlobal = true باشد → null (سراسری)
+            //                         اگر IsGlobal = false باشد → GymId خودش (اگر داشته باشد)
+            long? targetGymId;
+
+            if (isAdmin)
+            {
+                targetGymId = model.IsGlobal ? null : gymId;
+            }
+            else
+            {
+                targetGymId = gymId;
+            }
+
             var request = new RequestAddExerciseDto
             {
-                // مدیر باشگاه: همیشه GymId خودش
-                // مدیر کل: حرکت سراسری (GymId = null) ثبت می‌کند
-                GymId = isAdmin ? null : gymId,
+                GymId = targetGymId,
                 Name = model.Name,
                 EnglishName = model.EnglishName,
                 Description = model.Description,
@@ -184,10 +198,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             if (item == null)
                 return NotFound();
 
-            //====================================
-            // بررسی دسترسی: مدیر باشگاه فقط حرکات باشگاه خودش را ویرایش می‌کند
-            //====================================
-
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
 
             if (!isAdmin && item.GymId != gymId)
@@ -196,6 +206,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             }
 
             await FillLookupsAsync();
+
+            ViewBag.IsSuperAdmin = isAdmin;
 
             var model = new ExerciseCreateEditViewModel
             {
@@ -208,7 +220,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 DifficultyLevelId = item.DifficultyLevelId,
                 VideoUrl = item.VideoUrl,
                 ImagePath = item.ImagePath,
-                IsActive = item.IsActive
+                IsActive = item.IsActive,
+                IsGlobal = item.GymId == null
             };
 
             return View("CreateEdit", model);
@@ -228,20 +241,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     message = "اطلاعات ورودی معتبر نیست."
                 });
             }
-
-            var request = new RequestEditExerciseDto
-            {
-                Id = model.Id,
-                Name = model.Name,
-                EnglishName = model.EnglishName,
-                Description = model.Description,
-                PrimaryMuscleGroupId = model.PrimaryMuscleGroupId,
-                EquipmentTypeId = model.EquipmentTypeId,
-                DifficultyLevelId = model.DifficultyLevelId,
-                VideoUrl = model.VideoUrl,
-                ImagePath = model.ImagePath,
-                IsActive = model.IsActive
-            };
 
             //====================================
             // در صورت تغییر تصویر، تصویر قبلی حذف شود
@@ -273,6 +272,32 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     message = "شما اجازه ویرایش این حرکت را ندارید"
                 });
             }
+
+            // تعیین GymId جدید بر اساس چک‌باکس سراسری (فقط مدیر کل)
+            long? newGymId = existing.GymId;
+            bool updateGymId = false;
+
+            if (isAdmin)
+            {
+                newGymId = model.IsGlobal ? null : gymId;
+                updateGymId = (newGymId != existing.GymId);
+            }
+
+            var request = new RequestEditExerciseDto
+            {
+                Id = model.Id,
+                Name = model.Name,
+                EnglishName = model.EnglishName,
+                Description = model.Description,
+                PrimaryMuscleGroupId = model.PrimaryMuscleGroupId,
+                EquipmentTypeId = model.EquipmentTypeId,
+                DifficultyLevelId = model.DifficultyLevelId,
+                VideoUrl = model.VideoUrl,
+                ImagePath = model.ImagePath,
+                IsActive = model.IsActive,
+                UpdateGymId = updateGymId,
+                GymId = newGymId
+            };
 
             string previousImagePath = existing.ImagePath;
 
@@ -449,7 +474,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             try
             {
-                if (System.IO.File.Exists(fullPath))
+                if (System.IO. File.Exists(fullPath))
                 {
                     System.IO.File.Delete(fullPath);
                 }

@@ -15,28 +15,31 @@
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
                  model='@(isEdit ? "ویرایش حرکت تمرینی" : "ثبت حرکت تمرینی")' />
 
-        @if (!isEdit)
-        {
-            @if (ViewBag.IsGlobalExercise == true)
-            {
-                <div class="alert alert-info">
-                    <i class="fa fa-globe"></i>
-                    این حرکت به‌عنوان حرکت <strong>سراسری</strong> ثبت می‌شود و
-                    در بانک حرکات تمام باشگاه‌ها قابل استفاده خواهد بود.
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-light border">
-                    <i class="fa fa-building-o"></i>
-                    این حرکت فقط در بانک حرکات <strong>باشگاه شما</strong> ثبت و
-                    قابل استفاده خواهد بود.
-                </div>
-            }
-        }
-
         <form id="ExerciseForm">
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+
+            @* چک‌باکس سراسری — فقط برای مدیر کل (SuperAdmin/Admin) نمایش داده می‌شود *@
+            @if (ViewBag.IsSuperAdmin == true)
+            {
+                <div class="alert @(Model.IsGlobal ? "alert-info" : "alert-light border") mb-3 d-flex align-items-center gap-3">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               role="switch"
+                               id="IsGlobal"
+                               name="IsGlobal"
+                               value="true"
+                               @(Model.IsGlobal ? "checked" : "") />
+                        <label class="form-check-label fw-bold" for="IsGlobal">
+                            ثبت به‌عنوان حرکت سراسری
+                        </label>
+                    </div>
+                    <small class="text-muted">
+                        اگر تیک داشته باشد، این حرکت در بانک حرکات <strong>تمام باشگاه‌ها</strong> قابل مشاهده و استفاده خواهد بود.
+                        در غیر این صورت فقط در باشگاه انتخاب‌شده ثبت می‌شود.
+                    </small>
+                </div>
+            }
 
             <div class="row">
 
@@ -62,38 +65,47 @@
                              Col = 3
                          }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "PrimaryMuscleGroupId",
-                             Name = "PrimaryMuscleGroupId",
-                             LabelName = "گروه عضلانی اصلی",
-                             Col = 2,
-                             Items = ViewBag.MuscleGroups,
-                             Value = Model.PrimaryMuscleGroupId.ToString()
-                         }' />
+                <div class="col-md-2 fc-input-group">
+                    <label class="form-label">گروه عضلانی اصلی</label>
+                    <select id="PrimaryMuscleGroupId" name="PrimaryMuscleGroupId"
+                            class="form-control js-select2" required>
+                        @foreach (var item in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.MuscleGroups)
+                        {
+                            <option value="@item.Value"
+                                    selected="@(item.Value == Model.PrimaryMuscleGroupId.ToString())">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "EquipmentTypeId",
-                             Name = "EquipmentTypeId",
-                             LabelName = "نوع تجهیزات",
-                             Col = 2,
-                             Items = ViewBag.EquipmentTypes,
-                             Value = Model.EquipmentTypeId.ToString()
-                         }' />
+                <div class="col-md-2 fc-input-group">
+                    <label class="form-label">نوع تجهیزات</label>
+                    <select id="EquipmentTypeId" name="EquipmentTypeId"
+                            class="form-control js-select2" required>
+                        @foreach (var item in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.EquipmentTypes)
+                        {
+                            <option value="@item.Value"
+                                    selected="@(item.Value == Model.EquipmentTypeId.ToString())">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "DifficultyLevelId",
-                             Name = "DifficultyLevelId",
-                             LabelName = "سطح دشواری",
-                             Col = 2,
-                             Items = ViewBag.DifficultyLevels,
-                             Value = Model.DifficultyLevelId.ToString()
-                         }' />
+                <div class="col-md-2 fc-input-group">
+                    <label class="form-label">سطح دشواری</label>
+                    <select id="DifficultyLevelId" name="DifficultyLevelId"
+                            class="form-control js-select2" required>
+                        @foreach (var item in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.DifficultyLevels)
+                        {
+                            <option value="@item.Value"
+                                    selected="@(item.Value == Model.DifficultyLevelId.ToString())">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
 
             </div>
 
@@ -191,6 +203,31 @@
             const isEdit = @(isEdit ? "true" : "false");
             let isUploadingImage = false;
 
+            // ===== راه‌اندازی Select2 برای کمبوباکس‌های جستجوپذیر =====
+            $('.js-select2').each(function () {
+                $(this).select2({
+                    dir: 'rtl',
+                    width: '100%',
+                    language: 'fa',
+                    theme: 'bootstrap4',
+                    placeholder: 'انتخاب کنید...',
+                    allowClear: true
+                });
+            });
+            // ===========================================================
+
+            //====================================================
+            // تغییر رنگ alert با تغییر چک‌باکس سراسری
+            //====================================================
+            $("#IsGlobal").on("change", function () {
+                const $alert = $(this).closest(".alert");
+                if ($(this).is(":checked")) {
+                    $alert.removeClass("alert-light border").addClass("alert-info");
+                } else {
+                    $alert.removeClass("alert-info").addClass("alert-light border");
+                }
+            });
+
             //====================================================
             // آپلود تصویر حرکت به صورت آنی (هنگام انتخاب فایل)
             //====================================================
@@ -278,7 +315,8 @@
                     DifficultyLevelId: parseInt($("#DifficultyLevelId").val(), 10) || 0,
                     VideoUrl: $("#VideoUrl").val(),
                     ImagePath: $("#ImagePath").val(),
-                    IsActive: $("#IsActive").val() === "true"
+                    IsActive: $("#IsActive").val() === "true",
+                    IsGlobal: $("#IsGlobal").is(":checked")
                 };
 
                 $.ajax({

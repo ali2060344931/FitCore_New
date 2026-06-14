@@ -11,433 +11,1105 @@
         : SecurityUtils.EncryptId(long.Parse(userId));
 }
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" class="loading">
+<html lang="fa" dir="rtl">
 
 <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " | " : "")پنل مدیریت FitCore</title>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="~/AdminTemplate/app-assets/img/ico/favicon-32.png" />
 
-    <title>پنل مدیریت | FitCore</title>
+    <!-- فونت‌ها و آیکون‌ها -->
+    <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/feather/style.min.css" />
+    <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/simple-line-icons/style.css" />
 
-    <link rel="shortcut icon" type="image/png" href="~/AdminTemplate/app-assets/img/ico/favicon-32.png">
-
-    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
-
-    <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/feather/style.min.css">
-    <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/simple-line-icons/style.css">
-    <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/font-awesome/css/font-awesome.min.css">
-
-    <link rel="stylesheet" href="~/AdminTemplate/app-assets/vendors/css/perfect-scrollbar.min.css">
-    <link rel="stylesheet" href="~/AdminTemplate/app-assets/vendors/css/prism.min.css">
-
-    <link rel="stylesheet" href="~/AdminTemplate/app-assets/css/app.css">
-
+    <!-- کتابخانه‌های موجود -->
+    <link rel="stylesheet" href="~/AdminTemplate/app-assets/vendors/css/perfect-scrollbar.min.css" />
+    <link rel="stylesheet" href="~/AdminTemplate/app-assets/css/app.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/FitCorecss.css" />
+    <link rel="stylesheet" href="~/css/FitCorecss_AdminLayut.css" />
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+    <link href="~/lib/select2/css/select2-bootstrap4.min.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="~/css/admin-ui-modern.css" asp-append-version="true" />
+    @* <style>
+        :root {
+            --fc-sidebar-bg: #0f1117;
+            --fc-sidebar-hover: #1a1f2e;
+            --fc-sidebar-active: #00C896;
+            --fc-sidebar-text: #a0aec0;
+            --fc-sidebar-text-active: #ffffff;
+            --fc-sidebar-width: 260px;
+            --fc-sidebar-collapsed: 70px;
+            --fc-topbar-bg: #ffffff;
+            --fc-topbar-border: #e8ecf0;
+            --fc-topbar-height: 60px;
+            --fc-body-bg: #f4f6fb;
+            --fc-card-bg: #ffffff;
+            --fc-card-radius: 14px;
+            --fc-card-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            --fc-accent: #00C896;
+            --fc-accent-light: rgba(0,200,150,0.10);
+            --fc-accent-dark: #00a87d;
+            --fc-text-main: #1a202c;
+            --fc-text-muted: #718096;
+            --fc-border: #e2e8f0;
+            --fc-transition: 0.22s cubic-bezier(.4,0,.2,1);
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            background: var(--fc-body-bg);
+            color: var(--fc-text-main);
+            direction: rtl;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================
+                   لایوت اصلی
+                ============================ */
+        .fc-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ============================
+                   سایدبار
+                ============================ */
+        .fc-sidebar {
+            width: var(--fc-sidebar-width);
+            background: var(--fc-sidebar-bg);
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+            transition: width var(--fc-transition), transform var(--fc-transition);
+            overflow: hidden;
+        }
+
+        /* لوگو */
+        .fc-sidebar-logo {
+            height: var(--fc-topbar-height);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .fc-sidebar-logo-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--fc-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+            .fc-sidebar-logo-icon i {
+                color: #fff;
+                font-size: 17px;
+            }
+
+        .fc-sidebar-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            transition: opacity var(--fc-transition);
+        }
+
+        .fc-sidebar-logo-sub {
+            font-size: 10px;
+            color: var(--fc-accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: block;
+            margin-top: -2px;
+        }
+
+        /* ناوبری */
+        .fc-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px 0;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.08) transparent;
+        }
+
+            .fc-nav::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .fc-nav::-webkit-scrollbar-thumb {
+                background: rgba(255,255,255,0.08);
+                border-radius: 2px;
+            }
+
+        /* برچسب گروه */
+        .fc-nav-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: rgba(160,174,192,0.45);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 22px 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity var(--fc-transition);
+        }
+
+        /* آیتم منو */
+        .fc-nav-item {
+            list-style: none;
+        }
+
+        .fc-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: var(--fc-sidebar-text);
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 2px 10px;
+            font-size: 13.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: background var(--fc-transition), color var(--fc-transition);
+            position: relative;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: calc(100% - 20px);
+            text-align: right;
+        }
+
+            .fc-nav-link:hover {
+                background: var(--fc-sidebar-hover);
+                color: #fff;
+            }
+
+            .fc-nav-link.active {
+                background: var(--fc-accent-light);
+                color: var(--fc-accent);
+            }
+
+                .fc-nav-link.active::before {
+                    content: '';
+                    position: absolute;
+                    right: -10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 22px;
+                    background: var(--fc-accent);
+                    border-radius: 0 3px 3px 0;
+                }
+
+        .fc-nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .fc-nav-text {
+            flex: 1;
+            transition: opacity var(--fc-transition);
+        }
+
+        /* زیرمنو */
+        .fc-nav-arrow {
+            font-size: 10px;
+            transition: transform var(--fc-transition);
+            flex-shrink: 0;
+            margin-right: auto;
+        }
+
+        .fc-nav-item.open > .fc-nav-link .fc-nav-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .fc-nav-sub {
+            list-style: none;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+        }
+
+        .fc-nav-item.open > .fc-nav-sub {
+            max-height: 500px;
+        }
+
+        .fc-nav-sub-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px 8px 20px;
+            margin: 1px 10px 1px 10px;
+            color: var(--fc-sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 12.5px;
+            transition: background var(--fc-transition), color var(--fc-transition);
+        }
+
+            .fc-nav-sub-link:hover {
+                background: var(--fc-sidebar-hover);
+                color: #fff;
+            }
+
+            .fc-nav-sub-link.active {
+                color: var(--fc-accent);
+            }
+
+        .fc-nav-sub-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(160,174,192,0.4);
+            flex-shrink: 0;
+            margin-right: 18px;
+        }
+
+        .fc-nav-sub-link.active .fc-nav-sub-dot {
+            background: var(--fc-accent);
+        }
+
+        /* اورلی موبایل */
+        .fc-sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1039;
+            backdrop-filter: blur(2px);
+        }
+
+            .fc-sidebar-overlay.show {
+                display: block;
+            }
+
+        /* ============================
+                   محتوای اصلی
+                ============================ */
+        .fc-main {
+            margin-right: var(--fc-sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-right var(--fc-transition);
+        }
+
+        /* ============================
+                   نوار بالا (Topbar)
+                ============================ */
+        .fc-topbar {
+            height: var(--fc-topbar-height);
+            background: var(--fc-topbar-bg);
+            border-bottom: 1px solid var(--fc-topbar-border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        /* دکمه همبرگر موبایل */
+        .fc-menu-toggle {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: var(--fc-body-bg);
+            border-radius: 10px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--fc-text-main);
+            font-size: 16px;
+            transition: background var(--fc-transition);
+        }
+
+            .fc-menu-toggle:hover {
+                background: var(--fc-border);
+            }
+
+        /* عنوان صفحه در topbar */
+        .fc-topbar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--fc-text-main);
+            flex: 1;
+        }
+
+        /* آیتم‌های راست topbar */
+        .fc-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .fc-topbar-btn {
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: var(--fc-body-bg);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--fc-text-muted);
+            font-size: 16px;
+            transition: background var(--fc-transition), color var(--fc-transition);
+            text-decoration: none;
+        }
+
+            .fc-topbar-btn:hover {
+                background: var(--fc-accent-light);
+                color: var(--fc-accent);
+            }
+
+        /* منوی کاربر */
+        .fc-user-menu {
+            position: relative;
+        }
+
+        .fc-user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 10px 5px 5px;
+            border: 1px solid var(--fc-border);
+            border-radius: 40px;
+            cursor: pointer;
+            background: transparent;
+            transition: border-color var(--fc-transition);
+        }
+
+            .fc-user-trigger:hover {
+                border-color: var(--fc-accent);
+            }
+
+        .fc-user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .fc-user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--fc-text-main);
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .fc-user-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: #fff;
+            border: 1px solid var(--fc-border);
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            min-width: 180px;
+            padding: 8px;
+            display: none;
+            z-index: 2000;
+        }
+
+            .fc-user-dropdown.show {
+                display: block;
+            }
+
+            .fc-user-dropdown a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 9px 12px;
+                border-radius: 8px;
+                font-size: 13px;
+                color: var(--fc-text-main);
+                text-decoration: none;
+                transition: background var(--fc-transition);
+            }
+
+                .fc-user-dropdown a:hover {
+                    background: var(--fc-body-bg);
+                }
+
+                .fc-user-dropdown a.danger {
+                    color: #e53e3e;
+                }
+
+                    .fc-user-dropdown a.danger:hover {
+                        background: #fff5f5;
+                    }
+
+        .fc-user-dropdown-divider {
+            height: 1px;
+            background: var(--fc-border);
+            margin: 6px 0;
+        }
+
+        /* ============================
+                   بدنه محتوا
+                ============================ */
+        .fc-content {
+            flex: 1;
+            padding: 24px;
+            min-width: 0;
+        }
+
+        /* ============================
+                   حالت collapsed سایدبار (دسکتاپ)
+                ============================ */
+        body.sidebar-collapsed .fc-sidebar {
+            width: var(--fc-sidebar-collapsed);
+        }
+
+        body.sidebar-collapsed .fc-main {
+            margin-right: var(--fc-sidebar-collapsed);
+        }
+
+        body.sidebar-collapsed .fc-sidebar-logo-text,
+        body.sidebar-collapsed .fc-nav-text,
+        body.sidebar-collapsed .fc-nav-label,
+        body.sidebar-collapsed .fc-nav-arrow {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.sidebar-collapsed .fc-nav-link {
+            justify-content: center;
+            padding: 10px;
+        }
+
+        body.sidebar-collapsed .fc-nav-sub {
+            max-height: 0 !important;
+        }
+
+        /* تولتیپ برای حالت collapsed */
+        body.sidebar-collapsed .fc-nav-link[data-title]:hover::after {
+            content: attr(data-title);
+            position: absolute;
+            right: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--fc-sidebar-bg);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        /* دکمه collapse سایدبار (دسکتاپ) */
+        .fc-sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .fc-collapse-btn {
+            width: 100%;
+            padding: 9px;
+            border: none;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            color: var(--fc-sidebar-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            transition: background var(--fc-transition), color var(--fc-transition);
+        }
+
+            .fc-collapse-btn:hover {
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+            }
+
+            .fc-collapse-btn i {
+                transition: transform var(--fc-transition);
+            }
+
+        body.sidebar-collapsed .fc-collapse-btn i {
+            transform: rotate(180deg);
+        }
+
+        body.sidebar-collapsed .fc-collapse-btn span {
+            display: none;
+        }
+
+        /* ============================
+                   موبایل
+                ============================ */
+        @@media (max-width: 991px) {
+
+            .fc-sidebar {
+                transform: translateX(100%);
+                width: var(--fc-sidebar-width) !important;
+            }
+
+                .fc-sidebar.mobile-open {
+                    transform: translateX(0);
+                }
+
+            .fc-main {
+                margin-right: 0 !important;
+            }
+
+            .fc-menu-toggle {
+                display: flex;
+            }
+
+            .fc-content {
+                padding: 16px;
+            }
+
+            .fc-topbar {
+                padding: 0 14px;
+            }
+            /* پنهان کردن نام کاربر در موبایل */
+            .fc-user-name {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .fc-content {
+                padding: 12px;
+            }
+        }
+
+        /* ============================
+                   استایل‌های کاربردی برای viewها
+                ============================ */
+
+        /* کارت عمومی */
+        .fc-card {
+            background: var(--fc-card-bg);
+            border-radius: var(--fc-card-radius);
+            box-shadow: var(--fc-card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* عنوان صفحه */
+        .fc-page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .fc-page-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--fc-text-main);
+        }
+
+        /* جدول */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .table thead th {
+                background: #f8fafd;
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--fc-text-muted);
+                letter-spacing: 0.5px;
+                border-bottom: 2px solid var(--fc-border);
+                padding: 12px 14px;
+            }
+
+            .table tbody td {
+                padding: 12px 14px;
+                font-size: 13.5px;
+                border-bottom: 1px solid var(--fc-border);
+                vertical-align: middle;
+            }
+
+            .table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .table tbody tr:hover td {
+                background: #f8fafd;
+            }
+
+        /* دکمه‌ها */
+        .btn-modern {
+            border-radius: 8px;
+            font-size: 12.5px;
+            padding: 5px 12px;
+            font-weight: 500;
+        }
+
+        /* بج */
+        .badge {
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        /* فرم */
+        .fc-form-container {
+            background: var(--fc-card-bg);
+            border-radius: var(--fc-card-radius);
+            box-shadow: var(--fc-card-shadow);
+            padding: 24px;
+            max-width: 1100px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1.5px solid var(--fc-border);
+            font-size: 13.5px;
+            transition: border-color var(--fc-transition), box-shadow var(--fc-transition);
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: var(--fc-accent);
+                box-shadow: 0 0 0 3px var(--fc-accent-light);
+                outline: none;
+            }
+
+        label.form-label, label.font-weight-bold {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--fc-text-muted);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* اعلان خالی */
+        .fc-empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--fc-text-muted);
+        }
+
+            .fc-empty i {
+                font-size: 40px;
+                margin-bottom: 12px;
+                opacity: 0.3;
+                display: block;
+            }
+
+        /* Select2 در تم جدید */
+        .select2-container--bootstrap4 .select2-selection {
+            border-radius: 8px !important;
+            border: 1.5px solid var(--fc-border) !important;
+            font-size: 13.5px !important;
+        }
+
+        .select2-container--bootstrap4.select2-container--focus .select2-selection {
+            border-color: var(--fc-accent) !important;
+            box-shadow: 0 0 0 3px var(--fc-accent-light) !important;
+        }
+
+        /* ============================
+                   اسکرول صاف
+                ============================ */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* ============================
+                   انیمیشن ورود محتوا
+                ============================ */
+        .fc-content > * {
+            animation: fcFadeUp 0.28s ease both;
+        }
+
+        @@keyframes fcFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style> *@
 </head>
 
-<body data-col="2-columns" class="2-columns" dir="rtl">
-    <div class="wrapper">
+<body>
 
+    <!-- اورلی موبایل -->
+    <div class="fc-sidebar-overlay" id="fcOverlay"></div>
 
-        <div data-active-color="white"
-             data-background-color="black"
-             data-image="~/AdminTemplate/app-assets/img/sidebar-bg/01.jpg"
-             class="app-sidebar">
+    <div class="fc-layout">
 
-            <div class="sidebar-header">
+        <!-- ================================
+             سایدبار
+        ================================ -->
+        <aside class="fc-sidebar" id="fcSidebar">
 
-                <div class="logo clearfix">
-
-                    <a href="~/admin" class="logo-text float-right">
-
-                        <div class="logo-img">
-                            <img src="~/AdminTemplate/app-assets/img/logos/logo-big-black.png" />
-                        </div>
-
-                        <span class="text align-middle">FIT CORE</span>
-
-                    </a>
-
-                    <a id="sidebarToggle"
-                       href="javascript:;"
-                       class="nav-toggle d-none d-lg-block">
-
-                        <i data-toggle="expanded" class="ft-disc toggle-icon"></i>
-
-                    </a>
-
-                    <a id="sidebarClose"
-                       href="javascript:;"
-                       class="nav-close d-block d-lg-none">
-
-                        <i class="ft-circle"></i>
-
-                    </a>
-
+            <!-- لوگو -->
+            <a href="/admin" class="fc-sidebar-logo">
+                <div class="fc-sidebar-logo-icon">
+                    <i class="fa fa-heartbeat"></i>
                 </div>
+                <div>
+                    <div class="fc-sidebar-logo-text">FitCore</div>
+                    <span class="fc-sidebar-logo-sub">پنل مدیریت</span>
+                </div>
+            </a>
 
-            </div>
+            <!-- ناوبری -->
+            <nav class="fc-nav">
+                <ul style="list-style:none; padding:0; margin:0;">
 
+                    <!-- داشبورد -->
+                    <li class="fc-nav-item">
+                        <a href="/admin" class="fc-nav-link" data-title="داشبورد">
+                            <span class="fc-nav-icon"><i class="icon-home"></i></span>
+                            <span class="fc-nav-text">داشبورد</span>
+                        </a>
+                    </li>
 
-            <div class="sidebar-content">
+                    @if (User.IsSuperAdmin() || User.IsAdmin())
+                    {
+                        <!-- بخش مدیریت -->
+                        <div class="fc-nav-label">مدیریت</div>
 
-                <div class="nav-container">
+                        @if (User.IsSuperAdmin())
+                        {
+                            <li class="fc-nav-item has-sub" id="nav-gym">
+                                <button class="fc-nav-link" data-title="باشگاه‌ها"
+                                        onclick="fcToggleMenu('nav-gym')">
+                                    <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
+                                    <span class="fc-nav-text">باشگاه‌ها</span>
+                                    <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                </button>
+                                <ul class="fc-nav-sub">
+                                    <li>
+                                        <a href="/admin/Gym/index" class="fc-nav-sub-link">
+                                            <span class="fc-nav-sub-dot"></span>
+                                            لیست باشگاه‌ها
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/admin/Gym/Create" class="fc-nav-sub-link">
+                                            <span class="fc-nav-sub-dot"></span>
+                                            ثبت باشگاه جدید
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
 
-                    <ul id="main-menu-navigation"
-                        data-menu="menu-navigation"
-                        class="navigation navigation-main">
+                        @if (User.IsAdmin())
+                        {
+                            <li class="fc-nav-item has-sub" id="nav-members">
+                                <button class="fc-nav-link" data-title="اعضاء"
+                                        onclick="fcToggleMenu('nav-members')">
+                                    <span class="fc-nav-icon"><i class="icon-users"></i></span>
+                                    <span class="fc-nav-text">اعضاء باشگاه</span>
+                                    <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                </button>
+                                <ul class="fc-nav-sub">
+                                    <li>
+                                        <a href="/admin/Members/index" class="fc-nav-sub-link">
+                                            <span class="fc-nav-sub-dot"></span>
+                                            لیست اعضاء
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
 
-                        <li class="nav-item">
+                            <!-- برنامه‌ها -->
+                            <div class="fc-nav-label">برنامه‌ها</div>
 
-                            <a href="~/admin">
+                            <li class="fc-nav-item has-sub" id="nav-programs">
+                                <button class="fc-nav-link" data-title="برنامه‌ها"
+                                        onclick="fcToggleMenu('nav-programs')">
+                                    <span class="fc-nav-icon"><i class="fa fa-list-alt"></i></span>
+                                    <span class="fc-nav-text">برنامه‌های اعضاء</span>
+                                    <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                </button>
+                                <ul class="fc-nav-sub">
+                                    <li>
+                                        <a href="/admin/NutritionProgram/index" class="fc-nav-sub-link">
+                                            <span class="fc-nav-sub-dot"></span>
+                                            برنامه‌های غذایی
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/admin/TrainingProgram/index" class="fc-nav-sub-link">
+                                            <span class="fc-nav-sub-dot"></span>
+                                            برنامه‌های تمرینی
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
 
-                                <i class="icon-home"></i>
+                            <!-- بانک اطلاعات -->
+                            <div class="fc-nav-label">بانک اطلاعات</div>
 
-                                <span class="menu-title">داشبورد</span>
+                            <li class="fc-nav-item">
+                                <a href="/admin/Food/index" class="fc-nav-link" data-title="غذاها">
+                                    <span class="fc-nav-icon"><i class="fa fa-cutlery"></i></span>
+                                    <span class="fc-nav-text">بانک غذاها</span>
+                                </a>
+                            </li>
 
+                            <li class="fc-nav-item">
+                                <a href="/admin/Exercise/index" class="fc-nav-link" data-title="حرکات">
+                                    <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
+                                    <span class="fc-nav-text">بانک حرکات</span>
+                                </a>
+                            </li>
+                        }
+                    }
+
+                    @if (User.IsMember())
+                    {
+                        <!-- بخش عضو -->
+                        <div class="fc-nav-label">پروفایل من</div>
+
+                        <li class="fc-nav-item">
+                            <a asp-area="Admin"
+                               asp-controller="MemberProfile"
+                               asp-action="BodyMeasurement"
+                               asp-route-id="@encryptedUserId"
+                               class="fc-nav-link"
+                               data-title="اطلاعات جسمانی">
+                                <span class="fc-nav-icon"><i class="fa fa-user-o"></i></span>
+                                <span class="fc-nav-text">اطلاعات جسمانی</span>
                             </a>
-
                         </li>
 
+                        <li class="fc-nav-item">
+                            <a href="@Url.Action("Index", "NutritionProgram", new { area = "Admin" })"
+                               class="fc-nav-link"
+                               data-title="برنامه غذایی">
+                                <span class="fc-nav-icon"><i class="fa fa-cutlery"></i></span>
+                                <span class="fc-nav-text">برنامه غذایی من</span>
+                            </a>
+                        </li>
+                    }
 
+                </ul>
+            </nav>
 
-                        <li class="has-sub nav-item">
+            <!-- دکمه جمع شدن (دسکتاپ) -->
+            <div class="fc-sidebar-footer d-none d-lg-block">
+                <button class="fc-collapse-btn" id="fcCollapseBtn">
+                    <i class="fa fa-angle-double-right"></i>
+                    <span>جمع کردن منو</span>
+                </button>
+            </div>
 
+        </aside>
+
+        <!-- ================================
+             محتوای اصلی
+        ================================ -->
+        <div class="fc-main" id="fcMain">
+
+            <!-- نوار بالا -->
+            <header class="fc-topbar">
+
+                <!-- دکمه همبرگر موبایل -->
+                <button class="fc-menu-toggle" id="fcMenuToggle" aria-label="منو">
+                    <i class="fa fa-bars"></i>
+                </button>
+
+                <!-- عنوان صفحه -->
+                <div class="fc-topbar-title">
+                    @(ViewData["Title"] ?? "داشبورد")
+                </div>
+
+                <!-- آیکون‌های راست -->
+                <div class="fc-topbar-actions">
+
+                    <!-- منوی کاربر -->
+                    <div class="fc-user-menu">
+                        <button class="fc-user-trigger" id="fcUserTrigger">
+                            <img src="~/AdminTemplate/app-assets/img/portrait/small/avatar-s-3.jpg"
+                                 class="fc-user-avatar"
+                                 alt="کاربر" />
+                            <span class="fc-user-name">
+                                @User.Identity?.Name
+                            </span>
+                            <i class="fa fa-angle-down" style="font-size:11px;color:var(--fc-text-muted);"></i>
+                        </button>
+
+                        <div class="fc-user-dropdown" id="fcUserDropdown">
                             <a href="#">
-
-                                <i class="icon-users"></i>
-
-                                <span class="menu-title">مدیریت باشگاه</span>
-
+                                <i class="fa fa-user-o" style="width:16px;"></i>
+                                پروفایل من
                             </a>
-
-                            <ul class="menu-content">
-
-                                @if (User.IsSuperAdmin())
-                                {
-
-                                    <li>
-                                        <a href="~/admin/Gym/index" class="menu-item">
-                                            لیست باشگاه ها
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="~/admin/Gym/Create" class="menu-item">
-                                            ثبت باشگاه
-                                        </a>
-                                    </li>
-
-                                }
-                                @if (User.IsAdmin())
-                                {
-                                    <li>
-                                        <a href="~/admin/Members/index" class="menu-item">
-                                            لیست اعضاء باشگاه
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="~/admin/NutritionProgram/index" class="menu-item">
-                                            لیست برنامه غذایی اعضاء
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/admin/TrainingProgram/index" class="menu-item">
-                                            لیست برنامه‌های تمرینی اعضاء
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="~/admin/Food/index" class="menu-item">
-                                            لیست غــذاها
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/admin/Exercise/index" class="menu-item">
-                                            لیست حرکات تمرینی
-                                        </a>
-                                    </li>
-                                }
-                                @if (User.IsMember())
-                                {
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="MemberProfile"
-                                           asp-action="CompleteInfo"
-                                           asp-route-id="؟؟؟؟">
-                                            <i class="fa fa-pencil-square-o"></i>
-                                            پروفایل من
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area="Admin"
-                                           asp-controller="MemberProfile"
-                                           asp-action="BodyMeasurement"
-                                           asp-route-id="@encryptedUserId">
-                                            <i class="fa fa-pencil-square-o"></i>
-                                            لیست اطلاعات جسمانی
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="@Url.Action("Index", "NutritionProgram", new { area = "Admin" })" class="menu-item">
-                                            لیست برنامه غذایی
-                                        </a>
-                                    </li>
-                                }
-
-
-                            </ul>
-
-                        </li>
-
-                    </ul>
-
-                </div>
-
-            </div>
-
-            <div class="sidebar-background"></div>
-
-        </div>
-
-
-
-        <nav class="navbar navbar-expand-lg navbar-light bg-faded">
-
-            <div class="container-fluid">
-
-                <div class="navbar-header">
-
-                    <button type="button"
-                            data-toggle="collapse"
-                            class="navbar-toggle d-lg-none float-right">
-
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-
-                    </button>
-
-                    <a id="navbar-fullscreen"
-                       href="javascript:;"
-                       class="ml-2 apptogglefullscreen">
-
-                        <i class="ft-maximize toggleClass"></i>
-
-                    </a>
-
-                </div>
-
-
-                <div class="navbar-container">
-
-                    <div id="navbarSupportedContent"
-                         class="collapse navbar-collapse">
-
-                        <ul class="navbar-nav">
-
-                            <li class="nav-item mt-1 navbar-search dropdown">
-
-                                <a id="search"
-                                   href="#"
-                                   data-toggle="dropdown"
-                                   class="nav-link dropdown-toggle">
-
-                                    <i class="ft-search"></i>
-
-                                </a>
-
-                                <div class="search dropdown-menu dropdown-menu-right">
-
-                                    <div class="arrow_box_right">
-
-                                        <form class="navbar-form">
-
-                                            <div class="position-relative">
-
-                                                <input id="navbar-search"
-                                                       type="text"
-                                                       placeholder="جستجو..."
-                                                       class="form-control" />
-
-                                            </div>
-
-                                        </form>
-
-                                    </div>
-
-                                </div>
-
-                            </li>
-
-
-
-                            <li class="dropdown nav-item mr-0">
-
-                                <a id="dropdownBasic3"
-                                   href="#"
-                                   data-toggle="dropdown"
-                                   class="nav-link dropdown-user-link dropdown-toggle">
-
-                                    <span class="avatar avatar-online">
-
-                                        <img src="~/AdminTemplate/app-assets/img/portrait/small/avatar-s-3.jpg" />
-
-                                    </span>
-
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-left">
-
-                                    <div class="arrow_box_right">
-
-                                        <a href="#" class="dropdown-item py-1">
-
-                                            <i class="ft-edit ml-2"></i>
-
-                                            <span>پروفایل من</span>
-
-                                        </a>
-
-                                        <a href="javascript:;" class="dropdown-item py-1">
-
-                                            <i class="ft-settings ml-2"></i>
-
-                                            <span>تنظیمات</span>
-
-                                        </a>
-
-                                        <div class="dropdown-divider"></div>
-
-                                        <a href="/" class="dropdown-item">
-
-                                            <i class="ft-power ml-2"></i>
-
-                                            <span>خروج از بخش مدیریت</span>
-
-                                        </a>
-
-                                    </div>
-
-                                </div>
-
-                            </li>
-
-                        </ul>
-
+                            <a href="javascript:;">
+                                <i class="fa fa-cog" style="width:16px;"></i>
+                                تنظیمات
+                            </a>
+                            <div class="fc-user-dropdown-divider"></div>
+                            <a href="/" class="danger">
+                                <i class="fa fa-sign-out" style="width:16px;"></i>
+                                خروج
+                            </a>
+                        </div>
                     </div>
 
                 </div>
 
-            </div>
+            </header>
 
-        </nav>
-
-
-
-        <div class="main-panel">
-
-            <div class="main-content">
-
+            <!-- محتوای صفحه -->
+            <main class="fc-content">
                 @RenderBody()
-
-            </div>
+            </main>
 
         </div>
 
     </div>
 
 
-
-    <aside id="notification-sidebar"
-           class="notification-sidebar d-none d-md-block">
-
-        <a class="notification-sidebar-close">
-
-            <i class="ft-x font-medium-3"></i>
-
-        </a>
-
-        <div class="side-nav notification-sidebar-content"></div>
-
-    </aside>
-
-
-
+    <!-- ================================
+         اسکریپت‌های پایه (دقیقاً مثل قبل)
+    ================================ -->
     <script src="~/AdminTemplate/app-assets/vendors/js/core/jquery-3.3.1.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/core/popper.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/core/bootstrap.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/js/persian-datepicker.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/perfect-scrollbar.jquery.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/prism.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/jquery.matchHeight-min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/screenfull.min.js"></script>
-
     <script src="~/AdminTemplate/app-assets/vendors/js/pace/pace.min.js"></script>
-
-    <script src="~/AdminTemplate/app-assets/js/app-sidebar.js"></script>
-
-    <script src="~/AdminTemplate/app-assets/js/notification-sidebar.js"></script>
-
-    <script src="~/AdminTemplate/app-assets/js/customizer.js"></script>
-
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    <script src="~/lib/jquery/jquery/jquery.min.js"></script>
-    <script src="~/lib/popper/popper.min.js"></script>
-    <script src="~/lib/bootstrap/dist/css/bootstrap.min.css"></script>
-
     <script src="~/lib/select2/js/select2.min.js"></script>
     <script src="~/lib/select2/js/i18n/fa.js"></script>
 
-    <script src="~/app-assets/vendors/js/core/popper.min.js"></script>
-
-    <link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
-    <link href="~/lib/select2/css/select2-bootstrap4.min.css" rel="stylesheet" />
-
-
-
     @RenderSection("Scripts", false)
-
     @RenderSection("Modals", false)
 
     <script>
+        // ================================
+        // FitCore Admin — رفتار UI
+        // ================================
 
-        $(document).ready(function(){
+        // باز/بسته کردن زیرمنو
+        function fcToggleMenu(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var isOpen = el.classList.contains('open');
 
-        $("#sidebarToggle").on("click",function(){
+            // بستن همه زیرمنوهای دیگر
+            document.querySelectorAll('.fc-nav-item.has-sub.open').forEach(function(item) {
+                item.classList.remove('open');
+            });
 
-        $("body").toggleClass("sidebar-collapsed")
+            if (!isOpen) {
+                el.classList.add('open');
+            }
+        }
 
-        })
+        $(document).ready(function () {
 
-        $("#sidebarClose").on("click",function(){
+            // ---- سایدبار موبایل ----
+            $('#fcMenuToggle').on('click', function () {
+                $('#fcSidebar').toggleClass('mobile-open');
+                $('#fcOverlay').toggleClass('show');
+            });
 
-        $(".app-sidebar").toggleClass("mobile-open")
+            $('#fcOverlay').on('click', function () {
+                $('#fcSidebar').removeClass('mobile-open');
+                $('#fcOverlay').removeClass('show');
+            });
 
-        })
+            // ---- collapse دسکتاپ ----
+            $('#fcCollapseBtn').on('click', function () {
+                $('body').toggleClass('sidebar-collapsed');
+                // ذخیره در localStorage
+                try {
+                    localStorage.setItem('fc_sidebar_collapsed',
+                        $('body').hasClass('sidebar-collapsed') ? '1' : '0');
+                } catch(e) {}
+            });
 
-        })
+            // بازیابی وضعیت collapse
+            try {
+                if (localStorage.getItem('fc_sidebar_collapsed') === '1') {
+                    $('body').addClass('sidebar-collapsed');
+                }
+            } catch(e) {}
 
+            // ---- منوی کاربر ----
+            $('#fcUserTrigger').on('click', function (e) {
+                e.stopPropagation();
+                $('#fcUserDropdown').toggleClass('show');
+            });
+
+            $(document).on('click', function () {
+                $('#fcUserDropdown').removeClass('show');
+            });
+
+            // ---- فعال کردن آیتم منوی جاری ----
+            var currentPath = window.location.pathname.toLowerCase();
+            $('.fc-nav-link[href], .fc-nav-sub-link[href]').each(function () {
+                var href = $(this).attr('href');
+                if (href && href !== '#' && href !== 'javascript:;') {
+                    var normHref = href.replace(/^~/, '').toLowerCase();
+                    if (currentPath === normHref ||
+                        (normHref.length > 1 && currentPath.startsWith(normHref))) {
+                        $(this).addClass('active');
+                        // باز کردن والد
+                        var parentSub = $(this).closest('.has-sub');
+                        if (parentSub.length) {
+                            parentSub.addClass('open');
+                        }
+                    }
+                }
+            });
+
+        });
     </script>
-
 
 </body>
 </html>

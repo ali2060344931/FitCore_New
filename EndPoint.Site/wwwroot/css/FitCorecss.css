@@ -1040,55 +1040,7 @@ tfoot tr td {
     white-space: nowrap;
 }
 /*..........................*/
-/* تنظیمات عمومی فرم */
-/*.registration-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;*/ /* فاصله بین ردیف‌های فرم */
-    /*max-width: 400px;*/ /* یا عرض دلخواه شما */
-/*}*/
 
-/* استایل هر گروه ورودی */
-/*.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;*/ /* فاصله لیبل از ورودی */
-/*}*/
 
-/* استایل مشترک برای اینپوت و سلکت */
-/*.form-control {
-    width: 100%;
-    height: 48px;
-    padding: 0 15px;
-    border: 1px solid #ced4da;*/ /* کادر مشخص */
-    /*border-radius: 8px;*/ /* گوشه‌های گرد */
-    /*font-size: 15px;
-    box-sizing: border-box;*/ /* برای محاسبه درست عرض */
-    /*transition: all 0.3s ease;
-    background-color: #fff;
-}
 
-    .form-control:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-        outline: none;
-    }*/
 
-/* استایل دکمه */
-/*.btn-submit {
-    width: 100%;
-    height: 50px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    transition: background 0.3s;
-}
-
-    .btn-submit:hover {
-        background-color: #0056b3;
-    }
-*/

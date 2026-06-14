@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgramById;
+using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgramById;
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -50,5 +50,12 @@ namespace EndPoint.Site.Areas.Admin.Models
         public string ImagePath { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        /// <summary>
+        /// آیا این حرکت سراسری باشد (در همه باشگاه‌ها قابل استفاده)؟
+        /// فقط توسط مدیر کل قابل انتخاب است.
+        /// اگر false باشد، فقط در باشگاه خود مدیر ثبت می‌شود.
+        /// </summary>
+        public bool IsGlobal { get; set; } = false;
     }
 }
