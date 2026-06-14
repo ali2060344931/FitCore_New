@@ -905,8 +905,35 @@
                             </li>
                         }
                     }
-
                     @if (User.IsMember())
+                    {
+                        <div class="fc-nav-label">پرتال من</div>
+
+                        <li class="fc-nav-item">
+                            <a href="/Admin/MemberDashboard"
+                               class="fc-nav-link" data-title="داشبورد من">
+                                <span class="fc-nav-icon"><i class="icon-home"></i></span>
+                                <span class="fc-nav-text">داشبورد من</span>
+                            </a>
+                        </li>
+
+                        <li class="fc-nav-item">
+                            <a href="/Admin/MemberDashboard/MyNutritionPrograms"
+                               class="fc-nav-link" data-title="برنامه غذایی">
+                                <span class="fc-nav-icon"><i class="fa fa-cutlery"></i></span>
+                                <span class="fc-nav-text">برنامه غذایی من</span>
+                            </a>
+                        </li>
+
+                        <li class="fc-nav-item">
+                            <a href="/Admin/MemberDashboard/MyTrainingPrograms"
+                               class="fc-nav-link" data-title="برنامه تمرینی">
+                                <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
+                                <span class="fc-nav-text">برنامه تمرینی من</span>
+                            </a>
+                        </li>
+                    }
+                    @* @if (User.IsMember())
                     {
                         <!-- بخش عضو -->
                         <div class="fc-nav-label">پروفایل من</div>
@@ -931,7 +958,7 @@
                                 <span class="fc-nav-text">برنامه غذایی من</span>
                             </a>
                         </li>
-                    }
+                    } *@
 
                 </ul>
             </nav>

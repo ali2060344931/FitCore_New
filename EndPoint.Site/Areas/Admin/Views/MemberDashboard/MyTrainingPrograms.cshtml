@@ -1,0 +1,156 @@
+@using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms
+@using EndPoint.Site.Areas.Admin.Models
+@using FitCore.Common
+
+@model GetTrainingProgramsResultDto
+
+@{
+    ViewData["Title"] = "برنامه‌های تمرینی من";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        PageQueryKey = "page",
+        PageSizeQueryKey = "PageSize"
+    };
+
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="fc-page-header">
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"برنامه‌های تمرینی من"' />
+
+        <a href="/Admin/MemberDashboard"
+           class="btn btn-outline-secondary" style="border-radius:10px;font-size:13px;">
+            <i class="fa fa-angle-right me-1"></i> بازگشت به داشبورد
+        </a>
+    </div>
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
+             model="searchKey" />
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <div class="mb-3">
+        تعداد کل برنامه‌های تمرینی:
+        <strong>@Model.RowCount</strong>
+    </div>
+
+    @if (Model.TrainingPrograms != null && Model.TrainingPrograms.Any())
+    {
+        <!-- جدول دسکتاپ -->
+        <div class="d-none d-md-block">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>عنوان برنامه</th>
+                        <th>نوع</th>
+                        <th>هدف</th>
+                        <th>تاریخ شروع</th>
+                        <th>تاریخ پایان</th>
+                        <th>جلسات/هفته</th>
+                        <th>روزها</th>
+                        <th>وضعیت</th>
+                        <th>چاپ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TrainingPrograms)
+                    {
+                        <tr>
+                            <td><strong>@item.Title</strong></td>
+                            <td>@item.TrainingProgramType</td>
+                            <td>@item.TrainingGoalType</td>
+                            <td>@item.StartDate</td>
+                            <td>@item.EndDate</td>
+                            <td>@(item.SessionsPerWeek?.ToString() ?? "-")</td>
+                            <td>
+                                <span class="badge bg-primary">
+                                    @item.CountTrainingDays روز
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">فعال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">غیرفعال</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(item.Id)"
+                                   class="btn btn-sm btn-primary btn-modern"
+                                   target="_blank"
+                                   title="دانلود PDF">
+                                    <i class="fa fa-file-pdf-o me-1"></i> PDF
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- کارت‌های موبایل -->
+        <div class="d-block d-md-none">
+            @foreach (var item in Model.TrainingPrograms)
+            {
+                <div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div style="font-size:14px;font-weight:700;">@item.Title</div>
+                            <div style="font-size:12px;color:#718096;">
+                                @item.TrainingProgramType — @item.TrainingGoalType
+                            </div>
+                        </div>
+                        @if (item.IsActive)
+                        {
+                            <span class="badge bg-success" style="font-size:11px;">فعال</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary" style="font-size:11px;">غیرفعال</span>
+                        }
+                    </div>
+                    <div style="font-size:12px;color:#4a5568;margin-bottom:10px;">
+                        <i class="fa fa-calendar-o me-1"></i>
+                        @item.StartDate — @item.EndDate
+                        <span class="ms-2">
+                            <i class="fa fa-list me-1"></i>@item.CountTrainingDays روز
+                        </span>
+                        @if (item.SessionsPerWeek.HasValue)
+                        {
+                            <span class="ms-2">
+                                <i class="fa fa-repeat me-1"></i>@item.SessionsPerWeek جلسه/هفته
+                            </span>
+                        }
+                    </div>
+                    <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(item.Id)"
+                       class="btn btn-primary w-100"
+                       style="border-radius:8px;font-size:13px;"
+                       target="_blank">
+                        <i class="fa fa-print me-1"></i> دانلود / چاپ PDF برنامه تمرینی
+                    </a>
+                </div>
+            }
+        </div>
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                 model='"هنوز برنامه تمرینی برای شما ثبت نشده است"' />
+    }
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>

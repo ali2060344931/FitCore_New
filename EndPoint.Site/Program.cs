@@ -151,7 +151,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("FinancialManager", policy => policy.RequireRole("Admin", "SuperAdmin", "Accountant"));
 });
 
-
+builder.Services.AddScoped<
+    FitCore.Application.Services.TrainingProgramReports.Queries.IGetTrainingProgramPdfService,
+    FitCore.Application.Services.TrainingProgramReports.Queries.GetTrainingProgramPdfService>();
 // ===== Common =====
 
 builder.Services.AddScoped<IGetSetings, GetSetingService>();

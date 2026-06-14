@@ -1,0 +1,146 @@
+@using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
+@using EndPoint.Site.Areas.Admin.Models
+@using FitCore.Common
+
+@model ResultGetNutritionProgramsDto
+
+@{
+    ViewData["Title"] = "برنامه‌های غذایی من";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        PageQueryKey = "page",
+        PageSizeQueryKey = "PageSize"
+    };
+
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="fc-page-header">
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"برنامه‌های غذایی من"' />
+
+        <a href="/Admin/MemberDashboard"
+           class="btn btn-outline-secondary" style="border-radius:10px;font-size:13px;">
+            <i class="fa fa-angle-right me-1"></i> بازگشت به داشبورد
+        </a>
+    </div>
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
+             model="searchKey" />
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <div class="mb-3">
+        تعداد کل برنامه‌های غذایی:
+        <strong>@Model.RowCount</strong>
+    </div>
+
+    @if (Model.NutritionPrograms != null && Model.NutritionPrograms.Any())
+    {
+        <!-- نمایش کارتی در موبایل، جدول در دسکتاپ -->
+
+        <!-- جدول دسکتاپ -->
+        <div class="d-none d-md-block">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>نوع برنامه</th>
+                        <th>هدف</th>
+                        <th>تاریخ شروع</th>
+                        <th>تاریخ پایان</th>
+                        <th>تعداد روز</th>
+                        <th>وضعیت</th>
+                        <th>چاپ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.NutritionPrograms)
+                    {
+                        <tr>
+                            <td><strong>@item.ProgramType</strong></td>
+                            <td>@item.GoalType</td>
+                            <td>@item.StartDate</td>
+                            <td>@item.EndDate</td>
+                            <td>
+                                <span class="badge bg-success">
+                                    @item.CountProgramBuilder روز
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">فعال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">غیرفعال</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(item.Id)"
+                                   class="btn btn-sm btn-success btn-modern"
+                                   target="_blank"
+                                   title="دانلود PDF">
+                                    <i class="fa fa-file-pdf-o me-1"></i> PDF
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- کارت‌های موبایل -->
+        <div class="d-block d-md-none">
+            @foreach (var item in Model.NutritionPrograms)
+            {
+                <div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div style="font-size:14px;font-weight:700;">@item.ProgramType</div>
+                            <div style="font-size:12px;color:#718096;">هدف: @item.GoalType</div>
+                        </div>
+                        @if (item.IsActive)
+                        {
+                            <span class="badge bg-success" style="font-size:11px;">فعال</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary" style="font-size:11px;">غیرفعال</span>
+                        }
+                    </div>
+                    <div style="font-size:12px;color:#4a5568;margin-bottom:10px;">
+                        <i class="fa fa-calendar-o me-1"></i>
+                        @item.StartDate — @item.EndDate
+                        <span class="ms-2">
+                            <i class="fa fa-list me-1"></i>@item.CountProgramBuilder روز
+                        </span>
+                    </div>
+                    <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(item.Id)"
+                       class="btn btn-success w-100"
+                       style="border-radius:8px;font-size:13px;"
+                       target="_blank">
+                        <i class="fa fa-print me-1"></i> دانلود / چاپ PDF برنامه غذایی
+                    </a>
+                </div>
+            }
+        </div>
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                 model='"هنوز برنامه غذایی برای شما ثبت نشده است"' />
+    }
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>

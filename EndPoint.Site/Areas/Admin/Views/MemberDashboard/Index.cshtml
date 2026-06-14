@@ -1,0 +1,192 @@
+@using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
+@using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms
+@using FitCore.Common
+
+@{
+    ViewData["Title"] = "داشبورد من";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var nutritionPrograms = ViewBag.NutritionPrograms as
+        System.Collections.Generic.List<GetNutritionProgramsDto>;
+    var trainingPrograms = ViewBag.TrainingPrograms as
+        System.Collections.Generic.List<GetTrainingProgramsDto>;
+
+    string memberName = ViewBag.MemberName ?? "-";
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- خوش‌آمد -->
+    <div class="fc-card mb-4"
+         style="background:linear-gradient(135deg,#0f1117,#1a2035);color:#fff;border-radius:16px;">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width:56px;height:56px;border-radius:50%;background:#00C896;
+                        display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fa fa-user" style="font-size:24px;color:#fff;"></i>
+            </div>
+            <div>
+                <div style="font-size:20px;font-weight:700;">سلام، @memberName 👋</div>
+                <div style="font-size:13px;color:#a0aec0;margin-top:3px;">
+                    در اینجا می‌توانید برنامه‌های غذایی و تمرینی خود را مشاهده و چاپ کنید.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- کارت‌های خلاصه -->
+    <div class="row mb-4">
+        <div class="col-6 col-md-3 mb-3">
+            <a href="/Admin/MemberDashboard/MyNutritionPrograms"
+               class="fc-card d-flex align-items-center gap-3 text-decoration-none"
+               style="border-right:4px solid #00C896;transition:box-shadow 0.2s;">
+                <div style="width:44px;height:44px;border-radius:12px;background:#edfaf5;
+                            display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa fa-cutlery" style="color:#00C896;font-size:18px;"></i>
+                </div>
+                <div>
+                    <div style="font-size:24px;font-weight:700;color:#1a202c;">
+                        @(nutritionPrograms?.Count ?? 0)
+                    </div>
+                    <div style="font-size:12px;color:#718096;">برنامه غذایی</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-3 mb-3">
+            <a href="/Admin/MemberDashboard/MyTrainingPrograms"
+               class="fc-card d-flex align-items-center gap-3 text-decoration-none"
+               style="border-right:4px solid #3182ce;transition:box-shadow 0.2s;">
+                <div style="width:44px;height:44px;border-radius:12px;background:#ebf8ff;
+                            display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa fa-heartbeat" style="color:#3182ce;font-size:18px;"></i>
+                </div>
+                <div>
+                    <div style="font-size:24px;font-weight:700;color:#1a202c;">
+                        @(trainingPrograms?.Count ?? 0)
+                    </div>
+                    <div style="font-size:12px;color:#718096;">برنامه تمرینی</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- برنامه‌های غذایی -->
+        <div class="col-md-6 mb-4">
+            <div class="fc-card">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div style="font-size:15px;font-weight:700;">
+                        <i class="fa fa-cutlery me-2" style="color:#00C896;"></i>
+                        برنامه‌های غذایی من
+                    </div>
+                    <a href="/Admin/MemberDashboard/MyNutritionPrograms"
+                       class="btn btn-sm btn-outline-success" style="border-radius:8px;font-size:12px;">
+                        مشاهده همه
+                    </a>
+                </div>
+
+                @if (nutritionPrograms != null && nutritionPrograms.Any())
+                {
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        @foreach (var p in nutritionPrograms.Take(5))
+                        {
+                            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;
+                                        display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:13px;font-weight:600;color:#1a202c;">
+                                        @p.ProgramType
+                                    </div>
+                                    <div style="font-size:11px;color:#718096;margin-top:2px;">
+                                        @p.StartDate — @p.EndDate
+                                        <span class="badge ms-1"
+                                              style="background:@(p.IsActive ? "#edfaf5" : "#f7fafc");
+                                                     color:@(p.IsActive ? "#00C896" : "#718096");
+                                                     border:1px solid @(p.IsActive ? "#00C896" : "#e2e8f0");
+                                                     font-size:10px;border-radius:6px;">
+                                            @(p.IsActive ? "فعال" : "غیرفعال")
+                                        </span>
+                                    </div>
+                                </div>
+                                <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)"
+                                   class="btn btn-sm"
+                                   style="background:#00C896;color:#fff;border-radius:8px;
+                                          font-size:12px;padding:5px 12px;white-space:nowrap;"
+                                   title="دانلود PDF">
+                                    <i class="fa fa-print me-1"></i> چاپ PDF
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div style="text-align:center;padding:30px 0;color:#a0aec0;">
+                        <i class="fa fa-inbox fa-2x mb-2" style="display:block;opacity:0.4;"></i>
+                        هنوز برنامه غذایی ثبت نشده است
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- برنامه‌های تمرینی -->
+        <div class="col-md-6 mb-4">
+            <div class="fc-card">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div style="font-size:15px;font-weight:700;">
+                        <i class="fa fa-heartbeat me-2" style="color:#3182ce;"></i>
+                        برنامه‌های تمرینی من
+                    </div>
+                    <a href="/Admin/MemberDashboard/MyTrainingPrograms"
+                       class="btn btn-sm btn-outline-primary" style="border-radius:8px;font-size:12px;">
+                        مشاهده همه
+                    </a>
+                </div>
+
+                @if (trainingPrograms != null && trainingPrograms.Any())
+                {
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        @foreach (var p in trainingPrograms.Take(5))
+                        {
+                            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;
+                                        display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:13px;font-weight:600;color:#1a202c;
+                                                overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                        @p.Title
+                                    </div>
+                                    <div style="font-size:11px;color:#718096;margin-top:2px;">
+                                        @p.TrainingProgramType — @p.StartDate تا @p.EndDate
+                                        <span class="badge ms-1"
+                                              style="background:@(p.IsActive ? "#ebf8ff" : "#f7fafc");
+                                                     color:@(p.IsActive ? "#3182ce" : "#718096");
+                                                     border:1px solid @(p.IsActive ? "#3182ce" : "#e2e8f0");
+                                                     font-size:10px;border-radius:6px;">
+                                            @(p.IsActive ? "فعال" : "غیرفعال")
+                                        </span>
+                                    </div>
+                                </div>
+                                <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)"
+                                   class="btn btn-sm"
+                                   style="background:#3182ce;color:#fff;border-radius:8px;
+                                          font-size:12px;padding:5px 12px;white-space:nowrap;"
+                                   title="دانلود PDF">
+                                    <i class="fa fa-print me-1"></i> چاپ PDF
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div style="text-align:center;padding:30px 0;color:#a0aec0;">
+                        <i class="fa fa-inbox fa-2x mb-2" style="display:block;opacity:0.4;"></i>
+                        هنوز برنامه تمرینی ثبت نشده است
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+</div>
