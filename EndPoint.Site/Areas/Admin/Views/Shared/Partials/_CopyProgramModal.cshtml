@@ -1,0 +1,593 @@
+﻿@*
+    =====================================================
+    پارشال مودال کپی برنامه
+    استفاده در:
+      - NutritionProgram/Index.cshtml
+      - TrainingProgram/Index.cshtml
+
+    مثال استفاده:
+      <partial name="~/Areas/Admin/Views/Shared/Partials/_CopyProgramModal.cshtml" />
+    =====================================================
+*@
+@Html.AntiForgeryToken()
+
+<!-- ====================================================
+     مودال کپی برنامه
+==================================================== -->
+<div class="modal fade" id="copyProgramModal" tabindex="-1" role="dialog" aria-labelledby="copyProgramModalLabel">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;overflow:hidden;">
+
+            <!-- هدر مودال -->
+            <div class="modal-header border-0 pb-0"
+                 style="background:linear-gradient(135deg,#0f1117 0%,#1a2035 100%);padding:20px 24px 16px;">
+                <div>
+                    <h5 class="modal-title text-white mb-1" id="copyProgramModalLabel">
+                        <i class="fa fa-copy me-2" style="color:#00C896;"></i>
+                        کپی برنامه
+                    </h5>
+                    <p class="text-muted small mb-0" id="copyModalSubtitle"
+                       style="color:#a0aec0!important;">
+                        انتخاب برنامه مبدأ و عضو مقصد
+                    </p>
+                </div>
+                <button type="button" class="close text-white" data-dismiss="modal"
+                        style="opacity:0.7;font-size:22px;margin-top:-8px;">
+                    &times;
+                </button>
+            </div>
+
+            <!-- استپ‌ها -->
+            <div style="background:#0f1117;padding:0 24px 16px;">
+                <div class="d-flex align-items-center gap-2" id="copyStepIndicator">
+                    <div class="copy-step active" id="stepBadge1">
+                        <span class="step-num">۱</span>
+                        <span class="step-label">انتخاب برنامه</span>
+                    </div>
+                    <div style="flex:1;height:2px;background:rgba(255,255,255,0.1);border-radius:1px;">
+                        <div id="stepLine" style="height:100%;width:0%;background:#00C896;border-radius:1px;transition:width 0.4s ease;"></div>
+                    </div>
+                    <div class="copy-step" id="stepBadge2">
+                        <span class="step-num">۲</span>
+                        <span class="step-label">انتخاب عضو و تاریخ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-body p-0">
+
+                <!-- ============ مرحله ۱: انتخاب برنامه مبدأ ============ -->
+                <div id="copyStep1" style="padding:20px 24px;">
+
+                    <!-- جستجو -->
+                    <div class="mb-3 position-relative">
+                        <input type="text"
+                               id="copySearchProgram"
+                               class="form-control"
+                               placeholder="جستجو بر اساس نام عضو یا موبایل..."
+                               style="padding-right:36px;border-radius:10px;" />
+                        <i class="fa fa-search"
+                           style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#a0aec0;pointer-events:none;"></i>
+                    </div>
+
+                    <!-- لودر -->
+                    <div id="copyProgramsLoading" class="text-center py-4 d-none">
+                        <i class="fa fa-spinner fa-spin fa-2x" style="color:#00C896;"></i>
+                        <p class="text-muted mt-2 small">در حال بارگذاری...</p>
+                    </div>
+
+                    <!-- لیست برنامه‌ها -->
+                    <div id="copyProgramsList" style="max-height:340px;overflow-y:auto;">
+                        <!-- آیتم‌ها با JS پر می‌شوند -->
+                    </div>
+
+                    <div id="copyProgramsEmpty" class="text-center py-4 d-none">
+                        <i class="fa fa-inbox fa-2x text-muted mb-2"></i>
+                        <p class="text-muted small">برنامه‌ای یافت نشد</p>
+                    </div>
+
+                </div>
+
+                <!-- ============ مرحله ۲: انتخاب عضو مقصد و تاریخ ============ -->
+                <div id="copyStep2" style="padding:20px 24px;display:none;">
+
+                    <!-- کارت برنامه انتخاب‌شده -->
+                    <div id="selectedProgramCard"
+                         style="background:#f8fafd;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="fa fa-check-circle" style="color:#00C896;font-size:16px;"></i>
+                            <span class="fw-bold" style="font-size:13px;">برنامه انتخاب‌شده</span>
+                        </div>
+                        <div id="selectedProgramInfo" style="font-size:13px;color:#4a5568;"></div>
+                    </div>
+
+                    <div class="row">
+
+                        <!-- انتخاب عضو مقصد -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">عضو مقصد (برنامه برای چه کسی کپی شود؟)</label>
+                            <div class="position-relative">
+                                <input type="text"
+                                       id="copySearchMember"
+                                       class="form-control"
+                                       placeholder="نام یا موبایل عضو را جستجو کنید..."
+                                       style="padding-right:36px;border-radius:10px;" />
+                                <i class="fa fa-search"
+                                   style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#a0aec0;pointer-events:none;"></i>
+                            </div>
+
+                            <div id="memberSearchResults"
+                                 style="position:relative;border:1px solid #e2e8f0;border-radius:10px;margin-top:4px;max-height:180px;overflow-y:auto;display:none;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+                            </div>
+
+                            <!-- عضو انتخاب‌شده -->
+                            <div id="selectedMemberCard"
+                                 style="display:none;margin-top:8px;background:#edfaf5;border:1.5px solid #00C896;border-radius:10px;padding:10px 14px;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <i class="fa fa-user-circle" style="color:#00C896;margin-left:6px;"></i>
+                                        <span id="selectedMemberName" class="fw-bold" style="font-size:13px;"></span>
+                                        <span id="selectedMemberMobile" class="text-muted small ms-2"></span>
+                                    </div>
+                                    <button type="button"
+                                            onclick="clearSelectedMember()"
+                                            style="background:none;border:none;color:#718096;font-size:16px;cursor:pointer;padding:0;">
+                                        &times;
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="targetMemberId" value="" />
+                        </div>
+
+                        <!-- تاریخ شروع -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">تاریخ شروع (شمسی)</label>
+                            <input type="text"
+                                   id="copyNewStartDate"
+                                   class="form-control"
+                                   placeholder="مثلاً: 1403/01/01"
+                                   style="border-radius:10px;" />
+                        </div>
+
+                        <!-- تاریخ پایان -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">تاریخ پایان (شمسی)</label>
+                            <input type="text"
+                                   id="copyNewEndDate"
+                                   class="form-control"
+                                   placeholder="مثلاً: 1403/02/01"
+                                   style="border-radius:10px;" />
+                        </div>
+
+                    </div>
+
+                    <div id="copyStep2Message" class="mt-1"></div>
+
+                </div>
+
+            </div>
+
+            <!-- فوتر مودال -->
+            <div class="modal-footer border-0" style="padding:14px 24px;">
+
+                <!-- مرحله ۱ -->
+                <div id="step1Footer" class="d-flex w-100 justify-content-between align-items-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            style="border-radius:10px;font-size:13px;">
+                        بستن
+                    </button>
+                    <span class="text-muted small">برنامه‌ای را از لیست انتخاب کنید</span>
+                </div>
+
+                <!-- مرحله ۲ -->
+                <div id="step2Footer" class="d-flex w-100 justify-content-between align-items-center" style="display:none!important;">
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            onclick="goToCopyStep1()"
+                            style="border-radius:10px;font-size:13px;">
+                        <i class="fa fa-angle-right me-1"></i>
+                        بازگشت
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-success"
+                            id="btnDoCopy"
+                            style="border-radius:10px;font-size:13px;background:#00C896;border-color:#00C896;padding:8px 22px;">
+                        <i class="fa fa-copy me-1"></i>
+                        <span class="btn-text">کپی برنامه</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================
+     استایل مودال کپی
+==================================================== -->
+<style>
+    .copy-step {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+    }
+
+        .copy-step.active {
+            opacity: 1;
+        }
+
+        .copy-step .step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #a0aec0;
+            flex-shrink: 0;
+        }
+
+        .copy-step.active .step-num {
+            background: #00C896;
+            border-color: #00C896;
+            color: #fff;
+        }
+
+        .copy-step .step-label {
+            font-size: 12px;
+            color: #a0aec0;
+            white-space: nowrap;
+        }
+
+        .copy-step.active .step-label {
+            color: #fff;
+        }
+
+    .copy-program-item {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #fff;
+    }
+
+        .copy-program-item:hover {
+            border-color: #00C896;
+            background: #edfaf5;
+        }
+
+        .copy-program-item.selected {
+            border-color: #00C896;
+            background: #edfaf5;
+        }
+
+    .copy-member-item {
+        padding: 10px 14px;
+        cursor: pointer;
+        font-size: 13px;
+        border-bottom: 1px solid #f0f4f8;
+        transition: background 0.15s;
+    }
+
+        .copy-member-item:hover {
+            background: #f8fafd;
+        }
+
+        .copy-member-item:last-child {
+            border-bottom: none;
+        }
+</style>
+
+<!-- ====================================================
+     JS مودال کپی
+==================================================== -->
+<script>
+    var _copyProgramType = '';      // 'nutrition' یا 'training'
+    var _selectedProgramId = null;
+    var _selectedProgramInfo = {};
+    var _memberSearchTimer = null;
+    var _programSearchTimer = null;
+
+    //====================================================
+    // باز کردن مودال
+    //====================================================
+    function openCopyProgramModal(programType) {
+        _copyProgramType = programType;
+        _selectedProgramId = null;
+
+        // ریست
+        $('#copyProgramsList').html('');
+        $('#copySearchProgram').val('');
+        $('#copyStep2Message').html('');
+        $('#targetMemberId').val('');
+        clearSelectedMember();
+
+        // عنوان
+        var typeLabel = programType === 'nutrition' ? 'غذایی' : 'تمرینی';
+        $('#copyModalSubtitle').text('کپی برنامه ' + typeLabel + ' — انتخاب برنامه مبدأ');
+
+        goToCopyStep1();
+
+        $('#copyProgramModal').modal('show');
+
+        // بارگذاری اولیه
+        loadProgramsForCopy('');
+    }
+
+    //====================================================
+    // بارگذاری لیست برنامه‌ها
+    //====================================================
+    function loadProgramsForCopy(searchKey) {
+        var url = _copyProgramType === 'nutrition'
+            ? '/Admin/CopyProgram/GetNutritionPrograms'
+            : '/Admin/CopyProgram/GetTrainingPrograms';
+
+        $('#copyProgramsLoading').removeClass('d-none');
+        $('#copyProgramsList').html('');
+        $('#copyProgramsEmpty').addClass('d-none');
+
+        $.ajax({
+            url: url,
+            data: { searchKey: searchKey },
+            success: function (res) {
+                $('#copyProgramsLoading').addClass('d-none');
+
+                if (!res.isSuccess || !res.data || res.data.length === 0) {
+                    $('#copyProgramsEmpty').removeClass('d-none');
+                    return;
+                }
+
+                var html = '';
+                res.data.forEach(function (p) {
+                    html += '<div class="copy-program-item" onclick="selectProgram(' +
+                        p.id + ', \'' + escHtml(p.memberName) + '\', \'' +
+                        escHtml(p.memberMobile) + '\', \'' + escHtml(p.title) + '\', \'' +
+                        escHtml(p.programType) + '\', \'' + escHtml(p.startDate) + '\', \'' +
+                        escHtml(p.endDate) + '\', ' + p.daysCount + ')">' +
+                        '<div class="d-flex align-items-start justify-content-between">' +
+                            '<div>' +
+                                '<div class="fw-bold" style="font-size:13px;">' + escHtml(p.memberName) + '</div>' +
+                                '<div class="text-muted" style="font-size:12px;">' + escHtml(p.memberMobile) + '</div>' +
+                            '</div>' +
+                            '<div class="text-end">' +
+                                '<span class="badge bg-light text-dark border" style="font-size:11px;">' + escHtml(p.programType) + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="mt-2 d-flex gap-3" style="font-size:12px;color:#718096;">' +
+                            '<span><i class="fa fa-calendar-o me-1"></i>' + escHtml(p.startDate) + ' تا ' + escHtml(p.endDate) + '</span>' +
+                            '<span><i class="fa fa-list me-1"></i>' + p.daysCount + ' روز</span>' +
+                        '</div>' +
+                    '</div>';
+                });
+
+                $('#copyProgramsList').html(html);
+            },
+            error: function () {
+                $('#copyProgramsLoading').addClass('d-none');
+                $('#copyProgramsEmpty').removeClass('d-none');
+            }
+        });
+    }
+
+    // جستجوی برنامه با debounce
+    $('#copySearchProgram').on('input', function () {
+        var q = $(this).val();
+        clearTimeout(_programSearchTimer);
+        _programSearchTimer = setTimeout(function () {
+            loadProgramsForCopy(q);
+        }, 400);
+    });
+
+    //====================================================
+    // انتخاب برنامه و رفتن به مرحله ۲
+    //====================================================
+    function selectProgram(id, memberName, memberMobile, title, programType, startDate, endDate, daysCount) {
+        _selectedProgramId = id;
+        _selectedProgramInfo = { memberName, memberMobile, title, programType, startDate, endDate, daysCount };
+
+        // نمایش اطلاعات برنامه انتخاب‌شده
+        $('#selectedProgramInfo').html(
+            '<div class="d-flex flex-wrap gap-3 mt-1">' +
+            '<span><i class="fa fa-user-o me-1 text-muted"></i><strong>' + escHtml(memberName) + '</strong> (' + escHtml(memberMobile) + ')</span>' +
+            '<span><i class="fa fa-tag me-1 text-muted"></i>' + escHtml(programType) + '</span>' +
+            '<span><i class="fa fa-calendar-o me-1 text-muted"></i>' + escHtml(startDate) + ' تا ' + escHtml(endDate) + '</span>' +
+            '<span><i class="fa fa-list me-1 text-muted"></i>' + daysCount + ' روز</span>' +
+            '</div>'
+        );
+
+        // پیش‌فرض تاریخ‌ها
+        $('#copyNewStartDate').val(startDate);
+        $('#copyNewEndDate').val(endDate);
+
+        goToCopyStep2();
+    }
+
+    //====================================================
+    // جابجایی بین مراحل
+    //====================================================
+    function goToCopyStep1() {
+        $('#copyStep1').show();
+        $('#copyStep2').hide();
+        $('#step1Footer').show();
+        $('#step2Footer').hide();
+        $('#stepBadge1').addClass('active');
+        $('#stepBadge2').removeClass('active');
+        $('#stepLine').css('width', '0%');
+    }
+
+    function goToCopyStep2() {
+        $('#copyStep1').hide();
+        $('#copyStep2').show();
+        $('#step1Footer').hide();
+        $('#step2Footer').show();
+        $('#stepBadge1').addClass('active');
+        $('#stepBadge2').addClass('active');
+        $('#stepLine').css('width', '100%');
+
+        // focus روی جستجوی عضو
+        setTimeout(function () { $('#copySearchMember').focus(); }, 200);
+    }
+
+    //====================================================
+    // جستجوی عضو مقصد
+    //====================================================
+    $('#copySearchMember').on('input', function () {
+        var q = $(this).val();
+        clearTimeout(_memberSearchTimer);
+
+        if (q.length < 1) {
+            $('#memberSearchResults').hide();
+            return;
+        }
+
+        _memberSearchTimer = setTimeout(function () {
+            $.ajax({
+                url: '/Admin/CopyProgram/GetMembers',
+                data: { searchKey: q },
+                success: function (res) {
+                    if (!res.isSuccess || !res.data || res.data.length === 0) {
+                        $('#memberSearchResults').html('<div class="copy-member-item text-muted">عضوی یافت نشد</div>').show();
+                        return;
+                    }
+
+                    var html = '';
+                    res.data.forEach(function (m) {
+                        html += '<div class="copy-member-item" onclick="selectMember(' +
+                            m.id + ', \'' + escHtml(m.fullName) + '\', \'' + escHtml(m.mobile) + '\')">' +
+                            '<i class="fa fa-user-o me-2 text-muted"></i>' +
+                            '<strong>' + escHtml(m.fullName) + '</strong>' +
+                            '<span class="text-muted ms-2 small">' + escHtml(m.mobile) + '</span>' +
+                            '</div>';
+                    });
+
+                    $('#memberSearchResults').html(html).show();
+                }
+            });
+        }, 350);
+    });
+
+    function selectMember(id, fullName, mobile) {
+        $('#targetMemberId').val(id);
+        $('#selectedMemberName').text(fullName);
+        $('#selectedMemberMobile').text(mobile);
+        $('#selectedMemberCard').show();
+        $('#memberSearchResults').hide();
+        $('#copySearchMember').val('');
+    }
+
+    function clearSelectedMember() {
+        $('#targetMemberId').val('');
+        $('#selectedMemberCard').hide();
+        $('#copySearchMember').val('');
+        $('#memberSearchResults').hide();
+    }
+
+    //====================================================
+    // انجام کپی
+    //====================================================
+    $('#btnDoCopy').on('click', function () {
+
+        var targetMemberId = $('#targetMemberId').val();
+        var newStartDate   = $('#copyNewStartDate').val();
+        var newEndDate     = $('#copyNewEndDate').val();
+
+        if (!targetMemberId) {
+            showCopyMsg('danger', 'لطفاً عضو مقصد را انتخاب کنید');
+            return;
+        }
+        if (!newStartDate || !newEndDate) {
+            showCopyMsg('danger', 'لطفاً تاریخ شروع و پایان را وارد کنید');
+            return;
+        }
+        if (!_selectedProgramId) {
+            showCopyMsg('danger', 'برنامه مبدأ انتخاب نشده است');
+            return;
+        }
+
+        var url = _copyProgramType === 'nutrition'
+            ? '/Admin/CopyProgram/CopyNutritionProgram'
+            : '/Admin/CopyProgram/CopyTrainingProgram';
+
+        var $btn = $('#btnDoCopy');
+        $btn.prop('disabled', true);
+        $btn.find('.btn-text').text('در حال کپی...');
+
+        $.ajax({
+            url:  url,
+            type: 'POST',
+            data: {
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val(),
+                SourceProgramId: _selectedProgramId,
+                TargetMemberId:  targetMemberId,
+                NewStartDate:    newStartDate,
+                NewEndDate:      newEndDate
+            },
+            success: function (res) {
+                if (res.isSuccess) {
+                    $('#copyProgramModal').modal('hide');
+
+                    Swal.fire({
+                        icon:  'success',
+                        title: 'کپی انجام شد!',
+                        text:  res.message,
+                        confirmButtonText: 'مشاهده لیست',
+                        confirmButtonColor: '#00C896'
+                    }).then(function () {
+                        if (res.redirectUrl) {
+                            window.location.href = res.redirectUrl;
+                        } else {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    showCopyMsg('danger', res.message || 'خطا در انجام کپی');
+                }
+            },
+            error: function () {
+                showCopyMsg('danger', 'خطا در ارتباط با سرور');
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
+                $btn.find('.btn-text').text('کپی برنامه');
+            }
+        });
+    });
+
+    //====================================================
+    // توابع کمکی
+    //====================================================
+    function showCopyMsg(type, msg) {
+        $('#copyStep2Message').html(
+            '<div class="alert alert-' + type + ' py-2 mb-0" style="border-radius:8px;font-size:13px;">' +
+            msg + '</div>'
+        );
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g,  '&amp;')
+            .replace(/</g,  '&lt;')
+            .replace(/>/g,  '&gt;')
+            .replace(/"/g,  '&quot;')
+            .replace(/'/g,  '&#39;');
+    }
+
+    // بستن نتایج جستجوی عضو با کلیک خارج
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#copySearchMember, #memberSearchResults').length) {
+            $('#memberSearchResults').hide();
+        }
+    });
+</script>

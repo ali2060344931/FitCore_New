@@ -24,6 +24,9 @@
     var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
 }
+@section Modals {
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_CopyProgramModal.cshtml" />
+}
 
 <div class="container-fluid mt-4">
     <!-- Header -->
@@ -136,6 +139,14 @@
                                      aria-labelledby="nutritionProgramActions_@item.Id">
                                     @if (User.IsAdmin())
                                     {
+
+                                        <button type="button"
+                                                class="btn btn-outline-info"
+                                                onclick="openCopyProgramModal('nutrition')">
+                                            <i class="fa fa-copy"></i>
+                                            کپی برنامه غذایی
+                                        </button>
+
                                         <a class="dropdown-item"
                                            asp-area="Admin"
                                            asp-controller="NutritionProgramBuilder"

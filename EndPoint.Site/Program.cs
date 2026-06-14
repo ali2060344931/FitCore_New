@@ -224,7 +224,7 @@ builder.Services.AddScoped<IRemoveNutritionDayService, RemoveNutritionDayService
 builder.Services.AddScoped<IEditNutritionDayService, EditNutritionDayService>();
 builder.Services.AddScoped<IAutoGenerateNutritionDaysService, AutoGenerateNutritionDaysService>();
 builder.Services.AddScoped<IGetNutritionProgramPdfService, GetNutritionProgramPdfService>();
-
+builder.Services.AddScoped<ICopyProgramFacad, CopyProgramFacad>();
 
 //===== Facad =====
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();

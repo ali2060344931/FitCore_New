@@ -22,6 +22,9 @@
     var searchKey = Context.Request.Query["SearchKey"].ToString();
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
 }
+@section Modals {
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_CopyProgramModal.cshtml" />
+}
 
 <div class="container-fluid mt-4">
 
@@ -150,6 +153,8 @@
 
                                     @if (User.IsAdmin())
                                     {
+
+
                                         <a class="dropdown-item"
                                            asp-area="Admin"
                                            asp-controller="TrainingProgram"
@@ -167,6 +172,7 @@
                                             <i class="fa fa-times"></i>
                                             حذف
                                         </button>
+
                                     }
 
                                 </div>
