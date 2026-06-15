@@ -1,4 +1,5 @@
-﻿using FitCore.Application.Contexts;
+using FitCore.Application.Contexts;
+using FitCore.Application.Services.Dashboard;
 using FitCore.Common;
 
 using Microsoft.AspNetCore.Mvc;
@@ -6,35 +7,56 @@ using Microsoft.EntityFrameworkCore;
 
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
     [Area("Admin")]
-
     public class HomeController : Controller
     {
-
         private readonly IDataBaseContext _context;
+        private readonly IGymDashboardService _dashboardService;
 
-        public HomeController(IDataBaseContext context)
+        public HomeController(
+            IDataBaseContext context,
+            IGymDashboardService dashboardService)
         {
-            _context = context;
+            _context          = context;
+            _dashboardService = dashboardService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            string gymName = "فاقد باشگاه";
-            if (!User.IsSuperAdmin())
+            // اگر SuperAdmin بود فقط پیام کلی نمایش بده
+            if (User.IsSuperAdmin())
             {
-                long appUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var gid = _context.Users.Where(c => c.Id == appUserId).First().GymId;
-
-                gymName = _context.Gyms.Where(c => c.Id == gid).First().Name;
+                ViewBag.IsSuperAdmin = true;
+                ViewBag.GymCount = await _context.Gyms.CountAsync();
+                ViewBag.TotalUsers = await _context.Users.CountAsync();
+                return View();
             }
 
-                ViewBag.GymName = gymName;
+            // پیدا کردن GymId کاربر جاری
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userIdValue))
+                return Unauthorized();
 
-            return View();
+            var appUserId = long.Parse(userIdValue);
+
+            var gymId = await _context.Users
+                .Where(u => u.Id == appUserId)
+                .Select(u => u.GymId)
+                .FirstOrDefaultAsync();
+
+            if (gymId == null)
+            {
+                ViewBag.NoGym = true;
+                return View();
+            }
+
+            var dashboard = await _dashboardService.Execute(gymId.Value);
+
+            return View(dashboard);
         }
     }
 }

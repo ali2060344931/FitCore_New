@@ -4,6 +4,8 @@ using FitCore.Application.Interfaces.IGym;
 using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
 using FitCore.Application.Services.Auth;
+using FitCore.Application.Services.Dashboard;
+using FitCore.Application.Services.Exercises.ExerciseFacad;
 using FitCore.Application.Services.Facads;
 using FitCore.Application.Services.Foods.Commands.CreateFood;
 using FitCore.Application.Services.Foods.Commands.DeleteFood;
@@ -29,13 +31,12 @@ using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutrit
 using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.NutritionPrograms.NutritionProgramsFacad;
-using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
-using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
-using FitCore.Application.Services.Exercises.ExerciseFacad;
 using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
+using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
+using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
 using FitCore.Common.Roles;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
@@ -59,7 +60,6 @@ using System.IO;
 
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
-
 using VerifyOtpService =
     FitCore.Application.Services.Auth.VerifyOtpService;
 
@@ -237,6 +237,7 @@ builder.Services.AddScoped<INutritionProgramFacad, NutritionProgramFacad>();
 builder.Services.AddScoped<ITrainingProgramFacad, TrainingProgramFacad>();
 builder.Services.AddScoped<ITrainingProgramBuilderFacad, TrainingProgramBuilderFacad>();
 builder.Services.AddScoped<IExerciseFacad, ExerciseFacad>();
+builder.Services.AddScoped<IGymDashboardService, GymDashboardService>();
 //===== Facad - Training Program Module =====
 
 
