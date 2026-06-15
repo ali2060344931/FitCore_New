@@ -15,6 +15,7 @@ using FitCore.Application.Services.Foods.Queries;
 using FitCore.Application.Services.Gyms.Commands;
 using FitCore.Application.Services.Gyms.Commands.AddGym;
 using FitCore.Application.Services.Gyms.Commands.DeleteGym;
+using FitCore.Application.Services.Halpe;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
@@ -240,6 +241,8 @@ builder.Services.AddScoped<IExerciseFacad, ExerciseFacad>();
 builder.Services.AddScoped<IGymDashboardService, GymDashboardService>();
 //===== Facad - Training Program Module =====
 
+builder.Services.AddScoped<IGetHelpContentService, GetHelpContentService>();
+builder.Services.AddScoped<IHelp_Service, HelpService>();
 
 
 builder.Services.AddScoped<IGetMembersByIdService,

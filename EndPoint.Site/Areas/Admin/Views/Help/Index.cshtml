@@ -1,0 +1,57 @@
+﻿@model List<FitCore.Domain.Entities.Help.HelpContent>
+@{
+    ViewData["Title"] = "لیست راهنما";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+}
+
+<a class="btn btn-success mb-3"
+   asp-area="Admin"
+   asp-controller="Help"
+   asp-action="CreateEdit">
+    افزودن راهنما
+</a>
+
+<table class="table table-bordered">
+
+    <thead>
+        <tr>
+            <th>کلید</th>
+            <th>عنوان</th>
+            <th>فعال</th>
+            <th>عملیات</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>@item.HelpKey</td>
+                <td>@item.Title</td>
+                <td>@item.IsActive</td>
+
+                <td>
+
+                    <a asp-action="CreateEdit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-warning">
+                        ویرایش
+                    </a>
+
+                    <a asp-action="Delete"
+                       asp-route-id="@item.Id"
+                       class="btn btn-danger">
+                        حذف
+                    </a>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

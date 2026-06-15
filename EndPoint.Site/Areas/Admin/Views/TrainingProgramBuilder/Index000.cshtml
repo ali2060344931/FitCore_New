@@ -61,7 +61,7 @@
                         <div class="program-meta-item">
                             <i class="fa fa-user meta-icon"></i>
                             <span class="meta-label">عضــو:</span>
-                            <span class="meta-value-Fullmamu">@program.MemberName    @program.MemberMobile</span>
+                            <span class="meta-value-Fullmamu">@program.MemberName</span>
                         </div>
                         <div class="program-meta-item">
                             <span class="meta-label">عنوان:</span>
@@ -276,7 +276,7 @@
                                                     }
                                                     @foreach (var ex in day.Exercises)
                                                     {
-                                                        <tr data-item-id="@ex.Id" data-exercise-id="@ex.ExerciseId">
+                                                        <tr data-item-id="@ex.Id">
                                                             <td class="text-center text-muted drag-handle" style="cursor: move;">
                                                                 <i class="fa fa-bars"></i>
                                                             </td>
@@ -468,138 +468,62 @@
 
     <!-- افزودن حرکت -->
     <div class="modal fade" id="addExerciseModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content border-0 shadow" style="border-radius:14px;overflow:hidden;">
-
-                <!-- هدر -->
-                <div class="modal-header border-0 pb-2"
-                     style="background:linear-gradient(135deg,#0f1117,#1a2035);padding:16px 20px;">
-                    <div>
-                        <h5 class="modal-title text-white mb-0" style="font-size:15px;">
-                            <i class="fa fa-plus-circle me-2" style="color:#00C896;"></i>
-                            افزودن حرکت به روز:
-                            <span id="addExerciseDayTitle"
-                                  style="color:#00C896;font-weight:700;"></span>
-                            
-                        </h5>
-                        <div style="font-size:11px;color:#a0aec0;margin-top:3px;">
-                            پس از هر ثبت، فرم خالی می‌شود — می‌توانید حرکت بعدی را بلافاصله وارد کنید
-                        </div>
-                    </div>
-                    <button type="button" class="close text-white"
-                            data-dismiss="modal" style="opacity:0.7;">&times;</button>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        افزودن حرکت به روز: <small class="swal2-textarea countdown-timer mt-1"><span id="addExerciseDayTitle" class="countdown-text"></span></small>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
+                <div class="modal-body">
+                    <form id="addExerciseForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="TrainingDayId" id="AddExercise_TrainingDayId" />
 
-                <div class="modal-body" style="padding:0;">
-
-                    <!-- ناحیه پیام موفقیت (بالای فرم) -->
-                    <div id="addExerciseSuccessBanner" style="display:none;
-                         background:#edfaf5;border-bottom:2px solid #00C896;
-                         padding:10px 20px;font-size:13px;color:#276749;">
-                        <i class="fa fa-check-circle me-2" style="color:#00C896;"></i>
-                        <span id="addExerciseSuccessText"></span>
-                        <span style="color:#718096;font-size:12px;margin-right:8px;">
-                            — می‌توانید حرکت بعدی را ثبت کنید
-                        </span>
-                    </div>
-
-                    <!-- لیست حرکات ثبت‌شده در این جلسه -->
-                    <div id="addedExercisesPanel" style="display:none;
-                         background:#f8fafd;border-bottom:1px solid #e2e8f0;
-                         padding:10px 20px;">
-                        <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:6px;">
-                            <i class="fa fa-list me-1" style="color:#00C896;"></i>
-                            حرکات ثبت‌شده در این جلسه:
+                        <div class="form-group">
+                            <label>حرکت تمرینی</label>
+                            <select class="form-control js-select2-modal" name="ExerciseId" id="AddExercise_ExerciseId" required>
+                                <option value="">انتخاب کنید...</option>
+                                @foreach (var ex in Model.Exercises)
+                                {
+                                    <option value="@ex.Value">@ex.Text</option>
+                                }
+                            </select>
                         </div>
-                        <div id="addedExercisesList"
-                             style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-                    </div>
 
-                    <!-- فرم -->
-                    <div style="padding:16px 20px;">
-                        <form id="addExerciseForm">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="TrainingDayId" id="AddExercise_TrainingDayId" />
-
-                            <div class="form-group">
-                                <label style="font-size:12px;font-weight:700;color:#4a5568;">
-                                    حرکت تمرینی <span style="color:#e53e3e;">*</span>
-                                </label>
-                                <select class="form-control js-select2-modal"
-                                        name="ExerciseId" id="AddExercise_ExerciseId" required>
-                                    <option value="">جستجو و انتخاب حرکت...</option>
-                                    @foreach (var ex in Model.Exercises)
-                                    {
-                                        <option value="@ex.Value">@ex.Text</option>
-                                    }
-                                </select>
-                                <!-- پیام تکراری -->
-                                <div id="duplicateExerciseWarning"
-                                     style="display:none;margin-top:5px;padding:6px 10px;
-                                            background:#fff5f5;border:1px solid #fc8181;
-                                            border-radius:7px;font-size:12px;color:#c53030;">
-                                    <i class="fa fa-exclamation-triangle me-1"></i>
-                                    این حرکت قبلاً در این روز ثبت شده است!
-                                </div>
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <label>تعداد ست</label>
+                                <input type="number" class="form-control" name="Sets" min="1" />
                             </div>
-
-                            <div class="row">
-                                <div class="form-group col-6 col-md-3">
-                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">تعداد ست</label>
-                                    <input type="number" class="form-control"
-                                           name="Sets" id="AddExercise_Sets"
-                                           min="1" placeholder="مثلاً: 4" />
-                                </div>
-                                <div class="form-group col-6 col-md-3">
-                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">تکرار</label>
-                                    <input type="text" class="form-control"
-                                           name="Reps" id="AddExercise_Reps"
-                                           placeholder="مثلاً: 8-12" />
-                                </div>
-                                <div class="form-group col-6 col-md-3">
-                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">وزن (kg)</label>
-                                    <input type="number" class="form-control"
-                                           name="WeightKg" id="AddExercise_WeightKg"
-                                           step="0.5" min="0" placeholder="اختیاری" />
-                                </div>
-                                <div class="form-group col-6 col-md-3">
-                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">استراحت (ثانیه)</label>
-                                    <input type="number" class="form-control"
-                                           name="RestSeconds" id="AddExercise_RestSeconds"
-                                           min="0" placeholder="مثلاً: 90" />
-                                </div>
+                            <div class="form-group col-md-3">
+                                <label>تکرار</label>
+                                <input type="text" class="form-control" name="Reps" placeholder="مثلاً: 8-12" />
                             </div>
-
-                            <div class="form-group mb-0">
-                                <label style="font-size:12px;font-weight:700;color:#4a5568;">یادداشت مربی</label>
-                                <textarea class="form-control" name="CoachNote"
-                                          id="AddExercise_CoachNote" rows="2"
-                                          placeholder="نکات تکنیکی، تمپو، توجه ویژه..."></textarea>
+                            <div class="form-group col-md-3">
+                                <label>وزن (kg)</label>
+                                <input type="number" class="form-control" name="WeightKg" step="0.5" min="0" />
                             </div>
-                        </form>
-                    </div>
+                            <div class="form-group col-md-3">
+                                <label>استراحت (ثانیه)</label>
+                                <input type="number" class="form-control" name="RestSeconds" min="0" />
+                            </div>
+                        </div>
 
+                        <div class="form-group">
+                            <label>یادداشت مربی</label>
+                            <textarea class="form-control" name="CoachNote" rows="2" placeholder="نکات تکنیکی، تمپو، ..."></textarea>
+                        </div>
+                    </form>
+                    <div id="addExerciseMessage" class="mt-2"></div>
                 </div>
-
-                <div class="modal-footer border-0"
-                     style="padding:12px 20px;background:#f8fafd;">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-dismiss="modal"
-                            style="border-radius:9px;font-size:13px;padding:7px 18px;">
-                        <i class="fa fa-times me-1"></i> بستن
-                    </button>
-                    <button type="button"
-                            id="btnSaveExercise"
-                            style="border-radius:9px;font-size:13px;padding:7px 22px;
-                                   background:#00C896;border:none;color:#fff;
-                                   font-weight:600;min-width:120px;
-                                   transition:all 0.2s;">
-                        <i class="fa fa-plus me-1" id="btnSaveExerciseIcon"></i>
-                        <span id="btnSaveExerciseText">ثبت حرکت</span>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveExercise" form="addExerciseForm">
+                        <span class="btn-text">ثبت</span>
                     </button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -812,223 +736,21 @@
         // حرکات تمرینی — مودال‌های افزودن/ویرایش/حذف
         //====================================================
 
-        // شناسه‌های حرکاتی که در این جلسه به این روز اضافه شده‌اند
-        // کلید: dayId → Set از exerciseId های ثبت‌شده
-        var _sessionAddedExercises = {};
-
         function openAddExerciseModal(dayId, dayTitle) {
             $('#AddExercise_TrainingDayId').val(dayId);
             $('#addExerciseDayTitle').text(dayTitle || '');
 
-            // ریست فرم
-            resetAddExerciseForm();
-
-            // ریست پیام‌ها
-            $('#addExerciseSuccessBanner').hide();
-            $('#addedExercisesPanel').hide();
-            $('#addedExercisesList').html('');
-
-            //====================================
-            // خواندن حرکات از قبل موجود در این روز از DOM
-            // (هم از دیتابیس + هم از همین session)
-            //====================================
-            var existingSet = new Set();
-
-            $('#exerciseList_' + dayId + ' tr[data-exercise-id]').each(function () {
-                var eid = $(this).attr('data-exercise-id');
-                if (eid) existingSet.add(String(eid));
-            });
-
-            _sessionAddedExercises[dayId] = existingSet;
-
-            $('#addExerciseModal').modal('show');
-        }
-
-        function resetAddExerciseForm() {
-            var dayId = $('#AddExercise_TrainingDayId').val();
-
-            // ریست Select2
-            if ($('#AddExercise_ExerciseId').hasClass('select2-hidden-accessible')) {
-                $('#AddExercise_ExerciseId').val('').trigger('change');
-            } else {
-                $('#AddExercise_ExerciseId').val('');
-            }
-
-            // ریست فیلدها
-            $('#AddExercise_Sets').val('');
-            $('#AddExercise_Reps').val('');
-            $('#AddExercise_WeightKg').val('');
-            $('#AddExercise_RestSeconds').val('');
-            $('#AddExercise_CoachNote').val('');
-
-            // ریست پیام تکراری
-            $('#duplicateExerciseWarning').hide();
-
-            // TrainingDayId باید بماند
+            $('#addExerciseForm')[0].reset();
             $('#AddExercise_TrainingDayId').val(dayId);
 
-            // focus روی کمبوباکس
-            setTimeout(function () {
-                try { $('#AddExercise_ExerciseId').select2('open'); } catch(e) {}
-            }, 350);
+            // ریست Select2 اگر قبلاً init شده
+            if ($('#AddExercise_ExerciseId').hasClass('select2-hidden-accessible')) {
+                $('#AddExercise_ExerciseId').val('').trigger('change');
+            }
+
+            $('#addExerciseMessage').html('');
+            $('#addExerciseModal').modal('show');
         }
-
-        // بررسی تکراری بودن حرکت هنگام انتخاب از Select2
-        $(document).on('change', '#AddExercise_ExerciseId', function () {
-            var exerciseId = $(this).val();
-            var dayId = $('#AddExercise_TrainingDayId').val();
-
-            if (!exerciseId || !dayId) {
-                $('#duplicateExerciseWarning').hide();
-                return;
-            }
-
-            var added = _sessionAddedExercises[dayId];
-            if (added && added.has(String(exerciseId))) {
-                $('#duplicateExerciseWarning').show();
-            } else {
-                $('#duplicateExerciseWarning').hide();
-            }
-        });
-
-        // ثبت حرکت — بدون بستن مودال
-        $(document).on('click', '#btnSaveExercise', function () {
-
-            var exerciseId = $('#AddExercise_ExerciseId').val();
-            var dayId      = $('#AddExercise_TrainingDayId').val();
-
-            // validation — حرکت الزامی
-            if (!exerciseId) {
-                $('#AddExercise_ExerciseId').closest('.form-group')
-                    .find('label').css('color', '#e53e3e');
-                if ($('#AddExercise_ExerciseId').hasClass('select2-hidden-accessible')) {
-                    $('#AddExercise_ExerciseId').next('.select2-container')
-                        .find('.select2-selection')
-                        .css('border-color', '#e53e3e');
-                }
-                setTimeout(function () {
-                    $('label[for="AddExercise_ExerciseId"]').css('color', '');
-                    $('#AddExercise_ExerciseId').next('.select2-container')
-                        .find('.select2-selection').css('border-color', '');
-                }, 2000);
-                return;
-            }
-
-            // بررسی تکراری
-            var added = _sessionAddedExercises[dayId] || new Set();
-            if (added.has(String(exerciseId))) {
-                $('#duplicateExerciseWarning').show();
-                // لرزش دکمه
-                var $btn = $('#btnSaveExercise');
-                $btn.css('animation', 'fcShake 0.4s ease');
-                setTimeout(function () { $btn.css('animation', ''); }, 500);
-                return;
-            }
-
-            // غیرفعال کردن دکمه
-            var $btn = $('#btnSaveExercise');
-            $btn.prop('disabled', true);
-            $('#btnSaveExerciseText').text('در حال ثبت...');
-            $('#btnSaveExerciseIcon').removeClass('fa-plus').addClass('fa-spinner fa-spin');
-
-            // نام حرکت انتخاب‌شده
-            var exerciseName = $('#AddExercise_ExerciseId option:selected').text();
-
-            $.ajax({
-                url: '@Url.Action("AddExercise", "TrainingProgramBuilder", new { area = "Admin" })',
-                type: 'POST',
-                data: $('#addExerciseForm').serialize(),
-
-                success: function (res) {
-
-                    if (res && res.isSuccess) {
-
-                        // ثبت در لیست session
-                        if (!_sessionAddedExercises[dayId]) {
-                            _sessionAddedExercises[dayId] = new Set();
-                        }
-                        _sessionAddedExercises[dayId].add(String(exerciseId));
-
-                        // اضافه کردن سطر مجازی به DOM برای بررسی تکراری بعدی
-                        // (بدون نیاز به reload)
-                        var $tbody = $('#exerciseList_' + dayId);
-                        if ($tbody.length) {
-                            $tbody.append(
-                                '<tr data-item-id="new_' + exerciseId +
-                                '" data-exercise-id="' + exerciseId +
-                                '" class="fc-ghost-row" style="display:none;"></tr>'
-                            );
-                        }
-
-                        // نمایش بنر موفقیت
-                        $('#addExerciseSuccessText').text('حرکت «' + exerciseName + '» با موفقیت ثبت شد.');
-                        $('#addExerciseSuccessBanner').slideDown(200);
-
-                        // نمایش تگ در لیست session
-                        var tagHtml =
-                            '<span style="display:inline-flex;align-items:center;gap:5px;' +
-                            'background:#edfaf5;border:1px solid #00C896;color:#276749;' +
-                            'border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;">' +
-                            '<i class="fa fa-check-circle" style="color:#00C896;"></i>' +
-                            exerciseName + '</span>';
-
-                        $('#addedExercisesList').append(tagHtml);
-                        $('#addedExercisesPanel').show();
-
-                        // ریست فرم برای ثبت بعدی
-                        setTimeout(function () {
-                            resetAddExerciseForm();
-                            $('#addExerciseSuccessBanner').slideUp(300);
-                        }, 1800);
-
-                    } else {
-                        // خطا — نمایش در بنر قرمز
-                        $('#addExerciseSuccessBanner').hide();
-                        var errMsg = (res && res.message) ? res.message : 'خطا در ثبت حرکت';
-
-                        var $errBanner = $('<div id="addExerciseTempError" ' +
-                            'style="padding:10px 20px;background:#fff5f5;border-bottom:2px solid #fc8181;' +
-                            'font-size:13px;color:#c53030;">' +
-                            '<i class="fa fa-times-circle me-2"></i>' + errMsg + '</div>');
-
-                        $('#addExerciseModal .modal-body').prepend($errBanner);
-
-                        setTimeout(function () {
-                            $('#addExerciseTempError').fadeOut(400, function () { $(this).remove(); });
-                        }, 3000);
-                    }
-                },
-
-                error: function () {
-                    var $errBanner = $('<div id="addExerciseTempError" ' +
-                        'style="padding:10px 20px;background:#fff5f5;border-bottom:2px solid #fc8181;' +
-                        'font-size:13px;color:#c53030;">' +
-                        '<i class="fa fa-times-circle me-2"></i>خطا در ارتباط با سرور</div>');
-                    $('#addExerciseModal .modal-body').prepend($errBanner);
-                    setTimeout(function () {
-                        $('#addExerciseTempError').fadeOut(400, function () { $(this).remove(); });
-                    }, 3000);
-                },
-
-                complete: function () {
-                    $btn.prop('disabled', false);
-                    $('#btnSaveExerciseText').text('ثبت حرکت');
-                    $('#btnSaveExerciseIcon')
-                        .removeClass('fa-spinner fa-spin')
-                        .addClass('fa-plus');
-                }
-            });
-        });
-
-        // وقتی مودال بسته می‌شود، صفحه reload شود
-        // تا جدول حرکات به‌روز شود
-        $(document).on('hidden.bs.modal', '#addExerciseModal', function () {
-            var dayId = $('#AddExercise_TrainingDayId').val();
-            var added = _sessionAddedExercises[dayId];
-            if (added && added.size > 0) {
-                location.reload();
-            }
-        });
 
         function openEditExerciseModal(id, dayId, exerciseId, sets, reps, weightKg, restSeconds, coachNote) {
             $('#EditExercise_Id').val(id);
@@ -1073,7 +795,7 @@
 
         $(document).on('submit', '#addExerciseForm', function (e) {
             e.preventDefault();
-            // این فرم دیگر با submit ارسال نمی‌شود — از btnSaveExercise click handler استفاده می‌شود
+            postForm('#addExerciseForm', '#btnSaveExercise', '#addExerciseMessage', '@Url.Action("AddExercise", "TrainingProgramBuilder", new { area = "Admin" })');
         });
 
         $(document).on('submit', '#editExerciseForm', function (e) {
@@ -1166,27 +888,4 @@
         });
 
     </script>
-
-    <style>
-        /* انیمیشن لرزش دکمه برای خطای تکراری */
-        @@keyframes fcShake {
-            0%, 100% { transform: translateX(0); }
-            20%       { transform: translateX(-6px); }
-            40%       { transform: translateX(6px); }
-            60%       { transform: translateX(-4px); }
-            80%       { transform: translateX(4px); }
-        }
-
-        /* hover دکمه ثبت */
-        #btnSaveExercise:not(:disabled):hover {
-            background: #00a87d !important;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(0,200,150,0.35);
-        }
-
-        #btnSaveExercise:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-    </style>
 }

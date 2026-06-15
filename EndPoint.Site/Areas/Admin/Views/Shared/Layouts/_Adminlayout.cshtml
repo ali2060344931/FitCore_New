@@ -1035,7 +1035,20 @@
         </div>
 
     </div>
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_HelpModal.cshtml" />
 
+
+    <div class="modal fade" id="helpModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body" id="helpContent"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- ================================
          اسکریپت‌های پایه (دقیقاً مثل قبل)
@@ -1136,6 +1149,31 @@
             });
 
         });
+
+
+
+        //         function openHelp(helpKey) {
+
+        //     $.get('/Admin/Help/Get', { key: helpKey }, function (res) {
+
+        //         $('#helpTitle').text(res.title);
+        //         $('#helpContent').html(res.content);
+
+        //         $('#helpModal').modal('show');
+
+        //     });
+        // }
+
+
+
+                function openHelp(key) {
+            $.get('/Admin/Help/Get', { key: key }, function (res) {
+                $('#helpTitle').text(res.title);
+                $('#helpContent').html(res.content); // پشتیبانی از HTML
+                $('#helpModal').modal('show');
+            });
+        }
+
     </script>
 
 </body>

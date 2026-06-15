@@ -61,7 +61,7 @@
                         <div class="program-meta-item">
                             <i class="fa fa-user meta-icon"></i>
                             <span class="meta-label">عضــو:</span>
-                            <span class="meta-value-Fullmamu">@program.MemberName    @program.MemberMobile</span>
+                            <span class="meta-value-Fullmamu">@program.MemberName</span>
                         </div>
                         <div class="program-meta-item">
                             <span class="meta-label">عنوان:</span>
@@ -276,7 +276,7 @@
                                                     }
                                                     @foreach (var ex in day.Exercises)
                                                     {
-                                                        <tr data-item-id="@ex.Id" data-exercise-id="@ex.ExerciseId">
+                                                        <tr data-item-id="@ex.Id">
                                                             <td class="text-center text-muted drag-handle" style="cursor: move;">
                                                                 <i class="fa fa-bars"></i>
                                                             </td>
@@ -480,7 +480,6 @@
                             افزودن حرکت به روز:
                             <span id="addExerciseDayTitle"
                                   style="color:#00C896;font-weight:700;"></span>
-                            
                         </h5>
                         <div style="font-size:11px;color:#a0aec0;margin-top:3px;">
                             پس از هر ثبت، فرم خالی می‌شود — می‌توانید حرکت بعدی را بلافاصله وارد کنید
@@ -828,18 +827,8 @@
             $('#addedExercisesPanel').hide();
             $('#addedExercisesList').html('');
 
-            //====================================
-            // خواندن حرکات از قبل موجود در این روز از DOM
-            // (هم از دیتابیس + هم از همین session)
-            //====================================
-            var existingSet = new Set();
-
-            $('#exerciseList_' + dayId + ' tr[data-exercise-id]').each(function () {
-                var eid = $(this).attr('data-exercise-id');
-                if (eid) existingSet.add(String(eid));
-            });
-
-            _sessionAddedExercises[dayId] = existingSet;
+            // ریست لیست session برای این روز
+            _sessionAddedExercises[dayId] = new Set();
 
             $('#addExerciseModal').modal('show');
         }
@@ -874,7 +863,7 @@
         }
 
         // بررسی تکراری بودن حرکت هنگام انتخاب از Select2
-        $(document).on('change', '#AddExercise_ExerciseId', function () {
+        $('#AddExercise_ExerciseId').on('change', function () {
             var exerciseId = $(this).val();
             var dayId = $('#AddExercise_TrainingDayId').val();
 
@@ -892,7 +881,7 @@
         });
 
         // ثبت حرکت — بدون بستن مودال
-        $(document).on('click', '#btnSaveExercise', function () {
+        $('#btnSaveExercise').on('click', function () {
 
             var exerciseId = $('#AddExercise_ExerciseId').val();
             var dayId      = $('#AddExercise_TrainingDayId').val();
@@ -948,17 +937,6 @@
                             _sessionAddedExercises[dayId] = new Set();
                         }
                         _sessionAddedExercises[dayId].add(String(exerciseId));
-
-                        // اضافه کردن سطر مجازی به DOM برای بررسی تکراری بعدی
-                        // (بدون نیاز به reload)
-                        var $tbody = $('#exerciseList_' + dayId);
-                        if ($tbody.length) {
-                            $tbody.append(
-                                '<tr data-item-id="new_' + exerciseId +
-                                '" data-exercise-id="' + exerciseId +
-                                '" class="fc-ghost-row" style="display:none;"></tr>'
-                            );
-                        }
 
                         // نمایش بنر موفقیت
                         $('#addExerciseSuccessText').text('حرکت «' + exerciseName + '» با موفقیت ثبت شد.');
@@ -1022,7 +1000,7 @@
 
         // وقتی مودال بسته می‌شود، صفحه reload شود
         // تا جدول حرکات به‌روز شود
-        $(document).on('hidden.bs.modal', '#addExerciseModal', function () {
+        $('#addExerciseModal').on('hidden.bs.modal', function () {
             var dayId = $('#AddExercise_TrainingDayId').val();
             var added = _sessionAddedExercises[dayId];
             if (added && added.size > 0) {

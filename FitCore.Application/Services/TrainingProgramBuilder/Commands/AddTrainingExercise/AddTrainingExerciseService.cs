@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Contexts;
+using FitCore.Application.Contexts;
 using FitCore.Application.Interfaces.ITrainingProgram;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.TrainingProgram;
@@ -62,6 +62,27 @@ namespace FitCore.Application.Services.TrainingProgramBuilder.Commands.AddTraini
                         IsSuccess = false,
                         Message = "حرکت تمرینی یافت نشد",
                         Data = null
+                    };
+                }
+
+                //====================================
+                // بررسی تکراری نبودن حرکت در همین روز
+                //====================================
+
+                bool isDuplicate =
+                    await _context.TrainingExerciseItems
+                    .AnyAsync(x =>
+                        x.TrainingDayId == request.TrainingDayId &&
+                        x.ExerciseId    == request.ExerciseId &&
+                        !x.IsRemoved);
+
+                if (isDuplicate)
+                {
+                    return new ResultDto<RequestAddTrainingExerciseDto>()
+                    {
+                        IsSuccess = false,
+                        Message   = $"این حرکت قبلاً در این روز تمرینی ثبت شده است",
+                        Data      = null
                     };
                 }
 

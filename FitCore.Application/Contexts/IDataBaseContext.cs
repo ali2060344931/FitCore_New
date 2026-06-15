@@ -1,4 +1,5 @@
 ﻿using FitCore.Domain.Entities.Gyms;
+using FitCore.Domain.Entities.Help;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.NutritionProgram.Food;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
@@ -68,7 +69,7 @@ namespace FitCore.Application.Contexts
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<ExerciseDifficultyLevel> ExerciseDifficultyLevels { get; set; }
         //-------------  TrainingPrograms End-------------
-
+        public DbSet<HelpContent> HelpContents { get; set; }
         int SaveChanges();
 
         Task<int> SaveChangesAsync(

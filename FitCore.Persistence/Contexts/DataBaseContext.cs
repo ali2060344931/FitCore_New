@@ -1,5 +1,6 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Domain.Entities.Gyms;
+using FitCore.Domain.Entities.Help;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.NutritionProgram.Food;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
@@ -71,6 +72,7 @@ namespace FitCore.Persistence.Contexts
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<ExerciseDifficultyLevel> ExerciseDifficultyLevels { get; set; }
         //===============
+        public DbSet<HelpContent> HelpContents { get; set; }
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)

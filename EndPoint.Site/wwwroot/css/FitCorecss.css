@@ -1041,6 +1041,286 @@ tfoot tr td {
 }
 /*..........................*/
 
+.help-icon {
+    cursor: pointer;
+    margin-right: 6px;
+    color: #13e7f2; /* رنگ پیشفرض */
+    font-size: 20px;
+}
 
+    .help-icon:hover {
+        color: #3bff00; /* رنگ hover */
+    }
 
+/*    ******************/
 
+.dash-gym-header {
+    background: linear-gradient(135deg, #0f1117 0%, #1a2035 100%);
+    border-radius: 16px;
+    padding: 20px 24px;
+}
+
+.dash-gym-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.dash-gym-logo-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: rgba(0,200,150,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 24px;
+    color: #00C896;
+    border: 2px solid rgba(0,200,150,0.3);
+}
+
+.dash-gym-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.dash-gym-meta {
+    font-size: 12.5px;
+    color: #a0aec0;
+}
+
+/* بج‌ها */
+.dash-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dash-badge-green {
+    background: rgba(0,200,150,0.15);
+    color: #00C896;
+}
+
+.dash-badge-blue {
+    background: rgba(99,179,237,0.15);
+    color: #3182ce;
+}
+
+.dash-badge-info {
+    background: rgba(99,179,237,0.2);
+    color: #63b3ed;
+}
+
+.dash-badge-purple {
+    background: rgba(183,148,244,0.2);
+    color: #805ad5;
+}
+
+.dash-badge-red {
+    background: rgba(252,129,74,0.15);
+    color: #e53e3e;
+}
+
+.dash-badge-gray {
+    background: #f0f4f8;
+    color: #718096;
+}
+
+/* کارت‌های آمار */
+.dash-stat-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+    padding: 18px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-right: 4px solid var(--accent);
+    height: 100%;
+}
+
+    .dash-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+    }
+
+.dash-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.dash-stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a202c;
+    line-height: 1;
+}
+
+.dash-stat-label {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.dash-stat-trend {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f4f8;
+    font-size: 11px;
+    color: #718096;
+}
+
+    .dash-stat-trend.up {
+        color: #48bb78;
+    }
+
+/* هدر کارت */
+.dash-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.dash-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.dash-see-all {
+    font-size: 12px;
+    color: #00C896;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .dash-see-all:hover {
+        text-decoration: underline;
+    }
+
+/* آواتار جدول */
+.dash-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00C896, #0fa0d0);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* بج کوچک جدول */
+.dash-mini-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+    .dash-mini-badge.green {
+        background: #edfaf5;
+        color: #00C896;
+    }
+
+    .dash-mini-badge.blue {
+        background: #ebf8ff;
+        color: #3182ce;
+    }
+
+    .dash-mini-badge.gray {
+        background: #f0f4f8;
+        color: #a0aec0;
+    }
+
+/* فعالیت‌های اخیر */
+.dash-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.dash-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f4f8;
+}
+
+    .dash-activity-item:last-child {
+        border-bottom: none;
+    }
+
+.dash-activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dash-activity-body {
+    flex: 1;
+    min-width: 0;
+}
+
+/* دسترسی سریع */
+.dash-quick-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 8px;
+    background: #f8fafd;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    text-decoration: none;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+    .dash-quick-btn i {
+        font-size: 22px;
+        color: #00C896;
+    }
+
+    .dash-quick-btn:hover {
+        background: #edfaf5;
+        border-color: #00C896;
+        color: #00C896;
+        transform: translateY(-2px);
+    }
+
+.fw-600 {
+    font-weight: 600;
+}
