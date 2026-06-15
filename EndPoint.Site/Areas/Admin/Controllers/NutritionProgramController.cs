@@ -308,7 +308,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private async Task FillLookupsAsync()
         {
             var programTypes = await _context.NutritionProgramTypes
-                .OrderBy(x => x.Name)
+                .OrderBy(x => x.Id)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),

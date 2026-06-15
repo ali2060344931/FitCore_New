@@ -189,7 +189,8 @@ public class AddNewMemberService : IAddNewMemberService
                 Gender = request.Gender,
 
                 BirthDate = request.BirthDate,
-
+                MembershipStartDate=request.MembershipStartDate,
+                MembershipEndDate=request.MembershipEndDate,
                 IsActive = true
             };
 
@@ -242,6 +243,17 @@ public class RequestAddNewMemberDto
 
     [DisplayName("تاریخ تولد")]
     public string BirthDate { get; set; }
+
+
+    [DisplayName("تاریخ شروع عضویت")]
+    public string MembershipStartDate { get; set; }
+
+    [DisplayName("تاریخ پایان عضویت")]
+    public string MembershipEndDate { get; set; }
+
+
+
+
 }
 
 
