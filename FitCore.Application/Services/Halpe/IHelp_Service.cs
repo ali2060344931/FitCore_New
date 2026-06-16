@@ -32,6 +32,10 @@ namespace FitCore.Application.Services.Halpe
             return await _cache.GetOrCreateAsync($"help_{key}", async entry => {
                 entry.SlidingExpiration = TimeSpan.FromHours(1);
                 var help = await _context.HelpContents.FirstOrDefaultAsync(x => x.HelpKey == key && x.IsActive);
+                
+                
+                
+                
                 return help != null ? (help.Title, help.Content) : ("راهنما", "محتوایی یافت نشد.");
             });
         }
