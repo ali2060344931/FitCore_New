@@ -190,6 +190,7 @@
                     <div class="dash-card-title">
                         <i class="fa fa-line-chart me-2" style="color:#00C896;"></i>
                         روند ۶ ماه گذشته
+                        <help key="H3" />
                     </div>
                 </div>
                 <canvas id="lineChart" height="120"></canvas>
@@ -203,6 +204,7 @@
                     <div class="dash-card-title">
                         <i class="fa fa-pie-chart me-2" style="color:#63b3ed;"></i>
                         اهداف تمرینی
+                        <help key="H4" />
                     </div>
                 </div>
                 @if (Model.TrainingGoalTypes != null && Model.TrainingGoalTypes.Any())
@@ -234,6 +236,7 @@
                     <div class="dash-card-title">
                         <i class="fa fa-user-plus me-2" style="color:#00C896;"></i>
                         آخرین اعضای ثبت‌شده
+                        <help key="H5" />
                     </div>
                     <a href="/Admin/Members" class="dash-see-all">مشاهده همه</a>
                 </div>
@@ -299,6 +302,7 @@
                     <div class="dash-card-title">
                         <i class="fa fa-clock-o me-2" style="color:#f6ad55;"></i>
                         آخرین فعالیت‌ها
+                        <help key="H6" />
                     </div>
                 </div>
 
@@ -373,6 +377,7 @@
             <div class="dash-card-title">
                 <i class="fa fa-bolt me-2" style="color:#f6ad55;"></i>
                 دسترسی سریع
+                <help key="HD00" />
             </div>
         </div>
         <div class="row g-2">
@@ -381,36 +386,43 @@
                     <i class="fa fa-users"></i>
                     <span>اعضا</span>
                 </a>
+                <help key="HD01" />
             </div>
             <div class="col-6 col-sm-4 col-md-2">
                 <a href="/Admin/NutritionProgram" class="dash-quick-btn">
                     <i class="fa fa-cutlery"></i>
                     <span>برنامه غذایی</span>
                 </a>
+                <help key="HD02" />
             </div>
             <div class="col-6 col-sm-4 col-md-2">
                 <a href="/Admin/TrainingProgram" class="dash-quick-btn">
                     <i class="fa fa-heartbeat"></i>
                     <span>برنامه تمرینی</span>
                 </a>
+                <help key="HD03" />
             </div>
             <div class="col-6 col-sm-4 col-md-2">
                 <a href="/Admin/Food" class="dash-quick-btn">
                     <i class="fa fa-apple"></i>
                     <span>بانک غذاها</span>
                 </a>
+                <help key="HD04" />
             </div>
             <div class="col-6 col-sm-4 col-md-2">
                 <a href="/Admin/Exercise" class="dash-quick-btn">
                     <i class="fa fa-list-ul"></i>
                     <span>بانک حرکات</span>
                 </a>
+                <help key="HD05" />
             </div>
             <div class="col-6 col-sm-4 col-md-2">
                 <a href="/Admin/Gym" class="dash-quick-btn">
                     <i class="fa fa-building-o"></i>
                     <span>تنظیمات باشگاه</span>
+                    
                 </a>
+                <help key="HD06" />
             </div>
         </div>
     </div>

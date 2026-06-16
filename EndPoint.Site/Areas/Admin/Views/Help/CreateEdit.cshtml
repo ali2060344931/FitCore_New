@@ -1,40 +1,63 @@
 ﻿@model EndPoint.Site.Areas.Admin.Models.HelpContentCreateEditViewModel
+@using FitCore.Application.ViewModels.Common
 @{
-    ViewData["Title"] = "لیست راهنما";
-    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
-
+    ViewData["Title"] = Model.Id > 0 ? "ویرایش راهنما" : "افزودن راهنمای جدید";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_Adminlayout.cshtml";
 }
 
-<form method="post">
-
-    <input type="hidden" asp-for="Id" />
-
-    <div class="mb-3">
-        <label asp-for="HelpKey"></label>
-        <input asp-for="HelpKey" class="form-control" />
+<div class="fc-card">
+    <div class="fc-card-header">
+        <h4>
+            <i class="fa @(Model.Id > 0 ? "fa-edit" : "fa-plus") text-info"></i>
+            @ViewData["Title"]
+        </h4>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
+    <div class="fc-card-body">
+        <form method="post">
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row">
+                <!-- استفاده از Name و Value برای پر شدن فرم در حالت ویرایش -->
+                <div class="col-md-6">
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                             model='new BaseInputViewModel { Id = "HelpKey", Name = "HelpKey", LabelName = "کلید راهنما (مثال: H2)", Placeholder = "کلید یکتا را وارد کنید", Value = Model.HelpKey }' />
+                </div>
+
+                <div class="col-md-6">
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                             model='new BaseInputViewModel { Id = "Title", Name = "Title", LabelName = "عنوان راهنما", Placeholder = "عنوان را وارد کنید", Value = Model.Title }' />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
+                             model='new BaseInputViewModel { Id = "Content", Name = "Content", LabelName = "محتوای راهنما", Value = Model.Content }' />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <partial name="~/Areas/Admin/Views/Shared/Partials/_CheckboxInput.cshtml"
+                             model='new BaseInputViewModel { Id = "IsActive", Name = "IsActive", LabelName = "وضعیت فعال", ValueBool = Model.IsActive }' />
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="form-actions mt-3">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fa fa-save"></i> ذخیره اطلاعات
+                </button>
+                <a asp-action="Index" class="btn btn-secondary px-4">
+                    <i class="fa fa-arrow-right"></i> بازگشت
+                </a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="Content"></label>
-        <textarea asp-for="Content" class="form-control"></textarea>
-    </div>
-
-    <div class="form-check mb-3">
-        <input asp-for="IsActive" class="form-check-input" />
-        <label asp-for="IsActive"></label>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        ذخیره
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        بازگشت
-    </a>
-
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
