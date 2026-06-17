@@ -107,6 +107,33 @@
 
                         @if (User.IsAdmin())
                         {
+                            <!-- بخش مدیریت — فقط برای مدیر باشگاه -->
+                            <div class="fc-nav-label">مدیریت</div>
+
+                            @if (User.IsSuperAdmin())
+                            {
+                                <li class="fc-nav-item has-sub" id="nav-gym">
+                                    <button class="fc-nav-link" data-title="باشگاه‌ها"
+                                            onclick="fcToggleMenu('nav-gym')">
+                                        <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
+                                        <span class="fc-nav-text">باشگاه‌ها</span>
+                                        <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                    </button>
+                                    <ul class="fc-nav-sub">
+                                        <li>
+                                            <a href="/admin/Gym/index" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>لیست باشگاه‌ها
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/admin/Gym/Create" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>ثبت باشگاه جدید
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
                             <li class="fc-nav-item has-sub" id="nav-members">
                                 <button class="fc-nav-link" data-title="اعضاء"
                                         onclick="fcToggleMenu('nav-members')">
@@ -117,14 +144,12 @@
                                 <ul class="fc-nav-sub">
                                     <li>
                                         <a href="/admin/Members/index" class="fc-nav-sub-link">
-                                            <span class="fc-nav-sub-dot"></span>
-                                            لیست اعضاء
+                                            <span class="fc-nav-sub-dot"></span>لیست اعضاء
                                         </a>
                                     </li>
                                 </ul>
                             </li>
 
-                            <!-- برنامه‌ها -->
                             <div class="fc-nav-label">برنامه‌ها</div>
 
                             <li class="fc-nav-item has-sub" id="nav-programs">
@@ -137,20 +162,17 @@
                                 <ul class="fc-nav-sub">
                                     <li>
                                         <a href="/admin/NutritionProgram/index" class="fc-nav-sub-link">
-                                            <span class="fc-nav-sub-dot"></span>
-                                            برنامه‌های غذایی
+                                            <span class="fc-nav-sub-dot"></span>برنامه‌های غذایی
                                         </a>
                                     </li>
                                     <li>
                                         <a href="/admin/TrainingProgram/index" class="fc-nav-sub-link">
-                                            <span class="fc-nav-sub-dot"></span>
-                                            برنامه‌های تمرینی
+                                            <span class="fc-nav-sub-dot"></span>برنامه‌های تمرینی
                                         </a>
                                     </li>
                                 </ul>
                             </li>
 
-                            <!-- بانک اطلاعات -->
                             <div class="fc-nav-label">بانک اطلاعات</div>
 
                             <li class="fc-nav-item">
@@ -168,13 +190,12 @@
                             </li>
                         }
                     }
-                    @if (User.IsMember())
+                    @if (User.IsMember() && !User.IsAdmin())
                     {
                         <div class="fc-nav-label">پرتال من</div>
 
                         <li class="fc-nav-item">
-                            <a href="/Admin/MemberDashboard"
-                               class="fc-nav-link" data-title="داشبورد من">
+                            <a href="/Admin/MemberDashboard" class="fc-nav-link" data-title="داشبورد من">
                                 <span class="fc-nav-icon"><i class="icon-home"></i></span>
                                 <span class="fc-nav-text">داشبورد من</span>
                             </a>
@@ -195,22 +216,25 @@
                                 <span class="fc-nav-text">برنامه تمرینی من</span>
                             </a>
                         </li>
+
+                        <div class="fc-nav-label">پروفایل</div>
+
                         <li class="fc-nav-item">
                             <a href="/Admin/MemberProfile/CompleteInfo"
-                               class="fc-nav-link" data-title="برنامه تمرینی">
-                                <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
-                                <span class="fc-nav-text">اطلاعات تکمیلی من</span>
+                               class="fc-nav-link" data-title="ویرایش پروفایل">
+                                <span class="fc-nav-icon"><i class="fa fa-user-circle-o"></i></span>
+                                <span class="fc-nav-text">اطلاعات جسمانی</span>
                             </a>
                         </li>
+
                         <li class="fc-nav-item">
-                            <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedUserId"
-                               class="fc-nav-link" data-title="برنامه تمرینی">
-                                <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
-                                <span class="fc-nav-text">وضعیت جسمی من</span>
+                            <a href="/Admin/MemberProfile/AddBodyMeasurement"
+                               class="fc-nav-link" data-title="اندازه‌گیری">
+                                <span class="fc-nav-icon"><i class="fa fa-balance-scale"></i></span>
+                                <span class="fc-nav-text">ثبت اندازه‌گیری</span>
                             </a>
                         </li>
                     }
-                    
                 </ul>
             </nav>
 

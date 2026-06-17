@@ -1,192 +1,652 @@
 @using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
 @using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms
+@using FitCore.Domain.Entities.Members
 @using FitCore.Common
+@using EndPoint.Site.Areas.Admin.Controllers
 
 @{
     ViewData["Title"] = "داشبورد من";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 
-    var nutritionPrograms = ViewBag.NutritionPrograms as
-        System.Collections.Generic.List<GetNutritionProgramsDto>;
-    var trainingPrograms = ViewBag.TrainingPrograms as
-        System.Collections.Generic.List<GetTrainingProgramsDto>;
+    var member           = ViewBag.Member as Member;
+    var encryptedId      = ViewBag.EncryptedUserId as string;
+    var nutritionList    = ViewBag.NutritionPrograms as System.Collections.Generic.List<GetNutritionProgramsDto>;
+    var trainingList     = ViewBag.TrainingPrograms as System.Collections.Generic.List<GetTrainingProgramsDto>;
+    var lastMeasurement  = ViewBag.LastMeasurement as MemberBodyMeasurement;
+    var membershipStatus = ViewBag.MembershipStatus as MembershipStatusDto;
 
-    string memberName = ViewBag.MemberName ?? "-";
+    string memberName    = member?.AppUser?.FullName ?? "-";
+    string memberMobile  = member?.AppUser?.PhoneNumber ?? "-";
+    string genderLabel   = member?.Gender == Gender.Male ? "آقا" : "خانم";
+    bool   isProfileDone = member != null &&
+                           !string.IsNullOrWhiteSpace(member.BirthDate) &&
+                           member.Height != null;
 }
+
+@* ============ استایل‌ها ============ *@
+<style>
+    .mb-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 100%;
+    }
+
+    .mb-header-card {
+        background: linear-gradient(135deg, #0f1117 0%, #1a2035 100%);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    /* کارت‌های آمار */
+    .mb-stat {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+        color: inherit;
+        transition: transform .2s, box-shadow .2s;
+        border-right: 4px solid var(--c);
+        height: 100%;
+    }
+
+    .mb-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 22px rgba(0,0,0,0.1);
+        color: inherit;
+    }
+
+    .mb-stat-icon {
+        width: 46px; height: 46px;
+        border-radius: 12px;
+        background: var(--cb);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px; flex-shrink: 0;
+        color: var(--c);
+    }
+
+    .mb-stat-num  { font-size: 26px; font-weight: 700; line-height: 1; color: #1a202c; }
+    .mb-stat-lbl  { font-size: 12px; color: #718096; margin-top: 3px; }
+
+    /* بج وضعیت عضویت */
+    .mb-membership-card {
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .mb-membership-card.active   { background:#edfaf5; border:1.5px solid #00C896; }
+    .mb-membership-card.soon     { background:#fffbeb; border:1.5px solid #f6ad55; }
+    .mb-membership-card.expired  { background:#fff5f5; border:1.5px solid #fc8181; }
+    .mb-membership-card.unknown  { background:#f7fafc; border:1.5px solid #e2e8f0; }
+
+    /* کارت‌های برنامه */
+    .mb-program-item {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        transition: border-color .2s;
+    }
+
+    .mb-program-item:hover { border-color: #00C896; }
+    .mb-program-item:last-child { margin-bottom: 0; }
+
+    /* دسترسی سریع */
+    .mb-quick-btn {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 8px; padding: 16px 10px;
+        background: #f8fafd;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+        color: #4a5568; text-decoration: none;
+        transition: all .2s; text-align: center;
+    }
+
+    .mb-quick-btn i { font-size: 22px; }
+    .mb-quick-btn:hover {
+        background: #edfaf5;
+        border-color: #00C896;
+        color: #00C896;
+        transform: translateY(-2px);
+    }
+
+    .mb-quick-btn:hover i { color: #00C896; }
+
+    /* هشدار تکمیل پروفایل */
+    .mb-profile-alert {
+        background: #fffbeb;
+        border: 1.5px solid #f6ad55;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+    }
+
+    /* اندازه‌گیری */
+    .mb-measure-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7px 0;
+        border-bottom: 1px solid #f0f4f8;
+        font-size: 13px;
+    }
+
+    .mb-measure-row:last-child { border-bottom: none; }
+    .mb-measure-lbl { color: #718096; }
+    .mb-measure-val { font-weight: 700; color: #1a202c; }
+
+    @@media (max-width: 576px) {
+        .mb-header-card { padding: 16px; }
+        .mb-card { padding: 14px; }
+    }
+</style>
 
 <div class="container-fluid mt-4">
 
-    <!-- خوش‌آمد -->
-    <div class="fc-card mb-4"
-         style="background:linear-gradient(135deg,#0f1117,#1a2035);color:#fff;border-radius:16px;">
-        <div class="d-flex align-items-center gap-3">
-            <div style="width:56px;height:56px;border-radius:50%;background:#00C896;
-                        display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="fa fa-user" style="font-size:24px;color:#fff;"></i>
+    @* ============ هشدار تکمیل پروفایل ============ *@
+    @if (!isProfileDone)
+    {
+        <div class="mb-profile-alert">
+            <i class="fa fa-exclamation-triangle" style="color:#f6ad55;font-size:20px;flex-shrink:0;"></i>
+            <div style="flex:1;">
+                <strong>پروفایل شما ناقص است</strong> —
+                برای دریافت بهترین برنامه‌های تمرینی و غذایی، لطفاً اطلاعات جسمانی خود را تکمیل کنید.
             </div>
-            <div>
-                <div style="font-size:20px;font-weight:700;">سلام، @memberName 👋</div>
-                <div style="font-size:13px;color:#a0aec0;margin-top:3px;">
-                    در اینجا می‌توانید برنامه‌های غذایی و تمرینی خود را مشاهده و چاپ کنید.
+            <a href="/Admin/MemberProfile/CompleteInfo"
+               class="btn btn-sm btn-warning"
+               style="border-radius:8px;font-size:12px;white-space:nowrap;">
+                <i class="fa fa-edit me-1"></i> تکمیل پروفایل
+            </a>
+        </div>
+    }
+
+    @* ============ هدر خوش‌آمد ============ *@
+    <div class="mb-header-card mb-4">
+        <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:56px;height:56px;border-radius:50%;
+                            background:linear-gradient(135deg,#00C896,#0fa0d0);
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:22px;color:#fff;font-weight:700;flex-shrink:0;">
+                    @(memberName.Length > 0 ? memberName[0].ToString() : "؟")
                 </div>
+                <div>
+                    <div style="font-size:19px;font-weight:700;">سلام، @memberName 👋</div>
+                    <div style="font-size:12px;color:#a0aec0;margin-top:3px;">
+                        <i class="fa fa-mobile me-1"></i>@memberMobile
+                        <span class="ms-3">@genderLabel</span>
+                        @if (!string.IsNullOrWhiteSpace(member?.BirthDate))
+                        {
+                            <span class="ms-3">
+                                <i class="fa fa-birthday-cake me-1"></i>@member.BirthDate
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* اطلاعات اضافه سمت چپ *@
+            <div class="d-flex gap-2 flex-wrap">
+                @if (member?.ActivityLevel != null)
+                {
+                    <span style="background:rgba(255,255,255,0.1);border-radius:20px;
+                                 padding:4px 12px;font-size:11px;color:#e2e8f0;">
+                        <i class="fa fa-bolt me-1"></i>@member.ActivityLevel.Name
+                    </span>
+                }
+                @if (member?.ExperienceLevel != null)
+                {
+                    <span style="background:rgba(255,255,255,0.1);border-radius:20px;
+                                 padding:4px 12px;font-size:11px;color:#e2e8f0;">
+                        <i class="fa fa-trophy me-1"></i>@member.ExperienceLevel.Name
+                    </span>
+                }
+                @if (member?.Height != null)
+                {
+                    <span style="background:rgba(255,255,255,0.1);border-radius:20px;
+                                 padding:4px 12px;font-size:11px;color:#e2e8f0;">
+                        <i class="fa fa-arrows-v me-1"></i>قد: @member.Height سانتی‌متر
+                    </span>
+                }
             </div>
         </div>
     </div>
 
-    <!-- کارت‌های خلاصه -->
-    <div class="row mb-4">
-        <div class="col-6 col-md-3 mb-3">
+    @* ============ وضعیت عضویت ============ *@
+    @if (membershipStatus != null)
+    {
+        string msClass = membershipStatus.Status switch
+        {
+            MembershipState.Active       => "active",
+            MembershipState.ExpiringSoon => "soon",
+            MembershipState.Expired      => "expired",
+            _                            => "unknown"
+        };
+
+        string msIcon = membershipStatus.Status switch
+        {
+            MembershipState.Active       => "fa-check-circle",
+            MembershipState.ExpiringSoon => "fa-exclamation-circle",
+            MembershipState.Expired      => "fa-times-circle",
+            _                            => "fa-question-circle"
+        };
+
+        string msIconColor = membershipStatus.Status switch
+        {
+            MembershipState.Active       => "#00C896",
+            MembershipState.ExpiringSoon => "#f6ad55",
+            MembershipState.Expired      => "#fc8181",
+            _                            => "#a0aec0"
+        };
+
+        string msText = membershipStatus.Status switch
+        {
+            MembershipState.Active       => $"عضویت فعال — {membershipStatus.DaysLeft} روز تا پایان اعتبار",
+            MembershipState.ExpiringSoon => $"⚠️ عضویت شما تا {membershipStatus.DaysLeft} روز دیگر منقضی می‌شود",
+            MembershipState.Expired      => "عضویت شما منقضی شده است — با باشگاه تماس بگیرید",
+            _                            => "اطلاعات عضویت تعریف نشده"
+        };
+
+        <div class="mb-membership-card @msClass mb-4">
+            <i class="fa @msIcon fa-2x" style="color:@msIconColor;flex-shrink:0;"></i>
+            <div style="flex:1;">
+                <div style="font-weight:700;font-size:14px;">@msText</div>
+                <div style="font-size:12px;color:#4a5568;margin-top:4px;">
+                    <i class="fa fa-calendar-o me-1"></i>
+                    شروع: <strong>@membershipStatus.StartDate</strong>
+                    <span class="ms-3">
+                        <i class="fa fa-calendar-times-o me-1"></i>
+                        پایان: <strong>@membershipStatus.EndDate</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* ============ کارت‌های آمار ============ *@
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-md-3">
             <a href="/Admin/MemberDashboard/MyNutritionPrograms"
-               class="fc-card d-flex align-items-center gap-3 text-decoration-none"
-               style="border-right:4px solid #00C896;transition:box-shadow 0.2s;">
-                <div style="width:44px;height:44px;border-radius:12px;background:#edfaf5;
-                            display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fa fa-cutlery" style="color:#00C896;font-size:18px;"></i>
+               class="mb-stat" style="--c:#00C896;--cb:#edfaf5;">
+                <div class="mb-stat-icon">
+                    <i class="fa fa-cutlery"></i>
                 </div>
                 <div>
-                    <div style="font-size:24px;font-weight:700;color:#1a202c;">
-                        @(nutritionPrograms?.Count ?? 0)
-                    </div>
-                    <div style="font-size:12px;color:#718096;">برنامه غذایی</div>
+                    <div class="mb-stat-num">@(nutritionList?.Count ?? 0)</div>
+                    <div class="mb-stat-lbl">برنامه غذایی</div>
                 </div>
             </a>
         </div>
 
-        <div class="col-6 col-md-3 mb-3">
+        <div class="col-6 col-md-3">
             <a href="/Admin/MemberDashboard/MyTrainingPrograms"
-               class="fc-card d-flex align-items-center gap-3 text-decoration-none"
-               style="border-right:4px solid #3182ce;transition:box-shadow 0.2s;">
-                <div style="width:44px;height:44px;border-radius:12px;background:#ebf8ff;
-                            display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fa fa-heartbeat" style="color:#3182ce;font-size:18px;"></i>
+               class="mb-stat" style="--c:#3182ce;--cb:#ebf8ff;">
+                <div class="mb-stat-icon">
+                    <i class="fa fa-heartbeat"></i>
                 </div>
                 <div>
-                    <div style="font-size:24px;font-weight:700;color:#1a202c;">
-                        @(trainingPrograms?.Count ?? 0)
-                    </div>
-                    <div style="font-size:12px;color:#718096;">برنامه تمرینی</div>
+                    <div class="mb-stat-num">@(trainingList?.Count ?? 0)</div>
+                    <div class="mb-stat-lbl">برنامه تمرینی</div>
                 </div>
             </a>
         </div>
+
+        <div class="col-6 col-md-3">
+            <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedId"
+               class="mb-stat" style="--c:#9f7aea;--cb:#faf5ff;">
+                <div class="mb-stat-icon">
+                    <i class="fa fa-balance-scale"></i>
+                </div>
+                <div>
+                    <div class="mb-stat-num">
+                        @(lastMeasurement?.Weight?.ToString("0.#") ?? "-")
+                    </div>
+                    <div class="mb-stat-lbl">
+                        @(lastMeasurement != null ? "آخرین وزن (kg)" : "وزنی ثبت نشده")
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <a href="/Admin/MemberProfile/CompleteInfo"
+               class="mb-stat" style="--c:#f6ad55;--cb:#fffaf0;">
+                <div class="mb-stat-icon">
+                    <i class="fa fa-user-circle-o"></i>
+                </div>
+                <div>
+                    <div class="mb-stat-num" style="font-size:18px;padding-top:4px;">
+                        @(isProfileDone ? "✓ کامل" : "ناقص")
+                    </div>
+                    <div class="mb-stat-lbl">وضعیت پروفایل</div>
+                </div>
+            </a>
+        </div>
+
     </div>
 
-    <div class="row">
+    @* ============ برنامه‌ها + اندازه‌گیری ============ *@
+    <div class="row g-3 mb-4">
 
-        <!-- برنامه‌های غذایی -->
-        <div class="col-md-6 mb-4">
-            <div class="fc-card">
+        @* برنامه‌های غذایی *@
+        <div class="col-md-6">
+            <div class="mb-card">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div style="font-size:15px;font-weight:700;">
+                    <div style="font-size:14px;font-weight:700;">
                         <i class="fa fa-cutlery me-2" style="color:#00C896;"></i>
                         برنامه‌های غذایی من
                     </div>
                     <a href="/Admin/MemberDashboard/MyNutritionPrograms"
-                       class="btn btn-sm btn-outline-success" style="border-radius:8px;font-size:12px;">
+                       style="font-size:12px;color:#00C896;text-decoration:none;font-weight:600;">
                         مشاهده همه
                     </a>
                 </div>
 
-                @if (nutritionPrograms != null && nutritionPrograms.Any())
+                @if (nutritionList != null && nutritionList.Any())
                 {
-                    <div style="display:flex;flex-direction:column;gap:10px;">
-                        @foreach (var p in nutritionPrograms.Take(5))
-                        {
-                            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;
-                                        display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                                <div style="flex:1;min-width:0;">
-                                    <div style="font-size:13px;font-weight:600;color:#1a202c;">
-                                        @p.ProgramType
-                                    </div>
-                                    <div style="font-size:11px;color:#718096;margin-top:2px;">
-                                        @p.StartDate — @p.EndDate
-                                        <span class="badge ms-1"
-                                              style="background:@(p.IsActive ? "#edfaf5" : "#f7fafc");
-                                                     color:@(p.IsActive ? "#00C896" : "#718096");
-                                                     border:1px solid @(p.IsActive ? "#00C896" : "#e2e8f0");
-                                                     font-size:10px;border-radius:6px;">
-                                            @(p.IsActive ? "فعال" : "غیرفعال")
-                                        </span>
-                                    </div>
+                    @foreach (var p in nutritionList.Take(4))
+                    {
+                        <div class="mb-program-item">
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:13px;font-weight:600;">@p.ProgramType</div>
+                                <div style="font-size:11px;color:#718096;margin-top:2px;">
+                                    <i class="fa fa-calendar-o me-1"></i>
+                                    @p.StartDate — @p.EndDate
+                                    <span class="badge ms-1"
+                                          style="background:@(p.IsActive?"#edfaf5":"#f0f4f8");
+                                                 color:@(p.IsActive?"#00C896":"#718096");
+                                                 border:1px solid @(p.IsActive?"#00C896":"#e2e8f0");
+                                                 font-size:10px;border-radius:5px;">
+                                        @(p.IsActive ? "فعال" : "قدیمی")
+                                    </span>
                                 </div>
-                                <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)"
-                                   class="btn btn-sm"
-                                   style="background:#00C896;color:#fff;border-radius:8px;
-                                          font-size:12px;padding:5px 12px;white-space:nowrap;"
-                                   title="دانلود PDF">
-                                    <i class="fa fa-print me-1"></i> چاپ PDF
-                                </a>
                             </div>
-                        }
-                    </div>
+                            <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)"
+                               target="_blank"
+                               class="btn btn-sm"
+                               style="background:#00C896;color:#fff;border-radius:7px;
+                                      font-size:11px;padding:4px 10px;white-space:nowrap;flex-shrink:0;">
+                                <i class="fa fa-print me-1"></i>PDF
+                            </a>
+                        </div>
+                    }
                 }
                 else
                 {
                     <div style="text-align:center;padding:30px 0;color:#a0aec0;">
-                        <i class="fa fa-inbox fa-2x mb-2" style="display:block;opacity:0.4;"></i>
-                        هنوز برنامه غذایی ثبت نشده است
+                        <i class="fa fa-inbox fa-2x" style="display:block;margin-bottom:8px;opacity:.35;"></i>
+                        هنوز برنامه غذایی ثبت نشده
                     </div>
                 }
             </div>
         </div>
 
-        <!-- برنامه‌های تمرینی -->
-        <div class="col-md-6 mb-4">
-            <div class="fc-card">
+        @* برنامه‌های تمرینی *@
+        <div class="col-md-6">
+            <div class="mb-card">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div style="font-size:15px;font-weight:700;">
+                    <div style="font-size:14px;font-weight:700;">
                         <i class="fa fa-heartbeat me-2" style="color:#3182ce;"></i>
                         برنامه‌های تمرینی من
                     </div>
                     <a href="/Admin/MemberDashboard/MyTrainingPrograms"
-                       class="btn btn-sm btn-outline-primary" style="border-radius:8px;font-size:12px;">
+                       style="font-size:12px;color:#3182ce;text-decoration:none;font-weight:600;">
                         مشاهده همه
                     </a>
                 </div>
 
-                @if (trainingPrograms != null && trainingPrograms.Any())
+                @if (trainingList != null && trainingList.Any())
                 {
-                    <div style="display:flex;flex-direction:column;gap:10px;">
-                        @foreach (var p in trainingPrograms.Take(5))
-                        {
-                            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;
-                                        display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                                <div style="flex:1;min-width:0;">
-                                    <div style="font-size:13px;font-weight:600;color:#1a202c;
-                                                overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                                        @p.Title
-                                    </div>
-                                    <div style="font-size:11px;color:#718096;margin-top:2px;">
-                                        @p.TrainingProgramType — @p.StartDate تا @p.EndDate
-                                        <span class="badge ms-1"
-                                              style="background:@(p.IsActive ? "#ebf8ff" : "#f7fafc");
-                                                     color:@(p.IsActive ? "#3182ce" : "#718096");
-                                                     border:1px solid @(p.IsActive ? "#3182ce" : "#e2e8f0");
-                                                     font-size:10px;border-radius:6px;">
-                                            @(p.IsActive ? "فعال" : "غیرفعال")
-                                        </span>
-                                    </div>
+                    @foreach (var p in trainingList.Take(4))
+                    {
+                        <div class="mb-program-item">
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:13px;font-weight:600;
+                                            overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                    @p.Title
                                 </div>
-                                <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)"
-                                   class="btn btn-sm"
-                                   style="background:#3182ce;color:#fff;border-radius:8px;
-                                          font-size:12px;padding:5px 12px;white-space:nowrap;"
-                                   title="دانلود PDF">
-                                    <i class="fa fa-print me-1"></i> چاپ PDF
-                                </a>
+                                <div style="font-size:11px;color:#718096;margin-top:2px;">
+                                    <i class="fa fa-tag me-1"></i>@p.TrainingProgramType
+                                    <span class="ms-2">
+                                        <i class="fa fa-calendar-o me-1"></i>@p.StartDate
+                                    </span>
+                                    <span class="badge ms-1"
+                                          style="background:@(p.IsActive?"#ebf8ff":"#f0f4f8");
+                                                 color:@(p.IsActive?"#3182ce":"#718096");
+                                                 border:1px solid @(p.IsActive?"#3182ce":"#e2e8f0");
+                                                 font-size:10px;border-radius:5px;">
+                                        @(p.IsActive ? "فعال" : "قدیمی")
+                                    </span>
+                                </div>
                             </div>
-                        }
-                    </div>
+                            <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)"
+                               target="_blank"
+                               class="btn btn-sm"
+                               style="background:#3182ce;color:#fff;border-radius:7px;
+                                      font-size:11px;padding:4px 10px;white-space:nowrap;flex-shrink:0;">
+                                <i class="fa fa-print me-1"></i>PDF
+                            </a>
+                        </div>
+                    }
                 }
                 else
                 {
                     <div style="text-align:center;padding:30px 0;color:#a0aec0;">
-                        <i class="fa fa-inbox fa-2x mb-2" style="display:block;opacity:0.4;"></i>
-                        هنوز برنامه تمرینی ثبت نشده است
+                        <i class="fa fa-inbox fa-2x" style="display:block;margin-bottom:8px;opacity:.35;"></i>
+                        هنوز برنامه تمرینی ثبت نشده
                     </div>
                 }
             </div>
         </div>
 
+    </div>
+
+    @* ============ آخرین اندازه‌گیری + اطلاعات جسمانی ============ *@
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6">
+            <div class="mb-card">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div style="font-size:14px;font-weight:700;">
+                        <i class="fa fa-balance-scale me-2" style="color:#9f7aea;"></i>
+                        آخرین اندازه‌گیری بدن
+                    </div>
+                    <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedId"
+                       style="font-size:12px;color:#9f7aea;text-decoration:none;font-weight:600;">
+                        مشاهده تاریخچه
+                    </a>
+                </div>
+
+                @if (lastMeasurement != null)
+                {
+                    <div style="font-size:11px;color:#a0aec0;margin-bottom:10px;">
+                        تاریخ ثبت: @lastMeasurement.RecordDate
+                    </div>
+
+                    @if (lastMeasurement.Weight.HasValue)
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl"><i class="fa fa-balance-scale me-1"></i>وزن</span>
+                            <span class="mb-measure-val">@lastMeasurement.Weight kg</span>
+                        </div>
+                    }
+                    @if (lastMeasurement.BodyFatPercentage.HasValue)
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl"><i class="fa fa-percent me-1"></i>درصد چربی</span>
+                            <span class="mb-measure-val">@lastMeasurement.BodyFatPercentage %</span>
+                        </div>
+                    }
+                    @if (lastMeasurement.Waist.HasValue)
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl"><i class="fa fa-arrows-h me-1"></i>دور کمر</span>
+                            <span class="mb-measure-val">@lastMeasurement.Waist cm</span>
+                        </div>
+                    }
+                    @if (lastMeasurement.Hip.HasValue)
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">دور باسن</span>
+                            <span class="mb-measure-val">@lastMeasurement.Hip cm</span>
+                        </div>
+                    }
+                    @if (lastMeasurement.Chest.HasValue)
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">دور سینه</span>
+                            <span class="mb-measure-val">@lastMeasurement.Chest cm</span>
+                        </div>
+                    }
+
+                    <div class="mt-3">
+                        <a href="/Admin/MemberProfile/AddBodyMeasurement"
+                           class="btn btn-sm btn-outline-secondary w-100"
+                           style="border-radius:8px;font-size:12px;">
+                            <i class="fa fa-plus me-1"></i>ثبت اندازه‌گیری جدید
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div style="text-align:center;padding:20px 0;color:#a0aec0;">
+                        <i class="fa fa-inbox fa-2x" style="display:block;margin-bottom:8px;opacity:.35;"></i>
+                        <div style="font-size:13px;margin-bottom:12px;">هنوز اندازه‌گیری ثبت نشده</div>
+                        <a href="/Admin/MemberProfile/AddBodyMeasurement"
+                           class="btn btn-sm"
+                           style="background:#9f7aea;color:#fff;border-radius:8px;font-size:12px;">
+                            <i class="fa fa-plus me-1"></i>ثبت اولین اندازه‌گیری
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-card">
+                <div style="font-size:14px;font-weight:700;margin-bottom:14px;">
+                    <i class="fa fa-user-circle-o me-2" style="color:#f6ad55;"></i>
+                    اطلاعات جسمانی
+                </div>
+
+                @if (member != null)
+                {
+                    @if (!string.IsNullOrWhiteSpace(member.BirthDate))
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">تاریخ تولد</span>
+                            <span class="mb-measure-val">@member.BirthDate</span>
+                        </div>
+                    }
+                    @if (member.Height.HasValue)
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">قد</span>
+                            <span class="mb-measure-val">@member.Height سانتی‌متر</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(member.FoodAllergies))
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">حساسیت غذایی</span>
+                            <span class="mb-measure-val" style="font-size:12px;">@member.FoodAllergies</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(member.MedicalConditions))
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">شرایط پزشکی</span>
+                            <span class="mb-measure-val" style="font-size:12px;">@member.MedicalConditions</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(member.Injuries))
+                    {
+                        <div class="mb-measure-row">
+                            <span class="mb-measure-lbl">سوابق آسیب</span>
+                            <span class="mb-measure-val" style="font-size:12px;">@member.Injuries</span>
+                        </div>
+                    }
+                }
+
+                <div class="mt-3">
+                    <a href="/Admin/MemberProfile/CompleteInfo"
+                       class="btn btn-sm btn-outline-warning w-100"
+                       style="border-radius:8px;font-size:12px;">
+                        <i class="fa fa-edit me-1"></i>ویرایش اطلاعات جسمانی
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @* ============ دسترسی سریع ============ *@
+    <div class="mb-card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:14px;">
+            <i class="fa fa-bolt me-2" style="color:#f6ad55;"></i>
+            دسترسی سریع
+        </div>
+        <div class="row g-2">
+            <div class="col-6 col-sm-4 col-md-2">
+                <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-quick-btn">
+                    <i class="fa fa-cutlery" style="color:#00C896;"></i>
+                    <span>برنامه غذایی</span>
+                </a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-quick-btn">
+                    <i class="fa fa-heartbeat" style="color:#3182ce;"></i>
+                    <span>برنامه تمرینی</span>
+                </a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedId" class="mb-quick-btn">
+                    <i class="fa fa-balance-scale" style="color:#9f7aea;"></i>
+                    <span>اندازه‌گیری بدن</span>
+                </a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <a href="/Admin/MemberProfile/AddBodyMeasurement" class="mb-quick-btn">
+                    <i class="fa fa-plus-circle" style="color:#9f7aea;"></i>
+                    <span>ثبت اندازه‌گیری</span>
+                </a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <a href="/Admin/MemberProfile/CompleteInfo" class="mb-quick-btn">
+                    <i class="fa fa-user-circle-o" style="color:#f6ad55;"></i>
+                    <span>ویرایش پروفایل</span>
+                </a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <a href="/" class="mb-quick-btn">
+                    <i class="fa fa-sign-out" style="color:#fc8181;"></i>
+                    <span>خروج</span>
+                </a>
+            </div>
+        </div>
     </div>
 
 </div>
