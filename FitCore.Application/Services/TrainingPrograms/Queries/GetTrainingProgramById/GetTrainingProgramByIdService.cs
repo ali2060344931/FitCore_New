@@ -65,6 +65,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                 .ThenBy(x => x.DayNumber)
                 .Select(d => new TrainingDayDetailsDto
                 {
+                    //EquipmentTypes
                     Id = d.Id,
                     DayNumber = d.DayNumber,
                     Title = d.Title,
@@ -76,6 +77,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                         _context.TrainingExerciseItems
                         .Where(e => e.TrainingDayId == d.Id && !e.IsRemoved)
                         .Include(e => e.Exercise)
+                        
                         .ThenInclude(ex => ex.PrimaryMuscleGroup)
                         .OrderBy(e => e.SortOrder)
                         .Select(e => new TrainingExerciseItemDto
@@ -84,6 +86,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                             ExerciseId = e.ExerciseId,
                             ExerciseName = e.Exercise.Name,
                             MuscleGroup = e.Exercise.PrimaryMuscleGroup.Name,
+                            //EquipmentTypes = e.Exercise.Description,
                             Sets = e.Sets,
                             Reps = e.Reps,
                             WeightKg = e.WeightKg,

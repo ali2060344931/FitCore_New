@@ -7,6 +7,7 @@ using FitCore.Application.Services.TrainingProgramBuilder.Commands.AddTrainingEx
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingDay;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingExercise;
 using FitCore.Common;
+using FitCore.Domain.Entities.TrainingProgram;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -200,6 +201,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var exercisesQuery = _context.Exercises
                 .Where(x => x.IsActive && !x.IsRemoved)
                 .Include(x => x.PrimaryMuscleGroup)
+                .Include(x => x.EquipmentType)
+
                 .AsQueryable();
 
             //====================================
@@ -220,7 +223,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
-                    Text = x.PrimaryMuscleGroup.Name + " - " + x.Name +
+                    Text = x.PrimaryMuscleGroup.Name+" - "+ x.EquipmentType.Name + " - " + x.Name +
                            (x.GymId == null ? " (سراسری)" : "")
                 })
                 .ToListAsync();

@@ -57,6 +57,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
         public string ExerciseName { get; set; }
 
         public string MuscleGroup { get; set; }
+        public string EquipmentTypes { get; set; }
 
         public int? Sets { get; set; }
 

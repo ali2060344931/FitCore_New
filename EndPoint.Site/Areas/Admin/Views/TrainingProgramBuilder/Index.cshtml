@@ -261,6 +261,7 @@
                                                         </th>
                                                         <th style="width: 50px;">ردیف</th>
                                                         <th>نام حرکت</th>
+                                                        @* <th>نام دستگاه</th> *@
                                                         <th>گروه عضلانی</th>
                                                         <th class="text-center">ست</th>
                                                         <th class="text-center">تکرار</th>
@@ -282,6 +283,7 @@
                                                             </td>
                                                             <td class="text-center fw-bold text-muted">@counter</td>
                                                             <td class="food-name-cell text-nowrap">@ex.ExerciseName</td>
+                                                            @* <td class="food-name-cell text-nowrap">@ex.EquipmentTypes</td> *@
                                                             <td class="food-name-cell text-nowrap">@ex.MuscleGroup</td>
                                                             <td class="text-center text-nowrap">
                                                                 <span class="badge bg-light text-dark border amount-badge">@(ex.Sets?.ToString() ?? "-")</span>
@@ -694,7 +696,7 @@
     <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
 
     <!-- SortableJS برای جابجایی (Drag & Drop) حرکات هر روز -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <script src="~/lib/sortable/Sortable.min.js"></script>
 
     <script>
 
