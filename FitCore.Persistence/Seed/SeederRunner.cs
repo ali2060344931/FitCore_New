@@ -30,6 +30,7 @@ public static class SeederRunner
             new MuscleGroupSeeder(),
             new EquipmentTypeSeeder(),
             new ExerciseDifficultyLevelSeeder(),
+            new ExerciseSeeder(),
         };
 
         foreach (var seeder in seeders)

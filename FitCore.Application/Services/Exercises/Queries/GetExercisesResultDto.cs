@@ -150,7 +150,7 @@ namespace FitCore.Application.Services.Exercises.Queries
 
             var result =
                 await exercises
-                .OrderByDescending(x => x.Id)
+                .OrderBy(x => x.Name)
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .Select(x => new GetExercisesDto

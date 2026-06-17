@@ -84,14 +84,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         // لیست حرکات
         //====================================================
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string SearchKey = "")
         {
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
 
             var request = new GetExercisesRequestDto
             {
                 Page = page,
-                PageSize = PageSize,
+                PageSize = pageSize,
                 SearchKey = SearchKey,
                 GymId = gymId,
                 IsAdmin = isAdmin

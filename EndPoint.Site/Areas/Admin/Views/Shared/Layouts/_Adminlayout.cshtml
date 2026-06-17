@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <link href="~/lib/select2/css/select2-bootstrap4.min.css" rel="stylesheet" />
 
-    
+
 </head>
 
 <body>
@@ -50,29 +50,38 @@
         ================================ -->
         <aside class="fc-sidebar" id="fcSidebar">
 
-            <!-- لوگو -->
-            <a href="/admin" class="fc-sidebar-logo">
-                <div class="fc-sidebar-logo-icon">
-                    <i class="fa fa-heartbeat"></i>
-                </div>
-                <div>
-                    <div class="fc-sidebar-logo-text">FitCore</div>
-                    <span class="fc-sidebar-logo-sub">پنل مدیریت</span>
-                </div>
-            </a>
+
+            @if (User.IsSuperAdmin() || User.IsAdmin())
+            {
+                <!-- لوگو -->
+                <a href="/admin" class="fc-sidebar-logo">
+                    <div class="fc-sidebar-logo-icon">
+                        <i class="fa fa-heartbeat"></i>
+                    </div>
+                    <div>
+                        <div class="fc-sidebar-logo-text">FitCore</div>
+                        <span class="fc-sidebar-logo-sub">پنل مدیریت</span>
+                    </div>
+                </a>
+            }
+
 
             <!-- ناوبری -->
             <nav class="fc-nav">
                 <ul style="list-style:none; padding:0; margin:0;">
 
-                    <!-- داشبورد -->
-                    <li class="fc-nav-item">
-                        <a href="/admin" class="fc-nav-link" data-title="داشبورد">
-                            <span class="fc-nav-icon"><i class="icon-home"></i></span>
-                            <span class="fc-nav-text">داشبورد</span>
-                        </a>
-                    </li>
 
+
+                    @if (User.IsSuperAdmin() || User.IsAdmin())
+                    {
+                        <!-- داشبورد -->
+                        <li class="fc-nav-item">
+                            <a href="/admin" class="fc-nav-link" data-title="داشبورد">
+                                <span class="fc-nav-icon"><i class="icon-home"></i></span>
+                                <span class="fc-nav-text">داشبورد</span>
+                            </a>
+                        </li>
+                    }
                     @if (User.IsSuperAdmin() || User.IsAdmin())
                     {
                         <!-- بخش مدیریت -->

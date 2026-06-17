@@ -18,18 +18,37 @@ namespace FitCore.Persistence.Seed
 
             var muscleGroups = new List<MuscleGroup>
             {
-                new MuscleGroup { Name = "سینه" },
-                new MuscleGroup { Name = "پشت" },
-                new MuscleGroup { Name = "شانه" },
-                new MuscleGroup { Name = "دوسر بازو" },
-                new MuscleGroup { Name = "سه‌سر بازو" },
-                new MuscleGroup { Name = "ساق پا" },
-                new MuscleGroup { Name = "چهارسر ران" },
-                new MuscleGroup { Name = "همسترینگ" },
+                new MuscleGroup { Name = "سینه" },//
+                new MuscleGroup { Name = "پشت" },//
+                new MuscleGroup { Name = "شانه" },//
+                new MuscleGroup { Name = "دوسر بازو" },//
+                new MuscleGroup { Name = "سه‌سر بازو" },//
+                new MuscleGroup { Name = "ساق پا" },//
+                new MuscleGroup { Name = "چهارسر ران" },//
+                new MuscleGroup { Name = "همسترینگ" },//
                 new MuscleGroup { Name = "باسن (سرینی)" },
-                new MuscleGroup { Name = "شکم و میان‌تنه" },
-                new MuscleGroup { Name = "ساعد و مچ" },
-                new MuscleGroup { Name = "تمام بدن" }
+                new MuscleGroup { Name = "شکم و میان‌تنه" },//
+                new MuscleGroup { Name = "ساعد و مچ" },//
+                new MuscleGroup { Name = "تمام بدن" },//
+                new MuscleGroup { Name = "هسته" },//
+                new MuscleGroup { Name = "ابداکتور" },//
+                new MuscleGroup { Name = "ادداکتور" },//
+                new MuscleGroup { Name = "تله‌پز" },//
+                new MuscleGroup { Name = "کمر پایینی" },//
+                new MuscleGroup { Name = "ساعد" },//
+                new MuscleGroup { Name = "ساق" },//
+                new MuscleGroup { Name = "سرینی" },//
+                new MuscleGroup { Name = "ران خارجی" },//
+                new MuscleGroup { Name = "ران داخلی" },//
+                new MuscleGroup { Name = "کمر" },//
+                new MuscleGroup { Name = "پشت بازو" },//
+                new MuscleGroup { Name = "جلو بازو" },//
+                new MuscleGroup { Name = "سرشانه" },//
+                new MuscleGroup { Name = "تله‌پزیوس" },//
+                new MuscleGroup { Name = "کمر پایینی" },
+
+                
+
             };
 
             await context.SeedIfNotExists(
