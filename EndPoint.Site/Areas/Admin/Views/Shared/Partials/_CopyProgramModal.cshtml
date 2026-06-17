@@ -1,4 +1,4 @@
-﻿@*
+@*
     =====================================================
     پارشال مودال کپی برنامه
     استفاده در:
@@ -143,21 +143,47 @@
                         <!-- تاریخ شروع -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">تاریخ شروع (شمسی)</label>
-                            <input type="text"
-                                   id="copyNewStartDate"
-                                   class="form-control"
-                                   placeholder="مثلاً: 1403/01/01"
-                                   style="border-radius:10px;" />
+                            <div class="input-group">
+                                <input type="text"
+                                       id="copyNewStartDate"
+                                       class="form-control text-center"
+                                       placeholder="کلیک کنید..."
+                                       readonly
+                                       autocomplete="off"
+                                       style="border-radius:10px 0 0 10px;
+                                              background:#fff;cursor:pointer;" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text"
+                                          style="background:#fff;border-radius:0 10px 10px 0;
+                                                 cursor:pointer;"
+                                          onclick="$('#copyNewStartDate').focus();">
+                                        <i class="fa fa-calendar" style="color:#00C896;"></i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- تاریخ پایان -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">تاریخ پایان (شمسی)</label>
-                            <input type="text"
-                                   id="copyNewEndDate"
-                                   class="form-control"
-                                   placeholder="مثلاً: 1403/02/01"
-                                   style="border-radius:10px;" />
+                            <div class="input-group">
+                                <input type="text"
+                                       id="copyNewEndDate"
+                                       class="form-control text-center"
+                                       placeholder="کلیک کنید..."
+                                       readonly
+                                       autocomplete="off"
+                                       style="border-radius:10px 0 0 10px;
+                                              background:#fff;cursor:pointer;" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text"
+                                          style="background:#fff;border-radius:0 10px 10px 0;
+                                                 cursor:pointer;"
+                                          onclick="$('#copyNewEndDate').focus();">
+                                        <i class="fa fa-calendar" style="color:#00C896;"></i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -217,40 +243,40 @@
         transition: opacity 0.3s;
     }
 
-        .copy-step.active {
-            opacity: 1;
-        }
+    .copy-step.active {
+        opacity: 1;
+    }
 
-        .copy-step .step-num {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            border: 1.5px solid rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            color: #a0aec0;
-            flex-shrink: 0;
-        }
+    .copy-step .step-num {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        border: 1.5px solid rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #a0aec0;
+        flex-shrink: 0;
+    }
 
-        .copy-step.active .step-num {
-            background: #00C896;
-            border-color: #00C896;
-            color: #fff;
-        }
+    .copy-step.active .step-num {
+        background: #00C896;
+        border-color: #00C896;
+        color: #fff;
+    }
 
-        .copy-step .step-label {
-            font-size: 12px;
-            color: #a0aec0;
-            white-space: nowrap;
-        }
+    .copy-step .step-label {
+        font-size: 12px;
+        color: #a0aec0;
+        white-space: nowrap;
+    }
 
-        .copy-step.active .step-label {
-            color: #fff;
-        }
+    .copy-step.active .step-label {
+        color: #fff;
+    }
 
     .copy-program-item {
         border: 1.5px solid #e2e8f0;
@@ -262,15 +288,15 @@
         background: #fff;
     }
 
-        .copy-program-item:hover {
-            border-color: #00C896;
-            background: #edfaf5;
-        }
+    .copy-program-item:hover {
+        border-color: #00C896;
+        background: #edfaf5;
+    }
 
-        .copy-program-item.selected {
-            border-color: #00C896;
-            background: #edfaf5;
-        }
+    .copy-program-item.selected {
+        border-color: #00C896;
+        background: #edfaf5;
+    }
 
     .copy-member-item {
         padding: 10px 14px;
@@ -280,14 +306,14 @@
         transition: background 0.15s;
     }
 
-        .copy-member-item:hover {
-            background: #f8fafd;
-        }
-
-        .copy-member-item:last-child {
-            border-bottom: none;
-        }
+    .copy-member-item:hover { background: #f8fafd; }
+    .copy-member-item:last-child { border-bottom: none; }
 </style>
+
+<!-- ====================================================
+     کتابخانه تقویم شمسی (اگر در Layout لود نشده)
+==================================================== -->
+<link href="~/lib/persian-datepicker/persian-datepicker.min.css" rel="stylesheet" />
 
 <!-- ====================================================
      JS مودال کپی
@@ -306,12 +332,28 @@
         _copyProgramType = programType;
         _selectedProgramId = null;
 
-        // ریست
+        // ریست فیلدها
         $('#copyProgramsList').html('');
         $('#copySearchProgram').val('');
         $('#copyStep2Message').html('');
         $('#targetMemberId').val('');
         clearSelectedMember();
+
+        // ریست تاریخ‌ها و datepicker
+        try {
+            if ($('#copyNewStartDate').data('datepicker')) {
+                $('#copyNewStartDate').data('datepicker').setDate(null);
+            }
+            if ($('#copyNewEndDate').data('datepicker')) {
+                $('#copyNewEndDate').data('datepicker').setDate(null);
+            }
+        } catch(e) {}
+
+        $('#copyNewStartDate').val('');
+        $('#copyNewEndDate').val('');
+
+        // اجازه init مجدد datepicker
+        _datePickerInitialized = false;
 
         // عنوان
         var typeLabel = programType === 'nutrition' ? 'غذایی' : 'تمرینی';
@@ -406,9 +448,9 @@
             '</div>'
         );
 
-        // پیش‌فرض تاریخ‌ها
-        $('#copyNewStartDate').val(startDate);
-        $('#copyNewEndDate').val(endDate);
+        // پیش‌فرض تاریخ‌ها (با تبدیل به اعداد انگلیسی)
+        $('#copyNewStartDate').val(toEnglishDigits(startDate));
+        $('#copyNewEndDate').val(toEnglishDigits(endDate));
 
         goToCopyStep2();
     }
@@ -426,6 +468,45 @@
         $('#stepLine').css('width', '0%');
     }
 
+    //====================================================
+    // تبدیل اعداد فارسی/عربی به انگلیسی
+    //====================================================
+    function toEnglishDigits(str) {
+        if (!str) return str;
+        return String(str).replace(/[۰-۹]/g, function (d) {
+            return d.charCodeAt(0) - '۰'.charCodeAt(0);
+        }).replace(/[٠-٩]/g, function (d) {
+            return d.charCodeAt(0) - '٠'.charCodeAt(0);
+        });
+    }
+
+    //====================================================
+    // راه‌اندازی DatePicker شمسی در مودال کپی
+    //====================================================
+    var _datePickerInitialized = false;
+
+    function initCopyDatePickers() {
+        if (_datePickerInitialized) return;
+        _datePickerInitialized = true;
+
+        var pickerConfig = {
+            format: 'YYYY/MM/DD',
+            autoClose: true,
+            initialValue: false,
+            observer: true,
+            calendar: { persian: { locale: 'fa' } },
+            onSelect: function () {
+                // تبدیل اعداد فارسی به انگلیسی بعد از انتخاب
+                var $el = $(this.model.inputElement);
+                var val = toEnglishDigits($el.val());
+                $el.val(val);
+            }
+        };
+
+        $('#copyNewStartDate').persianDatepicker(pickerConfig);
+        $('#copyNewEndDate').persianDatepicker(pickerConfig);
+    }
+
     function goToCopyStep2() {
         $('#copyStep1').hide();
         $('#copyStep2').show();
@@ -435,8 +516,11 @@
         $('#stepBadge2').addClass('active');
         $('#stepLine').css('width', '100%');
 
-        // focus روی جستجوی عضو
-        setTimeout(function () { $('#copySearchMember').focus(); }, 200);
+        // راه‌اندازی datepicker (فقط یک‌بار)
+        setTimeout(function () {
+            initCopyDatePickers();
+            $('#copySearchMember').focus();
+        }, 200);
     }
 
     //====================================================
@@ -499,8 +583,8 @@
     $('#btnDoCopy').on('click', function () {
 
         var targetMemberId = $('#targetMemberId').val();
-        var newStartDate   = $('#copyNewStartDate').val();
-        var newEndDate     = $('#copyNewEndDate').val();
+        var newStartDate = toEnglishDigits($('#copyNewStartDate').val());
+        var newEndDate   = toEnglishDigits($('#copyNewEndDate').val());
 
         if (!targetMemberId) {
             showCopyMsg('danger', 'لطفاً عضو مقصد را انتخاب کنید');
