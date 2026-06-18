@@ -148,7 +148,6 @@
                                        id="copyNewStartDate"
                                        class="form-control text-center"
                                        placeholder="کلیک کنید..."
-                                       readonly
                                        autocomplete="off"
                                        style="border-radius:10px 0 0 10px;
                                               background:#fff;cursor:pointer;" />
@@ -156,7 +155,7 @@
                                     <span class="input-group-text"
                                           style="background:#fff;border-radius:0 10px 10px 0;
                                                  cursor:pointer;"
-                                          onclick="$('#copyNewStartDate').focus();">
+                                          id="triggerStartDate">
                                         <i class="fa fa-calendar" style="color:#00C896;"></i>
                                     </span>
                                 </div>
@@ -171,7 +170,6 @@
                                        id="copyNewEndDate"
                                        class="form-control text-center"
                                        placeholder="کلیک کنید..."
-                                       readonly
                                        autocomplete="off"
                                        style="border-radius:10px 0 0 10px;
                                               background:#fff;cursor:pointer;" />
@@ -179,7 +177,7 @@
                                     <span class="input-group-text"
                                           style="background:#fff;border-radius:0 10px 10px 0;
                                                  cursor:pointer;"
-                                          onclick="$('#copyNewEndDate').focus();">
+                                          id="triggerEndDate">
                                         <i class="fa fa-calendar" style="color:#00C896;"></i>
                                     </span>
                                 </div>
@@ -311,7 +309,7 @@
 </style>
 
 <!-- ====================================================
-     کتابخانه تقویم شمسی (اگر در Layout لود نشده)
+     کتابخانه تقویم شمسی — پیش‌نیاز: persian-date.min.js
 ==================================================== -->
 <link href="~/lib/persian-datepicker/persian-datepicker.min.css" rel="stylesheet" />
 
@@ -341,12 +339,10 @@
 
         // ریست تاریخ‌ها و datepicker
         try {
-            if ($('#copyNewStartDate').data('datepicker')) {
-                $('#copyNewStartDate').data('datepicker').setDate(null);
-            }
-            if ($('#copyNewEndDate').data('datepicker')) {
-                $('#copyNewEndDate').data('datepicker').setDate(null);
-            }
+            $('#copyNewStartDate').persianDatepicker('destroy');
+        } catch(e) {}
+        try {
+            $('#copyNewEndDate').persianDatepicker('destroy');
         } catch(e) {}
 
         $('#copyNewStartDate').val('');
@@ -487,24 +483,63 @@
 
     function initCopyDatePickers() {
         if (_datePickerInitialized) return;
-        _datePickerInitialized = true;
 
-        var pickerConfig = {
-            format: 'YYYY/MM/DD',
-            autoClose: true,
-            initialValue: false,
-            observer: true,
-            calendar: { persian: { locale: 'fa' } },
-            onSelect: function () {
-                // تبدیل اعداد فارسی به انگلیسی بعد از انتخاب
-                var $el = $(this.model.inputElement);
-                var val = toEnglishDigits($el.val());
-                $el.val(val);
+        // بارگذاری persian-date.min.js اگر لود نشده باشد
+        function loadScriptIfNeeded(src, callback) {
+            if (window.PersianDate) { callback(); return; }
+            var s = document.createElement('script');
+            s.src = src;
+            s.onload = callback;
+            document.head.appendChild(s);
+        }
+
+        loadScriptIfNeeded('/lib/persian-datepicker/persian-date.min.js', function () {
+
+            function loadPickerScript(src, callback) {
+                if ($.fn.persianDatepicker) { callback(); return; }
+                var s = document.createElement('script');
+                s.src = src;
+                s.onload = callback;
+                document.head.appendChild(s);
             }
-        };
 
-        $('#copyNewStartDate').persianDatepicker(pickerConfig);
-        $('#copyNewEndDate').persianDatepicker(pickerConfig);
+            loadPickerScript('/lib/persian-datepicker/persian-datepicker.min.js', function () {
+
+                _datePickerInitialized = true;
+
+                var commonConfig = {
+                    format: 'YYYY/MM/DD',
+                    autoClose: true,
+                    initialValue: false,
+                    initialValueType: 'persian',
+                    observer: true
+                };
+
+                $('#copyNewStartDate').persianDatepicker($.extend({}, commonConfig, {
+                    onSelect: function () {
+                        var val = toEnglishDigits($('#copyNewStartDate').val());
+                        $('#copyNewStartDate').val(val);
+                    }
+                }));
+
+                $('#copyNewEndDate').persianDatepicker($.extend({}, commonConfig, {
+                    onSelect: function () {
+                        var val = toEnglishDigits($('#copyNewEndDate').val());
+                        $('#copyNewEndDate').val(val);
+                    }
+                }));
+
+                // کلیک روی آیکون‌های تقویم — باز کردن datepicker
+                $('#triggerStartDate').off('click').on('click', function () {
+                    $('#copyNewStartDate').trigger('click').focus();
+                });
+
+                $('#triggerEndDate').off('click').on('click', function () {
+                    $('#copyNewEndDate').trigger('click').focus();
+                });
+
+            });
+        });
     }
 
     function goToCopyStep2() {

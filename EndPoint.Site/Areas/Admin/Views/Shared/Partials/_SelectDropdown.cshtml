@@ -6,16 +6,6 @@
         @Model.LabelName
     </label>
 
-  @*   <select id="@Model.Id"
-            name="@Model.Name"
-            class="form-control text-center">
-        @foreach (var item in Model.Items)
-        {
-            <option value="@item.Value" selected="@(item.Value == Model.Value ? "selected" : null)">
-                @item.Text
-            </option>
-        }
-    </select> *@
     <select id="@Model.Id"
             name="@Model.Name"
             class="form-control text-center">

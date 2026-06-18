@@ -1,12 +1,4 @@
-﻿@* @model string
-<div class="form-group">
-    <label class="d-block">@ViewBag.Label</label>
-    <div class="alert alert-secondary p-2 mb-0">
-        <i class="fa fa-calendar ml-1"></i>
-        @(Model ?? "تاریخ ثبت نشده")
-    </div>
-</div> *@
-
+﻿
 @model string
 @{
     var label = ViewData["Label"]?.ToString() ?? "تاریخ";
