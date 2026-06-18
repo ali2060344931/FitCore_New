@@ -6,10 +6,9 @@
 }
 @{
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var encryptedUserId = string.IsNullOrEmpty(userId)
-        ? ""
-        : SecurityUtils.EncryptId(long.Parse(userId));
+    var encryptedUserId = string.IsNullOrEmpty(userId) ? "" : SecurityUtils.EncryptId(long.Parse(userId));
 }
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -197,6 +196,21 @@
                                     <span class="fc-nav-text">بانک حرکات</span>
                                 </a>
                             </li>
+
+
+                            <li class="fc-nav-item">
+                                <a href="/Admin/ProgramRequest" class="fc-nav-link" data-title="درخواست‌های برنامه"
+                                   id="nav-requests-link">
+                                    <span class="fc-nav-icon"><i class="fa fa-bell"></i></span>
+                                    <span class="fc-nav-text">درخواست‌های برنامه</span>
+                                    <span id="nav-pending-badge"
+                                          style="display:none;background:#f6ad55;color:#fff;
+                                        border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                    </span>
+                                </a>
+                            </li>
+
+
                         }
                     }
                     @if (User.IsMember() && !User.IsAdmin())
@@ -235,12 +249,29 @@
                                 <span class="fc-nav-text">اطلاعات جسمانی</span>
                             </a>
                         </li>
+                        @* / Admin / MemberProfile / BodyMeasurement / *@
+                        @* /Admin/MemberProfile/BodyMeasurement/" + encryptedUserId *@
 
                         <li class="fc-nav-item">
                             <a href="/Admin/MemberProfile/AddBodyMeasurement"
+                            @* <a href="/Admin/MemberProfile/BodyMeasurement/" + @encryptedUserId *@
                                class="fc-nav-link" data-title="اندازه‌گیری">
                                 <span class="fc-nav-icon"><i class="fa fa-balance-scale"></i></span>
                                 <span class="fc-nav-text">ثبت اندازه‌گیری</span>
+                            </a>
+                        </li>
+
+                        @* در بخش IsMember:  *@
+                        <li class="fc-nav-item">
+                            <a href="/Admin/ProgramRequest/Submit" class="fc-nav-link">
+                                <span class="fc-nav-icon"><i class="fa fa-paper-plane"></i></span>
+                                <span class="fc-nav-text">درخواست برنامه</span>
+                            </a>
+                        </li>
+                        <li class="fc-nav-item">
+                            <a href="/Admin/ProgramRequest/MyRequests" class="fc-nav-link">
+                                <span class="fc-nav-icon"><i class="fa fa-history"></i></span>
+                                <span class="fc-nav-text">درخواست‌های من</span>
                             </a>
                         </li>
                     }
@@ -360,94 +391,103 @@
 
         // باز/بسته کردن زیرمنو
         function fcToggleMenu(id) {
-            var el = document.getElementById(id);
-            if (!el) return;
-            var isOpen = el.classList.contains('open');
+        var el = document.getElementById(id);
+        if (!el) return;
+        var isOpen = el.classList.contains('open');
 
-            // بستن همه زیرمنوهای دیگر
-            document.querySelectorAll('.fc-nav-item.has-sub.open').forEach(function(item) {
-                item.classList.remove('open');
-            });
+        // بستن همه زیرمنوهای دیگر
+        document.querySelectorAll('.fc-nav-item.has-sub.open').forEach(function(item) {
+        item.classList.remove('open');
+        });
 
-            if (!isOpen) {
-                el.classList.add('open');
-            }
+        if (!isOpen) {
+        el.classList.add('open');
+        }
         }
 
         $(document).ready(function () {
 
-            // ---- سایدبار موبایل ----
-            $('#fcMenuToggle').on('click', function () {
-                $('#fcSidebar').toggleClass('mobile-open');
-                $('#fcOverlay').toggleClass('show');
-            });
+        // ---- سایدبار موبایل ----
+        $('#fcMenuToggle').on('click', function () {
+        $('#fcSidebar').toggleClass('mobile-open');
+        $('#fcOverlay').toggleClass('show');
+        });
 
-            $('#fcOverlay').on('click', function () {
-                $('#fcSidebar').removeClass('mobile-open');
-                $('#fcOverlay').removeClass('show');
-            });
+        $('#fcOverlay').on('click', function () {
+        $('#fcSidebar').removeClass('mobile-open');
+        $('#fcOverlay').removeClass('show');
+        });
 
-            // ---- collapse دسکتاپ ----
-            $('#fcCollapseBtn').on('click', function () {
-                $('body').toggleClass('sidebar-collapsed');
-                // ذخیره در localStorage
-                try {
-                    localStorage.setItem('fc_sidebar_collapsed',
-                        $('body').hasClass('sidebar-collapsed') ? '1' : '0');
-                } catch(e) {}
-            });
+        // ---- collapse دسکتاپ ----
+        $('#fcCollapseBtn').on('click', function () {
+        $('body').toggleClass('sidebar-collapsed');
+        // ذخیره در localStorage
+        try {
+        localStorage.setItem('fc_sidebar_collapsed',
+        $('body').hasClass('sidebar-collapsed') ? '1' : '0');
+        } catch(e) {}
+        });
 
-            // بازیابی وضعیت collapse
-            try {
-                if (localStorage.getItem('fc_sidebar_collapsed') === '1') {
-                    $('body').addClass('sidebar-collapsed');
-                }
-            } catch(e) {}
+        // بازیابی وضعیت collapse
+        try {
+        if (localStorage.getItem('fc_sidebar_collapsed') === '1') {
+        $('body').addClass('sidebar-collapsed');
+        }
+        } catch(e) {}
 
-            // ---- منوی کاربر ----
-            $('#fcUserTrigger').on('click', function (e) {
-                e.stopPropagation();
-                $('#fcUserDropdown').toggleClass('show');
-            });
+        // ---- منوی کاربر ----
+        $('#fcUserTrigger').on('click', function (e) {
+        e.stopPropagation();
+        $('#fcUserDropdown').toggleClass('show');
+        });
 
-            $(document).on('click', function () {
-                $('#fcUserDropdown').removeClass('show');
-            });
+        $(document).on('click', function () {
+        $('#fcUserDropdown').removeClass('show');
+        });
 
-            // ---- فعال کردن آیتم منوی جاری ----
-            var currentPath = window.location.pathname.toLowerCase();
-            $('.fc-nav-link[href], .fc-nav-sub-link[href]').each(function () {
-                var href = $(this).attr('href');
-                if (href && href !== '#' && href !== 'javascript:;') {
-                    var normHref = href.replace(/^~/, '').toLowerCase();
-                    if (currentPath === normHref ||
-                        (normHref.length > 1 && currentPath.startsWith(normHref))) {
-                        $(this).addClass('active');
-                        // باز کردن والد
-                        var parentSub = $(this).closest('.has-sub');
-                        if (parentSub.length) {
-                            parentSub.addClass('open');
-                        }
-                    }
-                }
-            });
+        // ---- فعال کردن آیتم منوی جاری ----
+        var currentPath = window.location.pathname.toLowerCase();
+        $('.fc-nav-link[href], .fc-nav-sub-link[href]').each(function () {
+        var href = $(this).attr('href');
+        if (href && href !== '#' && href !== 'javascript:;') {
+        var normHref = href.replace(/^~/, '').toLowerCase();
+        if (currentPath === normHref ||
+        (normHref.length > 1 && currentPath.startsWith(normHref))) {
+        $(this).addClass('active');
+        // باز کردن والد
+        var parentSub = $(this).closest('.has-sub');
+        if (parentSub.length) {
+        parentSub.addClass('open');
+        }
+        }
+        }
+        });
 
         });
 
-                function openHelp(key) {
-            $.get('/Admin/Help/Get', { key: key }, function (res) {
-                $('#helpTitle').text(res.title);
-                $('#helpContent').html(res.content); // پشتیبانی از HTML
-                $('#helpModal').modal('show');
-            });
+        function openHelp(key) {
+        $.get('/Admin/Help/Get', { key: key }, function (res) {
+        $('#helpTitle').text(res.title);
+        $('#helpContent').html(res.content); // پشتیبانی از HTML
+        $('#helpModal').modal('show');
+        });
         }
 
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
+        return new bootstrap.Tooltip(tooltipTriggerEl)
         })
 
 
+
+        // بارگذاری تعداد درخواست‌های در انتظار برای badge سایدبار
+        if (document.getElementById('nav-pending-badge')) {
+        $.get('/Admin/ProgramRequest/PendingCount', function (res) {
+        if (res && res.count > 0) {
+        $('#nav-pending-badge').text(res.count).show();
+        }
+        });
+        }
     </script>
 
 </body>

@@ -110,31 +110,6 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 
 
         [HttpGet]
-        public IActionResult AddBodyMeasurement000()
-        {
-            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrWhiteSpace(userIdValue))
-            {
-                return Unauthorized();
-            }
-
-            var appUserId = long.Parse(userIdValue);
-            var memberId = _context.Members.Where(c => c.AppUserId == appUserId).FirstOrDefault().Id;
-
-
-            var model = new RequestAddMemberBodyMeasurementDto
-            {
-                MemberId = memberId
-            };
-            ViewBag.FullName = _context.Users.Where(c => c.Id == appUserId).FirstOrDefault().FullName;
-            ViewBag.Mobile = _context.Users.Where(c => c.Id == appUserId).FirstOrDefault().PhoneNumber;
-
-            return View(model);
-        }
-
-
-        [HttpGet]
         public async Task<IActionResult> BodyMeasurement(string  Id, string SearchKey, int page = 1, int pageSize = 10)
         {
             var id = SecurityUtils.DecryptId(Id);

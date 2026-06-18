@@ -6,9 +6,13 @@
 
   <ItemGroup>
     <Compile Remove="Areas\Admin\Data\**" />
+    <Compile Remove="Areas\Admin\Views\Home - Copy\**" />
     <Content Remove="Areas\Admin\Data\**" />
+    <Content Remove="Areas\Admin\Views\Home - Copy\**" />
     <EmbeddedResource Remove="Areas\Admin\Data\**" />
+    <EmbeddedResource Remove="Areas\Admin\Views\Home - Copy\**" />
     <None Remove="Areas\Admin\Data\**" />
+    <None Remove="Areas\Admin\Views\Home - Copy\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\Home - Copy\" />
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
     <Folder Include="Areas\Admin\Views\Shared\EditorTemplates\" />
     <Folder Include="Areas\Admin\Views\Shared\DisplayTemplates\" />

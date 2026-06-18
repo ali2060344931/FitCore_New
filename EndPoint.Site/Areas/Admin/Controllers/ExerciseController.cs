@@ -526,5 +526,39 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             difficultyLevels.Insert(0, new SelectListItem { Value = "", Text = "انتخاب کنید" });
             ViewBag.DifficultyLevels = difficultyLevels;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return Json(new { id = (long?)null });
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            // جستجوی دقیق اول
+            var exercise = await _context.Exercises
+                .Where(x => !x.IsRemoved && x.IsActive &&
+                       (x.GymId == null || x.GymId == gymId) &&
+                       x.Name == name)
+                .Select(x => new { x.Id, x.Name })
+                .FirstOrDefaultAsync();
+
+            // اگر پیدا نشد، جستجوی تقریبی
+            if (exercise == null)
+            {
+                exercise = await _context.Exercises
+                    .Where(x => !x.IsRemoved && x.IsActive &&
+                           (x.GymId == null || x.GymId == gymId) &&
+                           (x.Name.Contains(name) || name.Contains(x.Name)))
+                    .Select(x => new { x.Id, x.Name })
+                    .FirstOrDefaultAsync();
+            }
+
+            if (exercise == null)
+                return Json(new { id = (long?)null, name = "" });
+
+            return Json(new { id = exercise.Id, name = exercise.Name });
+        }
+
     }
 }

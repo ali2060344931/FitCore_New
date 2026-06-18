@@ -1,4 +1,5 @@
 using FitCore.Application.Contexts;
+using FitCore.Domain.Entities.ProgramRequest;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -59,6 +60,8 @@ namespace FitCore.Application.Services.Dashboard
         public List<DistributionDto> TrainingGoalTypes { get; set; }
 
         public List<ExpiringMemberDto> ExpiringMembers { get; set; }
+
+        public int PendingRequestsCount { get; set; }
     }
 
     public class MonthlyStatDto
@@ -264,6 +267,11 @@ namespace FitCore.Application.Services.Dashboard
                 RecentTrainingPrograms  = recentTraining,
                 NutritionProgramTypes   = nutritionDist,
                 TrainingGoalTypes       = trainingGoalDist,
+
+                PendingRequestsCount = await _context.ProgramRequests
+       .CountAsync(r => r.GymId == gymId &&
+                        r.Status == ProgramRequestStatus.Pending &&
+                        !r.IsRemoved),
             };
         }
 

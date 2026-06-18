@@ -6,6 +6,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMealItem;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
+using FitCore.Domain.Entities.ProgramRequest;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.TrainingProgram;
@@ -70,6 +71,7 @@ namespace FitCore.Application.Contexts
         public DbSet<ExerciseDifficultyLevel> ExerciseDifficultyLevels { get; set; }
         //-------------  TrainingPrograms End-------------
         public DbSet<HelpContent> HelpContents { get; set; }
+        public DbSet<ProgramRequest> ProgramRequests { get; set; }
         int SaveChanges();
 
         Task<int> SaveChangesAsync(

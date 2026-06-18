@@ -58,6 +58,7 @@ using QuestPDF.Infrastructure;
 
 using System;
 using System.IO;
+using FitCore.Application.Services.AI;
 
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
@@ -83,6 +84,34 @@ builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
 #region Identity
 
 builder.Services.AddHttpContextAccessor();
+
+
+
+//........................
+
+builder.Services.AddHttpClient("ClaudeAPI", client =>
+{
+    client.BaseAddress = new Uri("https://api.anthropic.com");
+    client.DefaultRequestHeaders.Add("x-api-key",
+        builder.Configuration["ClaudeAPI:ApiKey"]);
+    client.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
+    client.Timeout = TimeSpan.FromSeconds(120); // 120 ثانیه برای AI
+});
+
+// 3. ثبت سرویس‌های AI
+builder.Services.AddScoped<
+    IGenerateNutritionProgramAIService,
+    GenerateNutritionProgramAIService>();
+
+builder.Services.AddScoped<
+    IGenerateTrainingProgramAIService,
+    GenerateTrainingProgramAIService>();
+
+
+//........................
+
+
+
 
 builder.Services
     .AddIdentity<AppUser, IdentityRole<long>>(options =>
@@ -248,6 +277,9 @@ builder.Services.AddScoped<IHelp_Service, HelpService>();
 builder.Services.AddScoped<IGetMembersByIdService,
     GetMembersByIdService>();
 
+builder.Services.AddScoped<
+    FitCore.Application.FacadPatterns.IProgramRequestFacad,
+    FitCore.Application.FacadPatterns.ProgramRequestFacad>();
 
 builder.Services.AddScoped<IAddNewMemberService, AddNewMemberService>();
 

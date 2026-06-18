@@ -9,6 +9,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMealItem;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
+using FitCore.Domain.Entities.ProgramRequest;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.TrainingProgram;
@@ -77,14 +78,40 @@ namespace FitCore.Persistence.Contexts
         public DbSet<ExerciseDifficultyLevel> ExerciseDifficultyLevels { get; set; }
         //===============
         public DbSet<HelpContent> HelpContents { get; set; }
-
+        public DbSet<ProgramRequest> ProgramRequests { get; set; }
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             ApplyQueryFilter(modelBuilder);
+
+
+
+
+
+            modelBuilder.Entity<ProgramRequest>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.Member)
+                      .WithMany()
+                      .HasForeignKey(x => x.MemberId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.Gym)
+                      .WithMany()
+                      .HasForeignKey(x => x.GymId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.ProcessedByUser)
+                      .WithMany()
+                      .HasForeignKey(x => x.ProcessedByUserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
         }
+
+
 
         private void ApplyQueryFilter(
             ModelBuilder modelBuilder)

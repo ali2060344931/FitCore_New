@@ -116,6 +116,18 @@
                             <i class="fa fa-refresh"></i>
                         </button>
 
+
+                        @* <button class="btn btn-sm btn-outline-warning px-2 py-0 text-nowrap"
+                                onclick="openAIGenerateModal('nutrition', @program.ProgramId, {
+                            fullName: '@program.MemberName',
+                            height: @(member?.Height?.ToString() ?? "null"),
+                            weight: @(lastWeight?.ToString() ?? "null")
+                            })">
+                            <i class="fa fa-magic"></i>
+                            <span class="d-none d-md-inline ms-1">تولید با AI</span>
+                        </button> *@
+
+
                         <a class="btn btn-sm btn-outline-secondary px-2 py-0 text-nowrap"
                            href="/Admin/NutritionProgram">
                             <i class="fa fa-reply"></i>
@@ -1449,3 +1461,7 @@
 
     </script>
 }
+
+@* @section Modals {
+    <partial name="~/Areas/Admin/Views/AIAssistant/_AIGenerateModal.cshtml" />
+} *@
