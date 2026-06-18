@@ -9,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.Dashboard
 {
+
+    public class ExpiringMemberDto
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; }
+        public string MembershipEndDate { get; set; }
+        public int DaysRemaining { get; set; }
+    }
     public class GymDashboardDto
     {
         // اطلاعات باشگاه
@@ -49,6 +57,8 @@ namespace FitCore.Application.Services.Dashboard
         // توزیع برنامه‌ها بر اساس نوع
         public List<DistributionDto> NutritionProgramTypes { get; set; }
         public List<DistributionDto> TrainingGoalTypes { get; set; }
+
+        public List<ExpiringMemberDto> ExpiringMembers { get; set; }
     }
 
     public class MonthlyStatDto
@@ -301,4 +311,6 @@ namespace FitCore.Application.Services.Dashboard
             return (months, nutrition, training);
         }
     }
+
+
 }

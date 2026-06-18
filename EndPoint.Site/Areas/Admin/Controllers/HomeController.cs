@@ -5,6 +5,8 @@ using FitCore.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -21,7 +23,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             IDataBaseContext context,
             IGymDashboardService dashboardService)
         {
-            _context          = context;
+            _context = context;
             _dashboardService = dashboardService;
         }
 
@@ -54,9 +56,72 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View();
             }
 
+            // --- دریافت اطلاعات اصلی داشبورد ---
             var dashboard = await _dashboardService.Execute(gymId.Value);
 
+            // --- دریافت اعضای در حال انقضا (کد جدید) ---
+            var criticalMembers = await GetCriticalMembersAsync(gymId.Value);
+            ViewBag.CriticalMembers = criticalMembers;
+            // ---------------------------------------------
+
             return View(dashboard);
+        }
+
+        //====================================================
+        // Helper — دریافت اعضای بحرانی (پایان اشتراک)
+        //====================================================
+        private async Task<List<dynamic>> GetCriticalMembersAsync(long gymId)
+        {
+            var members = await _context.Members
+                .Include(m => m.AppUser)
+                .Where(m => m.AppUser.GymId == gymId &&
+                            m.IsActive &&
+                            !string.IsNullOrWhiteSpace(m.MembershipEndDate))
+                .ToListAsync();
+
+            var criticalList = new List<dynamic>();
+
+            foreach (var m in members)
+            {
+                // استفاده از همان منطق تبدیل تاریخ
+                try
+                {
+                    var parts = m.MembershipEndDate.Split('/');
+                    if (parts.Length == 3)
+                    {
+                        var pc = new System.Globalization.PersianCalendar();
+                        var endMiladi = pc.ToDateTime(
+                            int.Parse(parts[0]),
+                            int.Parse(parts[1]),
+                            int.Parse(parts[2]),
+                            0, 0, 0, 0);
+
+                        var today = DateTime.Today;
+                        var daysLeft = (endMiladi - today).Days;
+
+                        // اگر کمتر یا مساوی ۷ روز مانده یا منقضی شده
+                        if (daysLeft <= 7)
+                        {
+                            criticalList.Add(new
+                            {
+                                Id = m.Id,
+                                FullName = m.AppUser.FullName,
+                                Mobile = m.AppUser.PhoneNumber,
+                                EndDate = m.MembershipEndDate,
+                                RemainingDays = daysLeft
+                            });
+                        }
+                    }
+                }
+                catch
+                {
+                    // اگر تاریخ اشتباه بود، نادیده بگیر
+                    continue;
+                }
+            }
+
+            // مرتب‌سازی: کسانی که زودتر منقضی می‌شوند اول بیایند
+            return criticalList.OrderBy(x => x.RemainingDays).ToList();
         }
     }
 }

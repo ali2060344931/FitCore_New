@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Views\Home - Copy\" />
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
     <Folder Include="Areas\Admin\Views\Shared\EditorTemplates\" />
     <Folder Include="Areas\Admin\Views\Shared\DisplayTemplates\" />

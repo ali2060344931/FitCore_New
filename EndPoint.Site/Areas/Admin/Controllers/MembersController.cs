@@ -25,13 +25,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IDataBaseContext _dataBaseContext;
         private readonly IGetMembersByIdService _getMembersByIdService;
         private readonly IAddNewMemberService _addNewMemberService;
-
-        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext)
+        private readonly IDataBaseContext _context;
+        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext, IDataBaseContext context)
         {
             _memberFacad = memberFacad;
             _dataBaseContext = dataBaseContext;
             _getMembersByIdService = getMembersByIdService;
             _addNewMemberService = addNewMemberService;
+            _context = context;
         }
 
         [HttpGet]
@@ -79,10 +80,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(string Id)
+        public IActionResult Edit(string Id,bool isMemberID=false)
         {
             // تبدیل رشته به عدد واقعی
             long decryptedId = SecurityUtils.DecryptId(Id);
+
+            if(isMemberID)
+            {
+                decryptedId= _context.Members.Where(v=>v.Id == decryptedId).FirstOrDefault().AppUserId;
+            }
+
 
             // فراخوانی سرویس با عدد به دست آمده
             var q = _getMembersByIdService.Execute((int)decryptedId);

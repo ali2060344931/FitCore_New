@@ -1,4 +1,6 @@
-﻿using FitCore.Application.Contexts;
+﻿
+using FitCore.Application.Contexts;
+using FitCore.Domain.Entities.Commons;
 using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Help;
 using FitCore.Domain.Entities.Members;
@@ -16,6 +18,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -283,15 +287,67 @@ namespace FitCore.Persistence.Contexts
 
         }
 
+        //public override int SaveChanges()
+        //{
+        //    return base.SaveChanges();
+        //}
+
+        //public override async Task<int> SaveChangesAsync(
+        //    CancellationToken cancellationToken)
+        //{
+        //    return await base.SaveChangesAsync(cancellationToken);
+        //}
+
+
+
         public override int SaveChanges()
         {
+            BeforeSaveChanges();
             return base.SaveChanges();
         }
 
-        public override async Task<int> SaveChangesAsync(
-            CancellationToken cancellationToken)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            BeforeSaveChanges();
             return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void BeforeSaveChanges()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added ||
+                            e.State == EntityState.Modified ||
+                            e.State == EntityState.Deleted);
+
+            foreach (var entry in entries)
+            {
+                // بررسی می‌کنیم آیا موجودیت از BaseEntity ارث‌بری کرده است
+                if (entry.Entity is BaseEntity entity)
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            entity.InsertTime = DateTime.Now;
+                            break;
+
+                        case EntityState.Modified:
+                            entity.UpdateTime = DateTime.Now;
+                            // جلوگیری از تغییر InsertTime در دیتابیس هنگام آپدیت
+                            entry.Property("InsertTime").IsModified = false;
+                            break;
+
+                        case EntityState.Deleted:
+                            // تبدیل عملیات حذف فیزیکی به حذف منطقی
+                            entry.State = EntityState.Modified;
+                            entity.IsRemoved = true;
+                            entity.RemoveTime = DateTime.Now;
+
+                            // جلوگیری از تغییر InsertTime در دیتابیس هنگام آپدیت
+                            entry.Property("InsertTime").IsModified = false;
+                            break;
+                    }
+                }
+            }
         }
     }
 }

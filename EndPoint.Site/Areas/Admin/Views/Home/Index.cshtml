@@ -7,6 +7,15 @@
     ViewData["Title"] = "داشبورد";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
+@* @{
+    var expiringMembers = Model.Members.Where(m =>
+    {
+        var remainDays = GetRemainDays(m.MembershipEndDate);
+        return remainDays <= 5;
+    }).ToList();
+} *@
+
+
 
 @if (ViewBag.IsSuperAdmin == true)
 {
@@ -31,6 +40,64 @@
     </div>
     return;
 }
+
+@* ============ هشدار اعضای در حال انقضا (سازگار با Members.cshtml) ============ *@
+@if (ViewBag.CriticalMembers != null && ((System.Collections.IList)ViewBag.CriticalMembers).Count > 0)
+{
+    <div class="alert alert-warning alert-dismissible fade show mb-4" style="border-left: 5px solid #f6ad55; border-radius: 12px; background: #fffaf0;">
+        <h5 class="alert-heading" style="font-size: 16px; color: #744210;">
+            <i class="fa fa-exclamation-triangle me-2"></i>
+            نیاز به تمدید اشتراک
+        </h5>
+        <p style="font-size: 13px; color: #744210; margin-bottom: 12px;">
+            اشتراک اعضای زیر در حال انقضا است یا منقضی شده است:
+        </p>
+
+        <div class="table-responsive" style="background: #fff; border-radius: 8px; padding: 5px;">
+            <table class="table table-sm mb-0" style="font-size: 12px;">
+                <thead>
+                    <tr style="background: #fffaf0;">
+                        <th>نام عضو</th>
+                        <th>موبایل</th>
+                        <th>تاریخ پایان</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in ViewBag.CriticalMembers)
+                    {
+                        string statusClass = m.RemainingDays < 0 ? "badge-danger" : "badge-warning";
+                        string statusText = m.RemainingDays < 0 ? "منقضی شده" : $"{m.RemainingDays} روز مانده";
+
+                        <tr>
+                            <td>@m.FullName</td>
+                            <td style="direction:ltr">@m.Mobile</td>
+                            <td>@m.EndDate</td>
+                            <td><span class="badge @statusClass">@statusText</span></td>
+                            <td>
+                                @* --- کد اصلاح شده لینک تمدید --- *@
+                                <a asp-area="Admin"
+                                   asp-controller="Members"
+                                   asp-action="Edit"
+                                   asp-route-id="@SecurityUtils.EncryptId(m.Id)"
+                                   asp-route-isMemberID="@true"
+                                   class="btn btn-xs btn-outline-primary"
+                                   style="font-size: 11px; padding: 2px 8px;">
+                                    <i class="fa fa-edit"></i> تمدید
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: absolute; left: 15px; top: 10px;">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
 
 @if (ViewBag.NoGym == true || Model == null)
 {
@@ -420,7 +487,7 @@
                 <a href="/Admin/Gym" class="dash-quick-btn">
                     <i class="fa fa-building-o"></i>
                     <span>تنظیمات باشگاه</span>
-                    
+
                 </a>
                 <help key="HD06" />
             </div>
@@ -432,39 +499,38 @@
 <!-- ============================
      استایل
 ============================ -->
-
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
-        Chart.defaults.plugins.legend.rtl = true;
+            Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
+            Chart.defaults.plugins.legend.rtl = true;
 
-        // ============================
-        // داده‌های سرور
-        // ============================
-        var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                    Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
-                    ?? new System.Collections.Generic.List<string>()));
+            // ============================
+            // داده‌های سرور
+            // ============================
+            var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                            Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
+                                            ?? new System.Collections.Generic.List<string>()));
 
     var membersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
-                ?? new System.Collections.Generic.List<int>()));
+                                Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
+                                ?? new System.Collections.Generic.List<int>()));
 
     var nutritionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
-                ?? new System.Collections.Generic.List<int>()));
+                                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
+                                ?? new System.Collections.Generic.List<int>()));
 
     var trainingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
-                ?? new System.Collections.Generic.List<int>()));
+                                Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
+                                ?? new System.Collections.Generic.List<int>()));
 
     var donutLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
-                ?? new System.Collections.Generic.List<string>()));
+                                Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
+                                ?? new System.Collections.Generic.List<string>()));
 
     var donutData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
-                ?? new System.Collections.Generic.List<int>()));
+                                Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
+                                ?? new System.Collections.Generic.List<int>()));
 
     // ============================
     // نمودار خطی
@@ -523,47 +589,47 @@
         });
     }
 
-        // ============================
-        // نمودار دونات
-        // ============================
-        var donutCtx = document.getElementById('donutChart');
-        if (donutCtx && donutData.length > 0) {
-            var colors = ['#00C896','#63b3ed','#f6ad55','#b794f4','#fc8181','#68d391'];
+            // ============================
+            // نمودار دونات
+            // ============================
+            var donutCtx = document.getElementById('donutChart');
+            if (donutCtx && donutData.length > 0) {
+                var colors = ['#00C896','#63b3ed','#f6ad55','#b794f4','#fc8181','#68d391'];
 
-            new Chart(donutCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: donutLabels,
-                    datasets: [{
-                        data: donutData,
-                        backgroundColor: colors.slice(0, donutData.length),
-                        borderWidth: 2,
-                        borderColor: '#fff',
-                        hoverOffset: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { rtl: true }
+                new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: donutLabels,
+                        datasets: [{
+                            data: donutData,
+                            backgroundColor: colors.slice(0, donutData.length),
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '65%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { rtl: true }
+                        }
                     }
-                }
-            });
-
-            // legend دستی
-            var legend = document.getElementById('donutLegend');
-            if (legend) {
-                donutLabels.forEach(function(label, i) {
-                    legend.innerHTML +=
-                        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-                            '<div style="width:10px;height:10px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
-                            '<span style="font-size:12px;color:#4a5568;flex:1;">' + label + '</span>' +
-                            '<span style="font-size:12px;font-weight:700;color:#1a202c;">' + donutData[i] + '</span>' +
-                        '</div>';
                 });
+
+                // legend دستی
+                var legend = document.getElementById('donutLegend');
+                if (legend) {
+                    donutLabels.forEach(function(label, i) {
+                        legend.innerHTML +=
+                            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+                                '<div style="width:10px;height:10px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
+                                '<span style="font-size:12px;color:#4a5568;flex:1;">' + label + '</span>' +
+                                '<span style="font-size:12px;font-weight:700;color:#1a202c;">' + donutData[i] + '</span>' +
+                            '</div>';
+                    });
+                }
             }
-        }
     </script>
 }

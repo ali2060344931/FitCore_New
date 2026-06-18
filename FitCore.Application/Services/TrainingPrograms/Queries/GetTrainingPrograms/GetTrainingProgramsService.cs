@@ -1,4 +1,4 @@
-﻿using FitCore.Application.Contexts;
+using FitCore.Application.Contexts;
 using FitCore.Application.Interfaces.ITrainingProgram;
 using FitCore.Common.Dto;
 
@@ -28,6 +28,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                 .Include(x => x.Member)
                 .Include(x => x.TrainingProgramType)
                 .Include(x => x.TrainingGoalType)
+                .Include(x => x.Days)
                 .AsQueryable();
 
             //====================================
@@ -77,9 +78,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                     EndDate = x.EndDate,
                     SessionsPerWeek = x.SessionsPerWeek,
                     IsActive = x.IsActive,
-                    CountTrainingDays =
-                        _context.TrainingDays
-                            .Count(c => c.TrainingProgramId == x.Id)
+                    CountTrainingDays = x.Days.Count(c => !c.IsRemoved)
                 })
                 .ToListAsync();
 
