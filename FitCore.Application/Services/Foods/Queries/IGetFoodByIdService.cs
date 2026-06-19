@@ -42,7 +42,10 @@ namespace FitCore.Application.Services.Foods.Queries
                     FatPerUnit = x.FatPerUnit,
                     DefaultUnitId = x.DefaultUnitId,
                     DefaultUnitName = x.DefaultUnit.Name,
-                    IsActive = x.IsActive
+                    IsActive = x.IsActive,
+                    IsGlobal = x.GymId == null,
+                    GymName = x.Gym != null ? x.Gym.Name : null
+
                 })
                 .FirstOrDefaultAsync();
         }

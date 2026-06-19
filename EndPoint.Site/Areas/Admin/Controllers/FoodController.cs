@@ -1,4 +1,5 @@
-﻿using EndPoint.Site.Areas.Admin.Models.Foods;
+﻿using EndPoint.Site.Areas.Admin.Models;
+using EndPoint.Site.Areas.Admin.Models.Foods;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
@@ -30,11 +32,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(string SearchKey, int page = 1, int pageSize = 10)
         {
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
             var request = new RequestGetFoodsDto
             {
                 Page = page,
                 PageSize = pageSize,
-                SearchKey = SearchKey
+                SearchKey = SearchKey,
+                GymId = gymId,
+                IsAdmin = isAdmin
+
             };
 
             var result = await _foodFacad.GetFoodsService.Execute(request);
@@ -47,6 +53,18 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             var vm = await BuildViewModelAsync();
             await FillLookupsAsync();
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            // چک‌باکس سراسری فقط برای مدیر کل (SuperAdmin/Admin) نمایش داده می‌شود
+            ViewBag.IsSuperAdmin = isAdmin;
+            ViewBag.CurrentGymId = gymId;
+
+            var model = new FoodCreateEditViewModel
+            {
+                IsActive = true,
+                IsGlobal = false
+            };
             return View("CreateEdit", vm);
         }
 
@@ -61,8 +79,26 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View("CreateEdit", model);
 
             }
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            // تعیین GymId:
+            // - مدیر باشگاه (Admin): همیشه GymId خودش
+            // - مدیر کل (SuperAdmin): اگر IsGlobal = true باشد → null (سراسری)
+            //                         اگر IsGlobal = false باشد → GymId خودش (اگر داشته باشد)
+            long? targetGymId;
+
+            if (isAdmin)
+            {
+                targetGymId = model.IsGlobal ? null : gymId;
+            }
+            else
+            {
+                targetGymId = gymId;
+            }
             var result = await _foodFacad.AddFoodService.Execute(new CreateFoodDto
             {
+                GymId= targetGymId,
                 Title = model.Title,
                 EnglishTitle = model.EnglishTitle,
                 CategoryTypeId = model.CategoryTypeId,
@@ -91,6 +127,35 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             //return RedirectToAction(nameof(Index));
         }
 
+
+        //====================================================
+        // تشخیص باشگاه و سطح دسترسی کاربر جاری
+        //====================================================
+        private async Task<(long? GymId, bool IsAdmin)> GetCurrentUserGymContextAsync()
+        {
+            bool isAdmin = User.IsSuperAdmin();
+
+            if (isAdmin)
+            {
+                // مدیر کل: به همه حرکات دسترسی دارد
+                return (null, true);
+            }
+
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdValue))
+                return (null, false);
+
+            var appUserId = long.Parse(userIdValue);
+
+            var gymId = await _context.Users
+                .Where(x => x.Id == appUserId)
+                .Select(x => x.GymId)
+                .FirstOrDefaultAsync();
+
+            return (gymId, false);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -98,13 +163,26 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return BadRequest();
 
             long Id = SecurityUtils.DecryptId(id);
-
+            var item = await _context.Foods
+                .FirstOrDefaultAsync(x => x.Id == Id);
 
             await FillLookupsAsync();
 
             var food = await _foodFacad.GetFoodByIdService.Execute(Id);
             
             if (food == null) return NotFound();
+
+
+            var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+            if (!isAdmin && item.GymId != gymId)
+            {
+                return Forbid();
+            }
+
+            await FillLookupsAsync();
+
+            ViewBag.IsSuperAdmin = isAdmin;
 
             var vm = await BuildViewModelAsync(new FoodCreateEditViewModel
             {
@@ -117,7 +195,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 CarbohydratePerUnit = food.CarbohydratePerUnit,
                 FatPerUnit = food.FatPerUnit,
                 DefaultUnitId = food.DefaultUnitId,
-                IsActive = food.IsActive
+                IsActive = food.IsActive,
+                IsGlobal = item.GymId == null
             });
 
             return View("CreateEdit", vm);

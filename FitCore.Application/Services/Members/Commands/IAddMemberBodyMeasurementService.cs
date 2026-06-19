@@ -3,11 +3,7 @@ using FitCore.Application.Services.Members.Queries;
 using FitCore.Common.Dto;
 using FitCore.Domain.Entities.Members;
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.Members.Commands
 {
@@ -26,7 +22,7 @@ namespace FitCore.Application.Services.Members.Commands
 
         public ResultDto Execute(RequestAddMemberBodyMeasurementDto request)
         {
-            if(string.IsNullOrWhiteSpace(request.RecordDate)  )
+            if (string.IsNullOrWhiteSpace(request.RecordDate))
             {
                 return new ResultDto
                 {
@@ -36,7 +32,7 @@ namespace FitCore.Application.Services.Members.Commands
 
             }
 
-            var q=_context.memberBodyMeasurements.Any(c=>c.RecordDate==request.RecordDate && c.MemberId==request.MemberId);
+            var q = _context.memberBodyMeasurements.Any(c => c.RecordDate == request.RecordDate && c.MemberId == request.MemberId);
             if (q)
             {
                 return new ResultDto

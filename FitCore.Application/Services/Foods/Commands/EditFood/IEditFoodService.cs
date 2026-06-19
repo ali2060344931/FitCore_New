@@ -35,7 +35,6 @@ namespace FitCore.Application.Services.Foods.Commands.EditFood
                     Message = "غذا یافت نشد."
                 };
             }
-
             food.Title = request.Title;
             food.EnglishTitle = request.EnglishTitle;
             food.CategoryTypeId = request.CategoryTypeId;

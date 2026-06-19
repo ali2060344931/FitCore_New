@@ -68,6 +68,7 @@ namespace FitCore.Application.Services.Foods.Commands.CreateFood
             }
             var food = new Food
             {
+                GymId=request.GymId,
                 Title = request.Title,
                 EnglishTitle = request.EnglishTitle,
                 CategoryTypeId = request.CategoryTypeId,

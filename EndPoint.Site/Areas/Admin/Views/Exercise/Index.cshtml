@@ -136,23 +136,28 @@
                         <td>
                             @if (canManage)
                             {
-                                <div class="d-flex align-items-center gap-1">
-                                    <a class="btn btn-sm btn-outline-warning btn-modern"
-                                       asp-area="Admin"
-                                       asp-controller="Exercise"
-                                       asp-action="Edit"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-                                        <i class="fa fa-pencil-square-o"></i>
-                                        ویرایش
-                                    </a>
+                                @if (!item.IsGlobal)
+                                {
 
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-danger btn-modern"
-                                            onclick="DeleteExercise('@SecurityUtils.EncryptId(item.Id)')">
-                                        <i class="fa fa-times"></i>
-                                        حذف
-                                    </button>
-                                </div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <a class="btn btn-sm btn-outline-warning btn-modern"
+                                           asp-area="Admin"
+                                           asp-controller="Exercise"
+                                           asp-action="Edit"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            ویرایش
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger btn-modern"
+                                                onclick="DeleteExercise('@SecurityUtils.EncryptId(item.Id)')">
+                                            <i class="fa fa-times"></i>
+                                            حذف
+                                        </button>
+
+                                    </div>
+                                }
                             }
                             else
                             {
@@ -186,45 +191,45 @@
     <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
     <script>
         function DeleteExercise(id) {
-            Swal.fire({
-                title: 'حذف حرکت',
-                text: "آیا از حذف این حرکت مطمئن هستید؟",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#7cacbe',
-                confirmButtonText: 'بله، حذف شود',
-                cancelButtonText: 'خیر'
-            }).then((result) => {
-                if (result.value) {
-                    $.ajax({
-                        contentType: 'application/x-www-form-urlencoded',
-                        dataType: 'json',
-                        type: "POST",
-                        url: "/Admin/Exercise/Delete",
-                        data: { Id: id },
-                        success: function (data) {
-                            if (data.isSuccess === true) {
-                                Swal.fire({
-                                    title: 'موفق!',
-                                    text: data.message,
-                                    icon: 'success',
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire('هشدار!', data.message, 'warning');
-                            }
-                        },
-                        error: function () {
-                            Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
-                        }
-                    });
-                }
-            });
+        Swal.fire({
+        title: 'حذف حرکت',
+        text: "آیا از حذف این حرکت مطمئن هستید؟",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#7cacbe',
+        confirmButtonText: 'بله، حذف شود',
+        cancelButtonText: 'خیر'
+        }).then((result) => {
+        if (result.value) {
+        $.ajax({
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        type: "POST",
+        url: "/Admin/Exercise/Delete",
+        data: { Id: id },
+        success: function (data) {
+        if (data.isSuccess === true) {
+        Swal.fire({
+        title: 'موفق!',
+        text: data.message,
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false
+        }).then(() => {
+        location.reload();
+        });
+        } else {
+        Swal.fire('هشدار!', data.message, 'warning');
+        }
+        },
+        error: function () {
+        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+        }
+        });
+        }
+        });
         }
     </script>
 }

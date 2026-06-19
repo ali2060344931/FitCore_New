@@ -1,11 +1,10 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Common.Dto;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionDay
 {
@@ -25,7 +24,11 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNu
 
         public ResultDto Execute(RemoveNutritionDayDto request)
         {
-            var day = _context.NutritionProgramDays.Find(request.Id);
+            // دریافت روز به همراه وعده‌ها و آیتم‌های غذایی
+            var day = _context.NutritionProgramDays
+                .Include(d => d.Meals)
+                    .ThenInclude(m => m.Items)
+                .FirstOrDefault(d => d.Id == request.Id);
 
             if (day == null)
             {
@@ -36,27 +39,42 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNu
                 };
             }
 
-            var hasMeals = _context.NutritionMeals.Any(x => x.NutritionProgramDayId == request.Id);
+            var now = DateTime.Now;
 
-            if (hasMeals)
+            // Soft Delete کردن روز
+            day.IsRemoved = true;
+            day.RemoveTime = now;
+
+            // Soft Delete کردن تمام وعده‌های این روز
+            if (day.Meals != null)
             {
-                return new ResultDto
+                foreach (var meal in day.Meals)
                 {
-                    IsSuccess = false,
-                    Message = "این روز دارای وعده است. ابتدا وعده‌های این روز را حذف کنید."
-                };
+                    meal.IsRemoved = true;
+                    meal.RemoveTime = now;
+
+                    // Soft Delete کردن تمام آیتم‌های غذایی این وعده
+                    if (meal.Items != null)
+                    {
+                        foreach (var item in meal.Items)
+                        {
+                            item.IsRemoved = true;
+                            item.RemoveTime = now;
+                        }
+                    }
+                }
             }
 
-            _context.NutritionProgramDays.Remove(day);
             _context.SaveChanges();
 
             return new ResultDto
             {
                 IsSuccess = true,
-                Message = "روز با موفقیت حذف شد"
+                Message = "روز به همراه تمام وعده‌های آن با موفقیت حذف شد"
             };
         }
     }
+
     public class RemoveNutritionDayDto
     {
         public long Id { get; set; }

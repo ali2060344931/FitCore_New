@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 
@@ -31,7 +32,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly RegisterUserService _registerUserService;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RegisterUserViewModel _context;
-
+        private readonly UserManager<AppUser> _userManager; // <-- این خط اضافه شود
 
         private readonly IDataBaseContext _db; // تغییر نام به _db برای خوانایی
 
@@ -40,13 +41,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             VerifyOtpService verifyOtpService,
             RegisterUserService registerUserService,
             IDataBaseContext db, // تزریق دیتابیس بجای ViewModel
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            UserManager<AppUser> userManager)
         {
             _sendOtpService = sendOtpService;
             _verifyOtpService = verifyOtpService;
             _registerUserService = registerUserService;
             _signInManager = signInManager;
             _db = db; // انتساب به دیتابیس
+            _userManager = userManager;
         }
 
 
@@ -81,14 +84,48 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
 
+        //[HttpPost]
+        //public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
+        //{
+        //    var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
+        //    return Json(result);
+        //}
         [HttpPost]
         public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
         {
-            var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
-            return Json(result);
+            // ---------------------------------------------------------
+            // تعیین مسیر هدایت بر اساس نقش کاربر
+            // ---------------------------------------------------------
+            string redirectUrl = "/"; // مسیر پیش‌فرض
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                // استفاده از await به جای .Result برای جلوگیری از Deadlock
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+
+                    if (roles.Contains("Member"))
+                    {
+                        redirectUrl = "/Admin/MemberDashboard";
+                    }
+                    else if (roles.Contains("SuperAdmin") || roles.Contains("Admin"))
+                    {
+                        redirectUrl = "/Admin";
+                    }
+                }
+            }
+            // ---------------------------------------------------------
+
+            return Json(new
+            {
+                isSuccess = true,
+                redirectUrl = redirectUrl
+            });
         }
-
-
         [HttpGet]
         public async Task<IActionResult> Register()
         {
@@ -135,13 +172,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         }
 
-
-        //public async Task<IActionResult> Logout()
-        //{
-        //    await _signInManager.SignOutAsync();
-
-        //    return RedirectToAction("Login", "Auth");
-        //}
 
 
 

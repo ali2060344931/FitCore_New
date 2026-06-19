@@ -88,6 +88,7 @@
                     <th>پروتئین در واحد</th>
                     <th>کربوهیدرات در واحد</th>
                     <th>چربی در واحد</th>
+                    <th>مالکیت</th>
                     <th>فعال</th>
                     <th>عملیات</th>
                 </tr>
@@ -124,7 +125,23 @@
                         <td>
                             @item.FatPerUnit
                         </td>
+                        <td>
+                            @if (item.IsGlobal)
+                            {
+                                <span class="badge bg-info text-dark" title="این حرکت سراسری است و در همه باشگاه‌ها قابل استفاده است">
+                                    <i class="fa fa-globe"></i>
+                                    سراسری
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-light text-dark border" title="مخصوص باشگاه: @item.GymName">
+                                    <i class="fa fa-building-o"></i>
+                                    @(item.GymName ?? "باشگاه")
+                                </span>
+                            }
 
+                        </td>
 
                         <td>
                             @(item.IsActive == true ? "بله" : "خیر")
@@ -133,9 +150,34 @@
 
                         <td>
                             <div class="fc-action-buttons">
-                                
 
-                                <a class="btn btn-info btn-sm"
+
+                                @if (!item.IsGlobal)
+                                @* -------------- *@
+                                {
+                                    <div class="d-flex align-items-center gap-1">
+                                        <a class="btn btn-sm btn-outline-warning btn-modern"
+                                        asp-area="Admin"
+                                        asp-controller="Food"
+                                        asp-action="Edit"
+                                        asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            ویرایش
+                                        </a>
+
+                                        <button type="button"
+                                        class="btn btn-sm btn-outline-danger btn-modern"
+                                        onclick="foodPr('@SecurityUtils.EncryptId(item.Id)')">
+                                            <i class="fa fa-times"></i>
+                                            حذف
+                                        </button>
+
+                                    </div>
+                                }
+
+                                @* -------------- *@
+
+                                @* <a class="btn btn-info btn-sm"
                                    asp-area="Admin"
                                    asp-controller="Food"
                                    asp-action="Edit"
@@ -148,7 +190,7 @@
                                         class="btn btn-danger btn-sm"
                                         onclick="foodPr('@SecurityUtils.EncryptId(item.Id)')">
                                     حذف
-                                </button>
+                                </button> *@
 
                             </div>
                         </td>

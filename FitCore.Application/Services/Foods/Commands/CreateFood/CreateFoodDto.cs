@@ -8,6 +8,12 @@ namespace FitCore.Application.Services.Foods.Commands.CreateFood
 {
     public class CreateFoodDto
     {
+        /// <summary>
+        /// شناسه باشگاه. مقدار null یعنی حرکت سراسری (مشترک) است
+        /// و فقط توسط مدیر کل (SuperAdmin) قابل ثبت است.
+        /// </summary>
+        public long? GymId { get; set; }
+
         public string Title { get; set; } = string.Empty;
         public string EnglishTitle { get; set; } = string.Empty;
         public int CategoryTypeId { get; set; }
@@ -17,5 +23,15 @@ namespace FitCore.Application.Services.Foods.Commands.CreateFood
         public decimal FatPerUnit { get; set; } = 0;
         public int DefaultUnitId { get; set; }
         public bool IsActive { get; set; } = true;
+        /// <summary>
+        /// آیا این حرکت سراسری (مشترک بین همه باشگاه‌ها) است؟
+        /// </summary>
+        public bool IsGlobal { get; set; }
+
+        /// <summary>
+        /// نام باشگاه صاحب حرکت (در صورتی که سراسری نباشد)
+        /// </summary>
+        public string GymName { get; set; }
+
     }
 }

@@ -3,6 +3,7 @@ using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
 using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
+using FitCore.Application.Services.AI;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Dashboard;
 using FitCore.Application.Services.Exercises.ExerciseFacad;
@@ -36,6 +37,8 @@ using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
+using FitCore.Application.Services.Tickets;
+using FitCore.Application.Services.Tickets.Interfaces;
 using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
 using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
 using FitCore.Common.Roles;
@@ -58,7 +61,8 @@ using QuestPDF.Infrastructure;
 
 using System;
 using System.IO;
-using FitCore.Application.Services.AI;
+
+using static FitCore.Application.Services.Tickets.ReplyTicketService;
 
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
@@ -272,6 +276,14 @@ builder.Services.AddScoped<IGymDashboardService, GymDashboardService>();
 
 builder.Services.AddScoped<IGetHelpContentService, GetHelpContentService>();
 builder.Services.AddScoped<IHelp_Service, HelpService>();
+//++++++++++++++++
+builder.Services.AddScoped<ICreateTicketService, CreateTicketService>();
+builder.Services.AddScoped<IReplyTicketService, ReplyTicketService>();
+builder.Services.AddScoped<IGetGymTicketsService, GetGymTicketsService>();
+builder.Services.AddScoped<IGetAllTicketsService, GetAllTicketsService>();
+
+
+//++++++++++++++++
 
 
 builder.Services.AddScoped<IGetMembersByIdService,
@@ -283,7 +295,7 @@ builder.Services.AddScoped<
 
 builder.Services.AddScoped<IAddNewMemberService, AddNewMemberService>();
 
-
+builder.Services.AddScoped<ISuperAdminDashboardService, SuperAdminDashboardService>();
 
 
 

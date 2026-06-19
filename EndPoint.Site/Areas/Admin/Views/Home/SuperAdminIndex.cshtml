@@ -1,0 +1,67 @@
+@model FitCore.Application.Services.Dashboard.SuperAdminDashboardDto
+@{
+    ViewData["Title"] = "داشبورد مدیر سایت";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+<div class="container-fluid mt-4">
+
+    <div class="dash-gym-header mb-4" style="background:linear-gradient(135deg,#0f1117,#1a2035);border-radius:16px;padding:20px 24px;color:#fff;">
+        <div style="font-size:20px;font-weight:700;"><i class="fa fa-shield me-2" style="color:#00C896;"></i>پنل مدیر کل سیستم</div>
+        <div style="font-size:12px;color:#a0aec0;">مدیریت کلیه باشگاه‌ها و نظارت کلی</div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <a href="/Admin/Gym/index" class="dash-stat-card" style="--accent:#00C896;">
+                <div class="dash-stat-num">@Model.TotalGyms</div>
+                <div class="dash-stat-label">کل باشگاه‌ها (@Model.ActiveGyms فعال)</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dash-stat-card" style="--accent:#63b3ed;">
+                <div class="dash-stat-num">@Model.TotalMembers</div>
+                <div class="dash-stat-label">کل اعضا</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dash-stat-card" style="--accent:#f6ad55;">
+                <div class="dash-stat-num">@Model.TotalNutritionPrograms</div>
+                <div class="dash-stat-label">برنامه غذایی</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dash-stat-card" style="--accent:#b794f4;">
+                <div class="dash-stat-num">@Model.TotalTrainingPrograms</div>
+                <div class="dash-stat-label">برنامه تمرینی</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-card">
+        <div class="dash-card-title mb-3"><i class="fa fa-building-o me-2" style="color:#00C896;"></i>لیست باشگاه‌ها</div>
+        <div class="table-responsive">
+            <table class="table table-hover" style="font-size:13px;">
+                <thead><tr>
+                    <th>نام باشگاه</th><th>کد</th><th>وضعیت</th>
+                    <th>اعضا</th><th>برنامه غذایی</th><th>برنامه تمرینی</th><th>حرکات</th><th>اشتراک تا</th><th></th>
+                </tr></thead>
+                <tbody>
+                @foreach (var g in Model.Gyms)
+                {
+                    <tr>
+                        <td class="fw-600">@g.Name</td>
+                        <td>@g.Code</td>
+                        <td>@(g.IsActive ? "<span class='badge bg-success'>فعال</span>" : "<span class='badge bg-secondary'>غیرفعال</span>")</td>
+                        <td>@g.MembersCount</td>
+                        <td>@g.NutritionCount</td>
+                        <td>@g.TrainingCount</td>
+                        <td>@g.ExercisesCount</td>
+                        <td>@(g.SubscriptionExpireDate ?? "-")</td>
+                        <td><a href="/Admin/Gym/Edit/@g.Id" class="btn btn-sm btn-outline-warning">ویرایش</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

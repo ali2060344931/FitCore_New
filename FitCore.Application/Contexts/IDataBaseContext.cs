@@ -9,6 +9,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
 using FitCore.Domain.Entities.ProgramRequest;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
+using FitCore.Domain.Entities.Tickets;
 using FitCore.Domain.Entities.TrainingProgram;
 using FitCore.Domain.Entities.Users;
 
@@ -72,6 +73,8 @@ namespace FitCore.Application.Contexts
         //-------------  TrainingPrograms End-------------
         public DbSet<HelpContent> HelpContents { get; set; }
         public DbSet<ProgramRequest> ProgramRequests { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<TicketMessage> TicketMessages { get; set; }
         int SaveChanges();
 
         Task<int> SaveChangesAsync(

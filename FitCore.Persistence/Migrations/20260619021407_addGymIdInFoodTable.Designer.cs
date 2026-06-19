@@ -4,6 +4,7 @@ using FitCore.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitCore.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260619021407_addGymIdInFoodTable")]
+    partial class addGymIdInFoodTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -806,96 +809,6 @@ namespace FitCore.Persistence.Migrations
                     b.ToTable("Setings");
                 });
 
-            modelBuilder.Entity("FitCore.Domain.Entities.Tickets.Ticket", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("GymId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("InsertTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("ReceiverUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("RemoveTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("SenderUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GymId");
-
-                    b.HasIndex("ReceiverUserId");
-
-                    b.HasIndex("SenderUserId");
-
-                    b.ToTable("Tickets");
-                });
-
-            modelBuilder.Entity("FitCore.Domain.Entities.Tickets.TicketMessage", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("InsertTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("RemoveTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("SenderUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("TicketId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("UpdateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SenderUserId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("TicketMessages");
-                });
-
             modelBuilder.Entity("FitCore.Domain.Entities.TrainingProgram.EquipmentType", b =>
                 {
                     b.Property<int>("Id")
@@ -1502,7 +1415,7 @@ namespace FitCore.Persistence.Migrations
                     b.HasOne("FitCore.Domain.Entities.Users.AppUser", "AppUser")
                         .WithOne("Member")
                         .HasForeignKey("FitCore.Domain.Entities.Members.Member", "AppUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FitCore.Domain.Entities.Members.ExperienceLevel", "ExperienceLevel")
@@ -1690,50 +1603,6 @@ namespace FitCore.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Provinces");
-                });
-
-            modelBuilder.Entity("FitCore.Domain.Entities.Tickets.Ticket", b =>
-                {
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
-                        .WithMany()
-                        .HasForeignKey("GymId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("FitCore.Domain.Entities.Users.AppUser", "ReceiverUser")
-                        .WithMany()
-                        .HasForeignKey("ReceiverUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("FitCore.Domain.Entities.Users.AppUser", "SenderUser")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Gym");
-
-                    b.Navigation("ReceiverUser");
-
-                    b.Navigation("SenderUser");
-                });
-
-            modelBuilder.Entity("FitCore.Domain.Entities.Tickets.TicketMessage", b =>
-                {
-                    b.HasOne("FitCore.Domain.Entities.Users.AppUser", "SenderUser")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("FitCore.Domain.Entities.Tickets.Ticket", "Ticket")
-                        .WithMany("Messages")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("SenderUser");
-
-                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("FitCore.Domain.Entities.TrainingProgram.Exercise", b =>
@@ -1980,11 +1849,6 @@ namespace FitCore.Persistence.Migrations
             modelBuilder.Entity("FitCore.Domain.Entities.Provinces.Province", b =>
                 {
                     b.Navigation("Ciltys");
-                });
-
-            modelBuilder.Entity("FitCore.Domain.Entities.Tickets.Ticket", b =>
-                {
-                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("FitCore.Domain.Entities.TrainingProgram.EquipmentType", b =>

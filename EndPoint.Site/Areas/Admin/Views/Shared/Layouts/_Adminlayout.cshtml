@@ -63,6 +63,13 @@
                     </div>
                 </a>
             }
+            <!-- دکمه جمع شدن (دسکتاپ) -->
+            <div class="fc-sidebar-footer d-none d-lg-block">
+                <button class="fc-collapse-btn" id="fcCollapseBtn">
+                    <i class="fa fa-angle-double-right"></i>
+                    <span>جمع کردن منو</span>
+                </button>
+            </div>
 
 
             <!-- ناوبری -->
@@ -116,7 +123,7 @@
                         @if (User.IsAdmin())
                         {
                             <!-- بخش مدیریت — فقط برای مدیر باشگاه -->
-                            <div class="fc-nav-label">مدیریت</div>
+                            @* <div class="fc-nav-label">مدیریت</div> *@
 
                             @if (User.IsSuperAdmin())
                             {
@@ -253,11 +260,10 @@
                         @* /Admin/MemberProfile/BodyMeasurement/" + encryptedUserId *@
 
                         <li class="fc-nav-item">
-                            <a href="/Admin/MemberProfile/AddBodyMeasurement"
-                            @* <a href="/Admin/MemberProfile/BodyMeasurement/" + @encryptedUserId *@
-                               class="fc-nav-link" data-title="اندازه‌گیری">
+                            <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedUserId"
+                               class="fc-nav-link" data-title="تاریخچه اندازه‌گیری">
                                 <span class="fc-nav-icon"><i class="fa fa-balance-scale"></i></span>
-                                <span class="fc-nav-text">ثبت اندازه‌گیری</span>
+                                <span class="fc-nav-text">تاریخچه اندازه‌گیری</span>
                             </a>
                         </li>
 
@@ -274,17 +280,25 @@
                                 <span class="fc-nav-text">درخواست‌های من</span>
                             </a>
                         </li>
+                        <li class="fc-nav-item">
+                            <a href="/Admin/MemberDashboard/MyTickets" class="mb-quick-btn">
+                                <i class="fa fa-ticket text-primary"></i>
+                                <span>تیکت‌های من</span>
+                            </a>
+                        </li>
+
+
                     }
                 </ul>
             </nav>
 
             <!-- دکمه جمع شدن (دسکتاپ) -->
-            <div class="fc-sidebar-footer d-none d-lg-block">
+            @* <div class="fc-sidebar-footer d-none d-lg-block">
                 <button class="fc-collapse-btn" id="fcCollapseBtn">
                     <i class="fa fa-angle-double-right"></i>
                     <span>جمع کردن منو</span>
                 </button>
-            </div>
+            </div> *@
 
         </aside>
 

@@ -41,6 +41,10 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
                     .ThenInclude(d => d.ExerciseItems)
                         .ThenInclude(e => e.Exercise)
                             .ThenInclude(ex => ex.PrimaryMuscleGroup)
+                .Include(x => x.Days)
+                    .ThenInclude(d => d.ExerciseItems)
+                        .ThenInclude(e => e.Exercise)
+                            .ThenInclude(ex => ex.EquipmentType)
                 .FirstOrDefault(x => x.Id == programId && !x.IsRemoved);
 
             if (program == null)
@@ -52,7 +56,7 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
         private byte[] Generate(TrainingProgram program)
         {
             var primaryColor = Colors.Green.Medium;
-            var lightGray    = Colors.Grey.Lighten3;
+            var lightGray = Colors.Grey.Lighten3;
 
             return Document.Create(container =>
             {
@@ -174,6 +178,7 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
                                                 cols.ConstantColumn(28);  // ردیف
                                                 cols.RelativeColumn(3);   // نام حرکت
                                                 cols.RelativeColumn(2);   // گروه عضلانی
+                                                cols.RelativeColumn(2);   // ابزار/دستگاه
                                                 cols.ConstantColumn(35);  // ست
                                                 cols.ConstantColumn(45);  // تکرار
                                                 cols.ConstantColumn(50);  // وزن
@@ -187,6 +192,7 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
                                                 header.Cell().Element(HeaderCell).Text("#");
                                                 header.Cell().Element(HeaderCell).Text("نام حرکت");
                                                 header.Cell().Element(HeaderCell).Text("گروه عضلانی");
+                                                header.Cell().Element(HeaderCell).Text("ابزار/دستگاه");
                                                 header.Cell().Element(HeaderCell).Text("ست");
                                                 header.Cell().Element(HeaderCell).Text("تکرار");
                                                 header.Cell().Element(HeaderCell).Text("وزن(kg)");
@@ -201,6 +207,7 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
                                                 table.Cell().Element(SmallCell).Text(rowNum.ToString()).FontSize(8);
                                                 table.Cell().Element(BodyCell).Text(item.Exercise?.Name ?? "-").FontSize(10).SemiBold();
                                                 table.Cell().Element(SmallCell).Text(item.Exercise?.PrimaryMuscleGroup?.Name ?? "-").FontSize(9);
+                                                table.Cell().Element(SmallCell).Text(item.Exercise?.EquipmentType?.Name ?? "-").FontSize(9);
                                                 table.Cell().Element(CenterCell).Text(item.Sets?.ToString() ?? "-").FontSize(10);
                                                 table.Cell().Element(CenterCell).Text(item.Reps ?? "-").FontSize(10);
                                                 table.Cell().Element(CenterCell).Text(item.WeightKg?.ToString("0.##") ?? "-").FontSize(10);

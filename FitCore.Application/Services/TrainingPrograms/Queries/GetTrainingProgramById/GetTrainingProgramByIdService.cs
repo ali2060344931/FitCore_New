@@ -37,6 +37,10 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                     .ThenInclude(d => d.ExerciseItems.Where(e => !e.IsRemoved))
                         .ThenInclude(e => e.Exercise)
                             .ThenInclude(ex => ex.PrimaryMuscleGroup)
+                .Include(x => x.Days.Where(d => !d.IsRemoved))
+                    .ThenInclude(d => d.ExerciseItems.Where(e => !e.IsRemoved))
+                        .ThenInclude(e => e.Exercise)
+                            .ThenInclude(ex => ex.EquipmentType)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -45,8 +49,8 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                 return new ResultDto<TrainingProgramDetailsDto>
                 {
                     IsSuccess = false,
-                    Message   = "برنامه تمرینی یافت نشد",
-                    Data      = null
+                    Message = "برنامه تمرینی یافت نشد",
+                    Data = null
                 };
             }
 
@@ -56,45 +60,46 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
 
             var dto = new TrainingProgramDetailsDto
             {
-                Id                  = entity.Id,
-                Title               = entity.Title,
-                Description         = entity.Description,
+                Id = entity.Id,
+                Title = entity.Title,
+                Description = entity.Description,
                 TrainingProgramType = entity.TrainingProgramType?.Name,
-                TrainingGoalType    = entity.TrainingGoalType?.Name,
-                MemberName          = entity.Member?.AppUser?.FullName,
-                MemberMobile        = entity.Member?.AppUser?.PhoneNumber,
-                StartDate           = entity.StartDate,
-                EndDate             = entity.EndDate,
-                SessionsPerWeek     = entity.SessionsPerWeek,
-                IsActive            = entity.IsActive,
+                TrainingGoalType = entity.TrainingGoalType?.Name,
+                MemberName = entity.Member?.AppUser?.FullName,
+                MemberMobile = entity.Member?.AppUser?.PhoneNumber,
+                StartDate = entity.StartDate,
+                EndDate = entity.EndDate,
+                SessionsPerWeek = entity.SessionsPerWeek,
+                IsActive = entity.IsActive,
 
                 Days = entity.Days?
                     .OrderBy(d => d.SortOrder)
                     .ThenBy(d => d.DayNumber)
                     .Select(d => new TrainingDayDetailsDto
                     {
-                        Id              = d.Id,
-                        DayNumber       = d.DayNumber,
-                        Title           = d.Title,
-                        DayType         = d.DayType?.Name,
-                        Description     = d.Description,
+                        Id = d.Id,
+                        DayNumber = d.DayNumber,
+                        Title = d.Title,
+                        DayType = d.DayType?.Name,
+                        Description = d.Description,
                         DurationMinutes = d.DurationMinutes,
-                        SortOrder       = d.SortOrder,
+                        SortOrder = d.SortOrder,
 
                         Exercises = d.ExerciseItems?
                             .OrderBy(e => e.SortOrder)
                             .Select(e => new TrainingExerciseItemDto
                             {
-                                Id            = e.Id,
-                                ExerciseId    = e.ExerciseId,
-                                ExerciseName  = e.Exercise?.Name,
-                                MuscleGroup   = e.Exercise?.PrimaryMuscleGroup?.Name,
-                                Sets          = e.Sets,
-                                Reps          = e.Reps,
-                                WeightKg      = e.WeightKg,
-                                RestSeconds   = e.RestSeconds,
-                                CoachNote     = e.CoachNote,
-                                SortOrder     = e.SortOrder
+                                Id = e.Id,
+                                ExerciseId = e.ExerciseId,
+                                ExerciseName = e.Exercise?.Name,
+                                MuscleGroup = e.Exercise?.PrimaryMuscleGroup?.Name,
+                                EquipmentType = e.Exercise?.EquipmentType?.Name,
+                                Sets = e.Sets,
+                                Reps = e.Reps,
+                                WeightKg = e.WeightKg,
+                                RestSeconds = e.RestSeconds,
+                                CoachNote = e.CoachNote,
+                                SortOrder = e.SortOrder
                             })
                             .ToList()
                     })
@@ -104,7 +109,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
             return new ResultDto<TrainingProgramDetailsDto>
             {
                 IsSuccess = true,
-                Data      = dto
+                Data = dto
             };
         }
     }

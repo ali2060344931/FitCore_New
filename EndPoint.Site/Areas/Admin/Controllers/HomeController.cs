@@ -18,17 +18,30 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly IDataBaseContext _context;
         private readonly IGymDashboardService _dashboardService;
+        private readonly ISuperAdminDashboardService _superAdminDashboardService;
 
         public HomeController(
             IDataBaseContext context,
-            IGymDashboardService dashboardService)
+            IGymDashboardService dashboardService,
+            ISuperAdminDashboardService superAdminDashboardService)
         {
             _context = context;
             _dashboardService = dashboardService;
+            _superAdminDashboardService= superAdminDashboardService;
         }
+
 
         public async Task<IActionResult> Index()
         {
+            // =============================
+            // امنیت: جلوگیری از ورود اعضا به داشبورد مدیر
+            // =============================
+            if (User.IsMember())
+            {
+                // اگر کاربر نقش Member داشت، او را به داشبورد خودش بفرست
+                return RedirectToAction("Index", "MemberDashboard");
+            }
+
             // اگر SuperAdmin بود فقط پیام کلی نمایش بده
             if (User.IsSuperAdmin())
             {
@@ -38,7 +51,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View();
             }
 
-            // پیدا کردن GymId کاربر جاری
+            // پیدا کردن GymId کاربر جاری (فقط برای مدیران باشگاه اجرا می‌شود)
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(userIdValue))
                 return Unauthorized();
@@ -56,16 +69,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View();
             }
 
-            // --- دریافت اطلاعات اصلی داشبورد ---
             var dashboard = await _dashboardService.Execute(gymId.Value);
-
-            // --- دریافت اعضای در حال انقضا (کد جدید) ---
-            var criticalMembers = await GetCriticalMembersAsync(gymId.Value);
-            ViewBag.CriticalMembers = criticalMembers;
-            // ---------------------------------------------
 
             return View(dashboard);
         }
+
 
         //====================================================
         // Helper — دریافت اعضای بحرانی (پایان اشتراک)

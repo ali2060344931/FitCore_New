@@ -1,7 +1,9 @@
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
+using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
+using FitCore.Application.Services.Tickets.Interfaces;
 using FitCore.Application.Services.TrainingProgramReports.Queries;
 using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms;
 using FitCore.Common;
@@ -27,21 +29,31 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IGetNutritionProgramPdfService _nutritionPdfService;
         private readonly IGetTrainingProgramPdfService _trainingPdfService;
         private readonly IDataBaseContext _context;
-
+        private readonly IGetGymTicketsService _getGymTicketsService;
         public MemberDashboardController(
             INutritionProgramFacad nutritionFacad,
             ITrainingProgramFacad trainingFacad,
             IGetNutritionProgramPdfService nutritionPdfService,
             IGetTrainingProgramPdfService trainingPdfService,
-            IDataBaseContext context)
+            IDataBaseContext context,
+            IGetGymTicketsService getGymTicketsService)
         {
             _nutritionFacad      = nutritionFacad;
             _trainingFacad       = trainingFacad;
             _nutritionPdfService = nutritionPdfService;
             _trainingPdfService  = trainingPdfService;
             _context             = context;
+            _getGymTicketsService= getGymTicketsService;
         }
 
+
+
+        public IActionResult MyTickets()
+        {
+            var appUserId = GetCurrentUserId();
+            var result = _getGymTicketsService.Execute(appUserId); // فقط آیدی کاربر را به سرویس می‌دهد
+            return View(result.Data);
+        }
         private long GetCurrentUserId() =>
             long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -115,6 +127,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             ViewBag.MembershipStatus    = membershipStatus;
 
             ViewData["Title"] = "داشبورد من";
+
+            // در متد Index اضافه کنید:
+            ViewBag.Analytics = GetMemberAnalytics(member.Id);
+
             return View();
         }
 
@@ -271,6 +287,134 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return status;
         }
+
+
+
+        private MemberAnalyticsDto GetMemberAnalytics(long memberId)
+        {
+            var analytics = new MemberAnalyticsDto();
+
+            // 1. دریافت تاریخچه اندازه گیری ها
+            var measurements = _context.memberBodyMeasurements
+                .Where(m => m.MemberId == memberId && !m.IsRemoved)
+                .OrderBy(m => m.InsertTime)
+                .ToList();
+
+            if (measurements.Any())
+            {
+                var first = measurements.First();
+                var last = measurements.Last();
+
+                analytics.FirstWeight = first.Weight;
+                analytics.CurrentWeight = last.Weight;
+                analytics.WeightChange = analytics.CurrentWeight - analytics.FirstWeight;
+
+                analytics.FirstFat = first.BodyFatPercentage;
+                analytics.CurrentFat = last.BodyFatPercentage;
+                analytics.FatChange = analytics.CurrentFat - analytics.FirstFat;
+
+                // محاسبه نسبت کمر به باسن (WHR) از آخرین اندازه گیری
+                if (last.Waist.HasValue && last.Hip.HasValue && last.Hip > 0)
+                {
+                    analytics.WaistToHipRatio = Math.Round(last.Waist.Value / last.Hip.Value, 2);
+                }
+
+                // محاسبه سرعت پیشرفت (هفته ای چند کیلو تغییر کرده)
+                if (first.RecordDate != null && last.RecordDate != null && analytics.WeightChange.HasValue)
+                {
+                    try
+                    {
+                        var pc = new System.Globalization.PersianCalendar();
+                        var startDate = first.RecordDate.Split('/').Select(int.Parse).ToArray();
+                        var endDate = last.RecordDate.Split('/').Select(int.Parse).ToArray();
+
+                        var startMiladi = pc.ToDateTime(startDate[0], startDate[1], startDate[2], 0, 0, 0, 0);
+                        var endMiladi = pc.ToDateTime(endDate[0], endDate[1], endDate[2], 0, 0, 0, 0);
+
+                        int totalDays = (endMiladi - startMiladi).Days;
+                        analytics.TotalWeeksPassed = totalDays / 7;
+
+                        if (analytics.TotalWeeksPassed > 0)
+                        {
+                            analytics.WeeklyWeightChangeRate = Math.Round(analytics.WeightChange.Value / analytics.TotalWeeksPassed.Value, 2);
+                        }
+                    }
+                    catch { }
+                }
+
+                // آماده سازی دیتای نمودارها
+                analytics.WeightHistory = measurements.Select(m => new ChartPointDto { Label = m.RecordDate, Value = m.Weight }).ToList();
+                analytics.FatHistory = measurements.Select(m => new ChartPointDto { Label = m.RecordDate, Value = m.BodyFatPercentage }).ToList();
+                analytics.WaistHistory = measurements.Select(m => new ChartPointDto { Label = m.RecordDate, Value = m.Waist }).ToList();
+            }
+
+            // 2. محاسبه دقیق ماکروها و درصدهای کالری
+            var activeNutrition = _context.NutritionPrograms
+                .Where(p => p.MemberId == memberId && p.IsActive && !p.IsRemoved)
+                .Include(p => p.Days).ThenInclude(d => d.Meals).ThenInclude(m => m.Items)
+                .Include(p => p.GoalType)
+                .FirstOrDefault();
+
+            if (activeNutrition != null && activeNutrition.Days != null)
+            {
+                var allItems = activeNutrition.Days.Where(d => !d.IsRemoved)
+                    .SelectMany(d => d.Meals.Where(m => !m.IsRemoved))
+                    .SelectMany(m => m.Items.Where(i => !i.IsRemoved))
+                    .ToList();
+
+                int totalDays = activeNutrition.Days.Count(d => !d.IsRemoved);
+
+                if (totalDays > 0)
+                {
+                    decimal totalCal = allItems.Sum(i => i.Calories ?? 0) / totalDays;
+                    decimal totalPro = allItems.Sum(i => i.Protein ?? 0) / totalDays;
+                    decimal totalCarb = allItems.Sum(i => i.Carbohydrate ?? 0) / totalDays;
+                    decimal totalFat = allItems.Sum(i => i.Fat ?? 0) / totalDays;
+
+                    // محاسبه درصد کالری هر ماکرو (قانون 4-4-9)
+                    int calFromPro = totalPro > 0 ? (int)((totalPro * 4) / totalCal * 100) : 0;
+                    int calFromCarb = totalCarb > 0 ? (int)((totalCarb * 4) / totalCal * 100) : 0;
+                    int calFromFat = totalFat > 0 ? (int)((totalFat * 9) / totalCal * 100) : 0;
+
+                    analytics.Nutrition = new NutritionSummaryDto
+                    {
+                        GoalName = activeNutrition.GoalType?.Name,
+                        AvgDailyCalories = totalCal,
+                        AvgDailyProtein = totalPro,
+                        AvgDailyCarbs = totalCarb,
+                        AvgDailyFat = totalFat,
+                        ProteinPercent = calFromPro,
+                        CarbsPercent = calFromCarb,
+                        FatPercent = calFromFat
+                    };
+                }
+            }
+
+            // 3. محاسبه حجم تمرین (بر اساس ست ها)
+            var activeTraining = _context.TrainingPrograms
+                .Where(t => t.MemberId == memberId && t.IsActive && !t.IsRemoved)
+                .Include(t => t.TrainingGoalType)
+                .Include(t => t.Days).ThenInclude(d => d.ExerciseItems)
+                .FirstOrDefault();
+
+            if (activeTraining != null && activeTraining.Days != null)
+            {
+                var allExerciseItems = activeTraining.Days.Where(d => !d.IsRemoved)
+                    .SelectMany(d => d.ExerciseItems.Where(i => !i.IsRemoved))
+                    .ToList();
+
+                analytics.Training = new TrainingSummaryDto
+                {
+                    GoalName = activeTraining.TrainingGoalType?.Name,
+                    SessionsPerWeek = activeTraining.SessionsPerWeek,
+                    TotalActiveDays = activeTraining.Days.Count(d => !d.IsRemoved),
+                    TotalSets = allExerciseItems.Sum(i => i.Sets ?? 0),
+                    TotalExercises = allExerciseItems.Select(i => i.ExerciseId).Distinct().Count()
+                };
+            }
+
+            return analytics;
+        }
     }
 
     //====================================================
@@ -291,4 +435,5 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         ExpiringSoon,
         Expired
     }
+
 }

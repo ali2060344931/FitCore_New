@@ -61,7 +61,7 @@
                         <div class="program-meta-item">
                             <i class="fa fa-user meta-icon"></i>
                             <span class="meta-label">عضــو:</span>
-                            <span class="meta-value-Fullmamu">@program.MemberName</span>
+                            <span class="meta-value-Fullmamu">@program.MemberName    @program.MemberMobile</span>
                         </div>
                         <div class="program-meta-item">
                             <span class="meta-label">عنوان:</span>
@@ -110,6 +110,15 @@
                                 onclick="location.reload()">
                             <i class="fa fa-refresh"></i>
                         </button>
+
+                        <button class="btn btn-sm btn-outline-warning px-2 py-0 text-nowrap"
+                                onclick="openAIGenerateModal('training', @program.Id, {
+                            fullName: '@program.MemberName'
+                            })">
+                            <i class="fa fa-magic"></i>
+                            <span class="d-none d-md-inline ms-1">تولید با AI</span>
+                        </button>
+
 
                         <a class="btn btn-sm btn-outline-secondary px-2 py-0 text-nowrap"
                            href="/Admin/TrainingProgram">
@@ -261,8 +270,8 @@
                                                         </th>
                                                         <th style="width: 50px;">ردیف</th>
                                                         <th>نام حرکت</th>
+                                                        @* <th>نام دستگاه</th> *@
                                                         <th>گروه عضلانی</th>
-                                                        <th>ابزار/دستگاه</th>
                                                         <th class="text-center">ست</th>
                                                         <th class="text-center">تکرار</th>
                                                         <th class="text-center">وزن (kg)</th>
@@ -283,8 +292,8 @@
                                                             </td>
                                                             <td class="text-center fw-bold text-muted">@counter</td>
                                                             <td class="food-name-cell text-nowrap">@ex.ExerciseName</td>
+                                                            @* <td class="food-name-cell text-nowrap">@ex.EquipmentTypes</td> *@
                                                             <td class="food-name-cell text-nowrap">@ex.MuscleGroup</td>
-                                                            <td class="food-name-cell text-nowrap">@(ex.EquipmentType ?? "-")</td>
                                                             <td class="text-center text-nowrap">
                                                                 <span class="badge bg-light text-dark border amount-badge">@(ex.Sets?.ToString() ?? "-")</span>
                                                             </td>
@@ -482,6 +491,7 @@
                             افزودن حرکت به روز:
                             <span id="addExerciseDayTitle"
                                   style="color:#00C896;font-weight:700;"></span>
+                            
                         </h5>
                         <div style="font-size:11px;color:#a0aec0;margin-top:3px;">
                             پس از هر ثبت، فرم خالی می‌شود — می‌توانید حرکت بعدی را بلافاصله وارد کنید
@@ -695,7 +705,7 @@
     <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
 
     <!-- SortableJS برای جابجایی (Drag & Drop) حرکات هر روز -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <script src="~/lib/sortable/Sortable.min.js"></script>
 
     <script>
 
@@ -1191,3 +1201,4 @@
         }
     </style>
 }
+

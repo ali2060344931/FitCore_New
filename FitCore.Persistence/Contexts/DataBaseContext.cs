@@ -12,6 +12,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay;
 using FitCore.Domain.Entities.ProgramRequest;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Setings;
+using FitCore.Domain.Entities.Tickets;
 using FitCore.Domain.Entities.TrainingProgram;
 using FitCore.Domain.Entities.Users;
 
@@ -79,6 +80,10 @@ namespace FitCore.Persistence.Contexts
         //===============
         public DbSet<HelpContent> HelpContents { get; set; }
         public DbSet<ProgramRequest> ProgramRequests { get; set; }
+
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<TicketMessage> TicketMessages { get; set; }
+
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
         {
@@ -113,9 +118,27 @@ namespace FitCore.Persistence.Contexts
 
 
 
-        private void ApplyQueryFilter(
-            ModelBuilder modelBuilder)
+        private void ApplyQueryFilter(ModelBuilder modelBuilder)
         {
+
+            // --- فیلترهای حذف نرم برای جداول تغذیه (اضافه شود) ---
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionProgram.NutritionProgram>()
+                .HasQueryFilter(x => !x.IsRemoved);
+
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionProgramDay.NutritionProgramDay>()
+                .HasQueryFilter(x => !x.IsRemoved);
+
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionMeal.NutritionMeal>()
+                .HasQueryFilter(x => !x.IsRemoved);
+
+            modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionMealItem.NutritionMealItem>()
+                .HasQueryFilter(x => !x.IsRemoved);
+            // ------------------------------------------------------------------
+
+
+
+
+
             modelBuilder.Entity<Gym>()
                 .HasQueryFilter(x => !x.IsRemoved);
 
@@ -126,10 +149,50 @@ namespace FitCore.Persistence.Contexts
                 .HasOne(m => m.AppUser)
                 .WithOne(u => u.Member)
                 .HasForeignKey<Member>(m => m.AppUserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+                .OnDelete(DeleteBehavior.NoAction);
 
             //NutritionProgram
+            // ---------- Ticket ----------
+            modelBuilder.Entity<Ticket>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.SenderUser)
+                      .WithMany()
+                      .HasForeignKey(x => x.SenderUserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.ReceiverUser)
+                      .WithMany()
+                      .HasForeignKey(x => x.ReceiverUserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.Gym)
+                      .WithMany()
+                      .HasForeignKey(x => x.GymId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasMany(x => x.Messages)
+                      .WithOne(x => x.Ticket)
+                      .HasForeignKey(x => x.TicketId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ---------- TicketMessage ----------
+            modelBuilder.Entity<TicketMessage>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasOne(x => x.Ticket)
+                      .WithMany(x => x.Messages)
+                      .HasForeignKey(x => x.TicketId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(x => x.SenderUser)
+                      .WithMany()
+                      .HasForeignKey(x => x.SenderUserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
 
 
             //*************
@@ -310,20 +373,12 @@ namespace FitCore.Persistence.Contexts
                       .HasForeignKey(x => x.DifficultyLevelId)
                       .OnDelete(DeleteBehavior.NoAction);
             });
-            //*************TrainingProgram
+
+
+
 
         }
 
-        //public override int SaveChanges()
-        //{
-        //    return base.SaveChanges();
-        //}
-
-        //public override async Task<int> SaveChangesAsync(
-        //    CancellationToken cancellationToken)
-        //{
-        //    return await base.SaveChangesAsync(cancellationToken);
-        //}
 
 
 

@@ -26,7 +26,13 @@
                     <div class="col-lg-6 col-md-8 col-xs-12 mx-auto">
                         <div class="ds-userlogin">
 
-                            <a href="#" class="account-box-logo">FitCore</a>
+                            
+                            <a asp-area=""
+                               asp-controller="Home"
+                               asp-action="Index"
+                               class="account-box-logo">
+                                FitCore
+                            </a>
 
                             <div class="account-box">
                                 <div class="account-box-headline">
@@ -301,6 +307,7 @@
     data: { mobile: mobile, code: code },
     success: function (data) {
     if (data.isSuccess) {
+    // اگر سرور گفت باید باشگاه انتخاب شود
     if (data.needGymSelection) {
     $("#loginToken").val(data.loginToken);
 
@@ -313,9 +320,15 @@
 
     $("#otpSection").hide();
     $("#gymSelectionBox").show();
-
+    setBtnLoading("btnVerifyOtp", false);
     swal.fire('انتخاب باشگاه', 'لطفاً باشگاه مورد نظر را انتخاب کنید.', 'info');
-    } else {
+    }
+    // اضافه شدن بلوک جدید: اگر سرور گفت نیازی به انتخاب باشگاه نیست
+    else if (data.redirectUrl) {
+    window.location.href = data.redirectUrl;
+    }
+    //fallback در صورتی که سرور اصلا redirectUrl هم نفرستاده بود
+    else {
     window.location.href = "/";
     }
     } else {
@@ -329,6 +342,9 @@
     }
     });
     }
+
+
+
 
     function CompleteLogin() {
     var gymId = $("#gymSelect").val();
@@ -348,7 +364,8 @@
     data: { loginToken: loginToken, gymId: gymId },
     success: function (data) {
     if (data.isSuccess) {
-    window.location.href = "/";
+    // تغییر در این خط: استفاده از آدرس ارسالی از سمت سرور به جای "/"
+    window.location.href = data.redirectUrl || "/";
     } else {
     swal.fire('خطا!', data.message, 'warning');
     setBtnLoading("btnCompleteLogin", false);
@@ -360,6 +377,8 @@
     }
     });
     }
+
+
 
     $(document).ready(function () {
     var $mobile = $("#mobile");

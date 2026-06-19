@@ -1,4 +1,5 @@
 ﻿using FitCore.Domain.Entities.Commons;
+using FitCore.Domain.Entities.Gyms;
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,14 @@ namespace FitCore.Domain.Entities.NutritionProgram.Food
     /// </summary>
     public class Food: BaseEntity
     {
+        /// <summary>
+        /// شناسه باشگاه صاحب این غذا.
+        /// مقدار null به معنای غذا سراسری (مشترک بین همه باشگاه‌ها) است
+        /// که توسط مدیر کل (SuperAdmin) ثبت می‌شود.
+        /// </summary>
+        public long? GymId { get; set; }
+        public Gym Gym { get; set; }
+
         /// <summary>
         /// عنوان
         /// </summary>

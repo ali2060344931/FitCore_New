@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "ثبت تیکت پشتیبانی";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<style>
+    .modern-ticket-form {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
+    }
+
+        .modern-ticket-form h4 {
+            font-size: 20px;
+            color: #1a202c;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .modern-ticket-form h4 i {
+                color: #4f46e5;
+            }
+
+    .form-control-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 15px;
+        transition: all 0.3s;
+        box-shadow: none;
+    }
+
+        .form-control-modern:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+    .btn-submit-modern {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+        width: 100%;
+        font-size: 16px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .btn-submit-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 21px rgba(79, 70, 229, 0.35);
+        }
+</style>
+
+<div class="container py-5">
+    <div class="modern-ticket-form">
+        <h4><i class="fa fa-headset"></i> ثبت تیکت جدید</h4>
+
+        <form id="ticketForm">
+            @Html.AntiForgeryToken()
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted mb-2">موضوع تیکت</label>
+                <input type="text" id="title" name="title" class="form-control form-control-modern" placeholder="مشکل خود را خلاصه کنید..." required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted mb-2">شرح دقیق مشکل</label>
+                <textarea id="message" name="message" class="form-control form-control-modern" rows="6" placeholder="لطفاً جزئیات مشکل را بنویسید..." required></textarea>
+            </div>
+
+            <button type="button" onclick="submitTicket()" class="btn btn-submit-modern">
+                <i class="fa fa-paper-plane me-2"></i> ارسال تیکت به مدیریت
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function submitTicket() {
+        var data = {
+            title: $("#title").val(),
+            message: $("#message").val()
+        };
+
+        if (!data.title || !data.message) {
+            Swal.fire('خطا', 'لطفاً موضوع و شرح مشکل را وارد کنید.', 'warning');
+            return;
+        }
+
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: '/Admin/Ticket/Create',
+            type: 'POST',
+            data: { ...data, __RequestVerificationToken: token },
+            success: function(res) {
+                if (res.isSuccess) {
+                    Swal.fire('موفق', 'تیکت شما با موفقیت ثبت شد و در انتظار بررسی مدیر باشگاه است.', 'success').then(() => {
+                        window.location = '/Admin/Ticket/MyTickets';
+                    });
+                } else {
+                    Swal.fire('خطا', res.message, 'error');
+                }
+            }
+        });
+    }
+</script>

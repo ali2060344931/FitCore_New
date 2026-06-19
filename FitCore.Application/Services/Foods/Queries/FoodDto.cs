@@ -14,5 +14,15 @@
         public int DefaultUnitId { get; set; }
         public string DefaultUnitName { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        /// <summary>
+        /// آیا این حرکت سراسری (مشترک بین همه باشگاه‌ها) است؟
+        /// </summary>
+        public bool IsGlobal { get; set; }
+
+        /// <summary>
+        /// نام باشگاه صاحب حرکت (در صورتی که سراسری نباشد)
+        /// </summary>
+        public string GymName { get; set; }
+
     }
 }
