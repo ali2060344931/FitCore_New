@@ -73,8 +73,14 @@ namespace FitCore.Application.Contexts
         //-------------  TrainingPrograms End-------------
         public DbSet<HelpContent> HelpContents { get; set; }
         public DbSet<ProgramRequest> ProgramRequests { get; set; }
+
+
+
+        //-------------  Ticket Start -------------
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketMessage> TicketMessages { get; set; }
+
+        //-------------  Ticket End -------------
         int SaveChanges();
 
         Task<int> SaveChangesAsync(

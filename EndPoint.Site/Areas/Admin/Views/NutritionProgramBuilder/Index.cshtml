@@ -97,6 +97,15 @@
                             <span class="d-none d-md-inline ms-1">افزودن روزها خودکار</span>
                         </button>
 
+
+
+                        <button class="btn btn-sm btn-outline-danger px-2 py-0 text-nowrap"
+                                type="button"
+                                onclick="openDeleteAllDaysModal(@program.ProgramId)">
+                            <i class="fa fa-trash"></i>
+                            <span class="d-none d-md-inline ms-1">حذف همه روزها</span>
+                        </button>
+
                         <a class="btn btn-sm btn-outline-success px-2 py-0 text-nowrap"
                            href="/Admin/Food/Create" target="_blank">
                             <i class="fa fa-plus"></i>
@@ -905,6 +914,47 @@
         </div>
     </div>
 
+
+    @* ---------- حذف همه روزها (Soft Delete) ---------- *@
+    <div class="modal fade" id="deleteAllDaysModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content border-0 shadow" style="border-radius:14px;overflow:hidden;">
+                <div class="modal-header border-0"
+                     style="background:linear-gradient(135deg,#0f1117,#1a2035);padding:14px 18px;">
+                    <h5 class="modal-title text-white mb-0" style="font-size:14px;">
+                        <i class="fa fa-trash me-2" style="color:#fc8181;"></i>
+                        حذف تمامی روزها
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" style="opacity:0.7;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding:16px 18px;">
+                    <form id="deleteAllDaysForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="DeleteAllDays_ProgramId" name="NutritionProgramId" />
+                    </form>
+                    <div class="alert alert-danger mb-0" style="border-radius:8px;font-size:13px;">
+                        <i class="fa fa-exclamation-triangle me-1"></i>
+                        آیا از حذف <strong>تمامی روزها</strong> مطمئن هستید؟
+                        <br />
+                        <small class="text-muted">تمام وعده‌ها و غذاهای مرتبط نیز غیرفعال خواهند شد. این عملیات قابل بازگشت نیست.</small>
+                    </div>
+                    <div id="deleteAllDaysMessage" class="mt-2"></div>
+                </div>
+                <div class="modal-footer border-0" style="padding:10px 18px;background:#f8fafd;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            style="border-radius:9px;font-size:13px;">
+                        انصراف
+                    </button>
+                    <button type="button" id="btnConfirmDeleteAllDays" class="btn btn-danger"
+                            onclick="submitDeleteAllDays()"
+                            style="border-radius:9px;font-size:13px;">
+                        <i class="fa fa-trash me-1"></i>
+                        <span class="btn-text">حذف همه</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @section Scripts {
@@ -1646,6 +1696,63 @@
         }
         });
         });
-    </script>
+
+
+
+
+
+
+        function openDeleteAllDaysModal(programId) {
+            document.getElementById('DeleteAllDays_ProgramId').value = programId;
+            document.getElementById('deleteAllDaysMessage').innerHTML = '';
+            $('#deleteAllDaysModal').modal('show');
+        }
+
+        function submitDeleteAllDays() {
+            var $btn = $('#btnConfirmDeleteAllDays');
+            var $msg = $('#deleteAllDaysMessage');
+            var originalText = $btn.html();
+
+            $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> در حال حذف...');
+            $msg.html('');
+
+            var programId = $('#DeleteAllDays_ProgramId').val();
+
+            // گرفتن توکن از داخل خود مودال
+            var token = $('#deleteAllDaysForm input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Admin/NutritionProgramBuilder/DeleteAllDays',
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: token,
+                    NutritionProgramId: programId
+                },
+                success: function (response) {
+                    if (response.isSuccess) {
+                        $msg.html('<div class="alert alert-success mb-0 py-2" style="font-size:12px;border-radius:8px;">' +
+                            '<i class="fa fa-check-circle me-1"></i> ' + response.message + '</div>');
+                        setTimeout(function () {
+                            $('#deleteAllDaysModal').modal('hide');
+                            location.reload();
+                        }, 800);
+                    } else {
+                        $msg.html('<div class="alert alert-danger mb-0 py-2" style="font-size:12px;border-radius:8px;">' +
+                            '<i class="fa fa-times-circle me-1"></i> ' + (response.message || 'خطایی رخ داد.') + '</div>');
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                },
+                error: function (xhr) {
+                    var errMsg = 'خطایی در ارتباط با سرور رخ داد.';
+                    try {
+                        var json = xhr.responseJSON;
+                        if (json && json.message) errMsg = json.message;
+                    } catch (ex) { }
+                    $msg.html('<div class="alert alert-danger mb-0 py-2" style="font-size:12px;border-radius:8px;">' +
+                        '<i class="fa fa-times-circle me-1"></i> ' + errMsg + '</div>');
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            });
+        }    </script>
 }
 

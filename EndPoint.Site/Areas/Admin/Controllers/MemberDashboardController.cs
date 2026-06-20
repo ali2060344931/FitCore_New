@@ -3,7 +3,6 @@ using FitCore.Application.FacadPatterns;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram;
-using FitCore.Application.Services.Tickets.Interfaces;
 using FitCore.Application.Services.TrainingProgramReports.Queries;
 using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms;
 using FitCore.Common;
@@ -29,31 +28,24 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IGetNutritionProgramPdfService _nutritionPdfService;
         private readonly IGetTrainingProgramPdfService _trainingPdfService;
         private readonly IDataBaseContext _context;
-        private readonly IGetGymTicketsService _getGymTicketsService;
         public MemberDashboardController(
             INutritionProgramFacad nutritionFacad,
             ITrainingProgramFacad trainingFacad,
             IGetNutritionProgramPdfService nutritionPdfService,
             IGetTrainingProgramPdfService trainingPdfService,
-            IDataBaseContext context,
-            IGetGymTicketsService getGymTicketsService)
+            IDataBaseContext context
+           )
         {
             _nutritionFacad      = nutritionFacad;
             _trainingFacad       = trainingFacad;
             _nutritionPdfService = nutritionPdfService;
             _trainingPdfService  = trainingPdfService;
             _context             = context;
-            _getGymTicketsService= getGymTicketsService;
         }
 
 
 
-        public IActionResult MyTickets()
-        {
-            var appUserId = GetCurrentUserId();
-            var result = _getGymTicketsService.Execute(appUserId); // فقط آیدی کاربر را به سرویس می‌دهد
-            return View(result.Data);
-        }
+        
         private long GetCurrentUserId() =>
             long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 

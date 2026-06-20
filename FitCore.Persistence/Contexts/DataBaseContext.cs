@@ -81,8 +81,12 @@ namespace FitCore.Persistence.Contexts
         public DbSet<HelpContent> HelpContents { get; set; }
         public DbSet<ProgramRequest> ProgramRequests { get; set; }
 
+
+        //-------------  Ticket Start -------------
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketMessage> TicketMessages { get; set; }
+
+        //-------------  Ticket End -------------
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
@@ -152,47 +156,6 @@ namespace FitCore.Persistence.Contexts
                 .OnDelete(DeleteBehavior.NoAction);
 
             //NutritionProgram
-            // ---------- Ticket ----------
-            modelBuilder.Entity<Ticket>(entity =>
-            {
-                entity.HasQueryFilter(x => !x.IsRemoved);
-
-                entity.HasOne(x => x.SenderUser)
-                      .WithMany()
-                      .HasForeignKey(x => x.SenderUserId)
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(x => x.ReceiverUser)
-                      .WithMany()
-                      .HasForeignKey(x => x.ReceiverUserId)
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(x => x.Gym)
-                      .WithMany()
-                      .HasForeignKey(x => x.GymId)
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasMany(x => x.Messages)
-                      .WithOne(x => x.Ticket)
-                      .HasForeignKey(x => x.TicketId)
-                      .OnDelete(DeleteBehavior.NoAction);
-            });
-
-            // ---------- TicketMessage ----------
-            modelBuilder.Entity<TicketMessage>(entity =>
-            {
-                entity.HasQueryFilter(x => !x.IsRemoved);
-
-                entity.HasOne(x => x.Ticket)
-                      .WithMany(x => x.Messages)
-                      .HasForeignKey(x => x.TicketId)
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(x => x.SenderUser)
-                      .WithMany()
-                      .HasForeignKey(x => x.SenderUserId)
-                      .OnDelete(DeleteBehavior.NoAction);
-            });
 
 
             //*************

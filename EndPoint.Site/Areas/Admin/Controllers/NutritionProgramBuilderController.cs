@@ -48,8 +48,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IRemoveNutritionDayService _removeNutritionDayService;
         private readonly IEditNutritionDayService _editNutritionDayService;
         private readonly IAutoGenerateNutritionDaysService _autoGenerateNutritionDaysService;
+        private readonly IRemoveNutritionAllDayService _removeNutritionAllDayService;
         private readonly IFoodService _foodService;
 
+        
 
 
         public NutritionProgramBuilderController(
@@ -66,7 +68,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             IRemoveNutritionDayService removeNutritionDayService,
             IEditNutritionDayService editNutritionDayService,
             IAutoGenerateNutritionDaysService autoGenerateNutritionDaysService,
-            IFoodService foodService
+            IFoodService foodService,
+            IRemoveNutritionAllDayService removeNutritionAllDayService
             )
         {
             _getProgramBuilderService = getProgramBuilderService;
@@ -82,6 +85,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _editNutritionDayService = editNutritionDayService;
             _removeNutritionDayService= removeNutritionDayService;
             _autoGenerateNutritionDaysService= autoGenerateNutritionDaysService;
+            _removeNutritionAllDayService= removeNutritionAllDayService;
             _foodService = foodService;
 
         }
@@ -230,5 +234,19 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             });
         }
 
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteAllDays(RemoveAllNutritionDaysDto request)
+        {
+            var result = _removeNutritionAllDayService.Execute(request);
+
+            return Json(new
+            {
+                isSuccess = result.IsSuccess,
+                message = result.Message
+            });
+        }
     }
 }

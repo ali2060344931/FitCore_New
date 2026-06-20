@@ -37,8 +37,7 @@ using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
-using FitCore.Application.Services.Tickets;
-using FitCore.Application.Services.Tickets.Interfaces;
+using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveAllTrainingDays;
 using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
 using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
 using FitCore.Common.Roles;
@@ -62,7 +61,6 @@ using QuestPDF.Infrastructure;
 using System;
 using System.IO;
 
-using static FitCore.Application.Services.Tickets.ReplyTicketService;
 
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
@@ -76,10 +74,19 @@ var builder = WebApplication.CreateBuilder(args);
 string connectionString =
     @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
 
+
+//var connectionString = "Server=185.88.152.27;Port=3306;Database=fitcorea_;Uid=FitCoreDb;Pwd=58PyfwD0Nlmsxk%%;";
+
+
+
 builder.Services.AddDbContext<DataBaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
+
+
+
+
 
 builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
 
@@ -261,6 +268,8 @@ builder.Services.AddScoped<IEditNutritionDayService, EditNutritionDayService>();
 builder.Services.AddScoped<IAutoGenerateNutritionDaysService, AutoGenerateNutritionDaysService>();
 builder.Services.AddScoped<IGetNutritionProgramPdfService, GetNutritionProgramPdfService>();
 builder.Services.AddScoped<ICopyProgramFacad, CopyProgramFacad>();
+builder.Services.AddScoped<IRemoveNutritionAllDayService, RemoveNutritionAllDayService>();
+builder.Services.AddScoped<IRemoveAllTrainingDaysService, RemoveAllTrainingDaysService>();
 
 //===== Facad =====
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
@@ -277,11 +286,6 @@ builder.Services.AddScoped<IGymDashboardService, GymDashboardService>();
 builder.Services.AddScoped<IGetHelpContentService, GetHelpContentService>();
 builder.Services.AddScoped<IHelp_Service, HelpService>();
 //++++++++++++++++
-builder.Services.AddScoped<ICreateTicketService, CreateTicketService>();
-builder.Services.AddScoped<IReplyTicketService, ReplyTicketService>();
-builder.Services.AddScoped<IGetGymTicketsService, GetGymTicketsService>();
-builder.Services.AddScoped<IGetAllTicketsService, GetAllTicketsService>();
-
 
 //++++++++++++++++
 

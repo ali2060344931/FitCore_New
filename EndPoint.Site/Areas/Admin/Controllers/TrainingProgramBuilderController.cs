@@ -6,6 +6,7 @@ using FitCore.Application.Services.TrainingProgramBuilder.Commands.AddTrainingDa
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.AddTrainingExercise;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingDay;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingExercise;
+using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveAllTrainingDays;
 using FitCore.Common;
 using FitCore.Domain.Entities.TrainingProgram;
 
@@ -27,16 +28,19 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly ITrainingProgramFacad _trainingProgramFacad;
         private readonly ITrainingProgramBuilderFacad _builderFacad;
+        private readonly IRemoveAllTrainingDaysService _RemoveAllTrainingDaysService;
         private readonly IDataBaseContext _context;
 
         public TrainingProgramBuilderController(
             ITrainingProgramFacad trainingProgramFacad,
             ITrainingProgramBuilderFacad builderFacad,
-            IDataBaseContext context)
+            IDataBaseContext context,
+            IRemoveAllTrainingDaysService removeAllTrainingDaysService)
         {
             _trainingProgramFacad = trainingProgramFacad;
             _builderFacad = builderFacad;
             _context = context;
+            _RemoveAllTrainingDaysService = removeAllTrainingDaysService;
         }
 
         //====================================================
@@ -256,6 +260,20 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .FirstOrDefaultAsync();
 
             return (gymId, false);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteAllDays(RemoveAllTrainingDaysDto request)
+        {
+            var result = _RemoveAllTrainingDaysService.Execute(request);
+
+            return Json(new
+            {
+                isSuccess = result.IsSuccess,
+                message = result.Message
+            });
         }
     }
 }

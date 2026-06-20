@@ -8,4 +8,5 @@ namespace FitCore.Application.Interfaces.ITrainingProgram
     {
         Task<ResultDto> Execute(long trainingProgramId);
     }
+
 }
