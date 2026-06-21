@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "تیکت جدید";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+<style>
+    .tkc-wrap{max-width:680px;margin:0 auto;}
+    .tkc-card{background:#fff;border-radius:18px;padding:30px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+    .tkc-title{font-size:20px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+    .tkc-title i{color:#00C896;}
+    .tkc-sub{color:#718096;font-size:13px;margin-bottom:26px;}
+    .tkc-label{font-weight:600;font-size:13.5px;color:#2d3748;margin-bottom:7px;display:block;}
+    .tkc-input,.tkc-textarea,.tkc-select{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;
+        padding:12px 14px;font-size:14px;transition:.2s;background:#fafbfc;}
+    .tkc-input:focus,.tkc-textarea:focus,.tkc-select:focus{outline:none;border-color:#00C896;background:#fff;
+        box-shadow:0 0 0 3px rgba(0,200,150,.12);}
+    .tkc-textarea{resize:vertical;min-height:140px;}
+    .tkc-group{margin-bottom:20px;}
+    .tkc-priorities{display:flex;gap:10px;}
+    .tkc-priority-opt{flex:1;text-align:center;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px;
+        cursor:pointer;transition:.2s;font-size:13px;font-weight:600;color:#4a5568;}
+    .tkc-priority-opt.active{border-color:#00C896;background:#e6f9f1;color:#00a87d;}
+    .tkc-priority-opt i{display:block;font-size:18px;margin-bottom:5px;}
+    .tkc-submit{width:100%;background:linear-gradient(135deg,#00C896,#00a87d);color:#fff;border:none;
+        padding:14px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;transition:.2s;
+        box-shadow:0 4px 14px rgba(0,200,150,.3);}
+    .tkc-submit:hover{transform:translateY(-2px);}
+    .tkc-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .tkc-back{display:inline-flex;align-items:center;gap:6px;color:#718096;text-decoration:none;font-size:13px;margin-bottom:16px;}
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="tkc-wrap">
+        <a href="@Url.Action("Index")" class="tkc-back"><i class="fa fa-angle-right"></i> بازگشت به لیست</a>
+
+        <div class="tkc-card">
+            <div class="tkc-title"><i class="fa fa-edit"></i> ایجاد تیکت جدید</div>
+            <div class="tkc-sub">سوال یا مشکل خود را شرح دهید — در سریع‌ترین زمان پاسخ داده می‌شود.</div>
+
+            <form id="ticketForm">
+                @Html.AntiForgeryToken()
+                <div class="tkc-group">
+                    <label class="tkc-label">موضوع تیکت</label>
+                    <input type="text" id="subject" name="subject" class="tkc-input" placeholder="مثلاً: مشکل در ثبت برنامه تمرینی" required />
+                </div>
+
+                <div class="tkc-group">
+                    <label class="tkc-label">اولویت</label>
+                    <div class="tkc-priorities">
+                        <div class="tkc-priority-opt" data-val="1" onclick="selectPriority(this)">
+                            <i class="fa fa-arrow-down"></i> کم
+                        </div>
+                        <div class="tkc-priority-opt active" data-val="2" onclick="selectPriority(this)">
+                            <i class="fa fa-minus"></i> عادی
+                        </div>
+                        <div class="tkc-priority-opt" data-val="3" onclick="selectPriority(this)">
+                            <i class="fa fa-arrow-up"></i> فوری
+                        </div>
+                    </div>
+                    <input type="hidden" id="priority" name="priority" value="2" />
+                </div>
+
+                <div class="tkc-group">
+                    <label class="tkc-label">شرح کامل</label>
+                    <textarea id="body" name="body" class="tkc-textarea" placeholder="جزئیات مشکل یا سوال خود را بنویسید..." required></textarea>
+                </div>
+
+                <button type="submit" class="tkc-submit" id="submitBtn">
+                    <i class="fa fa-paper-plane"></i> ارسال تیکت
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectPriority(el) {
+            document.querySelectorAll('.tkc-priority-opt').forEach(x => x.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('priority').value = el.dataset.val;
+        }
+
+        document.getElementById('ticketForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> در حال ارسال...';
+
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('@Url.Action("Create")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    __RequestVerificationToken: token,
+                    subject: document.getElementById('subject').value,
+                    body: document.getElementById('body').value,
+                    priority: document.getElementById('priority').value
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.isSuccess) {
+                    window.location.href = '@Url.Action("Detail")/' + res.ticketId;
+                } else {
+                    alert(res.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa fa-paper-plane"></i> ارسال تیکت';
+                }
+            })
+            .catch(() => {
+                alert('خطا در ارتباط با سرور');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-paper-plane"></i> ارسال تیکت';
+            });
+        });
+    </script>
+}

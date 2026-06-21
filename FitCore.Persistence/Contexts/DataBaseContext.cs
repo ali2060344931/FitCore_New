@@ -339,6 +339,18 @@ namespace FitCore.Persistence.Contexts
 
 
 
+            modelBuilder.Entity<Ticket>(e =>
+            {
+                e.HasQueryFilter(x => !x.IsRemoved);
+                e.HasOne(x => x.SenderUser).WithMany().HasForeignKey(x => x.SenderUserId).OnDelete(DeleteBehavior.NoAction);
+                e.HasOne(x => x.Gym).WithMany().HasForeignKey(x => x.GymId).OnDelete(DeleteBehavior.NoAction);
+            });
+            modelBuilder.Entity<TicketMessage>(e =>
+            {
+                e.HasQueryFilter(x => !x.IsRemoved);
+                e.HasOne(x => x.Ticket).WithMany(t => t.Messages).HasForeignKey(x => x.TicketId).OnDelete(DeleteBehavior.Cascade);
+                e.HasOne(x => x.SenderUser).WithMany().HasForeignKey(x => x.SenderUserId).OnDelete(DeleteBehavior.NoAction);
+            });
 
         }
 

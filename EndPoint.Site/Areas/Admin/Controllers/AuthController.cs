@@ -1,46 +1,34 @@
-﻿// ===========================
-// AuthController
-// ===========================
-
-using FitCore.Application.Contexts;
+﻿using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Domain.Entities.Users;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Net.Http.Headers;
 
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Authorize] // حتما چک شود که کاربر لاگین باشد
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class AuthController : Controller
     {
         private readonly SendOtpService _sendOtpService;
-
         private readonly VerifyOtpService _verifyOtpService;
-
         private readonly RegisterUserService _registerUserService;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly RegisterUserViewModel _context;
-        private readonly UserManager<AppUser> _userManager; // <-- این خط اضافه شود
-
-        private readonly IDataBaseContext _db; // تغییر نام به _db برای خوانایی
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IDataBaseContext _db;
 
         public AuthController(
             SendOtpService sendOtpService,
             VerifyOtpService verifyOtpService,
             RegisterUserService registerUserService,
-            IDataBaseContext db, // تزریق دیتابیس بجای ViewModel
+            IDataBaseContext db,
             SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager)
         {
@@ -48,29 +36,25 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _verifyOtpService = verifyOtpService;
             _registerUserService = registerUserService;
             _signInManager = signInManager;
-            _db = db; // انتساب به دیتابیس
+            _db = db;
             _userManager = userManager;
         }
 
-
-
         [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
 
         [HttpPost]
         public async Task<IActionResult> SendOtpLogin(string mobile)
         {
             var result = await _sendOtpService.Execute(mobile);
-            return Json(result);
+            return Json(result); // فقط نتیجه سرویس را برمی‌گرداند
         }
+
         [HttpPost]
         public async Task<IActionResult> SendOtpReg(string FullName, string mobile, int gymId)
         {
             var result = await _sendOtpService.Execute(FullName, mobile, gymId);
-            return Json(result);
+            return Json(result); // فقط نتیجه سرویس را برمی‌گرداند
         }
 
 

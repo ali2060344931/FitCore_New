@@ -37,6 +37,7 @@ using FitCore.Application.Services.Provinces.Queries;
 using FitCore.Application.Services.Setings.Queries.GetSetings;
 using FitCore.Application.Services.SiteSettings;
 using FitCore.Application.Services.SmsService.Commands;
+using FitCore.Application.Services.Tickets;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveAllTrainingDays;
 using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
 using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
@@ -48,6 +49,8 @@ using FitCore.Persistence.Seed;
 
 using FluentValidation;
 using FluentValidation.AspNetCore;
+
+using GymBot.Services;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -69,13 +72,19 @@ using VerifyOtpService =
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 #region Database
 
+//string connectionString =
+//    @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
+
 string connectionString =
-    @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
+    @"Data Source=185.88.152.27,1430;Initial Catalog=fitcorea_;User ID=FitcoerDB;Password=KD0^qthh$djHce39;TrustServerCertificate=True;";
 
-
-//var connectionString = "Server=185.88.152.27;Port=3306;Database=fitcorea_;Uid=FitCoreDb;Pwd=58PyfwD0Nlmsxk%%;";
 
 
 
@@ -230,6 +239,8 @@ builder.Services.AddScoped<IGetProvincesService, GetProvincesService>();
 
 builder.Services.AddScoped<IGetCitiesService, GetCitiesService>();
 
+builder.Services.AddHttpClient<IBaleBotService, BaleBotService>();
+
 
 builder.Services.AddScoped<IAddOrUpdateMemberService, AddOrUpdateMemberService>();
 builder.Services.AddScoped<IGetMemberByAppUserIdService, GetMemberByAppUserIdService>();
@@ -271,6 +282,14 @@ builder.Services.AddScoped<ICopyProgramFacad, CopyProgramFacad>();
 builder.Services.AddScoped<IRemoveNutritionAllDayService, RemoveNutritionAllDayService>();
 builder.Services.AddScoped<IRemoveAllTrainingDaysService, RemoveAllTrainingDaysService>();
 
+
+builder.Services.AddScoped<ICreateTicketService, CreateTicketService>();
+builder.Services.AddScoped<IReplyTicketService, ReplyTicketService>();
+builder.Services.AddScoped<ICloseTicketService, CloseTicketService>();
+builder.Services.AddScoped<IGetTicketsService, GetTicketsService>();
+builder.Services.AddScoped<IGetTicketDetailService, GetTicketDetailService>();
+builder.Services.AddScoped<IGetOpenTicketsCountService, GetOpenTicketsCountService>();
+
 //===== Facad =====
 builder.Services.AddScoped<IMemberFacad, MemberFacad>();
 builder.Services.AddScoped<INutritionProgramFacad, NutritionProgramFacad>();
@@ -309,14 +328,11 @@ builder.Services.AddScoped<IGetMembersService, GetMembersService>();
 
 
 
-
 builder.Services.AddScoped<IEditMemberService, EditMemberService>();
 
 builder.Services.AddScoped<IRemoveMemberService, RemoveMemberService>();
 
 
-builder.Services.AddControllersWithViews();
-builder.Services.AddControllers();
 
 
 builder.Services.AddScoped<RegisterUserService>();
@@ -334,12 +350,16 @@ builder.Services.AddScoped<
 #region MVC
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddControllers();
-
-
-#endregion
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+#endregion
+
 
 #region Seeder
 
@@ -379,8 +399,6 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapControllers();
-
-
 
 #endregion
 

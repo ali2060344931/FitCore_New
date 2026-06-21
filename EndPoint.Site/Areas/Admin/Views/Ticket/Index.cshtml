@@ -1,0 +1,93 @@
+@using FitCore.Application.Services.Tickets
+@using FitCore.Domain.Entities.Tickets
+@{
+    ViewData["Title"] = ViewBag.Title ?? "تیکت‌ها";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+    var tickets = ViewBag.Tickets as List<TicketListItemDto>;
+}
+<style>
+    .tk-wrap{max-width:980px;margin:0 auto;}
+    .tk-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .tk-title{font-size:20px;font-weight:700;color:#1a202c;display:flex;align-items:center;gap:10px;}
+    .tk-title i{color:#00C896;}
+    .tk-new-btn{background:linear-gradient(135deg,#00C896,#00a87d);color:#fff;border:none;
+        padding:10px 22px;border-radius:12px;font-weight:600;font-size:14px;
+        box-shadow:0 4px 14px rgba(0,200,150,.3);transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+    .tk-new-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,150,.4);color:#fff;}
+
+    .tk-card{background:#fff;border-radius:16px;border:1px solid #eef1f5;padding:18px 20px;margin-bottom:12px;
+        display:flex;align-items:center;gap:16px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.03);}
+    .tk-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px);border-color:#d6f5ea;}
+
+    .tk-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);
+        color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;}
+
+    .tk-body{flex:1;min-width:0;}
+    .tk-subject{font-weight:700;font-size:15px;color:#1a202c;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .tk-meta{font-size:12.5px;color:#718096;display:flex;gap:14px;flex-wrap:wrap;}
+    .tk-meta span{display:flex;align-items:center;gap:5px;}
+
+    .tk-side{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .tk-badge{padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+    .tk-badge.open{background:#fff4e5;color:#dd8800;}
+    .tk-badge.answered{background:#e6f9f1;color:#00a87d;}
+    .tk-badge.closed{background:#f1f2f6;color:#8a94a6;}
+    .tk-priority{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .tk-priority.low{background:#a0aec0;}
+    .tk-priority.normal{background:#4299e1;}
+    .tk-priority.high{background:#f56565;}
+
+    .tk-empty{text-align:center;padding:70px 20px;color:#a0aec0;}
+    .tk-empty i{font-size:54px;margin-bottom:16px;opacity:.4;display:block;}
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="tk-wrap">
+        <div class="tk-header">
+            <div class="tk-title"><i class="fa fa-comments"></i> @ViewBag.Title</div>
+            @if ((bool)ViewBag.IsMember || (bool)ViewBag.IsAdmin)
+            {
+                <a href="@Url.Action("Create")" class="tk-new-btn"><i class="fa fa-plus"></i> تیکت جدید</a>
+            }
+        </div>
+
+        @if (tickets == null || !tickets.Any())
+        {
+            <div class="tk-empty">
+                <i class="fa fa-inbox"></i>
+                <div>هنوز تیکتی ثبت نشده است</div>
+            </div>
+        }
+        else
+        {
+            foreach (var t in tickets)
+            {
+                string statusClass = t.Status == TicketStatus.Open ? "open" : t.Status == TicketStatus.Answered ? "answered" : "closed";
+                string statusText = t.Status == TicketStatus.Open ? "در انتظار پاسخ" : t.Status == TicketStatus.Answered ? "پاسخ داده شد" : "بسته شده";
+                string priorityClass = t.Priority == TicketPriority.High ? "high" : t.Priority == TicketPriority.Low ? "low" : "normal";
+                string initial = !string.IsNullOrEmpty(t.SenderName) ? t.SenderName.Substring(0, 1) : "?";
+
+                <div class="tk-card" onclick="location.href='@Url.Action("Detail", new { id = t.Id })'">
+                    <div class="tk-avatar">@initial</div>
+                    <div class="tk-body">
+                        <div class="tk-subject">@t.Subject</div>
+                        <div class="tk-meta">
+                            <span><i class="fa fa-user-o"></i> @t.SenderName</span>
+                            @if (t.GymName != "-")
+                            {
+                                <span><i class="fa fa-building-o"></i> @t.GymName</span>
+                            }
+                            <span><i class="fa fa-comment-o"></i> @t.MessagesCount پیام</span>
+                            <span><i class="fa fa-clock-o"></i> @t.LastActivity.ToString("yyyy/MM/dd HH:mm")</span>
+                        </div>
+                    </div>
+                    <div class="tk-side">
+                        <span class="tk-priority @priorityClass" title="اولویت"></span>
+                        <span class="tk-badge @statusClass">@statusText</span>
+                        <i class="fa fa-angle-left text-muted"></i>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

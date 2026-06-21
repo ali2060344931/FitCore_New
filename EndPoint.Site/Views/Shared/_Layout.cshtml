@@ -2,14 +2,6 @@
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<AppUser> UserManager
 
-@* @{
-    var appUser = await UserManager.GetUserAsync(User);
-    var roles = appUser == null ? new List<string>() : (await UserManager.GetRolesAsync(appUser)).ToList();
-    var rolesText = roles.Any() ? string.Join("، ", roles) : "بدون نقش";
-}
- *@
-
-
 @using System.Security.Claims
 
 @{
@@ -32,7 +24,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باشگاه ورزشی فیروزجایی</title>
+    <title>FitCore App </title>
     <!-- font---------------------------------------->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
@@ -45,6 +37,43 @@
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/responsive.css">
     <link rel="stylesheet" href="~/css/FitCorecss.css" />
 
+    <!-- کدهای رفع مشکل موبایل -->
+    <!-- کدهای رفع مشکل موبایل -->
+    <style>
+            @@media (max-width: 991px) {
+                .h-main-row {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    overflow: visible !important;
+                }
+
+                .header-left {
+                    width: 100% !important;
+                    display: block !important;
+                    padding: 0 !important;
+                    margin-top: 15px; /* فاصله از قسمت جستجو */
+                }
+
+                .header-account {
+                    text-align: center !important; /* وسط چین کردن دکمه‌ها در موبایل */
+                }
+
+                    .header-account .account-box {
+                        justify-content: center !important;
+                        display: inline-flex !important;
+                    }
+                /* رفع مشکل طولانی شدن نام کاربری در موبایل */
+                .wide-account-box {
+                    min-width: unset !important;
+                    width: 100% !important;
+                    white-space: normal !important;
+                    text-align: center !important;
+                    display: block !important;
+                    padding: 10px 15px !important;
+                    font-size: 13px;
+                }
+            }
+    </style>
 </head>
 <body>
     @* .page-content-wrapper *@
@@ -67,78 +96,51 @@
                                     <div class="header-search-box">
                                         <form action="#" class="form-search">
                                             <div class="header-search-box-container">
-
                                                 <input type="search" class="header-search-input" name="search-input" placeholder="موضوع مورد نطر را جستجو کنید…">
                                                 <div class="action-btns">
                                                     <button class="btn btn-search" type="submit">
                                                         <i class="fa fa-search"></i>
                                                     </button>
                                                 </div>
-
                                             </div>
-
-
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- بخش اکانت -->
                     <div class="col-lg-3 col-md-3 col-xs-12 pl">
                         <div class="header-left">
                             <div class="header-account text-left">
                                 <div class="d-block">
                                     <div class="account-box">
 
-                                        @* جهت بررسی لاگین کاربر *@
                                         @if (User.Identity.IsAuthenticated)
                                         {
                                             <div class="nav-account d-block pl">
-
                                                 <div class="nav-account">
-
-
-                                                    <div class="account-box wide-account-box" style="width: auto !important; min-width: max-content; display: flex; white-space: nowrap; padding: 0 15px;">
-                                                        <span class="icon-account">
-                                                            @* <img src="~/SiteTemplate/assets/images/man.png" class="avator"> *@
-                                                        </span>
+                                                    <!-- استایل‌های اینلاین مخرب حذف و به کلاس منتقل شدند -->
+                                                    <div class="account-box wide-account-box">
+                                                        <span class="icon-account"></span>
                                                         <span class="title-account">
-                                                            @* کاربر: @User.Identity.Name | *@
-                                                            کاربر: <span style="color:red; font-weight:bold;">@User.Identity.Name</span> |
-                                                            باشگاه: <span style="color:red; font-weight:bold;">@User.FindFirst("GymName")?.Value</span>
-                                                            نقش: <span style="color:red; font-weight:bold;">@persianRole</span>                                                        @{
-
-
-                                                        }
+                                                            کاربر: <span style="color:red; font-weight:bold;">@User.Identity.Name</span> <br class="d-lg-none" />
+                                                            باشگاه: <span style="color:red; font-weight:bold;">@User.FindFirst("GymName")?.Value</span> <br class="d-lg-none" />
+                                                            نقش: <span style="color:red; font-weight:bold;">@persianRole</span>
                                                         </span>
-
                                                     </div>
-
-
-
                                                 </div>
-
-
 
                                                 <div class="dropdown-menu">
                                                     <ul class="account-uls mb-0">
-                                                        <li class="account-item">
-                                                            <a href="#" class="account-link">پنل کاربری</a>
-                                                        </li>
-                                                        <li class="account-item">
-                                                            <a href="#" class="account-link">سفارشات من</a>
-                                                        </li>
-                                                        <li class="account-item">
-                                                            <a href="#" class="account-link">تنظیمات</a>
-                                                        </li>
-                                                        <li class="account-item">
-                                                            <a href="~/Admin/Auth/Logout" class="account-link">خروج از برنامه</a>
-
-                                                        </li>
+                                                        <li class="account-item"><a href="#" class="account-link">پنل کاربری</a></li>
+                                                        <li class="account-item"><a href="#" class="account-link">سفارشات من</a></li>
+                                                        <li class="account-item"><a href="#" class="account-link">تنظیمات</a></li>
+                                                        <li class="account-item"><a href="~/Admin/Auth/Logout" class="account-link">خروج از برنامه</a></li>
                                                     </ul>
                                                 </div>
                                             </div>
-
                                         }
                                         else
                                         {
@@ -162,120 +164,31 @@
                     </div>
                 </section>
 
-
+                <!-- منوی ناوبری اصلی (دسکتاپ) -->
                 <div>
                     <nav class="header-main-nav">
                         <div class="d-block">
                             <div class="align-items-center">
                                 <ul class="menu-ul mega-menu-level-one">
                                     <li id="nav-menu-item" class="menu-item nav-overlay">
-                                        <a href="#" class="current-link-menu">
-                                            کالای دیجیتال
-                                        </a>
+                                        <a href="#" class="current-link-menu">کالای دیجیتال</a>
                                         <ul class="sub-menu is-mega-menu mega-menu-level-two">
                                             <li class="menu-mega-item menu-item-type-mega-menu">
-                                                <a href="#" class="mega-menu-link">
-                                                    موبایل
-                                                </a>
+                                                <a href="#" class="mega-menu-link">موبایل</a>
                                                 <ul class="sub-menu mega-menu-level-three">
-                                                    <li class="menu-mega-item-three">
-                                                        <a href="#">
-                                                            اپل
-                                                        </a>
-                                                    </li>
+                                                    <li class="menu-mega-item-three"><a href="#">اپل</a></li>
                                                 </ul>
                                             </li>
-                                            <div class="bg-image">
-                                                <img src="~/SiteTemplate/assets/images/menu-main/digital.png" alt="">
-                                            </div>
+                                            <div class="bg-image"><img src="~/SiteTemplate/assets/images/menu-main/digital.png" alt=""></div>
                                         </ul>
                                     </li>
-
-                                    @*
-                                    <div class="divider-space-card d-block">
-                                        <div class="header-cart-basket">
-                                            <a href="#" class="cart-basket-box">
-                                                <span class="icon-cart">
-                                                    <i class="mdi mdi-cart"></i>
-                                                </span>
-                                                <span class="title-cart">سبد خرید</span>
-                                                <span class="price-cart">
-                                                    25,000,000
-                                                    <span>تومان</span>
-                                                </span>
-                                                <span class="count-cart">2</span>
-                                            </a>
-                                            <div class="widget-shopping-cart">
-                                                <div class="widget-shopping-cart-content">
-                                                    <ul class="product-list-widget">
-                                                        <li class="mini-cart-item">
-                                                            <div class="mini-cart-item-content">
-                                                                <a href="#" class="mini-cart-item-close">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </a>
-                                                                <a href="#" class="mini-cart-item-image d-block">
-                                                                    <img src="~/SiteTemplate/assets/images/menu-main/img-card.jpg">
-                                                                </a>
-                                                                <span class="product-name-card">لپ تاپ چووی الترابوک 14 اینچ پرو</span>
-                                                                <div class="variation">
-                                                                    <span class="variation-n">فروشنده : </span>
-                                                                    <p class="mb-0">دیجی اسمارت </p>
-                                                                </div>
-                                                                <div class="quantity">
-                                                                    <span class="quantity-Price-amount">
-                                                                        15,000,000
-                                                                        <span>تومان</span>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li class="mini-cart-item">
-                                                            <div class="mini-cart-item-content">
-                                                                <a href="#" class="mini-cart-item-close">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </a>
-                                                                <a href="#" class="mini-cart-item-image d-block">
-                                                                    <img src="~/SiteTemplate/assets/images/menu-main/img-card-2.jpg">
-                                                                </a>
-                                                                <span class="product-name-card">هواوای میت بوک X پرو 13.9 اینچ</span>
-                                                                <div class="variation">
-                                                                    <span class="variation-n">فروشنده : </span>
-                                                                    <p class="mb-0">دیجی اسمارت </p>
-                                                                </div>
-                                                                <div class="quantity">
-                                                                    <span class="quantity-Price-amount">
-                                                                        10,000,000
-                                                                        <span>تومان</span>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                    <div class="mini-card-total">
-                                                        <strong>قیمت کل : </strong>
-                                                        <span class="price-total">
-                                                            25,000,000
-                                                            <span>تومان</span>
-                                                        </span>
-                                                    </div>
-                                                    <div class="mini-card-button">
-                                                        <a href="cart.html" class="view-card">مشاهده سبد خرید</a>
-                                                        <a href="checkout.html" class="card-checkout">تسویه حساب</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-*@
-
                                 </ul>
                             </div>
                         </div>
                     </nav>
                 </div>
 
-
-                <!--    responsive-megamenu-mobile----------------->
+                <!-- responsive-megamenu-mobile (منوی همبرگری موبایل) -->
                 <nav class="sidebar">
                     <div class="nav-header">
                         <div class="header-cover"></div>
@@ -290,39 +203,42 @@
                                 <ul>
                                     <li class="has-sub">
                                         <a href="#" class="category-level-2">لوازم جانبی گوشی</a>
-                                        <ul>
-                                            <li><a href="#" class="category-level-3">کیف و کاور گوشی</a></li>
-                                        </ul>
+                                        <ul><li><a href="#" class="category-level-3">کیف و کاور گوشی</a></li></ul>
                                     </li>
                                 </ul>
                             </div>
                         </li>
+                        <!-- پیشنهاد: قرار دادن لینک ورود و ثبت نام داخل منوی کناری موبایل برای دسترسی بهتر -->
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li style="border-top: 1px solid #ccc; margin-top: 15px; padding-top: 15px;">
+                                <a href="~/admin/Auth/Login" style="padding-right: 15px;"><i class="fa fa-sign-in"></i> ورود به حساب</a>
+                            </li>
+                            <li>
+                                <a href="~/admin/Auth/Register" style="padding-right: 15px;"><i class="fa fa-user-plus"></i> ثبت نام</a>
+                            </li>
+                        }
                     </ul>
                 </nav>
+
                 <div class="nav-btn nav-slider">
                     <span class="linee1"></span>
                     <span class="linee2"></span>
                     <span class="linee3"></span>
                 </div>
                 <div class="overlay"></div>
-                <!--    responsive-megamenu-mobile----------------->
             </div>
         </div>
     </header>
-    <div id="headerSpacer"></div>
-    <div id="headerSpacer"></div>
 
+    <div id="headerSpacer"></div>
     <div class="nav-categories-overlay"></div>
-
 
     @RenderBody()
 
-
-
     <!-- footer------------------------------------------->
     <footer class="footer-main-site">
-        <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
-        </section>
+        <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1"></section>
         <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
             <div class="container-fluid">
                 <div class="col-12">
@@ -332,32 +248,12 @@
                                 <div class="col-lg-3 col-md-3 col-xs-12 pr">
                                     <div class="row">
                                         <section class="footer-links-col">
-                                            <div class="headline-links">
-                                                <a href="#">
-                                                    با دیجی اسمارت
-                                                </a>
-                                            </div>
+                                            <div class="headline-links"><a href="#">با دیجی اسمارت</a></div>
                                             <ul class="footer-menu-ul">
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        اتاق خبر دیجی اسمارت
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        فروش در دیجی اسمارت
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        همکاری با سازمان‌ها
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        فرصت‌های شغلی
-                                                    </a>
-                                                </li>
+                                                <li class="menu-item-type-custom"><a href="#">اتاق خبر دیجی اسمارت</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">فروش در دیجی اسمارت</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">همکاری با سازمان‌ها</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">فرصت‌های شغلی</a></li>
                                             </ul>
                                         </section>
                                     </div>
@@ -365,32 +261,12 @@
                                 <div class="col-lg-3 col-md-3 col-xs-12 pr">
                                     <div class="row">
                                         <section class="footer-links-col">
-                                            <div class="headline-links">
-                                                <a href="#">
-                                                    خدمات مشتریان
-                                                </a>
-                                            </div>
+                                            <div class="headline-links"><a href="#">خدمات مشتریان</a></div>
                                             <ul class="footer-menu-ul">
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        پاسخ به پرسش‌های متداول
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        رویه‌های بازگرداندن کالا
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        شرایط استفاده
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        حریم خصوصی
-                                                    </a>
-                                                </li>
+                                                <li class="menu-item-type-custom"><a href="#">پاسخ به پرسش‌های متداول</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">رویه‌های بازگرداندن کالا</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">شرایط استفاده</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">حریم خصوصی</a></li>
                                             </ul>
                                         </section>
                                     </div>
@@ -398,27 +274,11 @@
                                 <div class="col-lg-3 col-md-3 col-xs-12 pr">
                                     <div class="row">
                                         <section class="footer-links-col">
-                                            <div class="headline-links">
-                                                <a href="#">
-                                                    راهنمای خرید از دیجی اسمارت
-                                                </a>
-                                            </div>
+                                            <div class="headline-links"><a href="#">راهنمای خرید از دیجی اسمارت</a></div>
                                             <ul class="footer-menu-ul">
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        نحوه ثبت سفارش
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        رویه ارسال سفارش
-                                                    </a>
-                                                </li>
-                                                <li class="menu-item-type-custom">
-                                                    <a href="#">
-                                                        شیوه‌های پرداخت
-                                                    </a>
-                                                </li>
+                                                <li class="menu-item-type-custom"><a href="#">نحوه ثبت سفارش</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">رویه ارسال سفارش</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">شیوه‌های پرداخت</a></li>
                                             </ul>
                                         </section>
                                     </div>
@@ -454,18 +314,10 @@
                                             <div class="owl-stage-outer">
                                                 <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 2234px;">
                                                     <div class="owl-item active" style="width: 300.75px; margin-left: 10px;">
-                                                        <div class="item">
-                                                            <a href="#" class="d-block hover-img-link">
-                                                                <img src="~/SiteTemplate/assets/images/footer/license/L-1.png" class="img-fluid img-brand" alt="">
-                                                            </a>
-                                                        </div>
+                                                        <div class="item"><a href="#" class="d-block hover-img-link"><img src="~/SiteTemplate/assets/images/footer/license/L-1.png" class="img-fluid img-brand" alt=""></a></div>
                                                     </div>
                                                     <div class="owl-item active" style="width: 300.75px; margin-left: 10px;">
-                                                        <div class="item">
-                                                            <a href="#" class="d-block hover-img-link mt-0">
-                                                                <img src="~/SiteTemplate/assets/images/footer/license/L-2.png" class="img-fluid img-brand" alt="">
-                                                            </a>
-                                                        </div>
+                                                        <div class="item"><a href="#" class="d-block hover-img-link mt-0"><img src="~/SiteTemplate/assets/images/footer/license/L-2.png" class="img-fluid img-brand" alt=""></a></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -475,7 +327,7 @@
                             </div>
                             <div class="footer-copyright">
                                 <div class="footer-copyright-text">
-                                    <p>تمامی مطالب، عکس ها و... متعلق به سایت فروشگاهی دیجی اسمارت می باشد.</p>
+                                    <p>تمامی مطالب، عکس ها و... متعلق به سایت فیت کور می باشد.</p>
                                 </div>
                             </div>
                         </div>
@@ -494,45 +346,32 @@
     <!-- scroll_Progress------------------------->
 
 </body>
+
 <!-- file js---------------------------------------------------->
-
-
 <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
 <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
-<!-- plugin----------------------------------------------------->
 <script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
 <script src="~/SiteTemplate/assets/js/vendor/jquery.countdown.js"></script>
 <script src="~/SiteTemplate/assets/js/vendor/jquery.nice-select.min.js"></script>
-<!-- main js---------------------------------------------------->
 <script src="~/SiteTemplate/assets/js/main.js"></script>
 
 <script>
     $(document).ready(function () {
-
     var header = $('#mainHeader');
     var spacer = $('#headerSpacer');
     var headerHeight = header.outerHeight();
 
     $(window).on('scroll', function () {
-
     if ($(window).scrollTop() > headerHeight) {
-
     if (!header.hasClass('header-fixed')) {
-
     header.addClass('header-fixed');
     spacer.height(headerHeight).show();
-
     }
-
     } else {
-
     header.removeClass('header-fixed');
     spacer.hide();
-
     }
-
     });
-
     });
 </script>
 

@@ -1,0 +1,153 @@
+@using FitCore.Application.Services.Tickets
+@using FitCore.Common.Roles
+@model TicketDetailDto
+@{
+    ViewData["Title"] = "تیکت: " + Model.Subject;
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+    long currentUserId = ViewBag.CurrentUserId;
+    string currentRole = ViewBag.CurrentRole;
+    bool isClosed = Model.Status == FitCore.Domain.Entities.Tickets.TicketStatus.Closed;
+}
+<style>
+    .tkd-wrap{max-width:820px;margin:0 auto;}
+    .tkd-head{background:#fff;border-radius:16px 16px 0 0;padding:20px 24px;border-bottom:1px solid #eef1f5;
+        display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .tkd-subject{font-size:18px;font-weight:700;color:#1a202c;}
+    .tkd-status{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+    .tkd-status.open{background:#fff4e5;color:#dd8800;}
+    .tkd-status.answered{background:#e6f9f1;color:#00a87d;}
+    .tkd-status.closed{background:#f1f2f6;color:#8a94a6;}
+
+    .tkd-chat{background:#f8fafc;padding:24px;min-height:340px;max-height:520px;overflow-y:auto;}
+    .tkd-msg{display:flex;margin-bottom:18px;gap:10px;}
+    .tkd-msg.mine{flex-direction:row-reverse;}
+    .tkd-msg-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;
+        display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;}
+    .tkd-msg.mine .tkd-msg-avatar{background:linear-gradient(135deg,#00C896,#00a87d);}
+    .tkd-msg:not(.mine) .tkd-msg-avatar{background:linear-gradient(135deg,#667eea,#764ba2);}
+    .tkd-msg-bubble{max-width:70%;}
+    .tkd-msg-text{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.7;}
+    .tkd-msg.mine .tkd-msg-text{background:linear-gradient(135deg,#00C896,#00a87d);color:#fff;border-bottom-left-radius:4px;}
+    .tkd-msg:not(.mine) .tkd-msg-text{background:#fff;color:#2d3748;border:1px solid #eef1f5;border-bottom-right-radius:4px;}
+    .tkd-msg-meta{font-size:11px;color:#a0aec0;margin-top:5px;padding:0 4px;}
+    .tkd-msg.mine .tkd-msg-meta{text-align:left;}
+
+    .tkd-footer{background:#fff;border-radius:0 0 16px 16px;padding:18px 24px;border-top:1px solid #eef1f5;}
+    .tkd-reply-box{display:flex;gap:10px;align-items:flex-end;}
+    .tkd-textarea{flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:14px;
+        resize:none;min-height:48px;max-height:120px;transition:.2s;}
+    .tkd-textarea:focus{outline:none;border-color:#00C896;box-shadow:0 0 0 3px rgba(0,200,150,.12);}
+    .tkd-send-btn{background:linear-gradient(135deg,#00C896,#00a87d);color:#fff;border:none;width:48px;height:48px;
+        border-radius:12px;cursor:pointer;flex-shrink:0;font-size:16px;transition:.2s;}
+    .tkd-send-btn:hover{transform:scale(1.05);}
+    .tkd-send-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+    .tkd-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+    .tkd-close-link{font-size:12.5px;color:#e53e3e;cursor:pointer;text-decoration:none;}
+    .tkd-closed-banner{text-align:center;padding:14px;color:#8a94a6;font-size:13px;background:#f8fafc;}
+    .tkd-back{display:inline-flex;align-items:center;gap:6px;color:#718096;text-decoration:none;font-size:13px;margin-bottom:16px;}
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="tkd-wrap">
+        <a href="@Url.Action("Index")" class="tkd-back"><i class="fa fa-angle-right"></i> بازگشت به لیست تیکت‌ها</a>
+
+        <div class="tkd-head">
+            <div class="tkd-subject"><i class="fa fa-ticket me-2 text-muted"></i>@Model.Subject</div>
+            @{
+                string statusClass = Model.Status == FitCore.Domain.Entities.Tickets.TicketStatus.Open ? "open"
+                    : Model.Status == FitCore.Domain.Entities.Tickets.TicketStatus.Answered ? "answered" : "closed";
+                string statusText = Model.Status == FitCore.Domain.Entities.Tickets.TicketStatus.Open ? "در انتظار پاسخ"
+                    : Model.Status == FitCore.Domain.Entities.Tickets.TicketStatus.Answered ? "پاسخ داده شد" : "بسته شده";
+            }
+            <span class="tkd-status @statusClass" id="statusBadge">@statusText</span>
+        </div>
+
+        <div class="tkd-chat" id="chatBox">
+            @foreach (var m in Model.Messages)
+            {
+                bool mine = m.SenderUserId == currentUserId;
+                string initial = !string.IsNullOrEmpty(m.SenderName) ? m.SenderName.Substring(0, 1) : "?";
+                <div class="tkd-msg @(mine ? "mine" : "")">
+                    <div class="tkd-msg-avatar">@initial</div>
+                    <div class="tkd-msg-bubble">
+                        <div class="tkd-msg-text">@m.Body</div>
+                        <div class="tkd-msg-meta">@m.SenderName · @m.InsertTime.ToString("yyyy/MM/dd HH:mm")</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="tkd-footer">
+            @if (isClosed)
+            {
+                <div class="tkd-closed-banner"><i class="fa fa-lock me-1"></i> این تیکت بسته شده است</div>
+            }
+            else
+            {
+                <form id="replyForm">
+                    @Html.AntiForgeryToken()
+                    <div class="tkd-reply-box">
+                        <textarea id="replyBody" class="tkd-textarea" placeholder="پاسخ خود را بنویسید..." required></textarea>
+                        <button type="submit" class="tkd-send-btn" id="sendBtn"><i class="fa fa-paper-plane"></i></button>
+                    </div>
+                    <div class="tkd-actions">
+                        <span class="tkd-close-link" onclick="closeTicket()"><i class="fa fa-times-circle me-1"></i>بستن این تیکت</span>
+                        <span style="font-size:11px;color:#a0aec0;">Enter برای ارسال، Shift+Enter برای خط جدید</span>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var ticketId = @Model.Id;
+        var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        var chatBox = document.getElementById('chatBox');
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        var replyForm = document.getElementById('replyForm');
+        if (replyForm) {
+            var textarea = document.getElementById('replyBody');
+            textarea.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    replyForm.requestSubmit();
+                }
+            });
+
+            replyForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var body = textarea.value.trim();
+                if (!body) return;
+
+                var btn = document.getElementById('sendBtn');
+                btn.disabled = true;
+
+                fetch('@Url.Action("Reply")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ __RequestVerificationToken: token, ticketId: ticketId, body: body })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.isSuccess) location.reload();
+                    else { alert(res.message); btn.disabled = false; }
+                })
+                .catch(() => { alert('خطا در ارتباط با سرور'); btn.disabled = false; });
+            });
+        }
+
+        function closeTicket() {
+            if (!confirm('آیا از بستن این تیکت مطمئن هستید؟')) return;
+            fetch('@Url.Action("Close")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ __RequestVerificationToken: token, ticketId: ticketId })
+            })
+            .then(r => r.json())
+            .then(res => { if (res.isSuccess) location.reload(); else alert(res.message); });
+        }
+    </script>
+}
