@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace GymBot.Models
 {
@@ -12,7 +13,28 @@ namespace GymBot.Models
         // پیام کاربر در یک شیء تودرتو قرار دارد
         [JsonPropertyName("message")]
         public BaleMessage Message { get; set; }
+
+
+        // بسیار مهم: وقتی کاربر روی دکمه شیشه‌ای کلیک می‌کند، این پر می‌شود
+        [JsonPropertyName("callback_query")]
+        public BaleCallbackQuery CallbackQuery { get; set; }
     }
+
+
+    // کلاس جدید برای دریافت اطلاعات کلیک
+    public class BaleCallbackQuery
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } // آیدی خود کلیک برای تایید
+
+        [JsonPropertyName("from")]
+        public BaleUser From { get; set; }
+
+        [JsonPropertyName("data")]
+        public string Data { get; set; } // متنی که در CallbackData دکمه گذاشتیم (مثل SRV_Survey1)
+    }
+
+
 
     // کلاس جدید برای جدا کردن پیام از ریشه
     public class BaleMessage
@@ -31,7 +53,21 @@ namespace GymBot.Models
 
         [JsonPropertyName("text")]
         public string Text { get; set; }
+
+
+        // اضافه شدن این خط برای دریافت شماره تماس
+        [JsonPropertyName("contact")]
+        public BaleContact Contact { get; set; }
     }
+
+
+    // ساخت کلاس مربوط به مخاطب
+    public class BaleContact
+    {
+        [JsonPropertyName("phone_number")]
+        public string PhoneNumber { get; set; }
+    }
+
 
     public class BaleUser
     {
@@ -59,5 +95,47 @@ namespace GymBot.Models
 
         [JsonPropertyName("text")]
         public string Text { get; set; }
+
+        // اضافه شدن دکمه‌ها (اختیاری است، اگر نال باشد دکمه‌ای نمی‌آید)
+        [JsonPropertyName("reply_markup")]
+        public InlineKeyboardMarkup ReplyMarkup { get; set; }
     }
+
+    // مدل‌های مربوط به دکمه‌های شیشه‌ای
+    public class InlineKeyboardButton
+    {
+        [JsonPropertyName("text")]
+        public string Text { get; set; }
+
+        [JsonPropertyName("callback_data")]
+        public string CallbackData { get; set; }
+    }
+
+    public class InlineKeyboardMarkup
+    {
+        [JsonPropertyName("inline_keyboard")]
+        public List<List<InlineKeyboardButton>> InlineKeyboard { get; set; }
+    }
+
+
+
+    public class ReplyKeyboardMarkup
+    {
+        [JsonPropertyName("keyboard")]
+        public List<List<KeyboardButton>> Keyboard { get; set; }
+        [JsonPropertyName("resize_keyboard")]
+        public bool ResizeKeyboard { get; set; } = true;
+        [JsonPropertyName("one_time_keyboard")]
+        public bool OneTimeKeyboard { get; set; } = true;
+    }
+
+    public class KeyboardButton
+    {
+        [JsonPropertyName("request_contact")]
+        public bool RequestContact { get; set; }
+
+        [JsonPropertyName("text")]
+        public string Text { get; set; }
+    }
+
 }

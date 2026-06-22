@@ -333,9 +333,13 @@ builder.Services.AddScoped<IEditMemberService, EditMemberService>();
 builder.Services.AddScoped<IRemoveMemberService, RemoveMemberService>();
 
 
+// اطمینان از ثبت SignInManager (معمولاً با AddIdentity قبلاً اضافه شده، اما اگر ارور گرفتید این خط را اضافه کنید)
+builder.Services.AddScoped<SignInManager<AppUser>>();
 
 
 builder.Services.AddScoped<RegisterUserService>();
+
+builder.Services.AddScoped<RegisterManagerService>();
 
 builder.Services.AddScoped<SendOtpService>();
 

@@ -21,6 +21,7 @@ namespace FitCore.Application.Services.Auth
         public long GymId { get; set; }
 
         public List<SelectListItem> Gyms { get; set; }
+        public List<SelectListItem> Provinces { get; set; } // اضافه شده
 
 
     }

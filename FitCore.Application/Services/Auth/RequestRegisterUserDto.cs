@@ -1,11 +1,6 @@
 ﻿using FitCore.Domain.Entities.Gyms;
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.Auth
 {

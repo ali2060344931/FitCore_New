@@ -154,7 +154,15 @@ namespace FitCore.Persistence.Contexts
                 .WithOne(u => u.Member)
                 .HasForeignKey<Member>(m => m.AppUserId)
                 .OnDelete(DeleteBehavior.NoAction);
-
+            // ================= اضافه کردن ایندکس یکتا برای کد باشگاه =================
+            modelBuilder.Entity<Gym>(entity =>
+            {
+                entity.HasIndex(e => e.Code)
+                      .IsUnique();
+            });
+            // =======================================================================
+            
+            
             //NutritionProgram
 
 

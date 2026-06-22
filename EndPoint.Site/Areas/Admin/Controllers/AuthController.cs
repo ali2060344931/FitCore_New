@@ -1,5 +1,6 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
+using FitCore.Application.Services.Auth.Dto;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly RegisterUserService _registerUserService;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RegisterManagerService _registerManagerService; // اضافه شده
         private readonly IDataBaseContext _db;
 
         public AuthController(
@@ -30,7 +32,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             RegisterUserService registerUserService,
             IDataBaseContext db,
             SignInManager<AppUser> signInManager,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            RegisterManagerService registerManagerService)
         {
             _sendOtpService = sendOtpService;
             _verifyOtpService = verifyOtpService;
@@ -38,6 +41,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _signInManager = signInManager;
             _db = db;
             _userManager = userManager;
+            _registerManagerService = registerManagerService;
         }
 
         [HttpGet]
@@ -56,9 +60,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var result = await _sendOtpService.Execute(FullName, mobile, gymId);
             return Json(result); // فقط نتیجه سرویس را برمی‌گرداند
         }
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> VerifyOtp(string mobile, string code)
@@ -110,37 +111,51 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 redirectUrl = redirectUrl
             });
         }
+
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            // حالا از _db استفاده می‌کنیم که به جدول Gyms دسترسی دارد
-            var gyms = await _db.Gyms
-                .Where(g => g.IsActive)
-                .Select(g => new SelectListItem
-                {
-                    Value = g.Id.ToString(),
-                    Text = g.Name
-                })
-                .ToListAsync();
+            var gyms = await _db.Gyms.Where(g => g.IsActive).Select(g => new SelectListItem { Value = g.Id.ToString(), Text = g.Name }).ToListAsync();
+
+            // لود کردن استان‌ها
+            var provinces = await _db.Provinces.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToListAsync();
 
             var model = new RegisterUserViewModel
             {
-                Gyms = gyms
+                Gyms = gyms,
+                Provinces = provinces // اضافه شده
             };
 
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RegisterUser(
-            RequestRegisterUserDto request)
+        // اکشن جدید برای گرفتن لیست شهرها بر اساس آیدی استان (برای Dropdown وابسته)
+        [HttpGet]
+        public async Task<IActionResult> GetCities(int provinceId)
         {
-            var result =
-                await _registerUserService.Execute(request);
+            var cities = await _db.Cities
+                .Where(c => c.ProvincesId == provinceId)
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToListAsync();
+            return Json(cities);
+        }
 
+        // اکشن جدید برای ارسال کد پیامک به مدیر
+        [HttpPost]
+        public async Task<IActionResult> SendOtpForManager(string FullName, string GymName, string mobile, int provinceId, int cityId)
+        {
+            // فقط شماره موبایل برای ارسال پیامک مهم است، بقیه اطلاعات بعد از تایید ثبت می‌شوند
+            var result = await _sendOtpService.Execute(mobile);
             return Json(result);
         }
 
+        // اکشن جدید برای ثبت نهایی مدیر
+        [HttpPost]
+        public async Task<IActionResult> RegisterManager(RequestRegisterManagerDto request)
+        {
+            var result = await _registerManagerService.Execute(request);
+            return Json(result);
+        }
 
         public async Task<IActionResult> Logout()
         {
