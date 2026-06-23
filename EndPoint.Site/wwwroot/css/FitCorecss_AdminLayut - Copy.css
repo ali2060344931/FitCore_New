@@ -38,16 +38,16 @@ body {
 }
 
 /* ============================
-       لایوت اصلی
-============================ */
+                   لایوت اصلی
+                ============================ */
 .fc-layout {
     display: flex;
     min-height: 100vh;
 }
 
 /* ============================
-       سایدبار
-============================ */
+                   سایدبار
+                ============================ */
 .fc-sidebar {
     width: var(--fc-sidebar-width);
     background: var(--fc-sidebar-bg);
@@ -273,8 +273,8 @@ body {
     }
 
 /* ============================
-       محتوای اصلی
-============================ */
+                   محتوای اصلی
+                ============================ */
 .fc-main {
     margin-right: var(--fc-sidebar-width);
     flex: 1;
@@ -285,8 +285,8 @@ body {
 }
 
 /* ============================
-       نوار بالا (Topbar)
-============================ */
+                   نوار بالا (Topbar)
+                ============================ */
 .fc-topbar {
     height: var(--fc-topbar-height);
     background: var(--fc-topbar-bg);
@@ -327,10 +327,6 @@ body {
     font-weight: 600;
     color: var(--fc-text-main);
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
 }
 
 /* آیتم‌های راست topbar */
@@ -338,7 +334,6 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-shrink: 0;
 }
 
 .fc-topbar-btn {
@@ -449,8 +444,8 @@ body {
 }
 
 /* ============================
-       بدنه محتوا
-============================ */
+                   بدنه محتوا
+                ============================ */
 .fc-content {
     flex: 1;
     padding: 24px;
@@ -458,8 +453,8 @@ body {
 }
 
 /* ============================
-       حالت collapsed سایدبار (دسکتاپ)
-============================ */
+                   حالت collapsed سایدبار (دسکتاپ)
+                ============================ */
 body.sidebar-collapsed .fc-sidebar {
     width: var(--fc-sidebar-collapsed);
 }
@@ -543,19 +538,17 @@ body.sidebar-collapsed .fc-collapse-btn span {
 }
 
 /* ============================
-       موبایل
-============================ */
+                   موبایل
+                ============================ */
 @@media (max-width: 991px) {
 
     .fc-sidebar {
         transform: translateX(100%);
         width: var(--fc-sidebar-width) !important;
-        box-shadow: none;
     }
 
         .fc-sidebar.mobile-open {
             transform: translateX(0);
-            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
         }
 
     .fc-main {
@@ -573,18 +566,9 @@ body.sidebar-collapsed .fc-collapse-btn span {
     .fc-topbar {
         padding: 0 14px;
     }
-    /* مخفی کردن نام کاربر در موبایل */
+    /* پنهان کردن نام کاربر در موبایل */
     .fc-user-name {
         display: none;
-    }
-    /* مخفی کردن دکمه جمع‌شدن در موبایل */
-    .fc-sidebar-footer {
-        display: none;
-    }
-    /* تنظیم منوی کشویی کاربر در موبایل */
-    .fc-user-dropdown {
-        left: auto;
-        right: 0;
     }
 }
 
@@ -595,8 +579,8 @@ body.sidebar-collapsed .fc-collapse-btn span {
 }
 
 /* ============================
-       استایل‌های کاربردی برای viewها
-============================ */
+                   استایل‌های کاربردی برای viewها
+                ============================ */
 
 /* کارت عمومی */
 .fc-card {
@@ -726,15 +710,15 @@ label.form-label, label.font-weight-bold {
 }
 
 /* ============================
-       اسکرول صاف
-============================ */
+                   اسکرول صاف
+                ============================ */
 html {
     scroll-behavior: smooth;
 }
 
 /* ============================
-       انیمیشن ورود محتوا
-============================ */
+                   انیمیشن ورود محتوا
+                ============================ */
 .fc-content > * {
     animation: fcFadeUp 0.28s ease both;
 }
@@ -748,5 +732,146 @@ html {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+
+/*/////////////////////////////////*/
+
+
+/* ---------- Global overflow guard ---------- */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* ---------- Desktop/default safety ---------- */
+.fc-layout,
+.fc-main,
+.fc-content {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   Mobile / Tablet Fix
+   Breakpoint matches admin layout: max-width: 991px
+   ========================================================= */
+@media (max-width: 991px) {
+
+    /* Ù…Ù‡Ù…â€ŒØªØ±ÛŒÙ† Ø¨Ø®Ø´: Ø­Ø°Ù offset Ø«Ø§Ø¨Øª Ø³Ø§ÛŒØ¯Ø¨Ø§Ø± Ø¯Ø± Ù…ÙˆØ¨Ø§ÛŒÙ„ */
+    .fc-main,
+    .fc-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        padding-right: 12px !important;
+        padding-left: 12px !important;
+        right: auto !important;
+        left: auto !important;
+        transform: none;
+        box-sizing: border-box;
+    }
+
+    /* Ø§Ú¯Ø± layout wrapper Ù‡Ù… offset Ú¯Ø±ÙØªÙ‡ Ø¨Ø§Ø´Ø¯ */
+    .fc-layout,
+    .fc-wrapper,
+    .admin-wrapper,
+    .page-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box;
+    }
+
+    /* Sidebar Ø¨Ù‡ ØµÙˆØ±Øª off-canvas Ø§Ø² Ø³Ù…Øª Ø±Ø§Ø³Øª */
+    .fc-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: var(--fc-sidebar-width, 260px) !important;
+        max-width: 85vw !important;
+        height: 100vh !important;
+        z-index: 1055 !important;
+        transform: translateX(100%) !important;
+        transition: transform .25s ease-in-out !important;
+        visibility: visible !important;
+        display: block !important;
+        overflow-y: auto !important;
+    }
+
+        /* Ø­Ø§Ù„Øª Ø¨Ø§Ø² Ø´Ø¯Ù† Ø³Ø§ÛŒØ¯Ø¨Ø§Ø± */
+        body.fc-sidebar-open .fc-sidebar,
+        .fc-sidebar.fc-sidebar-open,
+        .fc-sidebar.show,
+        .fc-sidebar.active {
+            transform: translateX(0) !important;
+        }
+
+    /* Overlay Ù…ÙˆØ¨Ø§ÛŒÙ„ */
+    .fc-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, .45);
+        z-index: 1050;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .2s ease-in-out, visibility .2s ease-in-out;
+    }
+
+    body.fc-sidebar-open .fc-sidebar-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Ø¯Ú©Ù…Ù‡ Ù…Ù†Ùˆ Ø¨Ø§ÛŒØ¯ Ø±ÙˆÛŒ Ù‡Ù…Ù‡ Ú†ÛŒØ² Ø¯ÛŒØ¯Ù‡ Ø´ÙˆØ¯ */
+    .fc-menu-toggle,
+    #fcMenuToggle,
+    [data-fc-toggle="sidebar"] {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1060 !important;
+        cursor: pointer;
+    }
+
+    /* Ø¬Ù„ÙˆÚ¯ÛŒØ±ÛŒ Ø§Ø² Ø¨Ø²Ø±Ú¯ Ø´Ø¯Ù† Ø¬Ø¯ÙˆÙ„â€ŒÙ‡Ø§/Ú©Ø§Ø±Øªâ€ŒÙ‡Ø§ Ø¯Ø± Ù…ÙˆØ¨Ø§ÛŒÙ„ */
+    .container,
+    .container-fluid,
+    .row,
+    .card,
+    .table-responsive {
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 576px) {
+    .fc-content {
+        padding: 10px !important;
+    }
+
+    .fs-4 {
+        font-size: 1.2rem !important;
+    }
+
+    .mb-stat-num {
+        font-size: 16px !important;
+    }
+
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
     }
 }

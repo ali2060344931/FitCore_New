@@ -7,33 +7,833 @@
     ViewData["Title"] = "داشبورد";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
-@* @{
-    var expiringMembers = Model.Members.Where(m =>
-    {
-        var remainDays = GetRemainDays(m.MembershipEndDate);
-        return remainDays <= 5;
-    }).ToList();
-} *@
 
+@* ============ استایل‌های واکنش‌گرا ============ *@
+<style>
+    /* === متغیرها === */
+    :root {
+        --text-main: #1a202c;
+        --text-muted: #718096;
+        --text-light: #a0aec0;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --accent-green: #00C896;
+        --accent-blue: #63b3ed;
+        --accent-orange: #f6ad55;
+        --accent-purple: #b794f4;
+        --accent-red: #fc8181;
+    }
 
+    /* === هدر باشگاه === */
+    .dash-gym-header {
+        background: linear-gradient(135deg, #0f1117 0%, #1a2035 100%);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
 
+    .dash-gym-header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .dash-gym-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .dash-gym-logo-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 2px solid rgba(255,255,255,0.2);
+        flex-shrink: 0;
+    }
+
+    .dash-gym-logo-placeholder {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(0,200,150,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 22px;
+        color: #00C896;
+        border: 2px solid rgba(0,200,150,0.3);
+    }
+
+    .dash-gym-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.3;
+    }
+
+    .dash-gym-meta {
+        font-size: 11px;
+        color: var(--text-light);
+        margin-top: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+    }
+
+    .dash-gym-badges {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    /* === بج‌ها === */
+    .dash-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .dash-badge-green {
+        background: rgba(0,200,150,0.15);
+        color: #00C896;
+    }
+
+    .dash-badge-blue {
+        background: rgba(99,179,237,0.15);
+        color: #3182ce;
+    }
+
+    .dash-badge-info {
+        background: rgba(99,179,237,0.2);
+        color: #63b3ed;
+    }
+
+    .dash-badge-purple {
+        background: rgba(183,148,244,0.2);
+        color: #805ad5;
+    }
+
+    .dash-badge-red {
+        background: rgba(252,129,74,0.15);
+        color: #e53e3e;
+    }
+
+    .dash-badge-gray {
+        background: #f0f4f8;
+        color: #718096;
+    }
+
+    /* === کارت آمار === */
+    .dash-stat-card {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+        padding: 16px;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-right: 4px solid var(--accent, #00C896);
+        height: 100%;
+    }
+
+        .dash-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+        }
+
+    .dash-stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .dash-stat-num {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--text-main);
+        line-height: 1;
+    }
+
+    .dash-stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .dash-stat-trend {
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid #f0f4f8;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 10px;
+    }
+
+        .dash-stat-trend.up {
+            color: #48bb78;
+        }
+
+    /* === هدر کارت === */
+    .dash-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .dash-card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .dash-see-all {
+        font-size: 11px;
+        color: var(--accent-green);
+        text-decoration: none;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .dash-see-all:hover {
+            text-decoration: underline;
+        }
+
+    /* === آواتار جدول === */
+    .dash-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00C896, #0fa0d0);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* === بج کوچک جدول === */
+    .dash-mini-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+        .dash-mini-badge.green {
+            background: #edfaf5;
+            color: #00C896;
+        }
+
+        .dash-mini-badge.blue {
+            background: #ebf8ff;
+            color: #3182ce;
+        }
+
+        .dash-mini-badge.gray {
+            background: #f0f4f8;
+            color: #a0aec0;
+        }
+
+    /* === فعالیت‌ها === */
+    .dash-activity-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dash-activity-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f4f8;
+    }
+
+        .dash-activity-item:last-child {
+            border-bottom: none;
+        }
+
+    .dash-activity-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .dash-activity-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dash-activity-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-main);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .dash-activity-meta {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 2px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 8px;
+    }
+
+    /* === دکمه سریع === */
+    .dash-quick-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 8px;
+        background: var(--bg-light);
+        border: 1.5px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #4a5568;
+        text-decoration: none;
+        transition: all 0.2s;
+        text-align: center;
+        min-height: 72px;
+    }
+
+        .dash-quick-btn i {
+            font-size: 20px;
+            color: var(--accent-green);
+        }
+
+        .dash-quick-btn:hover {
+            background: #edfaf5;
+            border-color: #00C896;
+            color: #00C896;
+            transform: translateY(-2px);
+        }
+
+    /* === هشدار درخواست‌ها === */
+    .dash-pending-alert {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fffbeb;
+        border: 1.5px solid #fcd34d;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 15px;
+    }
+
+    .dash-pending-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #fef3c7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .dash-pending-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dash-pending-title {
+        font-weight: 700;
+        font-size: 13px;
+        color: #92400e;
+    }
+
+    .dash-pending-desc {
+        font-size: 11px;
+        color: #78350f;
+        margin-top: 2px;
+    }
+
+    .dash-pending-btn {
+        flex-shrink: 0;
+        background: #d97706;
+        color: #fff;
+        border-radius: 8px;
+        font-size: 11px;
+        white-space: nowrap;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+    }
+
+    /* === هشدار اعضای بحرانی === */
+    .dash-critical-alert {
+        border-left: 5px solid #f6ad55;
+        border-radius: 12px;
+        background: #fffaf0;
+        padding: 16px;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .dash-critical-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #744210;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .dash-critical-desc {
+        font-size: 12px;
+        color: #744210;
+        margin-bottom: 12px;
+    }
+
+    .dash-critical-table-wrap {
+        background: #fff;
+        border-radius: 8px;
+        padding: 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dash-critical-table {
+        font-size: 11px;
+        min-width: 500px;
+    }
+
+        .dash-critical-table th {
+            background: #fffaf0;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 8px 10px;
+            white-space: nowrap;
+        }
+
+        .dash-critical-table td {
+            padding: 8px 10px;
+            white-space: nowrap;
+        }
+
+    .dash-critical-close {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #744210;
+        cursor: pointer;
+        padding: 4px;
+        line-height: 1;
+    }
+
+    /* === پنل سوپر ادمین === */
+    .dash-super-card {
+        background: linear-gradient(135deg, #0f1117, #1a2035);
+        color: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 15px;
+    }
+
+    .dash-super-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #00C896;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .dash-super-stat-num {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .dash-super-stat-label {
+        font-size: 12px;
+        color: var(--text-light);
+        margin-top: 2px;
+    }
+
+    /* === خالی === */
+    .dash-empty {
+        text-align: center;
+        padding: 30px 15px;
+        color: var(--text-light);
+    }
+
+        .dash-empty i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+
+    .dash-empty-text {
+        font-size: 12px;
+    }
+
+    /* === جدول اعضا === */
+    .dash-members-table {
+        font-size: 12px;
+    }
+
+        .dash-members-table th {
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding: 10px;
+        }
+
+        .dash-members-table td {
+            padding: 10px;
+            white-space: nowrap;
+        }
+
+    .dash-member-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* ==============================
+           تبلت (992px)
+        ============================== */
+    @@media (max-width: 991.98px) {
+        .dash-gym-header {
+            padding: 16px;
+        }
+
+        .dash-gym-logo-img,
+        .dash-gym-logo-placeholder {
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+        }
+
+        .dash-gym-name {
+            font-size: 16px;
+        }
+
+        .dash-stat-num {
+            font-size: 22px;
+        }
+
+        .dash-stat-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .dash-activity-title {
+            font-size: 11px;
+        }
+    }
+
+    /* ==============================
+           موبایل (576px)
+        ============================== */
+    @@media (max-width: 575.98px) {
+        .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        /* سوپر ادمین */
+        .dash-super-card {
+            padding: 16px;
+        }
+
+        .dash-super-title {
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .dash-super-stat-num {
+            font-size: 24px;
+        }
+
+        .dash-super-stat-label {
+            font-size: 11px;
+        }
+        /* هشدار درخواست */
+        .dash-pending-alert {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+        }
+
+        .dash-pending-title {
+            font-size: 12px;
+        }
+
+        .dash-pending-desc {
+            font-size: 10px;
+        }
+
+        .dash-pending-btn {
+            align-self: stretch;
+            justify-content: center;
+        }
+        /* هشدار بحرانی */
+        .dash-critical-alert {
+            padding: 12px;
+        }
+
+        .dash-critical-title {
+            font-size: 13px;
+            padding-right: 24px;
+        }
+
+        .dash-critical-desc {
+            font-size: 11px;
+        }
+
+        .dash-critical-close {
+            left: 8px;
+            top: 8px;
+        }
+        /* هدر باشگاه */
+        .dash-gym-header {
+            padding: 14px;
+        }
+
+        .dash-gym-top {
+            gap: 10px;
+        }
+
+        .dash-gym-logo-img,
+        .dash-gym-logo-placeholder {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        .dash-gym-name {
+            font-size: 14px;
+        }
+
+        .dash-gym-meta {
+            font-size: 10px;
+            gap: 2px 8px;
+        }
+
+        .dash-gym-badges {
+            gap: 4px;
+            width: 100%;
+        }
+
+        .dash-badge {
+            font-size: 9px;
+            padding: 3px 8px;
+        }
+        /* کارت آمار */
+        .dash-stat-card {
+            padding: 12px;
+        }
+
+        .dash-stat-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .dash-stat-num {
+            font-size: 20px;
+        }
+
+        .dash-stat-label {
+            font-size: 10px;
+        }
+
+        .dash-stat-trend {
+            font-size: 10px;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        /* هدر کارت */
+        .dash-card-header {
+            margin-bottom: 12px;
+        }
+
+        .dash-card-title {
+            font-size: 13px;
+        }
+
+        .dash-see-all {
+            font-size: 10px;
+        }
+        /* جدول اعضا */
+        .dash-members-table th {
+            font-size: 10px;
+            padding: 8px 6px;
+        }
+
+        .dash-members-table td {
+            font-size: 11px;
+            padding: 8px 6px;
+        }
+
+        .dash-avatar {
+            width: 26px;
+            height: 26px;
+            font-size: 10px;
+        }
+
+        .dash-mini-badge {
+            width: 22px;
+            height: 22px;
+            font-size: 10px;
+        }
+        /* فعالیت‌ها */
+        .dash-activity-item {
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .dash-activity-title {
+            font-size: 11px;
+        }
+
+        .dash-activity-meta {
+            font-size: 10px;
+        }
+
+        .dash-activity-item .dash-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+        }
+        /* دکمه سریع */
+        .dash-quick-btn {
+            padding: 10px 4px;
+            font-size: 10px;
+            min-height: 62px;
+            gap: 6px;
+        }
+
+            .dash-quick-btn i {
+                font-size: 17px;
+            }
+        /* خالی */
+        .dash-empty {
+            padding: 20px 10px;
+        }
+
+            .dash-empty i {
+                font-size: 24px;
+            }
+
+        .dash-empty-text {
+            font-size: 11px;
+        }
+    }
+
+    /* ==============================
+           موبایل خیلی کوچک (380px)
+        ============================== */
+    @@media (max-width: 380px) {
+        .container-fluid {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .dash-gym-logo-img,
+        .dash-gym-logo-placeholder {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+        }
+
+        .dash-gym-name {
+            font-size: 13px;
+        }
+
+        .dash-stat-num {
+            font-size: 18px;
+        }
+
+        .dash-stat-icon {
+            width: 30px;
+            height: 30px;
+            font-size: 13px;
+        }
+
+        .dash-quick-btn {
+            min-height: 56px;
+            font-size: 9px;
+            padding: 8px 4px;
+        }
+
+            .dash-quick-btn i {
+                font-size: 15px;
+            }
+
+        .dash-super-stat-num {
+            font-size: 22px;
+        }
+    }
+</style>
+
+@* ============ پنل سوپر ادمین ============ *@
 @if (ViewBag.IsSuperAdmin == true)
 {
-    <div class="container-fluid mt-4">
-        <div class="fc-card" style="background:linear-gradient(135deg,#0f1117,#1a2035);color:#fff;border-radius:16px;padding:30px;">
-            <h3 style="color:#00C896;">
-                <i class="fa fa-shield me-2"></i>
+    <div class="container-fluid" style="padding-top:16px;">
+        <div class="dash-super-card">
+            <div class="dash-super-title">
+                <i class="fa fa-shield"></i>
                 پنل مدیر کل
-
-            </h3>
-            <div class="row mt-3">
-                <div class="col-6 col-md-3">
-                    <div style="font-size:32px;font-weight:700;color:#fff;">@ViewBag.GymCount</div>
-                    <div style="color:#a0aec0;font-size:13px;">باشگاه فعال</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="dash-super-stat-num">@ViewBag.GymCount</div>
+                    <div class="dash-super-stat-label">باشگاه فعال</div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div style="font-size:32px;font-weight:700;color:#fff;">@ViewBag.TotalUsers</div>
-                    <div style="color:#a0aec0;font-size:13px;">کاربر ثبت‌شده</div>
+                <div class="col-6">
+                    <div class="dash-super-stat-num">@ViewBag.TotalUsers</div>
+                    <div class="dash-super-stat-label">کاربر ثبت‌شده</div>
                 </div>
             </div>
         </div>
@@ -41,107 +841,105 @@
     return;
 }
 
+@* ============ هشدار درخواست‌ها ============ *@
 @if (Model.PendingRequestsCount > 0)
 {
-    <div class="alert d-flex align-items-center gap-3"
-         style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;padding:14px 18px;margin-bottom:20px;">
-        <div style="width:42px;height:42px;border-radius:10px;background:#fef3c7;
-            display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fa fa-bell" style="color:#d97706;font-size:18px;"></i>
-        </div>
-        <div style="flex:1;">
-            <div style="font-weight:700;font-size:14px;color:#92400e;">
-                @Model.PendingRequestsCount درخواست برنامه در انتظار بررسی
+    <div class="container-fluid" style="padding-top:16px;">
+        <div class="dash-pending-alert">
+            <div class="dash-pending-icon">
+                <i class="fa fa-bell" style="color:#d97706;font-size:17px;"></i>
             </div>
-            <div style="font-size:12px;color:#78350f;margin-top:2px;">
-                اعضا منتظر دریافت برنامه از شما هستند
+            <div class="dash-pending-body">
+                <div class="dash-pending-title">
+                    @Model.PendingRequestsCount درخواست برنامه در انتظار بررسی
+                </div>
+                <div class="dash-pending-desc">
+                    اعضا منتظر دریافت برنامه از شما هستند
+                </div>
             </div>
+            <a href="/Admin/ProgramRequest" class="dash-pending-btn">
+                <i class="fa fa-eye"></i> مشاهده درخواست‌ها
+            </a>
         </div>
-        <a href="/Admin/ProgramRequest"
-           class="btn btn-sm"
-           style="background:#d97706;color:#fff;border-radius:8px;font-size:12px;white-space:nowrap;">
-            <i class="fa fa-eye me-1"></i> مشاهده درخواست‌ها
-        </a>
     </div>
 }
-@* ============ هشدار اعضای در حال انقضا (سازگار با Members.cshtml) ============ *@
+
+@* ============ هشدار اعضای بحرانی ============ *@
 @if (ViewBag.CriticalMembers != null && ((System.Collections.IList)ViewBag.CriticalMembers).Count > 0)
 {
-    <div class="alert alert-warning alert-dismissible fade show mb-4" style="border-left: 5px solid #f6ad55; border-radius: 12px; background: #fffaf0;">
-        <h5 class="alert-heading" style="font-size: 16px; color: #744210;">
-            <i class="fa fa-exclamation-triangle me-2"></i>
-            نیاز به تمدید اشتراک
-        </h5>
-        <p style="font-size: 13px; color: #744210; margin-bottom: 12px;">
-            اشتراک اعضای زیر در حال انقضا است یا منقضی شده است:
-        </p>
+    <div class="container-fluid" style="padding-top:8px;">
+        <div class="dash-critical-alert">
+            <button type="button" class="dash-critical-close" data-dismiss="alert" aria-label="Close">&times;</button>
+            <div class="dash-critical-title">
+                <i class="fa fa-exclamation-triangle"></i>
+                نیاز به تمدید اشتراک
+            </div>
+            <div class="dash-critical-desc">
+                اشتراک اعضای زیر در حال انقضا یا منقضی شده است:
+            </div>
 
-        <div class="table-responsive" style="background: #fff; border-radius: 8px; padding: 5px;">
-            <table class="table table-sm mb-0" style="font-size: 12px;">
-                <thead>
-                    <tr style="background: #fffaf0;">
-                        <th>نام عضو</th>
-                        <th>موبایل</th>
-                        <th>تاریخ پایان</th>
-                        <th>وضعیت</th>
-                        <th>عملیات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var m in ViewBag.CriticalMembers)
-                    {
-                        string statusClass = m.RemainingDays < 0 ? "badge-danger" : "badge-warning";
-                        string statusText = m.RemainingDays < 0 ? "منقضی شده" : $"{m.RemainingDays} روز مانده";
-
+            <div class="dash-critical-table-wrap">
+                <table class="table table-sm mb-0 dash-critical-table">
+                    <thead>
                         <tr>
-                            <td>@m.FullName</td>
-                            <td style="direction:ltr">@m.Mobile</td>
-                            <td>@m.EndDate</td>
-                            <td><span class="badge @statusClass">@statusText</span></td>
-                            <td>
-                                @* --- کد اصلاح شده لینک تمدید --- *@
-                                <a asp-area="Admin"
-                                   asp-controller="Members"
-                                   asp-action="Edit"
-                                   asp-route-id="@SecurityUtils.EncryptId(m.Id)"
-                                   asp-route-isMemberID="@true"
-                                   class="btn btn-xs btn-outline-primary"
-                                   style="font-size: 11px; padding: 2px 8px;">
-                                    <i class="fa fa-edit"></i> تمدید
-                                </a>
-                            </td>
+                            <th>نام عضو</th>
+                            <th>موبایل</th>
+                            <th>تاریخ پایان</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in ViewBag.CriticalMembers)
+                        {
+                            string statusClass = m.RemainingDays < 0 ? "badge-danger" : "badge-warning";
+                            string statusText = m.RemainingDays < 0 ? "منقضی شده" : $"{m.RemainingDays} روز مانده";
+
+                            <tr>
+                                <td>@m.FullName</td>
+                                <td style="direction:ltr;text-align:right;">@m.Mobile</td>
+                                <td>@m.EndDate</td>
+                                <td><span class="badge @statusClass" style="font-size:10px;">@statusText</span></td>
+                                <td>
+                                    <a asp-area="Admin"
+                                       asp-controller="Members"
+                                       asp-action="Edit"
+                                       asp-route-id="@SecurityUtils.EncryptId(m.Id)"
+                                       asp-route-isMemberID="@true"
+                                       class="btn btn-xs btn-outline-primary"
+                                       style="font-size:10px;padding:2px 8px;border-radius:6px;">
+                                        <i class="fa fa-edit"></i> تمدید
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: absolute; left: 15px; top: 10px;">
-            <span aria-hidden="true">&times;</span>
-        </button>
     </div>
 }
 
-
+@* ============ بدون باشگاه ============ *@
 @if (ViewBag.NoGym == true || Model == null)
 {
     <div class="container-fluid mt-4">
-        <div class="alert alert-warning">باشگاهی برای این حساب کاربری تعریف نشده است.</div>
+        <div class="alert alert-warning" style="border-radius:12px;">باشگاهی برای این حساب کاربری تعریف نشده است.</div>
     </div>
     return;
 }
 
-<div class="container-fluid mt-4" id="dashboardRoot">
+<div class="container-fluid" style="padding-top:16px;padding-bottom:24px;" id="dashboardRoot">
 
     <!-- ============================
          هدر باشگاه
     ============================ -->
-    <div class="dash-gym-header mb-4">
+    <div class="dash-gym-header">
         <div class="dash-gym-header-inner">
-            <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="dash-gym-top">
                 @if (!string.IsNullOrWhiteSpace(Model.GymLogo))
                 {
-                    <img src="@Model.GymLogo" alt="لوگو"
-                         style="width:60px;height:60px;border-radius:14px;object-fit:cover;border:2px solid rgba(255,255,255,0.2);" />
+                    <img src="@Model.GymLogo" alt="لوگو" class="dash-gym-logo-img" />
                 }
                 else
                 {
@@ -150,40 +948,37 @@
                     </div>
                 }
 
-
                 <div>
                     <div class="dash-gym-name">
                         @Model.GymName
-
                         <help key="H2" />
-
                     </div>
                     <div class="dash-gym-meta">
                         <span><i class="fa fa-barcode me-1"></i>کد: @Model.GymCode</span>
                         @if (!string.IsNullOrWhiteSpace(Model.GymMobile))
                         {
-                            <span class="ms-3"><i class="fa fa-mobile me-1"></i>@Model.GymMobile</span>
+                            <span><i class="fa fa-mobile me-1"></i>@Model.GymMobile</span>
                         }
                         @if (!string.IsNullOrWhiteSpace(Model.GymAddress))
                         {
-                            <span class="ms-3 d-none d-md-inline"><i class="fa fa-map-marker me-1"></i>@Model.GymAddress</span>
+                            <span class="d-none d-md-inline"><i class="fa fa-map-marker me-1"></i>@Model.GymAddress</span>
                         }
                     </div>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2 flex-wrap mt-2 mt-md-0">
+            <div class="dash-gym-badges">
                 @if (!string.IsNullOrWhiteSpace(Model.SubscriptionExpireDate))
                 {
                     <span class="dash-badge dash-badge-info">
                         <i class="fa fa-calendar-check-o me-1"></i>
-                        اشتراک تا: @Model.SubscriptionExpireDate
+                        تا: @Model.SubscriptionExpireDate
                     </span>
                 }
                 @if (Model.MaxMembers > 0)
                 {
                     <span class="dash-badge dash-badge-purple">
                         <i class="fa fa-users me-1"></i>
-                        ظرفیت: @Model.TotalMembers / @Model.MaxMembers
+                        @Model.TotalMembers/@Model.MaxMembers
                     </span>
                 }
                 <span class="dash-badge @(Model.IsActive ? "dash-badge-green" : "dash-badge-red")">
@@ -196,36 +991,32 @@
     <!-- ============================
          کارت‌های آمار کلی
     ============================ -->
-    <div class="row g-3 mb-4">
+    <div class="row g-2" style="margin-bottom:15px;">
 
         <div class="col-6 col-md-3">
-            <a href="/Admin/Members" class="dash-stat-card" style="--accent:#00C896;--light:#edfaf5;">
+            <a href="/Admin/Members" class="dash-stat-card" style="--accent:#00C896;">
                 <div class="dash-stat-icon" style="background:#edfaf5;">
                     <i class="fa fa-users" style="color:#00C896;"></i>
                 </div>
-                <div class="dash-stat-body">
-                    <div class="dash-stat-num">@Model.TotalMembers</div>
-                    <div class="dash-stat-label">کل اعضا</div>
-                </div>
+                <div class="dash-stat-num">@Model.TotalMembers</div>
+                <div class="dash-stat-label">کل اعضا</div>
                 <div class="dash-stat-trend @(Model.NewMembersThisMonth > 0 ? "up" : "")">
                     @if (Model.NewMembersThisMonth > 0)
                     {
                         <i class="fa fa-arrow-up me-1"></i>
-                        <span>@Model.NewMembersThisMonth نفر این ماه</span>
+                        <span>@Model.NewMembersThisMonth این ماه</span>
                     }
                 </div>
             </a>
         </div>
 
         <div class="col-6 col-md-3">
-            <a href="/Admin/NutritionProgram" class="dash-stat-card" style="--accent:#f6ad55;--light:#fffaf0;">
+            <a href="/Admin/NutritionProgram" class="dash-stat-card" style="--accent:#f6ad55;">
                 <div class="dash-stat-icon" style="background:#fffaf0;">
                     <i class="fa fa-cutlery" style="color:#f6ad55;"></i>
                 </div>
-                <div class="dash-stat-body">
-                    <div class="dash-stat-num">@Model.TotalNutritionPrograms</div>
-                    <div class="dash-stat-label">برنامه غذایی</div>
-                </div>
+                <div class="dash-stat-num">@Model.TotalNutritionPrograms</div>
+                <div class="dash-stat-label">برنامه غذایی</div>
                 <div class="dash-stat-trend @(Model.ActiveNutritionPrograms > 0 ? "up" : "")">
                     <i class="fa fa-check-circle me-1" style="color:#48bb78;"></i>
                     <span>@Model.ActiveNutritionPrograms فعال</span>
@@ -234,14 +1025,12 @@
         </div>
 
         <div class="col-6 col-md-3">
-            <a href="/Admin/TrainingProgram" class="dash-stat-card" style="--accent:#63b3ed;--light:#ebf8ff;">
+            <a href="/Admin/TrainingProgram" class="dash-stat-card" style="--accent:#63b3ed;">
                 <div class="dash-stat-icon" style="background:#ebf8ff;">
                     <i class="fa fa-heartbeat" style="color:#63b3ed;"></i>
                 </div>
-                <div class="dash-stat-body">
-                    <div class="dash-stat-num">@Model.TotalTrainingPrograms</div>
-                    <div class="dash-stat-label">برنامه تمرینی</div>
-                </div>
+                <div class="dash-stat-num">@Model.TotalTrainingPrograms</div>
+                <div class="dash-stat-label">برنامه تمرینی</div>
                 <div class="dash-stat-trend @(Model.ActiveTrainingPrograms > 0 ? "up" : "")">
                     <i class="fa fa-check-circle me-1" style="color:#48bb78;"></i>
                     <span>@Model.ActiveTrainingPrograms فعال</span>
@@ -250,16 +1039,14 @@
         </div>
 
         <div class="col-6 col-md-3">
-            <div class="dash-stat-card" style="--accent:#b794f4;--light:#faf5ff;">
+            <div class="dash-stat-card" style="--accent:#b794f4;">
                 <div class="dash-stat-icon" style="background:#faf5ff;">
                     <i class="fa fa-database" style="color:#b794f4;"></i>
                 </div>
-                <div class="dash-stat-body">
-                    <div class="dash-stat-num">@(Model.TotalFoods + Model.TotalExercises)</div>
-                    <div class="dash-stat-label">آیتم بانک اطلاعات</div>
-                </div>
+                <div class="dash-stat-num">@(Model.TotalFoods + Model.TotalExercises)</div>
+                <div class="dash-stat-label">بانک اطلاعات</div>
                 <div class="dash-stat-trend">
-                    <span style="color:#718096;font-size:11px;">
+                    <span style="color:#718096;font-size:10px;">
                         @Model.TotalFoods غذا · @Model.TotalExercises حرکت
                     </span>
                 </div>
@@ -271,42 +1058,46 @@
     <!-- ============================
          نمودارها
     ============================ -->
-    <div class="row g-3 mb-4">
+    <div class="row g-2" style="margin-bottom:15px;">
 
-        <!-- نمودار خطی — اعضا و برنامه‌ها -->
+        <!-- نمودار خطی -->
         <div class="col-md-8">
             <div class="fc-card h-100">
                 <div class="dash-card-header">
                     <div class="dash-card-title">
-                        <i class="fa fa-line-chart me-2" style="color:#00C896;"></i>
+                        <i class="fa fa-line-chart" style="color:#00C896;"></i>
                         روند ۶ ماه گذشته
                         <help key="H3" />
                     </div>
                 </div>
-                <canvas id="lineChart" height="120"></canvas>
+                <div style="position:relative;height:220px;">
+                    <canvas id="lineChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- نمودار دونات — توزیع هدف تمرینی -->
+        <!-- نمودار دونات -->
         <div class="col-md-4">
             <div class="fc-card h-100">
                 <div class="dash-card-header">
                     <div class="dash-card-title">
-                        <i class="fa fa-pie-chart me-2" style="color:#63b3ed;"></i>
+                        <i class="fa fa-pie-chart" style="color:#63b3ed;"></i>
                         اهداف تمرینی
                         <help key="H4" />
                     </div>
                 </div>
                 @if (Model.TrainingGoalTypes != null && Model.TrainingGoalTypes.Any())
                 {
-                    <canvas id="donutChart" height="200"></canvas>
-                    <div id="donutLegend" class="mt-3"></div>
+                    <div style="position:relative;height:160px;">
+                        <canvas id="donutChart"></canvas>
+                    </div>
+                    <div id="donutLegend" style="margin-top:10px;"></div>
                 }
                 else
                 {
-                    <div style="text-align:center;padding:40px 0;color:#a0aec0;">
-                        <i class="fa fa-info-circle fa-2x mb-2" style="display:block;"></i>
-                        داده‌ای موجود نیست
+                    <div class="dash-empty">
+                        <i class="fa fa-info-circle"></i>
+                        <div class="dash-empty-text">داده‌ای موجود نیست</div>
                     </div>
                 }
             </div>
@@ -317,29 +1108,29 @@
     <!-- ============================
          جداول اخیر
     ============================ -->
-    <div class="row g-3 mb-4">
+    <div class="row g-2" style="margin-bottom:15px;">
 
         <!-- اعضای اخیر -->
         <div class="col-md-7">
             <div class="fc-card">
                 <div class="dash-card-header">
                     <div class="dash-card-title">
-                        <i class="fa fa-user-plus me-2" style="color:#00C896;"></i>
-                        آخرین اعضای ثبت‌شده
+                        <i class="fa fa-user-plus" style="color:#00C896;"></i>
+                        آخرین اعضا
                         <help key="H5" />
                     </div>
                     <a href="/Admin/Members" class="dash-see-all">مشاهده همه</a>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0" style="font-size:13px;">
+                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+                    <table class="table table-hover mb-0 dash-members-table">
                         <thead>
                             <tr>
-                                <th>نام و نام خانوادگی</th>
+                                <th>نام</th>
                                 <th>موبایل</th>
-                                <th class="text-center">برنامه غذایی</th>
-                                <th class="text-center">برنامه تمرینی</th>
-                                <th>تاریخ ثبت</th>
+                                <th class="text-center">غذایی</th>
+                                <th class="text-center">تمرینی</th>
+                                <th>تاریخ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -349,11 +1140,11 @@
                                 {
                                     <tr>
                                         <td>
-                                            <div class="d-flex align-items-center gap-2">
+                                            <div class="dash-member-name">
                                                 <div class="dash-avatar">
                                                     @(m.FullName?.Length > 0 ? m.FullName[0].ToString() : "؟")
                                                 </div>
-                                                <span class="fw-600">@m.FullName</span>
+                                                <span style="font-weight:600;">@m.FullName</span>
                                             </div>
                                         </td>
                                         <td style="color:#718096;">@m.Mobile</td>
@@ -367,7 +1158,7 @@
                                                 @m.TrainingCount
                                             </span>
                                         </td>
-                                        <td style="color:#718096;font-size:12px;">
+                                        <td style="color:#718096;font-size:11px;">
                                             @m.InsertTime.ToString("yyyy/MM/dd")
                                         </td>
                                     </tr>
@@ -376,7 +1167,7 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted py-4">هنوز عضوی ثبت نشده است</td>
+                                    <td colspan="5" class="text-center text-muted py-4" style="font-size:12px;">هنوز عضوی ثبت نشده</td>
                                 </tr>
                             }
                         </tbody>
@@ -390,7 +1181,7 @@
             <div class="fc-card h-100">
                 <div class="dash-card-header">
                     <div class="dash-card-title">
-                        <i class="fa fa-clock-o me-2" style="color:#f6ad55;"></i>
+                        <i class="fa fa-clock-o" style="color:#f6ad55;"></i>
                         آخرین فعالیت‌ها
                         <help key="H6" />
                     </div>
@@ -405,16 +1196,13 @@
                             <div class="dash-activity-item">
                                 <div class="dash-activity-dot" style="background:#f6ad55;"></div>
                                 <div class="dash-activity-body">
-                                    <div style="font-size:13px;font-weight:600;">
-                                        برنامه غذایی — @p.Title
-                                    </div>
-                                    <div style="font-size:12px;color:#718096;">
-                                        <i class="fa fa-user-o me-1"></i>@p.MemberName
-                                        <span class="ms-2">@p.StartDate</span>
+                                    <div class="dash-activity-title">غذایی — @p.Title</div>
+                                    <div class="dash-activity-meta">
+                                        <span><i class="fa fa-user-o me-1"></i>@p.MemberName</span>
+                                        <span>@p.StartDate</span>
                                     </div>
                                 </div>
-                                <span class="dash-badge @(p.IsActive ? "dash-badge-green" : "dash-badge-gray")"
-                                      style="font-size:10px;">
+                                <span class="dash-badge @(p.IsActive ? "dash-badge-green" : "dash-badge-gray")">
                                     @(p.IsActive ? "فعال" : "قدیمی")
                                 </span>
                             </div>
@@ -428,16 +1216,13 @@
                             <div class="dash-activity-item">
                                 <div class="dash-activity-dot" style="background:#63b3ed;"></div>
                                 <div class="dash-activity-body">
-                                    <div style="font-size:13px;font-weight:600;">
-                                        برنامه تمرینی — @p.Title
-                                    </div>
-                                    <div style="font-size:12px;color:#718096;">
-                                        <i class="fa fa-user-o me-1"></i>@p.MemberName
-                                        <span class="ms-2">@p.StartDate</span>
+                                    <div class="dash-activity-title">تمرینی — @p.Title</div>
+                                    <div class="dash-activity-meta">
+                                        <span><i class="fa fa-user-o me-1"></i>@p.MemberName</span>
+                                        <span>@p.StartDate</span>
                                     </div>
                                 </div>
-                                <span class="dash-badge @(p.IsActive ? "dash-badge-blue" : "dash-badge-gray")"
-                                      style="font-size:10px;">
+                                <span class="dash-badge @(p.IsActive ? "dash-badge-blue" : "dash-badge-gray")">
                                     @(p.IsActive ? "فعال" : "قدیمی")
                                 </span>
                             </div>
@@ -445,11 +1230,11 @@
                     }
 
                     @if ((Model.RecentNutritionPrograms == null || !Model.RecentNutritionPrograms.Any()) &&
-                                        (Model.RecentTrainingPrograms == null || !Model.RecentTrainingPrograms.Any()))
+                         (Model.RecentTrainingPrograms == null || !Model.RecentTrainingPrograms.Any()))
                     {
-                        <div style="text-align:center;padding:30px;color:#a0aec0;">
-                            <i class="fa fa-inbox fa-2x" style="display:block;margin-bottom:8px;opacity:0.4;"></i>
-                            هنوز برنامه‌ای ثبت نشده
+                        <div class="dash-empty">
+                            <i class="fa fa-inbox"></i>
+                            <div class="dash-empty-text">هنوز برنامه‌ای ثبت نشده</div>
                         </div>
                     }
 
@@ -463,54 +1248,53 @@
          دسترسی سریع
     ============================ -->
     <div class="fc-card">
-        <div class="dash-card-header mb-3">
+        <div class="dash-card-header" style="margin-bottom:12px;">
             <div class="dash-card-title">
-                <i class="fa fa-bolt me-2" style="color:#f6ad55;"></i>
+                <i class="fa fa-bolt" style="color:#f6ad55;"></i>
                 دسترسی سریع
                 <help key="HD00" />
             </div>
         </div>
         <div class="row g-2">
-            <div class="col-6 col-sm-4 col-md-2">
+            <div class="col-4 col-sm-4 col-md-2">
                 <a href="/Admin/Members" class="dash-quick-btn">
                     <i class="fa fa-users"></i>
                     <span>اعضا</span>
                 </a>
                 <help key="HD01" />
             </div>
-            <div class="col-6 col-sm-4 col-md-2">
+            <div class="col-4 col-sm-4 col-md-2">
                 <a href="/Admin/NutritionProgram" class="dash-quick-btn">
                     <i class="fa fa-cutlery"></i>
-                    <span>برنامه غذایی</span>
+                    <span>غذایی</span>
                 </a>
                 <help key="HD02" />
             </div>
-            <div class="col-6 col-sm-4 col-md-2">
+            <div class="col-4 col-sm-4 col-md-2">
                 <a href="/Admin/TrainingProgram" class="dash-quick-btn">
                     <i class="fa fa-heartbeat"></i>
-                    <span>برنامه تمرینی</span>
+                    <span>تمرینی</span>
                 </a>
                 <help key="HD03" />
             </div>
-            <div class="col-6 col-sm-4 col-md-2">
+            <div class="col-4 col-sm-4 col-md-2">
                 <a href="/Admin/Food" class="dash-quick-btn">
                     <i class="fa fa-apple"></i>
-                    <span>بانک غذاها</span>
+                    <span>غذاها</span>
                 </a>
                 <help key="HD04" />
             </div>
-            <div class="col-6 col-sm-4 col-md-2">
+            <div class="col-4 col-sm-4 col-md-2">
                 <a href="/Admin/Exercise" class="dash-quick-btn">
                     <i class="fa fa-list-ul"></i>
-                    <span>بانک حرکات</span>
+                    <span>حرکات</span>
                 </a>
                 <help key="HD05" />
             </div>
-            <div class="col-6 col-sm-4 col-md-2">
+            <div class="col-4 col-sm-4 col-md-2">
                 <a href="/Admin/Gym" class="dash-quick-btn">
                     <i class="fa fa-building-o"></i>
-                    <span>تنظیمات باشگاه</span>
-
+                    <span>باشگاه</span>
                 </a>
                 <help key="HD06" />
             </div>
@@ -520,139 +1304,167 @@
 </div>
 
 <!-- ============================
-     استایل
+     اسکریپت‌ها
 ============================ -->
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-            Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
-            Chart.defaults.plugins.legend.rtl = true;
+        Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
+        Chart.defaults.font.size = 10;
+        Chart.defaults.plugins.legend.rtl = true;
 
-            // ============================
-            // داده‌های سرور
-            // ============================
-            var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                            Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
-                                            ?? new System.Collections.Generic.List<string>()));
+        // ============================
+        // داده‌های سرور
+        // ============================
+        var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                    Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
+                                    ?? new System.Collections.Generic.List<string>()));
 
-    var membersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
-                                ?? new System.Collections.Generic.List<int>()));
+        var membersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                        Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
+                                        ?? new System.Collections.Generic.List<int>()));
 
-    var nutritionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
-                                ?? new System.Collections.Generic.List<int>()));
+        var nutritionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                        Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
+                                        ?? new System.Collections.Generic.List<int>()));
 
-    var trainingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
-                                ?? new System.Collections.Generic.List<int>()));
+        var trainingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                        Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
+                                        ?? new System.Collections.Generic.List<int>()));
 
-    var donutLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
-                                ?? new System.Collections.Generic.List<string>()));
+        var donutLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                        Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
+                                        ?? new System.Collections.Generic.List<string>()));
 
-    var donutData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
-                                ?? new System.Collections.Generic.List<int>()));
+        var donutData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                        Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
+                                        ?? new System.Collections.Generic.List<int>()));
 
-    // ============================
-    // نمودار خطی
-    // ============================
-    var lineCtx = document.getElementById('lineChart');
-    if (lineCtx) {
+        // ============================
+        // تنظیمات مشترک محورها
+        // ============================
+        var commonScales = {
+        x: {
+        grid: { display: false },
+        ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 }
+        },
+        y: {
+        beginAtZero: true,
+        ticks: { stepSize: 1, font: { size: 9 }, maxTicksLimit: 5 },
+        grid: { color: '#f0f4f8' }
+        }
+        };
+
+        // ============================
+        // نمودار خطی
+        // ============================
+        var lineCtx = document.getElementById('lineChart');
+        if (lineCtx) {
         new Chart(lineCtx, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [
-                    {
-                        label: 'اعضای جدید',
-                        data: membersData,
-                        borderColor: '#00C896',
-                        backgroundColor: 'rgba(0,200,150,0.08)',
-                        tension: 0.4, fill: true,
-                        pointBackgroundColor: '#00C896',
-                        pointRadius: 5, pointHoverRadius: 7,
-                        borderWidth: 2.5
-                    },
-                    {
-                        label: 'برنامه غذایی',
-                        data: nutritionData,
-                        borderColor: '#f6ad55',
-                        backgroundColor: 'rgba(246,173,85,0.07)',
-                        tension: 0.4, fill: true,
-                        pointBackgroundColor: '#f6ad55',
-                        pointRadius: 5, pointHoverRadius: 7,
-                        borderWidth: 2.5
-                    },
-                    {
-                        label: 'برنامه تمرینی',
-                        data: trainingData,
-                        borderColor: '#63b3ed',
-                        backgroundColor: 'rgba(99,179,237,0.07)',
-                        tension: 0.4, fill: true,
-                        pointBackgroundColor: '#63b3ed',
-                        pointRadius: 5, pointHoverRadius: 7,
-                        borderWidth: 2.5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { position: 'top', align: 'end' },
-                    tooltip: { rtl: true }
-                },
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f0f4f8' } }
-                }
-            }
+        type: 'line',
+        data: {
+        labels: months,
+        datasets: [
+        {
+        label: 'اعضای جدید',
+        data: membersData,
+        borderColor: '#00C896',
+        backgroundColor: 'rgba(0,200,150,0.08)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#00C896',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2.5
+        },
+        {
+        label: 'برنامه غذایی',
+        data: nutritionData,
+        borderColor: '#f6ad55',
+        backgroundColor: 'rgba(246,173,85,0.07)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#f6ad55',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2.5
+        },
+        {
+        label: 'برنامه تمرینی',
+        data: trainingData,
+        borderColor: '#63b3ed',
+        backgroundColor: 'rgba(99,179,237,0.07)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#63b3ed',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2.5
+        }
+        ]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+        legend: {
+        position: 'top',
+        align: 'end',
+        labels: { boxWidth: 10, padding: 12, font: { size: 10 } }
+        },
+        tooltip: { rtl: true }
+        },
+        scales: commonScales
+        }
         });
-    }
+        }
 
-            // ============================
-            // نمودار دونات
-            // ============================
-            var donutCtx = document.getElementById('donutChart');
-            if (donutCtx && donutData.length > 0) {
-                var colors = ['#00C896','#63b3ed','#f6ad55','#b794f4','#fc8181','#68d391'];
+        // ============================
+        // نمودار دونات
+        // ============================
+        var donutCtx = document.getElementById('donutChart');
+        if (donutCtx && donutData.length > 0) {
+        var colors = ['#00C896','#63b3ed','#f6ad55','#b794f4','#fc8181','#68d391'];
 
-                new Chart(donutCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: donutLabels,
-                        datasets: [{
-                            data: donutData,
-                            backgroundColor: colors.slice(0, donutData.length),
-                            borderWidth: 2,
-                            borderColor: '#fff',
-                            hoverOffset: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        cutout: '65%',
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { rtl: true }
-                        }
-                    }
-                });
+        new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+        labels: donutLabels,
+        datasets: [{
+        data: donutData,
+        backgroundColor: colors.slice(0, donutData.length),
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 4
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+        legend: { display: false },
+        tooltip: { rtl: true }
+        }
+        }
+        });
 
-                // legend دستی
-                var legend = document.getElementById('donutLegend');
-                if (legend) {
-                    donutLabels.forEach(function(label, i) {
-                        legend.innerHTML +=
-                            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-                                '<div style="width:10px;height:10px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
-                                '<span style="font-size:12px;color:#4a5568;flex:1;">' + label + '</span>' +
-                                '<span style="font-size:12px;font-weight:700;color:#1a202c;">' + donutData[i] + '</span>' +
-                            '</div>';
-                    });
-                }
-            }
+        // legend دستی
+        var legend = document.getElementById('donutLegend');
+        if (legend) {
+        var legendHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;">';
+        donutLabels.forEach(function(label, i) {
+        legendHtml +=
+        '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">' +
+        '<div style="width:8px;height:8px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
+        '<span style="font-size:11px;color:#4a5568;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + label + '</span>' +
+        '<span style="font-size:11px;font-weight:700;color:#1a202c;flex-shrink:0;">' + donutData[i] + '</span>' +
+        '</div>';
+        });
+        legendHtml += '</div>';
+        legend.innerHTML = legendHtml;
+        }
+        }
     </script>
 }

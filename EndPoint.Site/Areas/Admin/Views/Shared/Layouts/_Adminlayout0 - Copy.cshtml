@@ -34,10 +34,68 @@
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <link href="~/lib/select2/css/select2-bootstrap4.min.css" rel="stylesheet" />
 
-    <!-- فقط استایل قفل اسکرول موبایل - بقیه کدهای موبایل در فایل CSS خارجی هستند -->
+    <!-- ========================================== -->
+    <!-- کدهای رفع مشکل نمایش در موبایل (اضافه شده) -->
+    <!-- ========================================== -->
     <style>
-            body.mobile-menu-open {
-                overflow: hidden !important;
+            @@media (max-width: 991.98px) {
+                /* 1. تنظیمات نوار بالا (Topbar) برای جلوگیری از ریختگی */
+                .fc-topbar {
+                    display: flex !important;
+                    flex-wrap: nowrap !important;
+                    align-items: center !important;
+                }
+
+                .fc-topbar-title {
+                    flex-grow: 1 !important;
+                    white-space: nowrap !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                    margin: 0 10px !important;
+                    min-width: 0 !important; /* بسیار مهم برای جلوگیری از شکستن فلکس‌باکس */
+                }
+                /* مخفی کردن نام کاربر در موبایل و نمایش فقط آواتار */
+                .fc-user-name {
+                    display: none !important;
+                }
+
+                .fc-user-avatar {
+                    margin: 0 !important;
+                }
+                /* 2. تنظیمات سایدبار برای باز شدن به صورت کشویی از سمت راست */
+                .fc-layout {
+                    overflow: hidden !important;
+                }
+
+                .fc-sidebar {
+                    position: fixed !important;
+                    top: 0 !important;
+                    bottom: 0 !important;
+                    right: -300px !important; /* موقعیت اولیه بیرون صفحه */
+                    width: 280px !important;
+                    max-width: 85vw !important; /* در گوشی‌های خیلی کوچک بیشتر از 85 درصد نشود */
+                    z-index: 1051 !important;
+                    transition: right 0.3s ease !important;
+                    box-shadow: none !important;
+                    background: #fff !important; /* اطمینان از داشتن پس‌زمینه هنگام باز شدن */
+                }
+
+                    .fc-sidebar.mobile-open {
+                        right: 0 !important; /* سر جایش آمدن */
+                        box-shadow: -5px 0 15px rgba(0,0,0,0.1) !important;
+                    }
+                /* 3. تنظیمات اورلی (بک‌دراپ) پشت سایدبار */
+                #fcOverlay {
+                    z-index: 1050 !important;
+                    background-color: rgba(0, 0, 0, 0.4) !important;
+                }
+                /* 4. منوی کشویی کاربر در موبایل */
+                .fc-user-dropdown {
+                    left: auto !important;
+                    right: 0 !important;
+                    position: absolute !important;
+                    top: 100% !important;
+                }
             }
     </style>
 </head>
@@ -50,9 +108,10 @@
     <div class="fc-layout">
 
         <!-- ================================
-             سایدبار
+             سایدبار (بدون هیچ تغییری در منوها)
         ================================ -->
         <aside class="fc-sidebar" id="fcSidebar">
+
 
             @if (User.IsSuperAdmin() || User.IsAdmin())
             {
@@ -67,9 +126,8 @@
                     </div>
                 </a>
             }
-
-            <!-- دکمه جمع شدن (فقط دسکتاپ) -->
-            <div class="fc-sidebar-footer">
+            <!-- دکمه جمع شدن (دسکتاپ) -->
+            <div class="fc-sidebar-footer d-block d-lg-block">
                 <button class="fc-collapse-btn" id="fcCollapseBtn">
                     <i class="fa fa-angle-double-right"></i>
                     <span>جمع کردن منو</span>
@@ -77,15 +135,11 @@
             </div>
 
 
-
-
             <!-- ناوبری -->
-            
-            
-            
-            
             <nav class="fc-nav">
                 <ul style="list-style:none; padding:0; margin:0;">
+
+
 
                     @if (User.IsSuperAdmin() || User.IsAdmin())
                     {
@@ -97,7 +151,6 @@
                             </a>
                         </li>
                     }
-
                     @if (User.IsSuperAdmin() || User.IsAdmin())
                     {
                         <!-- بخش مدیریت -->
@@ -125,12 +178,40 @@
                                             ثبت باشگاه جدید
                                         </a>
                                     </li>
+
                                 </ul>
                             </li>
                         }
 
                         @if (User.IsAdmin())
                         {
+                            <!-- بخش مدیریت — فقط برای مدیر باشگاه -->
+                            @* <div class="fc-nav-label">مدیریت</div> *@
+
+                            @if (User.IsSuperAdmin())
+                            {
+                                <li class="fc-nav-item has-sub" id="nav-gym">
+                                    <button class="fc-nav-link" data-title="باشگاه‌ها"
+                                            onclick="fcToggleMenu('nav-gym')">
+                                        <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
+                                        <span class="fc-nav-text">باشگاه‌ها</span>
+                                        <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                    </button>
+                                    <ul class="fc-nav-sub">
+                                        <li>
+                                            <a href="/admin/Gym/index" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>لیست باشگاه‌ها
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/admin/Gym/Create" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>ثبت باشگاه جدید
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
                             <li class="fc-nav-item has-sub" id="nav-members">
                                 <button class="fc-nav-link" data-title="اعضاء"
                                         onclick="fcToggleMenu('nav-members')">
@@ -186,6 +267,7 @@
                                 </a>
                             </li>
 
+
                             <li class="fc-nav-item">
                                 <a href="/Admin/ProgramRequest" class="fc-nav-link" data-title="درخواست‌های برنامه"
                                    id="nav-requests-link">
@@ -197,9 +279,10 @@
                                     </span>
                                 </a>
                             </li>
+
+
                         }
                     }
-
                     @if (User.IsMember() && !User.IsAdmin())
                     {
                         <div class="fc-nav-label">پرتال من</div>
@@ -251,14 +334,16 @@
                                 <span class="fc-nav-text">درخواست برنامه</span>
                             </a>
                         </li>
-
                         <li class="fc-nav-item">
                             <a href="/Admin/ProgramRequest/MyRequests" class="fc-nav-link">
                                 <span class="fc-nav-icon"><i class="fa fa-history"></i></span>
                                 <span class="fc-nav-text">درخواست‌های من</span>
                             </a>
                         </li>
+
+
                     }
+
 
                     @if (User.IsInRole("Member") || User.IsInRole("Admin"))
                     {
@@ -271,24 +356,22 @@
                             </a>
                         </li>
                     }
-
                     @if (User.IsInRole("SuperAdmin"))
                     {
                         <li class="fc-nav-item">
                             <a href="/Admin/Ticket" class="fc-nav-link" data-title="تیکت مدیران">
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های مدیران باشگاه</span>
-                                <span id="ticket-badge-sa" style="display:none;background:#f56565;color:#fff;border-radius:10px;
+                                <span id="ticket-badge" style="display:none;background:#f56565;color:#fff;border-radius:10px;
                                 padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
-
                 </ul>
             </nav>
 
-            @* <!-- دکمه جمع شدن (فقط دسکتاپ) -->
-            <div class="fc-sidebar-footer">
+            <!-- دکمه جمع شدن (دسکتاپ) -->
+            @* <div class="fc-sidebar-footer d-none d-lg-block">
                 <button class="fc-collapse-btn" id="fcCollapseBtn">
                     <i class="fa fa-angle-double-right"></i>
                     <span>جمع کردن منو</span>
@@ -359,8 +442,8 @@
         </div>
 
     </div>
-
     <partial name="~/Areas/Admin/Views/Shared/Partials/_HelpModal.cshtml" />
+
 
     <div class="modal fade" id="helpModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
@@ -417,35 +500,18 @@
         $(document).ready(function () {
 
         // ---- سایدبار موبایل ----
-        $('#fcMenuToggle').on('click', function (e) {
-        e.preventDefault();
+        $('#fcMenuToggle').on('click', function () {
         $('#fcSidebar').toggleClass('mobile-open');
         $('#fcOverlay').toggleClass('show');
+        // اضافه شده: جلوگیری از اسکرول صفحه وقتی منو باز است
         $('body').toggleClass('mobile-menu-open');
         });
 
         $('#fcOverlay').on('click', function () {
         $('#fcSidebar').removeClass('mobile-open');
         $('#fcOverlay').removeClass('show');
+        // اضافه شده: برگرداندن اسکرول
         $('body').removeClass('mobile-menu-open');
-        });
-
-        // بستن سایدبار با کلید Escape
-        $(document).on('keydown', function (e) {
-        if (e.key === 'Escape') {
-        $('#fcSidebar').removeClass('mobile-open');
-        $('#fcOverlay').removeClass('show');
-        $('body').removeClass('mobile-menu-open');
-        }
-        });
-
-        // بستن سایدبار هنگام تغییر سایز به دسکتاپ
-        $(window).on('resize', function () {
-        if ($(window).width() > 991) {
-        $('#fcSidebar').removeClass('mobile-open');
-        $('#fcOverlay').removeClass('show');
-        $('body').removeClass('mobile-menu-open');
-        }
         });
 
         // ---- collapse دسکتاپ ----
@@ -498,10 +564,15 @@
         function openHelp(key) {
         $.get('/Admin/Help/Get', { key: key }, function (res) {
         $('#helpTitle').text(res.title);
-        $('#helpContent').html(res.content);
+        $('#helpContent').html(res.content); // پشتیبانی از HTML
         $('#helpModal').modal('show');
         });
         }
+
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
 
         // بارگذاری تعداد درخواست‌های در انتظار برای badge سایدبار
         if (document.getElementById('nav-pending-badge')) {
@@ -512,9 +583,11 @@
         });
         }
 
-        // بارگذاری تعداد تیکت‌های باز
+
+
+
         if (document.getElementById('ticket-badge')) {
-        fetch('/Admin/Ticket/OpenCount').then(function(r) { return r.json(); }).then(function(res) {
+        fetch('/Admin/Ticket/OpenCount').then(r => r.json()).then(res => {
         if (res.count > 0) {
         var b = document.getElementById('ticket-badge');
         b.innerText = res.count;
@@ -523,16 +596,76 @@
         });
         }
 
-        if (document.getElementById('ticket-badge-sa')) {
-        fetch('/Admin/Ticket/OpenCount').then(function(r) { return r.json(); }).then(function(res) {
-        if (res.count > 0) {
-        var b = document.getElementById('ticket-badge-sa');
-        b.innerText = res.count;
-        b.style.display = 'inline-block';
+
+
+
+
+
+
+        // ----------------------------
+        (function () {
+        document.addEventListener('DOMContentLoaded', function () {
+        var body = document.body;
+        var sidebar = document.querySelector('.fc-sidebar');
+
+        if (!sidebar) return;
+
+        var toggle = document.querySelector('#fcMenuToggle, .fc-menu-toggle, [data-fc-toggle="sidebar"]');
+
+        var overlay = document.querySelector('.fc-sidebar-overlay');
+        if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'fc-sidebar-overlay';
+        document.body.appendChild(overlay);
         }
+
+        function openSidebar() {
+        body.classList.add('fc-sidebar-open');
+        sidebar.classList.add('fc-sidebar-open');
+        }
+
+        function closeSidebar() {
+        body.classList.remove('fc-sidebar-open');
+        sidebar.classList.remove('fc-sidebar-open');
+        }
+
+        function toggleSidebar(e) {
+        if (e) e.preventDefault();
+        if (body.classList.contains('fc-sidebar-open')) {
+        closeSidebar();
+        } else {
+        openSidebar();
+        }
+        }
+
+        if (toggle) {
+        toggle.addEventListener('click', toggleSidebar);
+        }
+
+        overlay.addEventListener('click', closeSidebar);
+
+        document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeSidebar();
         });
-        }
+
+        window.addEventListener('resize', function () {
+        if (window.innerWidth > 991) closeSidebar();
+        });
+        });
+        })();
+
+
+
     </script>
+
+    <!-- اسکریپت تکمیلی برای قفل اسکرول در موبایل -->
+    <style>
+        body.mobile-menu-open {
+        overflow: hidden !important;
+        }
+    </style>
+
+
 
 </body>
 </html>

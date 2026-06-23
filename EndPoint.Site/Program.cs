@@ -82,16 +82,17 @@ builder.Services.AddSwaggerGen();
 
 #region Database
 
-//string connectionString =@"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
+//string connectionString = @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
 
 
-//string connectionString = @"Data Source=185.88.152.27,1430;Initial Catalog=fitcorea_;User ID=FitcoerDB;Password=KD0^qthh$djHce39;TrustServerCertificate=True;";
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<DataBaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
+    //options.UseInternalServiceProviderFactory();
+
 });
 
 
@@ -158,13 +159,19 @@ builder.Services
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Auth/Login";
 
-    options.AccessDeniedPath =
-        "/Auth/AccessDenied";
+    options.LoginPath = "/Admin/Auth/Login";
+    options.AccessDeniedPath = "/Admin/Auth/Login";
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    
+    
+    //options.LoginPath = "/Auth/Login";
 
-    options.ExpireTimeSpan =
-        TimeSpan.FromDays(30);
+    //options.AccessDeniedPath =
+    //    "/Auth/AccessDenied";
+
+    //options.ExpireTimeSpan =
+    //    TimeSpan.FromDays(30);
 
     options.SlidingExpiration = true;
 

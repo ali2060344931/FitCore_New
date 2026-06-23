@@ -86,7 +86,6 @@ namespace FitCore.Application.Services.ProgramRequests
                 RequestType = request.RequestType,
                 MemberNote  = request.MemberNote,
                 Status      = ProgramRequestStatus.Pending,
-                InsertTime  = DateTime.Now
             };
 
             await _context.ProgramRequests.AddAsync(entity);

@@ -5,6 +5,7 @@ using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.TrainingProgramReports.Queries;
+using FitCore.Domain.Entities.ProgramRequest;
 
 using GymBot.Models;
 using GymBot.Services;
@@ -140,6 +141,8 @@ namespace EndPoint.Site.BaleBot.Handlers
                 responseText = "لطفاً نام و نام خانوادگی خود را تایپ کنید:";
             }
 
+
+
             // ---------------- درخواست و دریافت برنامه ----------------
             else if (data == "REQ_PLANS_MENU")
             {
@@ -149,19 +152,120 @@ namespace EndPoint.Site.BaleBot.Handlers
             else if (data == "SEND_REQ_NUTRITION" || data == "SEND_REQ_TRAINING" || data == "SEND_REQ_BOTH")
             {
                 string reqType = data == "SEND_REQ_NUTRITION" ? "غذایی" : (data == "SEND_REQ_TRAINING" ? "تمرینی" : "غذایی و تمرینی");
+
+                // تبدیل دیتای دکمه به عدد ذخیره شده در دیتابیس
+                int requestTypeInt = data switch
+                {
+                    "SEND_REQ_NUTRITION" => 1,
+                    "SEND_REQ_TRAINING" => 2,
+                    "SEND_REQ_BOTH" => 3,
+                    _ => 0
+                };
+
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+                var memberid =  _db.Members.Where(c=>c.AppUserId== user.Id).First().Id;
+
+
+                var today = DateTime.Today;
+                var tomorrow = today.AddDays(1);
+
+                var q = _db.ProgramRequests.Any(c =>
+                    c.MemberId == memberid &&
+                    c.GymId == user.GymId &&
+                    c.RequestType == (ProgramRequestType)requestTypeInt &&
+                    c.Status == ProgramRequestStatus.Pending &&
+                    c.InsertTime >= today &&
+                    c.InsertTime < tomorrow);
+
+                if (q)
+                {
+                    responseText = "❌ شما امروز این درخواست را ارسال کرده اید."+'\n'+"امکان ارسال مجدد وجود ندارد";
+                   await _baleBotService.SendMessageAsync(chatId, responseText);
+                    return;
+                }
                 if (user != null)
                 {
-                    try { var adminSetting = await _db.Setings.FirstOrDefaultAsync(s => s.Code == "01"); if (adminSetting != null && adminSetting.SuperAdminChatId.HasValue) { _ = _baleBotService.SendMessageAsync(adminSetting.SuperAdminChatId.Value, $"🔔 درخواست برنامه جدید\n👤 کاربر: {user.FullName}\n📱 شماره: {user.PhoneNumber}\n📋 نوع درخواست: {reqType}"); } } catch (Exception ex) { _logger.LogError(ex, "Error sending notification to admin"); }
-                    responseText = $"✅ درخواست شما برای دریافت برنامه {reqType} با موفقیت ثبت شد.";
+                    // ==========================================================
+                    // ۱. ثبت قطعی درخواست در دیتابیس (داخل Try Catch)
+                    // ==========================================================
+                    try
+                    {
+                        var newRequest = new ProgramRequest
+                        {
+                            //MemberId = user.Id,
+                            MemberId = memberid,
+                            GymId = user.GymId.HasValue ? user.GymId.Value : 0, // جلوگیری از کرش در صورت نال بودن
+                            RequestType = (ProgramRequestType)requestTypeInt,
+                            Status = (ProgramRequestStatus)1,
+                            MemberNote = "درخواست ارسال شده از طریق ربات بله",
+                        };
+
+                        _db.ProgramRequests.Add(newRequest);
+                        await _db.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        // نمایش متن دقیق خطا به کاربر برای دیباگ
+                        _logger.LogError(ex, "Error saving program request to DB for user {UserId}", user.Id);
+                        responseText = $"❌ خطای پایگاه داده:\n{ex.InnerException?.InnerException?.Message ?? ex.Message}";
+                    }
+                    // ==========================================================
+                    // ۲. ارسال نوتیفیکیشن فوری به مدیر در ربات بله (حتی اگر دیتابیس ارور داد)
+                    // ==========================================================
+                    try
+                    {
+
+                        long? AdminChatId =0;
+
+                        //AdminChatId = (
+                        //    from userRole in _db.UserRoles
+                        //    join user_ in _db.Users
+                        //        on userRole.UserId equals user.Id
+                        //    where userRole.RoleId == 2 && user.GymId == user.GymId.Value
+                        //    select user.BaleChatId
+                        //).FirstOrDefault().Value;
+
+                        AdminChatId = _db.UserRoles
+    .Where(r => r.RoleId == 2)
+    .Join(_db.Users,
+        r => r.UserId,
+        u => u.Id,
+        (r, u) => new { r, u })
+    .Where(x => x.u.GymId == user.GymId.Value)
+    .Select(x => x.u.BaleChatId)
+    .FirstOrDefault();
+
+                        var adminSetting = await _db.Setings.FirstOrDefaultAsync(s => s.Code == "01");
+                        if (adminSetting != null && adminSetting.SuperAdminChatId.HasValue)
+                        {
+                            string adminMessage = $"🔔 **درخواست برنامه جدید**\n\n" +
+                                                 $"👤 کاربر: {user.FullName}\n" +
+                                                 $"📱 شماره: {user.PhoneNumber}\n" +
+                                                 $"📋 نوع درخواست: {reqType}\n" +
+                                                 $"🕒 زمان: {DateTime.Now:HH:mm - yyyy/MM/dd}";
+
+                            _ = _baleBotService.SendMessageAsync((long)AdminChatId, adminMessage);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error sending notification to admin");
+                    }
+
+                    if (string.IsNullOrEmpty(responseText))
+                        responseText = $"✅ درخواست شما برای دریافت برنامه {reqType} با موفقیت ثبت شد.\nمنتظر تایید و ارسال برنامه توسط مدیر باشد.";
                 }
-                else { responseText = "❌ خطا در شناسایی حساب کاربری شما."; }
+                else
+                {
+                    responseText = "❌ خطا در شناسایی حساب کاربری شما.";
+                }
             }
+
             else if (data == "VIEW_PLANS_MENU")
             {
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
                 var member = await _db.Members.FirstOrDefaultAsync(m => m.AppUserId == user.Id);
-                
+
                 if (member == null)
                 { responseText = "❌ پروفایل عضویت شما یافت نشد."; }
                 else
@@ -193,11 +297,6 @@ namespace EndPoint.Site.BaleBot.Handlers
                             new InlineKeyboardButton { Text = $"🥩 برنامه غذایی: {title}", CallbackData = $"DL_NUT_{n.Id}" }
                         });
                     }
-
-
-
-
-
 
                     // خواندن برنامه‌های تمرینی (لود کردن جداول وابسته و مرتب‌سازی)
                     var trainings = await _db.TrainingPrograms
@@ -240,7 +339,7 @@ namespace EndPoint.Site.BaleBot.Handlers
 
 
                     if (rows.Count == 0)
-                    
+
                     { responseText = "ℹ️ شما هنوز هیچ برنامه‌ای دریافت نکرده‌اید."; }
                     else { rows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت به منوی اصلی", CallbackData = "MAIN_MENU" } }); keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows }; responseText = "📥 لطفاً برنامه مورد نظر خود را برای دانلود انتخاب کنید:"; }
                 }

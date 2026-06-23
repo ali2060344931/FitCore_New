@@ -3,6 +3,7 @@ using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace FitCore.Domain.Entities.ProgramRequest
@@ -46,6 +47,7 @@ namespace FitCore.Domain.Entities.ProgramRequest
         /// </summary>
         [MaxLength(1000)]
         public string AdminNote { get; set; }
+
 
         /// <summary>
         /// شناسه مدیری که درخواست را پردازش کرده
