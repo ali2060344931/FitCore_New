@@ -6,6 +6,7 @@ using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 using FitCore.Application.Services.TrainingProgramReports.Queries;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
+
 using GymBot.Models;
 using GymBot.Services;
 
@@ -16,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +57,7 @@ namespace EndPoint.Site.Controllers
             _cache = cache;
             _httpContextAccessor = httpContextAccessor;
             _trainingPdfService = trainingPdfService;
-            _nutritionPdfService= nutritionPdfService;
+            _nutritionPdfService = nutritionPdfService;
         }
 
         [HttpPost]
@@ -117,9 +119,6 @@ namespace EndPoint.Site.Controllers
             return Ok();
         }
 
-        // -----------------------------------------------------------------
-        // متدهای کمکی
-        // -----------------------------------------------------------------
 
         // این متد منوی اصلی کامل را با تمام دکمه‌ها نشان می‌دهد
         private async Task ShowMainMenu(long chatId, string userName)
@@ -174,7 +173,7 @@ namespace EndPoint.Site.Controllers
             };
             await _baleBotService.SendMessageAsync(chatId, $"به سیستم باشگاه FitCore خوش آمدید {userName} عزیز.\nلطفاً گزینه مورد نظر را انتخاب کنید:", keyboard);
         }
-        // این متد پیام خطا را به همراه دکمه بازگشت به منو نشان می‌دهد
+
         private async Task ShowErrorWithMenu(long chatId, string errorMessage)
         {
             var keyboard = new InlineKeyboardMarkup
@@ -309,12 +308,65 @@ namespace EndPoint.Site.Controllers
                 };
                 responseText = "لطفاً نوع برنامه‌ای که از مدیر باشگاه خود درخواست دارید را انتخاب کنید:";
             }
+
+
             else if (data == "SEND_REQ_NUTRITION" || data == "SEND_REQ_TRAINING" || data == "SEND_REQ_BOTH")
             {
                 string reqType = data == "SEND_REQ_NUTRITION" ? "غذایی" : (data == "SEND_REQ_TRAINING" ? "تمرینی" : "غذایی و تمرینی");
-                responseText = $"✅ درخواست شما برای دریافت برنامه {reqType} ثبت شد.\nمنتظر تایید و ارسال برنامه توسط مدیر باشید.";
-            }
 
+                // پیدا کردن کاربر از روی ChatId
+                var user = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+
+                if (user != null)
+                {
+                    // ==========================================================
+                    // ۱. ثبت درخواست در دیتابیس
+                    // ==========================================================
+                    // نکته مهم: من نام جدول و کلاس شما را ProgramRequest فرض کردم.
+                    // اگر نام جدول یا فیلدهای شما متفاوت است، خطوط زیر را مطابق دیتابیس خود تغییر دهید.
+                    /*
+                    var newRequest = new ProgramRequest 
+                    { 
+                        UserId = user.Id, 
+                        GymId = user.GymId, 
+                        RequestType = reqType, 
+                        CreatedDate = DateTime.Now.ToString(), 
+                        IsHandled = false 
+                    };
+                    _db.ProgramRequests.Add(newRequest);
+                    await _db.SaveChangesAsync();
+                    */
+
+                    // ==========================================================
+                    // ۲. ارسال نوتیفیکیشن فوری به مدیر در ربات بله
+                    // ==========================================================
+                    try
+                    {
+                        var adminSetting = await _db.Setings.FirstOrDefaultAsync(s => s.Code == "01");
+                        if (adminSetting != null && adminSetting.SuperAdminChatId.HasValue)
+                        {
+                            string adminMessage = $"🔔 **درخواست برنامه جدید**\n\n" +
+                                                 $"👤 کاربر: {user.FullName}\n" +
+                                                 $"📱 شماره: {user.PhoneNumber}\n" +
+                                                 $"📋 نوع درخواست: {reqType}\n" +
+                                                 $"🕒 زمان: {DateTime.Now:HH:mm - yyyy/MM/dd}";
+
+                            // ارسال پیام به مدیر (بدون منتظر ماندن برای جواب)
+                            _ = _baleBotService.SendMessageAsync(adminSetting.SuperAdminChatId.Value, adminMessage);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error sending notification to admin");
+                    }
+
+                    responseText = $"✅ درخواست شما برای دریافت برنامه {reqType} با موفقیت ثبت شد.\nمنتظر تایید و ارسال برنامه توسط مدیر باشید.";
+                }
+                else
+                {
+                    responseText = "❌ خطا در شناسایی حساب کاربری شما.";
+                }
+            }
             // ---------------- منوی دریافت لیست برنامه‌ها ----------------
             else if (data == "VIEW_PLANS_MENU")
             {
@@ -440,7 +492,7 @@ namespace EndPoint.Site.Controllers
                     state.GymName = text;
                     state.Step = "WAITING_FOR_NAME";
                     _cache.Set(chatId.ToString(), state);
-                    await _baleBotService.SendMessageAsync(chatId, "نام باشگاه ثبت شد.\nحالا لطفاً نام و نام خانوادگی خود را تایپ کنید:");
+                    await _baleBotService.SendMessageAsync(chatId, "نام باشگاه ثبت شد.\n لطفاً نام و نام خانوادگی خود را تایپ کنید:");
                     return;
                 }
 
@@ -527,14 +579,20 @@ namespace EndPoint.Site.Controllers
             _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = true });
             await _db.SaveChangesAsync();
 
-            // خط زیر حذف شد چون در وب‌هوک نباید لاگین کرد
-            // await _signInManager.SignInAsync(newUser, isPersistent: true);
 
             // پیام موفقیت و نمایش منوی اصلی
-            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.\nرمز عبور پیش‌فرض شما: FitCore@123");
+            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.");
             await ShowMainMenu(chatId, state.FullName);
         }
 
+        /// <summary>
+        /// ثبت نام مدیر باشگاه
+        /// </summary>
+        /// <param name="chatId"></param>
+        /// <param name="phone"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private async Task RegisterManagerDirectly(long chatId, string phone, BotState state)
         {
             bool gymExists = await _db.Gyms.AnyAsync(g => g.Name == state.GymName);
@@ -580,9 +638,11 @@ namespace EndPoint.Site.Controllers
             // await _signInManager.SignInAsync(newUser, isPersistent: true);
 
             // پیام موفقیت و نمایش منوی اصلی
-            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان مدیر باشگاه انجام شد.\nحساب شما توسط ادمین سیستم بررسی و تایید نهایی می‌شود.\nرمز عبور پیش‌فرض: FitCore@123");
+            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان مدیر باشگاه انجام شد.\nحساب شما توسط ادمین سیستم بررسی و تایید نهایی می‌شود.");
             await ShowMainMenu(chatId, state.FullName);
         }
+
+
         // -----------------------------------------------------------------
         // متد نظرسنجی
         // -----------------------------------------------------------------
