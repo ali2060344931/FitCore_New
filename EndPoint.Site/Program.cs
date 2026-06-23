@@ -1,3 +1,5 @@
+using EndPoint.Site.BaleBot.Handlers;
+
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
@@ -55,6 +57,7 @@ using GymBot.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -79,14 +82,12 @@ builder.Services.AddSwaggerGen();
 
 #region Database
 
-//string connectionString =
-//    @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
-
-string connectionString =
-    @"Data Source=185.88.152.27,1430;Initial Catalog=fitcorea_;User ID=FitcoerDB;Password=KD0^qthh$djHce39;TrustServerCertificate=True;";
+//string connectionString =@"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
 
 
+//string connectionString = @"Data Source=185.88.152.27,1430;Initial Catalog=fitcorea_;User ID=FitcoerDB;Password=KD0^qthh$djHce39;TrustServerCertificate=True;";
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<DataBaseContext>(options =>
 {
@@ -304,6 +305,11 @@ builder.Services.AddScoped<IGymDashboardService, GymDashboardService>();
 
 builder.Services.AddScoped<IGetHelpContentService, GetHelpContentService>();
 builder.Services.AddScoped<IHelp_Service, HelpService>();
+
+
+
+builder.Services.AddScoped<IBaleCallbackHandler, BaleCallbackHandler>();
+builder.Services.AddScoped<IBaleMessageHandler, BaleMessageHandler>();
 //++++++++++++++++
 
 //++++++++++++++++
@@ -332,6 +338,7 @@ builder.Services.AddScoped<IEditMemberService, EditMemberService>();
 
 builder.Services.AddScoped<IRemoveMemberService, RemoveMemberService>();
 
+builder.Services.AddScoped<EndPoint.Site.BaleBot.Services.IBaleMenuService, EndPoint.Site.BaleBot.Services.BaleMenuService>();
 
 // اطمینان از ثبت SignInManager (معمولاً با AddIdentity قبلاً اضافه شده، اما اگر ارور گرفتید این خط را اضافه کنید)
 builder.Services.AddScoped<SignInManager<AppUser>>();
@@ -377,6 +384,7 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
 #region Middleware
+
 
 if (app.Environment.IsDevelopment())
 {
