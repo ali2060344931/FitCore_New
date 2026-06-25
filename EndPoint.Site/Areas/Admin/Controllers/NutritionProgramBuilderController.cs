@@ -1,6 +1,8 @@
 ﻿using EndPoint.Site.Areas.Admin.Models;
+using EndPoint.Site.BaleBot.Services;
 
 using FitCore.Application.Contexts;
+using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Foods.Queries;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealDto;
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.AddNutritionMealItemDto;
@@ -14,6 +16,7 @@ using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutrit
 using FitCore.Application.Services.NutritionProgramBuilder.Commands.RemoveNutritionMealItem;
 using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Common;
+using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
 
 using Microsoft.AspNetCore.Authorization;
@@ -35,8 +38,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     public class NutritionProgramBuilderController : Controller
     {
 
-         private readonly IDataBaseContext _Context;
-       private readonly IGetProgramBuilderService _getProgramBuilderService;
+        private readonly IDataBaseContext _Context;
+        private readonly IGetProgramBuilderService _getProgramBuilderService;
         private readonly IAddNutritionProgramDayService _addNutritionProgramDayService;
         private readonly IAddNutritionMealService _addNutritionMealService;
         private readonly IAddNutritionMealItemService _addNutritionMealItemService;
@@ -50,8 +53,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IAutoGenerateNutritionDaysService _autoGenerateNutritionDaysService;
         private readonly IRemoveNutritionAllDayService _removeNutritionAllDayService;
         private readonly IFoodService _foodService;
-
-        
+        private readonly IBaleBotService _baleBotService;
+        private readonly IBaleMenuService _menuService;
 
 
         public NutritionProgramBuilderController(
@@ -60,7 +63,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             IAddNutritionMealService addNutritionMealService,
             IAddNutritionMealItemService addNutritionMealItemService,
             IGetBuilderLookupService getBuilderLookupService,
-            IDataBaseContext Context, 
+            IDataBaseContext Context,
             IRemoveNutritionMealItemService removeNutritionMealItemService,
             IEditNutritionMealItemService editNutritionMealItemService,
             IRemoveNutritionMealService removeNutritionMealService,
@@ -69,7 +72,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             IEditNutritionDayService editNutritionDayService,
             IAutoGenerateNutritionDaysService autoGenerateNutritionDaysService,
             IFoodService foodService,
-            IRemoveNutritionAllDayService removeNutritionAllDayService
+            IRemoveNutritionAllDayService removeNutritionAllDayService,
+            IBaleBotService baleBotService,
+            IBaleMenuService menuService
             )
         {
             _getProgramBuilderService = getProgramBuilderService;
@@ -79,14 +84,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _getBuilderLookupService = getBuilderLookupService;
             _Context = Context;
             _removeNutritionMealItemService = removeNutritionMealItemService;
-            _editNutritionMealItemService= editNutritionMealItemService;
-            _removeNutritionMealService= removeNutritionMealService;
-            _editNutritionMealService= editNutritionMealService;
+            _editNutritionMealItemService = editNutritionMealItemService;
+            _removeNutritionMealService = removeNutritionMealService;
+            _editNutritionMealService = editNutritionMealService;
             _editNutritionDayService = editNutritionDayService;
-            _removeNutritionDayService= removeNutritionDayService;
-            _autoGenerateNutritionDaysService= autoGenerateNutritionDaysService;
-            _removeNutritionAllDayService= removeNutritionAllDayService;
+            _removeNutritionDayService = removeNutritionDayService;
+            _autoGenerateNutritionDaysService = autoGenerateNutritionDaysService;
+            _removeNutritionAllDayService = removeNutritionAllDayService;
             _foodService = foodService;
+            _baleBotService= baleBotService;
+            _menuService= menuService;
 
         }
         public IActionResult Index(string id)
@@ -125,7 +132,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return Json(result);
         }
-        
+
         [HttpPost]
         public JsonResult AddMeal(AddNutritionMealDto request)
         {
@@ -248,5 +255,58 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 message = result.Message
             });
         }
+
+
+        //--------------------------
+        /// <summary>
+        /// ارسال پیام برنامه غدایی جدید به ربات بله کاربران
+        /// </summary>
+        /// <param name="programId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendNotification(long programId)
+        {
+            var program = await _Context.NutritionPrograms
+                .Include(p => p.Member)
+                
+
+                    .ThenInclude(m => m.AppUser)
+                    .Include(p => p.GoalType)
+                    .Include(p => p.ProgramType)
+                .FirstOrDefaultAsync(p => p.Id == programId);
+
+            var programGymName = _Context.Gyms.Where(c => c.Id == program.GymId).First().Name;
+
+            if (program?.Member?. AppUser != null && program.Member.AppUser.BaleChatId.HasValue)
+            {
+                string message = $"📋 *برنامه جدید برای شما*\n" +
+                    $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
+                                 $"🍔 نوع برنامه: برنامه غذایی\n" +
+                                 $"⏰ عنوان برنامه:" + program.ProgramType.Name +'\n'+
+                                 $"🚴‍♂️ موضوع برنامه: " + program.GoalType.Name + '\n' +
+                                 $"📅 تاریخ شروع: " + program.StartDate  + '\n' +
+                                 $"📅 تاریخ پایان: " + program.EndDate + '\n' +
+
+                                 
+                                 $"🗓️ تاریخ ثبت: " + DateConverterMlladiToShamsi.ToShamsi(program.InsertTime) + '\n' +
+                                 $"🔔 لطفاً وارد ربات بله شوید و از بخش «دریافت لیست برنامه‌های من» برنامه خود را دانلود کنید.";
+
+                await _baleBotService.SendMessageAsync(program.Member.AppUser.BaleChatId.Value, message);
+
+                await _menuService.ShowMainMenu(program.Member.AppUser.BaleChatId.Value,"-");
+                return Json(new { isSuccess = true, message = "پیام با موفقیت در ربات ارسال شد." });
+            }
+
+            return Json(new { isSuccess = false, message = "کاربر در ربات بله ثبت نام نکرده است یا چت آیدی او یافت نشد." });
+        }
+
+
+        //--------------------------
+
+
+
+
+
     }
 }

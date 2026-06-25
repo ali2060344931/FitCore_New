@@ -67,6 +67,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                 TrainingGoalType = entity.TrainingGoalType?.Name,
                 MemberName = entity.Member?.AppUser?.FullName,
                 MemberMobile = entity.Member?.AppUser?.PhoneNumber,
+                BaleChatId= entity.Member.AppUser.BaleChatId,
                 StartDate = entity.StartDate,
                 EndDate = entity.EndDate,
                 SessionsPerWeek = entity.SessionsPerWeek,

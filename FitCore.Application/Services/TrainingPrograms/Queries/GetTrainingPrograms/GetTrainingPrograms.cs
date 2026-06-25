@@ -39,6 +39,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
         public bool IsActive { get; set; }
 
         public int CountTrainingDays { get; set; }
+        public long? BaleChatId { get; set; }
     }
 
     public class GetTrainingProgramsRequestDto

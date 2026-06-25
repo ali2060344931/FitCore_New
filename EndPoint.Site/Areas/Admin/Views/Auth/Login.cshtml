@@ -54,23 +54,28 @@
                                         <div class="form-account text-right">
 
                                             <!-- Step 1: Mobile -->
+                                            <!-- Step 1: Mobile -->
                                             <div id="stepMobile">
-                                                <label for="mobile">شماره موبایل</label>
+                                                <div class="form-group">
+                                                    <label for="mobile">شماره موبایل</label>
 
-                                                <div class="mobile-row-container">
-                                                    <input type="text"
-                                                           class="number-email-input"
-                                                           id="mobile"
-                                                           placeholder="مثــال: 09123456789"
-                                                           inputmode="numeric"
-                                                           autocomplete="tel" />
+                                                    <!-- حذف کلاس mobile-row-container یا تغییر استایل آن -->
+                                                    <div class="mobile-column-container">
+                                                        <input type="text"
+                                                               class="number-email-input form-control"
+                                                               id="mobile"
+                                                               placeholder="مثــال: 09123456789"
+                                                               inputmode="numeric"
+                                                               autocomplete="tel" />
 
-                                                    <button id="btnSendOtp"
-                                                            type="button"
-                                                            onclick="SendOtp()"
-                                                            class="btn btn-primary btn-login">
-                                                        ارسال کد
-                                                    </button>
+                                                        <!-- اضافه کردن کلاس mt-3 برای فاصله گرفتن دکمه از فیلد بالا -->
+                                                        <button id="btnSendOtp"
+                                                                type="button"
+                                                                onclick="SendOtp()"
+                                                                class="btn btn-primary btn-login btn-block mt-3">
+                                                            ارسال کد
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -365,7 +370,7 @@
     success: function (data) {
     if (data.isSuccess) {
     // تغییر در این خط: استفاده از آدرس ارسالی از سمت سرور به جای "/"
-    window.location.href = data.redirectUrl || "/";
+    window.location.href = data.redirectUrl || "/admin";
     } else {
     swal.fire('خطا!', data.message, 'warning');
     setBtnLoading("btnCompleteLogin", false);

@@ -160,6 +160,23 @@
                                             کپی برنامه تمرینی
                                         </button>
 
+                                        <!-- ارسال پیام به کاربر در ربات بله -->
+                                        @if (item.BaleChatId != null)
+                                        {
+
+                                            <button class="btn btn-sm btn-outline-primary px-2 py-0 text-nowrap"
+                                                    onclick="sendProgramNotificationToUser(@item.Id)">
+                                                <i class="fa fa-bell"></i>
+                                                <span class="d-none d-md-inline ms-1">ارسال پیام برنامه جدید به کاربر</span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-light-danger text-danger" title="کاربر در ربات بله عضو نیست">
+                                                <i class="fa fa-exclamation-triangle"></i> فاقد شناسه بله
+                                            </span>
+                                        }
+
 
                                         <a class="dropdown-item"
                                            asp-area="Admin"
@@ -247,6 +264,35 @@
                     });
                 }
             });
+        }
+
+        function sendProgramNotificationToUser(programId) {
+        // استفاده از پنجره تایید پیش‌فرض خود مرورگر
+        var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
+
+        if (isConfirmed) {
+        // گرفتن توکن امنیتی
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+        url: '/Admin/TrainingProgramBuilder/SendNotification',
+        type: 'POST',
+        data: {
+        __RequestVerificationToken: token,
+        programId: programId
+        },
+        success: function (response) {
+        if (response.isSuccess) {
+        alert('موفق: ' + response.message);
+        } else {
+        alert('خطا: ' + response.message);
+        }
+        },
+        error: function (xhr, status, error) {
+        alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
+        }
+        });
+        }
         }
     </script>
 }

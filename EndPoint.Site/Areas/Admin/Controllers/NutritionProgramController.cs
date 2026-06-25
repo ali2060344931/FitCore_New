@@ -34,9 +34,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         public NutritionProgramController(
             INutritionProgramFacad nutritionProgramFacad,
             IDataBaseContext context, IGetNutritionProgramPdfService pdfService
-            /*IReportMembersService reportMembersService*/)
+            )
         {
-            //_reportMembersService= reportMembersService;
             _nutritionProgramFacad = nutritionProgramFacad;
             _context = context;
             _pdfService = pdfService;
@@ -46,46 +45,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         // لیست برنامه های غذایی
         //====================================================
 
-        /*
-        public async Task<IActionResult> Index(
-    long? userId,
-    int page = 1,
-    int pageSize = 20,
-    string searchKey = "")
-        {
-            var currentUserIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrWhiteSpace(currentUserIdValue))
-                return Unauthorized();
-
-            var currentUserId = long.Parse(currentUserIdValue);
-
-            long targetUserId;
-
-            if (User.IsInRole(UserRoles.Admin))
-            {
-                targetUserId = userId ?? currentUserId;
-            }
-            else
-            {
-                targetUserId = currentUserId;
-            }
-
-            var request = new RequestGetNutritionProgramsDto
-            {
-                AppUserId = targetUserId,
-                Page = page,
-                PageSize = pageSize,
-                SearchKey = searchKey
-            };
-
-            var result = await _nutritionProgramFacad
-                .GetNutritionProgramsService
-                .Execute(request);
-
-            return View(result);
-        }
-        */
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
         {

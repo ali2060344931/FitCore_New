@@ -25,6 +25,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 _context.NutritionPrograms
                 .Where(c => !c.IsRemoved)
                 .Include(x => x.Member)
+
                 .AsQueryable();
 
 
@@ -63,12 +64,12 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                     ProgramType = x.ProgramType.Name,
                     MemberName = x.Member.AppUser.FullName,
                     MemberMobile = x.Member.AppUser.PhoneNumber,
+                    
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     IsActive = x.IsActive,
-                    CountProgramBuilder =
-                        _context.NutritionProgramDays
-                            .Count(c => c.NutritionProgramId == x.Id)
+                    BaleChatId = x.Member.AppUser.BaleChatId,
+                    CountProgramBuilder = _context.NutritionProgramDays.Count(c => c.NutritionProgramId == x.Id)
                 })
                 .ToListAsync();
 

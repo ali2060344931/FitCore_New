@@ -66,6 +66,14 @@ namespace EndPoint.Site.BaleBot.Handlers
                 await _menuService.ShowMainMenu(chatId, userName);
                 return;
             }
+            else if (data == "REQ_LINK_PHONE")
+            {
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+                _cache.Set(chatId.ToString(), new BotState { Step = "WAITING_FOR_LINK_PHONE" });
+                await _baleBotService.SendMessageAsync(chatId, "لطفاً شماره موبایلی که با آن در سایت ثبت‌نام کرده‌اید را ارسال کنید:");
+                await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "📱 ارسال شماره موبایل");
+                return;
+            }
 
             if (data == "INFO_CLASSES")
             {
@@ -216,14 +224,6 @@ namespace EndPoint.Site.BaleBot.Handlers
                     {
 
                         long? AdminChatId =0;
-
-                        //AdminChatId = (
-                        //    from userRole in _db.UserRoles
-                        //    join user_ in _db.Users
-                        //        on userRole.UserId equals user.Id
-                        //    where userRole.RoleId == 2 && user.GymId == user.GymId.Value
-                        //    select user.BaleChatId
-                        //).FirstOrDefault().Value;
 
                         AdminChatId = _db.UserRoles
     .Where(r => r.RoleId == 2)

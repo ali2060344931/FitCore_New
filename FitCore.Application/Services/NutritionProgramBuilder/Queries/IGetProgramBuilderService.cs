@@ -52,7 +52,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
                 GoalType = program.GoalType?.Name ?? "",
                 StartDate = program.StartDate,
                 EndDate = program.EndDate,
-
+                BaleChatId=program.Member.AppUser.BaleChatId,
                 Days = program.Days?
                     .OrderBy(x => x.DayNumber)
                     .Select(day => new ProgramDayDto
@@ -108,6 +108,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
         public string StartDate { get; set; }
         public string EndDate { get; set; }
         public List<ProgramDayDto> Days { get; set; }
+        public long? BaleChatId { get; set; }
     }
 
     public class ProgramDayDto

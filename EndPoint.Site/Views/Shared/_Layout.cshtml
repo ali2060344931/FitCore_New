@@ -1,4 +1,4 @@
-﻿@using FitCore.Domain.Entities.Users
+@using FitCore.Domain.Entities.Users
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<AppUser> UserManager
 
@@ -16,364 +16,616 @@
         "Member" => "عضو",
         _ => "نامشخص"
     };
-}
 
+    var gymName = User.FindFirst("GymName")?.Value;
+    var userName = User.Identity?.Name;
+
+    // حروف اول نام برای آواتار
+    string initials = "؟";
+    if (!string.IsNullOrEmpty(userName) && userName.Length >= 1)
+    {
+        var parts = userName.Trim().Split(' ');
+        initials = parts.Length >= 2
+            ? $"{parts[0][0]}{parts[1][0]}"
+            : $"{parts[0][0]}";
+    }
+}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitCore App </title>
-    <!-- font---------------------------------------->
+    <title>FitCore App</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Vendor -->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
-    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
-    <!-- plugin-------------------------------------->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/owl.carousel.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/nice-select.css">
-    <!-- main-style---------------------------------->
+
+    <!-- Main Styles -->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/responsive.css">
     <link rel="stylesheet" href="~/css/FitCorecss.css" />
 
-    <!-- کدهای رفع مشکل موبایل -->
-    <!-- کدهای رفع مشکل موبایل -->
     <style>
-            @@media (max-width: 991px) {
-                .h-main-row {
-                    display: flex !important;
-                    flex-wrap: wrap !important;
-                    overflow: visible !important;
-                }
+        /* =========================================================
+           FITCORE — Design System Variables
+        ========================================================= */
+        :root {
+            --fc-primary:      #1a1a2e;
+            --fc-primary-soft: #16213e;
+            --fc-accent:       #e94560;
+            --fc-accent-soft:  rgba(233, 69, 96, 0.10);
+            --fc-gold:         #f5a623;
+            --fc-surface:      #f8f7f4;
+            --fc-white:        #ffffff;
+            --fc-border:       rgba(0, 0, 0, 0.08);
+            --fc-text:         #1a1a2e;
+            --fc-muted:        #6b7280;
+            --fc-radius:       12px;
+            --fc-radius-sm:    8px;
+            --fc-header-h:     0px; /* مقدار واقعی با JS ست می‌شود */
+            --fc-transition:   0.25s ease;
+        }
 
-                .header-left {
-                    width: 100% !important;
-                    display: block !important;
-                    padding: 0 !important;
-                    margin-top: 15px; /* فاصله از قسمت جستجو */
-                }
+        /* =========================================================
+           Reset / Base
+        ========================================================= */
+        *, *::before, *::after { box-sizing: border-box; }
 
-                .header-account {
-                    text-align: center !important; /* وسط چین کردن دکمه‌ها در موبایل */
-                }
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+            direction: rtl;
+            background: var(--fc-surface);
+            color: var(--fc-text);
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
 
-                    .header-account .account-box {
-                        justify-content: center !important;
-                        display: inline-flex !important;
-                    }
-                /* رفع مشکل طولانی شدن نام کاربری در موبایل */
-                .wide-account-box {
-                    min-width: unset !important;
-                    width: 100% !important;
-                    white-space: normal !important;
-                    text-align: center !important;
-                    display: block !important;
-                    padding: 10px 15px !important;
-                    font-size: 13px;
-                }
+        a { text-decoration: none; color: inherit; }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+        .fc-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--fc-primary);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+        }
+
+        /* ---- صف اول: لوگو + همبرگر ---- */
+        .fc-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            gap: 12px;
+        }
+
+        /* لوگو */
+        .fc-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .fc-logo-icon {
+            width: 38px; height: 38px;
+            background: var(--fc-accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .fc-logo-icon svg {
+            width: 20px; height: 20px; fill: #fff;
+        }
+
+        .fc-logo-text {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .fc-logo-text em {
+            font-style: normal;
+            color: var(--fc-accent);
+        }
+
+        /* دکمه همبرگر (موبایل) */
+        .fc-hamburger {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 38px; height: 38px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: var(--fc-radius-sm);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .fc-hamburger span {
+            display: block;
+            width: 18px; height: 1.5px;
+            background: #fff;
+            border-radius: 2px;
+            transition: transform var(--fc-transition), opacity var(--fc-transition);
+        }
+
+        .fc-hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .fc-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .fc-hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        /* ---- نوار کاربر (دسکتاپ: سمت چپ هدر | موبایل: زیر لوگو) ---- */
+        .fc-user-strip {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.04);
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .fc-avatar {
+            width: 36px; height: 36px;
+            background: var(--fc-accent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+
+        .fc-user-detail { flex: 1; min-width: 0; }
+
+        .fc-user-name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fc-user-gym {
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fc-user-gym strong { color: rgba(255,255,255,0.75); font-weight: 500; }
+
+        .fc-role-badge {
+            flex-shrink: 0;
+            background: var(--fc-gold);
+            color: var(--fc-primary);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        /* ---- منوی موبایل (درگاه) ---- */
+        .fc-mobile-nav {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--fc-primary-soft);
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .fc-mobile-nav.fc-open { max-height: 400px; }
+
+        .fc-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 20px;
+            color: rgba(255,255,255,0.72);
+            font-size: 14px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            transition: background var(--fc-transition), color var(--fc-transition);
+        }
+
+        .fc-nav-item:hover,
+        .fc-nav-item:focus { background: rgba(255,255,255,0.06); color: #fff; }
+
+        .fc-nav-item.fc-danger { color: var(--fc-accent); }
+        .fc-nav-item.fc-danger:hover { background: var(--fc-accent-soft); }
+
+        .fc-nav-icon {
+            width: 32px; height: 32px;
+            background: rgba(255,255,255,0.06);
+            border-radius: var(--fc-radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .fc-nav-icon i { font-size: 15px; line-height: 1; }
+
+        /* ---- دسکتاپ: همه چیز در یک ردیف ---- */
+        @@media (min-width: 992px) {
+            .fc-header-top { padding: 0 32px; height: 64px; }
+            .fc-user-strip {
+                /* در دسکتاپ نوار کاربر را خارج می‌کنیم و داخل header-top می‌ذاریم */
+                display: none;
             }
+            .fc-header-desktop-user {
+                display: flex !important;
+                align-items: center;
+                gap: 14px;
+            }
+            .fc-hamburger { display: none !important; }
+            .fc-mobile-nav { display: none !important; }
+        }
+
+        /* نوار کاربر داخل هدر دسکتاپ */
+        .fc-header-desktop-user {
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ---- موبایل ---- */
+        @@media (max-width: 991px) {
+            .fc-hamburger { display: flex; }
+            .fc-header-desktop-user { display: none !important; }
+            .fc-user-strip { display: flex; }
+        }
+
+        /* =========================================================
+           CONTENT AREA
+        ========================================================= */
+        .fc-main {
+            min-height: 60vh;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+        .fc-footer {
+            background: var(--fc-primary);
+            color: rgba(255,255,255,0.6);
+            margin-top: 40px;
+        }
+
+        .fc-footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px 20px;
+        }
+
+        .fc-footer-newsletter {
+            margin-bottom: 24px;
+        }
+
+        .fc-newsletter-title {
+            color: rgba(255,255,255,0.85);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .fc-newsletter-form {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .fc-newsletter-input {
+            flex: 1 1 200px;
+            min-width: 0;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: var(--fc-radius-sm);
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            direction: rtl;
+            transition: border-color var(--fc-transition);
+        }
+
+        .fc-newsletter-input::placeholder { color: rgba(255,255,255,0.3); }
+        .fc-newsletter-input:focus { border-color: var(--fc-accent); }
+
+        .fc-newsletter-btn {
+            background: var(--fc-accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--fc-radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity var(--fc-transition);
+        }
+
+        .fc-newsletter-btn:hover { opacity: 0.88; }
+
+        .fc-footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.07);
+            padding-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .fc-footer-copy {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .fc-footer-badges { display: flex; gap: 10px; align-items: center; }
+
+        .fc-footer-badges img {
+            height: 36px;
+            border-radius: 6px;
+            opacity: 0.7;
+            transition: opacity var(--fc-transition);
+        }
+
+        .fc-footer-badges img:hover { opacity: 1; }
+
+        /* =========================================================
+           Scroll-to-top
+        ========================================================= */
+        .fc-scroll-top {
+            position: fixed;
+            left: 20px;
+            bottom: 24px;
+            width: 40px; height: 40px;
+            background: var(--fc-accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity var(--fc-transition), transform var(--fc-transition);
+            z-index: 999;
+            box-shadow: 0 4px 14px rgba(233,69,96,0.4);
+        }
+
+        .fc-scroll-top.visible { opacity: 1; transform: translateY(0); }
+        .fc-scroll-top i { font-size: 16px; }
+
+        /* =========================================================
+           Utility
+        ========================================================= */
+        .fc-spacer { height: var(--fc-header-h, 0px); }
+
     </style>
 </head>
 <body>
-    @* .page-content-wrapper *@
-    <!-- header-------------------------------->
-    <header class="header-main" id="mainHeader">
-        <div class="container-main">
-            <div class="d-block">
-                <section class="h-main-row">
-                    <div class="col-lg-9 col-xs-12 pr">
-                        <div class="header-right">
-                            <div class="col-lg-3 pr">
-                                <div class="header-logo row text-right">
-                                    <a href="#">
-                                        <img src="~/SiteTemplate/assets/images/logo.png" alt="دیجی اسمارت">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-9 pl">
-                                <div class="header-search row text-right">
-                                    <div class="header-search-box">
-                                        <form action="#" class="form-search">
-                                            <div class="header-search-box-container">
-                                                <input type="search" class="header-search-input" name="search-input" placeholder="موضوع مورد نطر را جستجو کنید…">
-                                                <div class="action-btns">
-                                                    <button class="btn btn-search" type="submit">
-                                                        <i class="fa fa-search"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- بخش اکانت -->
-                    <div class="col-lg-3 col-md-3 col-xs-12 pl">
-                        <div class="header-left">
-                            <div class="header-account text-left">
-                                <div class="d-block">
-                                    <div class="account-box">
-
-                                        @if (User.Identity.IsAuthenticated)
-                                        {
-                                            <div class="nav-account d-block pl">
-                                                <div class="nav-account">
-                                                    <!-- استایل‌های اینلاین مخرب حذف و به کلاس منتقل شدند -->
-                                                    <div class="account-box wide-account-box">
-                                                        <span class="icon-account"></span>
-                                                        <span class="title-account">
-                                                            کاربر: <span style="color:red; font-weight:bold;">@User.Identity.Name</span> <br class="d-lg-none" />
-                                                            باشگاه: <span style="color:red; font-weight:bold;">@User.FindFirst("GymName")?.Value</span> <br class="d-lg-none" />
-                                                            نقش: <span style="color:red; font-weight:bold;">@persianRole</span>
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="dropdown-menu">
-                                                    <ul class="account-uls mb-0">
-                                                        <li class="account-item"><a href="#" class="account-link">پنل کاربری</a></li>
-                                                        <li class="account-item"><a href="#" class="account-link">سفارشات من</a></li>
-                                                        <li class="account-item"><a href="#" class="account-link">تنظیمات</a></li>
-                                                        <li class="account-item"><a href="~/Admin/Auth/Logout" class="account-link">خروج از برنامه</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="nav-account">
-                                                <div class="account-box">
-                                                    <a href="~/admin/Auth/Register" class="account-link">
-                                                        <i class="fa fa-user-plus"></i> <span>ثبت نام</span>
-                                                    </a>
-                                                    <span class="divider"></span>
-                                                    <a href="~/admin/Auth/Login" class="account-link">
-                                                        <i class="fa fa-sign-in"></i> <span>ورود</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        }
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- منوی ناوبری اصلی (دسکتاپ) -->
-                <div>
-                    <nav class="header-main-nav">
-                        <div class="d-block">
-                            <div class="align-items-center">
-                                <ul class="menu-ul mega-menu-level-one">
-                                    <li id="nav-menu-item" class="menu-item nav-overlay">
-                                        <a href="#" class="current-link-menu">کالای دیجیتال</a>
-                                        <ul class="sub-menu is-mega-menu mega-menu-level-two">
-                                            <li class="menu-mega-item menu-item-type-mega-menu">
-                                                <a href="#" class="mega-menu-link">موبایل</a>
-                                                <ul class="sub-menu mega-menu-level-three">
-                                                    <li class="menu-mega-item-three"><a href="#">اپل</a></li>
-                                                </ul>
-                                            </li>
-                                            <div class="bg-image"><img src="~/SiteTemplate/assets/images/menu-main/digital.png" alt=""></div>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </nav>
+    <!-- ==================== HEADER ==================== -->
+    <header class="fc-header" id="fcHeader">
+        <div class="fc-header-top">
+            <!-- لوگو -->
+            <a href="/" class="fc-logo">
+                <div class="fc-logo-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 9h4v12H4zM10 5h4v16h-4zM16 12h4v9h-4z"/>
+                    </svg>
                 </div>
+                <span class="fc-logo-text">Fit<em>Core</em></span>
+            </a>
 
-                <!-- responsive-megamenu-mobile (منوی همبرگری موبایل) -->
-                <nav class="sidebar">
-                    <div class="nav-header">
-                        <div class="header-cover"></div>
-                        <div class="logo-wrap">
-                            <a class="logo-icon" href="#"><img alt="logo-icon" src="~/SiteTemplate/assets/images/logo.png" width="40"></a>
-                        </div>
+            <!-- اطلاعات کاربر — نمایش دسکتاپ -->
+            <div class="fc-header-desktop-user">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="fc-avatar">@initials</div>
+                    <div class="fc-user-detail">
+                        <div class="fc-user-name">@userName</div>
+                        <div class="fc-user-gym">باشگاه: <strong>@gymName</strong></div>
                     </div>
-                    <ul class="nav-categories ul-base">
-                        <li>
-                            <a href="#" class="collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne"><i class="mdi mdi-chevron-down"></i>کالای دیجیتال</a>
-                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample" style="">
-                                <ul>
-                                    <li class="has-sub">
-                                        <a href="#" class="category-level-2">لوازم جانبی گوشی</a>
-                                        <ul><li><a href="#" class="category-level-3">کیف و کاور گوشی</a></li></ul>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <!-- پیشنهاد: قرار دادن لینک ورود و ثبت نام داخل منوی کناری موبایل برای دسترسی بهتر -->
-                        @if (!User.Identity.IsAuthenticated)
-                        {
-                            <li style="border-top: 1px solid #ccc; margin-top: 15px; padding-top: 15px;">
-                                <a href="~/admin/Auth/Login" style="padding-right: 15px;"><i class="fa fa-sign-in"></i> ورود به حساب</a>
-                            </li>
-                            <li>
-                                <a href="~/admin/Auth/Register" style="padding-right: 15px;"><i class="fa fa-user-plus"></i> ثبت نام</a>
-                            </li>
-                        }
-                    </ul>
-                </nav>
+                    <div class="fc-role-badge">@persianRole</div>
 
-                <div class="nav-btn nav-slider">
-                    <span class="linee1"></span>
-                    <span class="linee2"></span>
-                    <span class="linee3"></span>
+                    <!-- دکمه خروج دسکتاپ -->
+                    <a href="~/Admin/Auth/Logout"
+                       style="display:flex;align-items:center;gap:6px;color:var(--fc-accent);font-size:13px;padding:6px 14px;border:1px solid rgba(233,69,96,0.3);border-radius:8px;transition:background .2s;"
+                       onmouseover="this.style.background='rgba(233,69,96,0.1)'"
+                       onmouseout="this.style.background='transparent'">
+                        <i class="fa fa-sign-out"></i> خروج
+                    </a>
+                }
+                else
+                {
+                    <a href="~/admin/Auth/Login"
+                       style="display:flex;align-items:center;gap:6px;color:#fff;font-size:13px;padding:7px 16px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;transition:background .2s;"
+                       onmouseover="this.style.background='rgba(255,255,255,0.08)'"
+                       onmouseout="this.style.background='transparent'">
+                        <i class="fa fa-sign-in"></i> ورود
+                    </a>
+                    <a href="~/admin/Auth/Register"
+                       style="display:flex;align-items:center;gap:6px;color:var(--fc-primary);font-size:13px;padding:7px 16px;background:var(--fc-gold);border:none;border-radius:8px;font-weight:600;">
+                        <i class="fa fa-user-plus"></i> ثبت نام
+                    </a>
+                }
+            </div>
+
+            <!-- دکمه همبرگر — نمایش موبایل -->
+            <button class="fc-hamburger" id="fcHamburger" aria-label="باز کردن منو" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- نوار کاربر — نمایش موبایل -->
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <div class="fc-user-strip">
+                <div class="fc-avatar">@initials</div>
+                <div class="fc-user-detail">
+                    <div class="fc-user-name">@userName</div>
+                    <div class="fc-user-gym">باشگاه: <strong>@gymName</strong></div>
                 </div>
-                <div class="overlay"></div>
+                <div class="fc-role-badge">@persianRole</div>
+            </div>
+        }
+
+        <!-- منوی کشویی موبایل -->
+        <nav class="fc-mobile-nav" id="fcMobileNav" aria-hidden="true">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a href="#" class="fc-nav-item">
+                    <span class="fc-nav-icon"><i class="fa fa-th-large" aria-hidden="true"></i></span>
+                    پنل کاربری
+                </a>
+                <a href="#" class="fc-nav-item">
+                    <span class="fc-nav-icon"><i class="fa fa-shopping-bag" aria-hidden="true"></i></span>
+                    سفارشات من
+                </a>
+                <a href="#" class="fc-nav-item">
+                    <span class="fc-nav-icon"><i class="fa fa-cog" aria-hidden="true"></i></span>
+                    تنظیمات
+                </a>
+                <a href="~/Admin/Auth/Logout" class="fc-nav-item fc-danger">
+                    <span class="fc-nav-icon" style="background:rgba(233,69,96,0.12)">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    </span>
+                    خروج از برنامه
+                </a>
+            }
+            else
+            {
+                <a href="~/admin/Auth/Login" class="fc-nav-item">
+                    <span class="fc-nav-icon"><i class="fa fa-sign-in" aria-hidden="true"></i></span>
+                    ورود به حساب
+                </a>
+                <a href="~/admin/Auth/Register" class="fc-nav-item">
+                    <span class="fc-nav-icon"><i class="fa fa-user-plus" aria-hidden="true"></i></span>
+                    ثبت نام
+                </a>
+            }
+        </nav>
+    </header>
+    <!-- /HEADER -->
+
+    <!-- فضاگذار برای جلوگیری از overlap در هنگام scroll -->
+    <div class="fc-spacer" id="fcSpacer"></div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="fc-main">
+        @RenderBody()
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="fc-footer">
+        <div class="fc-footer-inner">
+            <div class="fc-footer-newsletter">
+                <span class="fc-newsletter-title">با عضویت در خبرنامه از آخرین اخبار و محصولات مطلع شوید...</span>
+                <div class="fc-newsletter-form">
+                    <input type="email"
+                           class="fc-newsletter-input"
+                           placeholder="آدرس ایمیل خود را وارد کنید">
+                    <button class="fc-newsletter-btn" type="button">ارسال</button>
+                </div>
+            </div>
+
+            <div class="fc-footer-bottom">
+                <span class="fc-footer-copy">تمامی مطالب، عکس‌ها و... متعلق به سایت فیتکور می‌باشد.</span>
+                <div class="fc-footer-badges">
+                    <a href="#"><img src="~/SiteTemplate/assets/images/footer/license/L-1.png" alt="مجوز ۱"></a>
+                    <a href="#"><img src="~/SiteTemplate/assets/images/footer/license/L-2.png" alt="مجوز ۲"></a>
+                </div>
             </div>
         </div>
-    </header>
-
-    <div id="headerSpacer"></div>
-    <div class="nav-categories-overlay"></div>
-
-    @RenderBody()
-
-    <!-- footer------------------------------------------->
-    <footer class="footer-main-site">
-        <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1"></section>
-        <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
-            <div class="container-fluid">
-                <div class="col-12">
-                    <div class="footer-middlebar">
-                        <div class="col-lg-8 d-block pr">
-                            <div class="footer-links">
-                                <div class="col-lg-3 col-md-3 col-xs-12 pr">
-                                    <div class="row">
-                                        <section class="footer-links-col">
-                                            <div class="headline-links"><a href="#">با دیجی اسمارت</a></div>
-                                            <ul class="footer-menu-ul">
-                                                <li class="menu-item-type-custom"><a href="#">اتاق خبر دیجی اسمارت</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">فروش در دیجی اسمارت</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">همکاری با سازمان‌ها</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">فرصت‌های شغلی</a></li>
-                                            </ul>
-                                        </section>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-xs-12 pr">
-                                    <div class="row">
-                                        <section class="footer-links-col">
-                                            <div class="headline-links"><a href="#">خدمات مشتریان</a></div>
-                                            <ul class="footer-menu-ul">
-                                                <li class="menu-item-type-custom"><a href="#">پاسخ به پرسش‌های متداول</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">رویه‌های بازگرداندن کالا</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">شرایط استفاده</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">حریم خصوصی</a></li>
-                                            </ul>
-                                        </section>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-xs-12 pr">
-                                    <div class="row">
-                                        <section class="footer-links-col">
-                                            <div class="headline-links"><a href="#">راهنمای خرید از دیجی اسمارت</a></div>
-                                            <ul class="footer-menu-ul">
-                                                <li class="menu-item-type-custom"><a href="#">نحوه ثبت سفارش</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">رویه ارسال سفارش</a></li>
-                                                <li class="menu-item-type-custom"><a href="#">شیوه‌های پرداخت</a></li>
-                                            </ul>
-                                        </section>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 d-block pl">
-                            <div class="shortcode-widget-area">
-                                <form action="#" class="form-newsletter">
-                                    <fieldset>
-                                        <span class="form-newsletter-title"> با عضویت در خبرنامه از آخرین اخبار و محصولات سایت مطلع شوید...</span>
-                                        <div class="input-group-newsletter">
-                                            <input type="email" class="input-field form-control" placeholder="آدرس ایمیل خود را وارد کنید">
-                                            <button class="btn btn-info btn-secondary" type="submit">ارسال</button>
-                                        </div>
-                                    </fieldset>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="footer-more-info">
-                            <div class="col-lg-10 pr">
-                                <div class="footer-content d-block">
-                                    <div class="text pr-1">
-                                        <h2 class="title">فروشگاه اینترنتی دیجی اسمارت</h2>
-                                        <p class="desc"> دیجی اسمارت به عنوان یکی از قدیمی‌ترین فروشگاه های اینترنتی با بیش از یک دهه تجربه، با پایبندی به سه اصل کلیدی، پرداخت در محل، 7 روز ضمانت بازگشت کالا و تضمین اصل‌بودن کالا، موفق شده تا همگام با فروشگاه‌های معتبر جهان، به بزرگ‌ترین فروشگاه اینترنتی ایران تبدیل شود. به محض ورود به دیجی اسمارت با یک سایت پر از کالا رو به رو می‌شوید! هر آنچه که نیاز دارید و به ذهن شما خطور می‌کند در اینجا پیدا خواهید کرد.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 pl">
-                                <div class="footer-safety-partner">
-                                    <div class="widget widget-product card mb-0">
-                                        <div class="product-carousel-symbol owl-carousel owl-theme owl-rtl owl-loaded owl-drag">
-                                            <div class="owl-stage-outer">
-                                                <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 2234px;">
-                                                    <div class="owl-item active" style="width: 300.75px; margin-left: 10px;">
-                                                        <div class="item"><a href="#" class="d-block hover-img-link"><img src="~/SiteTemplate/assets/images/footer/license/L-1.png" class="img-fluid img-brand" alt=""></a></div>
-                                                    </div>
-                                                    <div class="owl-item active" style="width: 300.75px; margin-left: 10px;">
-                                                        <div class="item"><a href="#" class="d-block hover-img-link mt-0"><img src="~/SiteTemplate/assets/images/footer/license/L-2.png" class="img-fluid img-brand" alt=""></a></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="footer-copyright">
-                                <div class="footer-copyright-text">
-                                    <p>تمامی مطالب، عکس ها و... متعلق به سایت فیت کور می باشد.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </footer>
-    <!-- footer------------------------------------------->
-    <!-- scroll_Progress------------------------->
-    <div class="progress-wrap">
-        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
-            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
-        </svg>
-    </div>
-    <!-- scroll_Progress------------------------->
 
+    <!-- دکمه بازگشت به بالا -->
+    <button class="fc-scroll-top" id="fcScrollTop" aria-label="بازگشت به بالا">
+        <i class="fa fa-chevron-up"></i>
+    </button>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery.nice-select.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/main.js"></script>
+
+    <script>
+        (function () {
+            /* --- همبرگر منو --- */
+            var btn  = document.getElementById('fcHamburger');
+            var nav  = document.getElementById('fcMobileNav');
+
+            if (btn && nav) {
+                btn.addEventListener('click', function () {
+                    var isOpen = nav.classList.toggle('fc-open');
+                    btn.classList.toggle('active', isOpen);
+                    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    nav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+                });
+
+                /* بستن منو با کلیک خارج */
+                document.addEventListener('click', function (e) {
+                    if (!btn.contains(e.target) && !nav.contains(e.target)) {
+                        nav.classList.remove('fc-open');
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-expanded', 'false');
+                        nav.setAttribute('aria-hidden', 'true');
+                    }
+                });
+            }
+
+            /* --- ارتفاع هدر برای spacer --- */
+            function setHeaderHeight() {
+                var h = document.getElementById('fcHeader');
+                var s = document.getElementById('fcSpacer');
+                if (h && s) {
+                    /* spacer فقط زمانی نیاز است که هدر sticky است و
+                       overflow نداریم — اینجا ارتفاع صفر است چون sticky */
+                    document.documentElement.style.setProperty('--fc-header-h', h.offsetHeight + 'px');
+                }
+            }
+
+            setHeaderHeight();
+            window.addEventListener('resize', setHeaderHeight);
+
+            /* --- scroll-to-top --- */
+            var scrollBtn = document.getElementById('fcScrollTop');
+            if (scrollBtn) {
+                window.addEventListener('scroll', function () {
+                    scrollBtn.classList.toggle('visible', window.scrollY > 300);
+                });
+                scrollBtn.addEventListener('click', function () {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        })();
+    </script>
+
+    @RenderSection("Scripts", required: false)
 </body>
-
-<!-- file js---------------------------------------------------->
-<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/jquery.countdown.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/jquery.nice-select.min.js"></script>
-<script src="~/SiteTemplate/assets/js/main.js"></script>
-
-<script>
-    $(document).ready(function () {
-    var header = $('#mainHeader');
-    var spacer = $('#headerSpacer');
-    var headerHeight = header.outerHeight();
-
-    $(window).on('scroll', function () {
-    if ($(window).scrollTop() > headerHeight) {
-    if (!header.hasClass('header-fixed')) {
-    header.addClass('header-fixed');
-    spacer.height(headerHeight).show();
-    }
-    } else {
-    header.removeClass('header-fixed');
-    spacer.hide();
-    }
-    });
-    });
-</script>
-
-@RenderSection("Scripts", required: false)
 </html>

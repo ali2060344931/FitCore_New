@@ -7,16 +7,6 @@
     ViewData["Title"] = "داشبورد";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
-@* @{
-    var expiringMembers = Model.Members.Where(m =>
-    {
-        var remainDays = GetRemainDays(m.MembershipEndDate);
-        return remainDays <= 5;
-    }).ToList();
-} *@
-
-
-
 @if (ViewBag.IsSuperAdmin == true)
 {
     <div class="container-fluid mt-4">

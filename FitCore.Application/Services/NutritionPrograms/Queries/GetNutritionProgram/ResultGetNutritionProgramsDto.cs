@@ -40,6 +40,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
 
         public bool IsActive { get; set; }
         public int CountProgramBuilder { get; set; }
+        public long? BaleChatId { get; set; }
     }
 
     public class RequestGetNutritionProgramsDto

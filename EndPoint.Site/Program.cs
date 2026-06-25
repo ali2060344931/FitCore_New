@@ -80,28 +80,26 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 #region Database
-
-//string connectionString = @"Data Source=.;Initial Catalog=FitCoreDb;Integrated Security=True;TrustServerCertificate=True";
-
-
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+string connectionString;
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = builder.Configuration.GetConnectionString("DevelopmentConnection");
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("ProductionConnection");
+}
 builder.Services.AddDbContext<DataBaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
-    //options.UseInternalServiceProviderFactory();
-
 });
-
-
-
-
-
 builder.Services.AddScoped<IDataBaseContext, DataBaseContext>();
-
 #endregion
+
+
+
 
 #region Identity
 
@@ -163,16 +161,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Admin/Auth/Login";
     options.AccessDeniedPath = "/Admin/Auth/Login";
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    
-    
-    //options.LoginPath = "/Auth/Login";
-
-    //options.AccessDeniedPath =
-    //    "/Auth/AccessDenied";
-
-    //options.ExpireTimeSpan =
-    //    TimeSpan.FromDays(30);
-
     options.SlidingExpiration = true;
 
     options.Cookie.HttpOnly = true;
@@ -193,14 +181,6 @@ builder.Services
 #region Dependency Injection
 
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("ManagementAccess", policy => policy.RequireRole(UserRoles.SuperAdmin, UserRoles.Admin));
-
-//    options.AddPolicy("FinancialAccess", policy => policy.RequireRole(UserRoles.SuperAdmin, UserRoles.Admin));
-
-//    options.AddPolicy("GymOwnerOnly", policy => policy.RequireRole(UserRoles.SuperAdmin, UserRoles.Admin));
-//});
 
 builder.Services.AddAuthorization(options =>
 {
@@ -217,10 +197,6 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<IGetSetings, GetSetingService>();
 
 builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
-
-//builder.Services.AddScoped<ILoginUserService, LoginUserService>();
-
-//builder.Services.AddScoped<ILogoutUserService, LogoutUserService>();
 
 builder.Services.AddScoped<ISmsService, SmsService>();
 

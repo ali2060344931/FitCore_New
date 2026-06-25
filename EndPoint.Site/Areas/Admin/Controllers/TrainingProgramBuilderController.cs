@@ -2,6 +2,7 @@ using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
+using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.AddTrainingDay;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.AddTrainingExercise;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.EditTrainingDay;
@@ -30,17 +31,21 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly ITrainingProgramBuilderFacad _builderFacad;
         private readonly IRemoveAllTrainingDaysService _RemoveAllTrainingDaysService;
         private readonly IDataBaseContext _context;
+        private readonly IBaleBotService _baleBotService;
+
 
         public TrainingProgramBuilderController(
             ITrainingProgramFacad trainingProgramFacad,
             ITrainingProgramBuilderFacad builderFacad,
             IDataBaseContext context,
-            IRemoveAllTrainingDaysService removeAllTrainingDaysService)
+            IRemoveAllTrainingDaysService removeAllTrainingDaysService,
+            IBaleBotService baleBotService)
         {
             _trainingProgramFacad = trainingProgramFacad;
             _builderFacad = builderFacad;
             _context = context;
             _RemoveAllTrainingDaysService = removeAllTrainingDaysService;
+            _baleBotService = baleBotService;
         }
 
         //====================================================
@@ -227,7 +232,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
-                    Text = x.PrimaryMuscleGroup.Name+" - "+ x.EquipmentType.Name + " - " + x.Name +
+                    Text = x.PrimaryMuscleGroup.Name + " - " + x.EquipmentType.Name + " - " + x.Name +
                            (x.GymId == null ? " (سراسری)" : "")
                 })
                 .ToListAsync();
@@ -274,6 +279,43 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 isSuccess = result.IsSuccess,
                 message = result.Message
             });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendNotification(long programId)
+        {
+            var program = await _context.TrainingPrograms
+                .Include(p => p.Member)
+                    .ThenInclude(m => m.AppUser)
+                    .Include(p => p.TrainingProgramType)
+                    .Include(p => p.TrainingGoalType)
+                .FirstOrDefaultAsync(p => p.Id == programId);
+
+            var programGymName = _context.Gyms.Where(c => c.Id == program.GymId).First().Name;
+
+            if (program?.Member?.AppUser != null && program.Member.AppUser.BaleChatId.HasValue)
+            {
+                string message = $"📋 *برنامه جدید برای شما*\n" +
+                    $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
+                                 $"🏋️ نوع برنامه: برنامه تمرینی\n" +
+                                 $"📑 عنوان برنامه: " + program.TrainingProgramType.Name + '\n' +
+                                 $"🏃‍♂️ هدف برنامه: " + program.TrainingGoalType.Name + '\n' +
+                                 $"🏃‍♂️ تعداد : " + program.SessionsPerWeek + " در هفته" + '\n' +
+                                 $"📅 تاریخ شروع: " + program.StartDate + '\n' +
+                                 $"📅 تاریخ پایان: " + program.EndDate + '\n' +
+
+                                 
+                                 $"🗓️ تاریخ ثبت: " + DateConverterMlladiToShamsi.ToShamsi(program.InsertTime) + '\n' +
+
+                                 $"🔔 لطفاً وارد ربات بله شوید و از بخش «دریافت لیست برنامه‌های من» برنامه خود را دانلود کنید.";
+
+                await _baleBotService.SendMessageAsync(program.Member.AppUser.BaleChatId.Value, message);
+
+                return Json(new { isSuccess = true, message = "پیام با موفقیت در ربات ارسال شد." });
+            }
+
+            return Json(new { isSuccess = false, message = "کاربر در ربات بله ثبت نام نکرده است یا چت آیدی او یافت نشد." });
         }
     }
 }

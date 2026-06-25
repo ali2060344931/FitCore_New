@@ -9,23 +9,23 @@
         <div class="section-group">
             <div class="title-wrapper" style="text-align: center;">
 
-                <h4 class="section-title">مدیریت کاربران و ثبت نام</h4>
+                <h4 class="section-title">مدیریت کاربران</h4>
                 <div class="btn-container">
 
 
 
 
-                    @if (User.IsAdmin() )
+                    @if (User.IsAdmin())
                     {
                         <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="custom-btn">
-                            <i class="fa fa-pencil-square-o btn-icon-lg"></i> مدیریت سایت
+                            <i class="fa fa-pencil-square-o btn-icon-lg"></i> ورود به پنل کاربری
                         </a>
                     }
 
                     @if (User.IsMember())
                     {
                         <a asp-area="Admin" asp-controller="MemberDashboard" asp-action="Index" class="custom-btn">
-                            <i class="fa fa-pencil-square-o btn-icon-lg"></i> تنظیمات پروفایل
+                            <i class="fa fa-pencil-square-o btn-icon-lg"></i> ورود به پنل کاربری
                         </a>
                     }
 
@@ -36,7 +36,7 @@
                     </button> *@
 
 
-@*                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
+                    @*                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
                         <i class="fa fa-list-alt btn-icon-lg"></i> گزارشات مالی
                     </button>
                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
@@ -45,12 +45,14 @@
                     <button type="button" class="custom-btn" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="openForm('Form2')">
                         <i class="fa fa-list-alt btn-icon-lg"></i> گزارشات خزانه داری
                     </button>
- *@                </div>
+ *@
+                </div>
             </div>
         </div>
 
         <!-- شروع بخش بعدی -->
-        <div class="section-group">
+
+        @* <div class="section-group">
             <div class="title-wrapper" style="text-align: center;">
 
                 <h4 class="section-title">تنظیمات و پیکربندی</h4>
@@ -107,7 +109,7 @@
                     <i class="fa fa-shield btn-icon-lg"></i> آزمایشی 3
                 </button>
             </div>
-        </div>
+        </div> *@
     }
     else
     {

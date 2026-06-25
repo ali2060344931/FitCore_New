@@ -1,0 +1,385 @@
+﻿@using FitCore.Domain.Entities.Users
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+
+@using System.Security.Claims
+
+@{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+    string persianRole = role switch
+    {
+        "SuperAdmin" => "مدیر سایت",
+        "Admin" => "مدیر باشگاه و سیستم",
+        "GymManager" => "مدیر باشگاه",
+        "Coach" => "مربی",
+        "Member" => "عضو",
+        _ => "نامشخص"
+    };
+}
+
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitCore App </title>
+    <!-- font---------------------------------------->
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/nice-select.css">
+    <!-- main-style---------------------------------->
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
+    <link rel="stylesheet" href="~/SiteTemplate/assets/css/responsive.css">
+    <link rel="stylesheet" href="~/css/FitCorecss.css" />
+
+    <!-- کدهای رفع مشکل موبایل -->
+    <!-- کدهای رفع مشکل موبایل -->
+    <style>
+            @@media (max-width: 991px) {
+                .h-main-row {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    overflow: visible !important;
+                }
+
+                .header-left {
+                    width: 100% !important;
+                    display: block !important;
+                    padding: 0 !important;
+                    margin-top: 15px; /* فاصله از قسمت جستجو */
+                }
+
+                .header-account {
+                    text-align: center !important; /* وسط چین کردن دکمه‌ها در موبایل */
+                }
+
+                    .header-account .account-box {
+                        justify-content: center !important;
+                        display: inline-flex !important;
+                    }
+                /* رفع مشکل طولانی شدن نام کاربری در موبایل */
+                .wide-account-box {
+                    min-width: unset !important;
+                    width: 100% !important;
+                    white-space: normal !important;
+                    text-align: center !important;
+                    display: block !important;
+                    padding: 10px 15px !important;
+                    font-size: 13px;
+                }
+            }
+            /* ----------------------------- */
+
+
+    </style>
+</head>
+<body>
+    @* .page-content-wrapper *@
+    <!-- header-------------------------------->
+    <header class="header-main" id="mainHeader">
+        <div class="container-main">
+            <div class="d-block">
+                <section class="h-main-row">
+                    <div class="col-lg-9 col-xs-12 pr">
+                        <div class="header-right">
+                            <div class="col-lg-3 pr">
+                                <div class="header-logo row text-right">
+                                    <a href="#">
+                                        <img src="~/SiteTemplate/assets/images/logo.png" alt="فیتــکور">
+                                    </a>
+                                </div>
+                            </div>
+                            @* <div class="col-lg-9 pl">
+                                <div class="header-search row text-right">
+                                    <div class="header-search-box">
+                                        <form action="#" class="form-search">
+                                            <div class="header-search-box-container">
+                                                <input type="search" class="header-search-input" name="search-input" placeholder="موضوع مورد نطر را جستجو کنید…">
+                                                <div class="action-btns">
+                                                    <button class="btn btn-search" type="submit">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div> *@
+                        </div>
+                    </div>
+
+                    <!-- بخش اکانت -->
+                    <!-- استایل‌های inline با !important برای شکستن قوانین مخرب قالب -->
+                    <div class="col-12 col-lg-3 pl">
+                        <div class="header-left">
+                            <div class="header-account text-left">
+                                <div class="d-block">
+                                    <div class="account-box">
+
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            <div class="nav-account d-block pl">
+                                                <div class="nav-account">
+                                                    <!-- استایل‌های اینلاین مخرب حذف و به کلاس منتقل شدند -->
+                                                    <div class="account-box wide-account-box">
+                                                        <span class="icon-account"></span>
+                                                        <span class="title-account">
+                                                            کاربر: <span style="color:red; font-weight:bold;">@User.Identity.Name</span> <br class="d-lg-none" />
+                                                            باشگاه: <span style="color:red; font-weight:bold;">@User.FindFirst("GymName")?.Value</span> <br class="d-lg-none" />
+                                                            نقش: <span style="color:red; font-weight:bold;">@persianRole</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="dropdown-menu">
+                                                    <ul class="account-uls mb-0">
+                                                        <li class="account-item"><a href="#" class="account-link">پنل کاربری</a></li>
+                                                        <li class="account-item"><a href="#" class="account-link">سفارشات من</a></li>
+                                                        <li class="account-item"><a href="#" class="account-link">تنظیمات</a></li>
+                                                        <li class="account-item"><a href="~/Admin/Auth/Logout" class="account-link">خروج از برنامه</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="nav-account">
+                                                <div class="account-box">
+                                                    <a href="~/admin/Auth/Register" class="account-link">
+                                                        <i class="fa fa-user-plus"></i> <span>ثبت نام</span>
+                                                    </a>
+                                                    <span class="divider"></span>
+                                                    <a href="~/admin/Auth/Login" class="account-link">
+                                                        <i class="fa fa-sign-in"></i> <span>ورود</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- منوی ناوبری اصلی (دسکتاپ) -->
+@*                 <div>
+                    <nav class="header-main-nav">
+                        <div class="d-block">
+                            <div class="align-items-center">
+                                <ul class="menu-ul mega-menu-level-one">
+                                    <li id="nav-menu-item" class="menu-item nav-overlay">
+                                        <a href="#" class="current-link-menu">کالای دیجیتال</a>
+                                        <ul class="sub-menu is-mega-menu mega-menu-level-two">
+                                            <li class="menu-mega-item menu-item-type-mega-menu">
+                                                <a href="#" class="mega-menu-link">موبایل</a>
+                                                <ul class="sub-menu mega-menu-level-three">
+                                                    <li class="menu-mega-item-three"><a href="#">اپل</a></li>
+                                                </ul>
+                                            </li>
+                                            <div class="bg-image"><img src="~/SiteTemplate/assets/images/menu-main/digital.png" alt=""></div>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                </div> *@
+
+                <!-- responsive-megamenu-mobile (منوی همبرگری موبایل) -->
+                <nav class="sidebar">
+                    <div class="nav-header">
+                        <div class="header-cover"></div>
+                        <div class="logo-wrap">
+                            <a class="logo-icon" href="#"><img alt="logo-icon" src="~/SiteTemplate/assets/images/logo.png" width="40"></a>
+                        </div>
+                    </div>
+                    <ul class="nav-categories ul-base">
+@*                         <li>
+                            <a href="#" class="collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne"><i class="mdi mdi-chevron-down"></i>کالای دیجیتال</a>
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample" style="">
+                                <ul>
+                                    <li class="has-sub">
+                                        <a href="#" class="category-level-2">لوازم جانبی گوشی</a>
+                                        <ul><li><a href="#" class="category-level-3">کیف و کاور گوشی</a></li></ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+ *@                        <!-- پیشنهاد: قرار دادن لینک ورود و ثبت نام داخل منوی کناری موبایل برای دسترسی بهتر -->
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li style="border-top: 1px solid #ccc; margin-top: 15px; padding-top: 15px;">
+                                <a href="~/admin/Auth/Login" style="padding-right: 15px;"><i class="fa fa-sign-in"></i> ورود به حساب</a>
+                            </li>
+                            <li>
+                                <a href="~/admin/Auth/Register" style="padding-right: 15px;"><i class="fa fa-user-plus"></i> ثبت نام</a>
+                            </li>
+                        }
+
+                        <li class="account-item"><a href="~/Admin/Auth/Logout" class="account-link">خروج از برنامه</a></li>
+                    </ul>
+                </nav>
+
+                <div class="nav-btn nav-slider">
+                    <span class="linee1"></span>
+                    <span class="linee2"></span>
+                    <span class="linee3"></span>
+                </div>
+                <div class="overlay"></div>
+            </div>
+        </div>
+    </header>
+
+    <div id="headerSpacer"></div>
+    <div class="nav-categories-overlay"></div>
+
+    @RenderBody()
+
+    <!-- footer------------------------------------------->
+    <footer class="footer-main-site">
+        <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1"></section>
+        <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
+            <div class="container-fluid">
+                <div class="col-12">
+                    <div class="footer-middlebar">
+                        @* <div class="col-lg-8 d-block pr">
+                            <div class="footer-links">
+                                <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                                    <div class="row">
+                                        <section class="footer-links-col">
+                                            <div class="headline-links"><a href="#">با دیجی اسمارت</a></div>
+                                            <ul class="footer-menu-ul">
+                                                <li class="menu-item-type-custom"><a href="#">اتاق خبر دیجی اسمارت</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">فروش در دیجی اسمارت</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">همکاری با سازمان‌ها</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">فرصت‌های شغلی</a></li>
+                                            </ul>
+                                        </section>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                                    <div class="row">
+                                        <section class="footer-links-col">
+                                            <div class="headline-links"><a href="#">خدمات مشتریان</a></div>
+                                            <ul class="footer-menu-ul">
+                                                <li class="menu-item-type-custom"><a href="#">پاسخ به پرسش‌های متداول</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">رویه‌های بازگرداندن کالا</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">شرایط استفاده</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">حریم خصوصی</a></li>
+                                            </ul>
+                                        </section>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                                    <div class="row">
+                                        <section class="footer-links-col">
+                                            <div class="headline-links"><a href="#">راهنمای خرید از دیجی اسمارت</a></div>
+                                            <ul class="footer-menu-ul">
+                                                <li class="menu-item-type-custom"><a href="#">نحوه ثبت سفارش</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">رویه ارسال سفارش</a></li>
+                                                <li class="menu-item-type-custom"><a href="#">شیوه‌های پرداخت</a></li>
+                                            </ul>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> *@
+                        <div class="col-lg-4 d-block pl">
+                            <div class="shortcode-widget-area">
+                                <form action="#" class="form-newsletter">
+                                    <fieldset>
+                                        <span class="form-newsletter-title"> با عضویت در خبرنامه از آخرین اخبار و محصولات سایت مطلع شوید...</span>
+                                        <div class="input-group-newsletter">
+                                            <input type="email" class="input-field form-control" placeholder="آدرس ایمیل خود را وارد کنید">
+                                            <button class="btn btn-info btn-secondary" type="submit">ارسال</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="footer-more-info">
+                            @* <div class="col-lg-10 pr">
+                                <div class="footer-content d-block">
+                                    <div class="text pr-1">
+                                        <h2 class="title">فروشگاه اینترنتی دیجی اسمارت</h2>
+                                        <p class="desc"> دیجی اسمارت به عنوان یکی از قدیمی‌ترین فروشگاه های اینترنتی با بیش از یک دهه تجربه، با پایبندی به سه اصل کلیدی، پرداخت در محل، 7 روز ضمانت بازگشت کالا و تضمین اصل‌بودن کالا، موفق شده تا همگام با فروشگاه‌های معتبر جهان، به بزرگ‌ترین فروشگاه اینترنتی ایران تبدیل شود. به محض ورود به دیجی اسمارت با یک سایت پر از کالا رو به رو می‌شوید! هر آنچه که نیاز دارید و به ذهن شما خطور می‌کند در اینجا پیدا خواهید کرد.</p>
+                                    </div>
+                                </div>
+                            </div> *@
+                            <div class="col-lg-2 pl">
+                                <div class="footer-safety-partner">
+                                    <div class="widget widget-product card mb-0">
+                                        <div class="product-carousel-symbol owl-carousel owl-theme owl-rtl owl-loaded owl-drag">
+                                            <div class="owl-stage-outer">
+                                                <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 2234px;">
+                                                    <div class="owl-item active" style="width: 300.75px; margin-left: 10px;">
+                                                        <div class="item"><a href="#" class="d-block hover-img-link"><img src="~/SiteTemplate/assets/images/footer/license/L-1.png" class="img-fluid img-brand" alt=""></a></div>
+                                                    </div>
+                                                    <div class="owl-item active" style="width: 300.75px; margin-left: 10px;">
+                                                        <div class="item"><a href="#" class="d-block hover-img-link mt-0"><img src="~/SiteTemplate/assets/images/footer/license/L-2.png" class="img-fluid img-brand" alt=""></a></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer-copyright">
+                                <div class="footer-copyright-text">
+                                    <p>تمامی مطالب، عکس ها و... متعلق به سایت فیتکور می باشد.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </footer>
+    <!-- footer------------------------------------------->
+    <!-- scroll_Progress------------------------->
+    <div class="progress-wrap">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+    </div>
+    <!-- scroll_Progress------------------------->
+
+</body>
+
+<!-- file js---------------------------------------------------->
+<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+<script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
+<script src="~/SiteTemplate/assets/js/vendor/owl.carousel.min.js"></script>
+<script src="~/SiteTemplate/assets/js/vendor/jquery.countdown.js"></script>
+<script src="~/SiteTemplate/assets/js/vendor/jquery.nice-select.min.js"></script>
+<script src="~/SiteTemplate/assets/js/main.js"></script>
+
+<script>
+    $(document).ready(function () {
+    var header = $('#mainHeader');
+    var spacer = $('#headerSpacer');
+    var headerHeight = header.outerHeight();
+
+    $(window).on('scroll', function () {
+    if ($(window).scrollTop() > headerHeight) {
+    if (!header.hasClass('header-fixed')) {
+    header.addClass('header-fixed');
+    spacer.height(headerHeight).show();
+    }
+    } else {
+    header.removeClass('header-fixed');
+    spacer.hide();
+    }
+    });
+    });
+</script>
+
+@RenderSection("Scripts", required: false)
+</html>

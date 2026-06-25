@@ -105,7 +105,9 @@ namespace EndPoint.Site.BaleBot.Handlers
                     if (state == null || state.Step != "WAITING_FOR_PHONE")
                     {
                         _cache.Remove(chatId.ToString());
-                        await _menuService.ShowErrorWithMenu(chatId, "❌ شماره موبایل شما در سیستم یافت نشد.\nلطفاً برای ثبت‌نام از منوی اصلی اقدام کنید.");
+
+                        // تغییر اصلی اینجا است: بجای ShowErrorWithMenu، منوی ثبت نام نمایش داده می‌شود
+                        await _menuService.ShowUnauthenticatedMenu(chatId, "کاربر");
                         return;
                     }
                 }
