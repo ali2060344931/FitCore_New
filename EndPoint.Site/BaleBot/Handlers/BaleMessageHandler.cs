@@ -157,6 +157,8 @@ namespace EndPoint.Site.BaleBot.Handlers
             await _db.SaveChangesAsync();
 
             await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.");
+            
+            
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
 

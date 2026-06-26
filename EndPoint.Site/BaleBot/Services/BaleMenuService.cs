@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
+using NuGet.DependencyResolver;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,10 +23,11 @@ namespace EndPoint.Site.BaleBot.Services
 {
     public interface IBaleMenuService
     {
-        Task ShowMainMenu(long chatId, string userName);
+        Task ShowMainMenu(long chatId, string userName,bool IsStert=false);
         Task ShowErrorWithMenu(long chatId, string errorMessage);
         Task SendSurveyToBale(long chatId);
         Task ShowUnauthenticatedMenu(long chatId, string userName);
+        Task EditMemberInfoSend(long memberId);
     }
 
     public class BaleMenuService : IBaleMenuService
@@ -47,7 +50,7 @@ namespace EndPoint.Site.BaleBot.Services
         }
 
         // این متد منوی اصلی کامل را با تمام دکمه‌ها نشان می‌دهد
-        public async Task ShowMainMenu(long chatId, string userName)
+        public async Task ShowMainMenu(long chatId, string userName, bool isStart=false)
         {
             var existingUser = await _db.Users.Include(u => u.Gym).FirstOrDefaultAsync(u => u.BaleChatId == chatId);
 
@@ -62,7 +65,6 @@ namespace EndPoint.Site.BaleBot.Services
                     new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📋 اطلاعات کلاس‌ها", CallbackData = "INFO_CLASSES" } },
                     new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📊 نظرسنجی", CallbackData = "SRV_SHOW" } }
                 };
-
 
                 // ==========================================================
                 // ۱. استخراج اطلاعات عضویت زودتر از موعد برای بررسی اعتبار
@@ -95,20 +97,12 @@ namespace EndPoint.Site.BaleBot.Services
                 // ==========================================================
                 // ۲. نمایش دکمه‌ها فقط در صورت فعال بودن عضویت
                 // ==========================================================
-                if (isMember && isMembershipActive)
+                if (isMember && isMembershipActive && memberInfo.IsActive )
                 {
+                    loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🧑‍💻 اطلاعات کاربر", CallbackData = "MEMBER_INFO_MENU" } });
                     loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📝 درخواست برنامه جدید از مدیر", CallbackData = "REQ_PLANS_MENU" } });
                     loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📥 دریافت لیست برنامه‌های من", CallbackData = "VIEW_PLANS_MENU" } });
                 }
-                //if (isMember)
-                //{
-                //    loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📝 درخواست برنامه جدید از مدیر", CallbackData = "REQ_PLANS_MENU" } });
-                //    loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📥 دریافت لیست برنامه‌های من", CallbackData = "VIEW_PLANS_MENU" } });
-                //}
-
-
-
-
                 if (isSuperAdmin)
                 {
                     loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔑 ثبت چت آیدی مدیر", CallbackData = "MYCHATID" } });
@@ -133,38 +127,58 @@ namespace EndPoint.Site.BaleBot.Services
                 else if (roles.Contains("Admin")) roleName = "مدیر باشگاه";
                 else if (isMember) roleName = "عضو باشگاه";
 
-                // ساخت بدنه پیام
-                string welcomeText = $"👋 سلام مجدد {existingUser.FullName} عزیز!\n\n" +
-                                     $"👤 نقش شما: {roleName}\n" +
-                                     $"🏢 نام باشگاه: {gymName}\n" +
-                                     $"📱 شماره موبایل: {existingUser.PhoneNumber}\n" +
-                                     $"🆔 شناسه چت بله: {existingUser.BaleChatId}";
 
-                // اطلاعات عضویت
-                if (isMember)
+                if(!memberInfo.IsActive)
+                
                 {
-                    //var memberInfo = await _db.Members.FirstOrDefaultAsync(m => m.AppUserId == existingUser.Id);
-                    if (memberInfo != null && !string.IsNullOrEmpty(memberInfo.MembershipStartDate))
-                    {
-                        welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(isMembershipActive ? "فعال" : "غیرفعال")}" +" "+ remainingDays.ToString()+"روز" +'\n'+
-               $"├ 📅 از تاریخ: {memberInfo.MembershipStartDate}\n" +
-               $"└ 📅 تا تاریخ: {memberInfo.MembershipEndDate ?? "نامحدود"}";
-                        //welcomeText += $"\n\n🗓️ وضعیت عضویت شما: " +
-                        //               $"├ 📅 از تاریخ: {memberInfo.MembershipStartDate}\n" +
-                        //               $"└ 📅 تا تاریخ: {memberInfo.MembershipEndDate ?? "نامحدود"}";
-                    }
-                    else
-                    {
-                        welcomeText += "\n\nℹ️ وضعیت عضویت: هنوز دوره عضویتی برای شما تعریف نشده است.";
-                    }
+                
                 }
 
-                welcomeText += "\n\n✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
+                string welcomeText = "";
+                if (isStart)
+
+                { // ساخت بدنه پیام
+                     welcomeText = $"👋 سلام مجدد {existingUser.FullName} عزیز!\n\n" +
+                                         $"👤 نقش شما: {roleName}\n" +
+                                         $"🏢 نام باشگاه: {gymName}\n" +
+                                         $"📱 شماره موبایل: {existingUser.PhoneNumber}\n" +
+                                         $"🗓️ تاریخ تولد: {existingUser.Member.BirthDate}\n" +
+                                         $"🗓️ قد(cm): {existingUser.Member.Height}\n" +
+                                         $"🆔 شناسه چت بله: {existingUser.BaleChatId}\n"
+                                         ;
+
+                    // اطلاعات عضویت
+                    if (isMember)
+                    {
+                        if (memberInfo != null && !string.IsNullOrEmpty(memberInfo.MembershipStartDate))
+                        {
+                            welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(isMembershipActive && memberInfo.IsActive ? "✅فعال" : "❌غیرفعال")}\n" +
+                                $"مدت زمان اعتبار: {(remainingDays > 0 ? remainingDays + " روز باقیمانده" : remainingDays + " روز منقضی شده")}\n" +
+                   $"📅 از تاریخ: {memberInfo.MembershipStartDate}\n" +
+                   $"📅 تا تاریخ: {memberInfo.MembershipEndDate ?? "نامحدود"}\n\n" +
+                   "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
+
+                        }
+                        else
+                        {
+                            welcomeText += "\n\nℹ️ وضعیت عضویت: هنوز دوره عضویتی برای شما تعریف نشده است.";
+                        }
+                    }
+
+                    welcomeText += "\n\n✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
+                }
+                else
+                {
+                    welcomeText = "✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
+                }
+
+
+                loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "منوی اصلی", CallbackData = "MAIN_MENU" } });
 
                 var loggedKeyboard = new InlineKeyboardMarkup { InlineKeyboard = loggedKeyboardRows };
+                
+                
                 await _baleBotService.SendMessageAsync(chatId, welcomeText, loggedKeyboard);
-
-
             }
             else
             {
@@ -173,14 +187,13 @@ namespace EndPoint.Site.BaleBot.Services
                 // ==========================================================
                 _cache.Set(chatId.ToString(), new BaleBot.Models.BotState { Step = "WAITING_FOR_LINK_PHONE" });
 
-                await _baleBotService.SendMessageAsync(chatId, $"به سیستم مدیریت باشگاهای فیتکور FitCore خوش آمدید {userName} عزیز.\nبرای اتصال به حساب کاربری خود در سایت، لطفاً شماره موبایلی که با آن ثبت نام کرده‌اید را ارسال کنید:");
-                await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "📱 ارسال شماره موبایل");
+                //await _baleBotService.SendMessageAsync(chatId, $"به سیستم مدیریت باشگاهای فیتکور FitCore خوش آمدید {userName} عزیز.\nبرای اتصال به حساب کاربری خود در سایت، لطفاً شماره موبایلی که با آن ثبت نام کرده‌اید را ارسال کنید:");
+                //await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "📱 ارسال شماره موبایل");
 
                 await ShowUnauthenticatedMenu(chatId, userName);
             }
         }
 
-        // این متد جدید را به انتهای کلاس اضافه کنید
         public async Task ShowUnauthenticatedMenu(long chatId, string userName)
         {
             var keyboard = new InlineKeyboardMarkup
@@ -212,7 +225,7 @@ namespace EndPoint.Site.BaleBot.Services
 
         public async Task SendSurveyToBale(long chatId)
         {
-            string TextMessge = "نظر سنجی\nهمکارم محترم، با سلام\nلطفا نظر خود را نسبت به عملکرد شرکت بیمه پارسیان در خصوص خدمات بیمه تکمیلی در سال 1404 را اعلام بفرمائید.\nبا تشکر- امور اداری\n";
+            string TextMessge = "نظر سنجی\nکاربر محترم، با سلام\nلطفا نظر خود را نسبت به عملکرد این نرم افزار  را اعلام بفرمائید.\nبا تشکر- مدیریت سایت فیتکور\n";
 
             var btn1 = new InlineKeyboardButton { Text = "ضعیف", CallbackData = "SRV_Survey1" };
             var btn2 = new InlineKeyboardButton { Text = "متوسط", CallbackData = "SRV_Survey2" };
@@ -227,5 +240,22 @@ namespace EndPoint.Site.BaleBot.Services
 
             await _baleBotService.SendMessageAsync(chatId, TextMessge, keyboard);
         }
+
+        public async Task EditMemberInfoSend(long memberId)
+        {
+            var loggedKeyboardRows = new List<List<InlineKeyboardButton>>
+                {
+                new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🧑‍💻 اطلاعات کاربر", CallbackData = "MEMBER_INFO_MENU" } },
+                    new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "منو اصلی", CallbackData = "MAIN_MENU" } }
+                };
+            var loggedKeyboard = new InlineKeyboardMarkup { InlineKeyboard = loggedKeyboardRows };
+            var member = _db.Members
+                           .Include(x => x.AppUser)
+                           .FirstOrDefault(x => x.Id == memberId);
+
+            await _baleBotService.SendMessageAsync((long)member.AppUser.BaleChatId, "تغییراتی در پنل کاربری از طرف مدیر باشگاه انجام شد"+'\n'+"لطفا بخش اطلاعات کاربر، موارد ویرایش شده را مشاهده نمائید", loggedKeyboard);
+        }
+
+
     }
 }

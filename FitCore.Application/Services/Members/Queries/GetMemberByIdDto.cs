@@ -34,6 +34,7 @@ namespace FitCore.Application.Services.Member.Queries
         public string MembershipStartDate { get; set; }
 
         public string MembershipEndDate { get; set; }
+        public bool IsActive { get; set; }
 
 
 

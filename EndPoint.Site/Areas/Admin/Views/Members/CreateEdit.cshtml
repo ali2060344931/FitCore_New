@@ -23,7 +23,7 @@
 
         <form id="MemberForm">
 
-            <input type="hidden" id="Id" name="Id" value="@(isEdit? Model.Id: 0)" />
+            <input type="hidden" id="Id" name="Id" value="@(isEdit ? Model.Id : 0)" />
 
             <!-- ✅ ردیف اول : نام + موبایل + جنسیت -->
             <div class="row">
@@ -38,17 +38,17 @@
                              Col = 4
                          }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "Mobile",
-                             Name = "Mobile",
-                             Value = Model.Mobile,
-                             LabelName = "موبایل",
-                             Col = 2
-                         }' />
+<partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "Mobile",
+             Name = "Mobile",
+             Value = Model.Mobile,
+             LabelName = "موبایل",
+             Col = 2
+         }' />
 
-                <div class="col-md-1 mb-1">
+<div class="col-md-1 mb-1">
                     <label class="form-label font-weight-bold">جنسیت</label>
                     <select class="form-control"
                             id="Gender"
@@ -57,6 +57,7 @@
                             asp-items="genders">
                     </select>
                 </div>
+
 
             </div>
 
@@ -75,28 +76,38 @@
                              Col = 2
                          }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "MembershipStartDate",
-                             Name = "MembershipStartDate",
-                             Value = Model.MembershipStartDate,
-                             LabelName = Html.DisplayNameFor(m => m.MembershipStartDate),
-                             Placeholder = Html.DisplayNameFor(m => m.MembershipStartDate),
-                             Col = 2
-                         }' />
+<partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "MembershipStartDate",
+             Name = "MembershipStartDate",
+             Value = Model.MembershipStartDate,
+             LabelName = Html.DisplayNameFor(m => m.MembershipStartDate),
+             Placeholder = Html.DisplayNameFor(m => m.MembershipStartDate),
+             Col = 2
+         }' />
 
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
-                         model='new BaseInputViewModel
-                         {
-                             Id = "MembershipEndDate",
-                             Name = "MembershipEndDate",
-                             Value = Model.MembershipEndDate,
-                             LabelName = Html.DisplayNameFor(m => m.MembershipEndDate),
-                             Placeholder = Html.DisplayNameFor(m => m.MembershipEndDate),
-                             Col = 2
-                         }' />
+<partial name="~/Areas/Admin/Views/Shared/Partials/_PersianDatePickerInput.cshtml"
+         model='new BaseInputViewModel
+         {
+             Id = "MembershipEndDate",
+             Name = "MembershipEndDate",
+             Value = Model.MembershipEndDate,
+             LabelName = Html.DisplayNameFor(m => m.MembershipEndDate),
+             Placeholder = Html.DisplayNameFor(m => m.MembershipEndDate),
+             Col = 2
+         }' />
 
+</div>
+
+            <!-- ✅ اضافه شدن چک‌باکس فعال/غیرفعال -->
+            <div class="col-md-2 mb-1 d-flex align-items-end">
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive"
+                    @(Model != null && Model.IsActive ? "checked" : "")>
+                    @* <label class="form-check-label font-weight-bold" for="IsActive">وضعیت فعالیت</label> *@
+                    <label class="form-check-label font-weight-bold" for="IsActive" style="margin-right: 12px;">وضعیت فعالیت</label>
+                </div>
             </div>
 
 
@@ -112,7 +123,7 @@
                                  BackText = "انصراف و بازگشت"
                              }' />
 
-                </div>
+</div>
             </div>
 
         </form>
@@ -131,7 +142,7 @@
     <script>
         $(document).ready(function () {
 
-         const datePickerConfig = {
+        const datePickerConfig = {
         format: 'YYYY/MM/DD',
         autoClose: true,
         initialValue: false,
@@ -143,35 +154,41 @@
 
         $("#BirthDate, #MembershipStartDate, #MembershipEndDate").persianDatepicker(datePickerConfig);
 
-            $("#MemberForm").on("submit", function (e) {
-                e.preventDefault();
+        $("#MemberForm").on("submit", function (e) {
+        e.preventDefault();
 
-                const isEdit = @(isEdit ? "true" : "false");
-                const url = isEdit ? "/Admin/Members/Edit" : "/Admin/Members/Create";
+        const isEdit = @(isEdit ? "true" : "false");
+        const url = isEdit ? "/Admin/Members/Edit" : "/Admin/Members/Create";
 
-                const data = {
-                    Id: parseInt($("#Id").val()) || 0,
-                    FullName: $("#FullName").val(),
-                    Mobile: $("#Mobile").val(),
-                    Gender: parseInt($("#Gender").val()),
-                    BirthDate: $("#BirthDate").val(),
-                    MembershipStartDate: $("#MembershipStartDate").val(),
-                    MembershipEndDate: $("#MembershipEndDate").val(),
-                };
+        const data = {
+        Id: parseInt($("#Id").val()) || 0,
+        FullName: $("#FullName").val(),
+        Mobile: $("#Mobile").val(),
+        Gender: parseInt($("#Gender").val()),
+        BirthDate: $("#BirthDate").val(),
+        MembershipStartDate: $("#MembershipStartDate").val(),
+        MembershipEndDate: $("#MembershipEndDate").val(),
+        // ✅ اضافه شدن مقدار چک‌باکس (دقت کنید که از is(":checked") استفاده شده تا True/False دقیق ارسال شود)
+        IsActive: $("#IsActive").is(":checked")
 
-                $.ajax({
-                    type: "POST", url: url, data: data,
-                    success: function (res) {
-                        if (res.isSuccess) {
-                            Swal.fire({ icon: 'success', title: 'موفق', text: res.message }).then(() => {
-                                window.location.href = "/Admin/Members";
-                            });
-                        } else {
-                            Swal.fire({ icon: 'warning', title: 'خطا', text: res.message });
-                        }
-                    }
-                });
-            });
+        };
+
+        $.ajax({
+        type: "POST", url: url, data: data,
+        success: function (res) {
+        if (res.isSuccess) {
+        Swal.fire({ icon: 'success', title: 'موفق', text: res.message }).then(() => {
+        window.location.href = "/Admin/Members";
         });
+        } else {
+        Swal.fire({ icon: 'warning', title: 'خطا', text: res.message });
+        }
+        }
+        });
+        });
+        });
+
+
+
     </script>
 }

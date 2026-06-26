@@ -1,4 +1,5 @@
 ﻿using EndPoint.Site.Areas.Admin.Models.Member;
+using EndPoint.Site.BaleBot.Services;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
@@ -26,13 +27,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IGetMembersByIdService _getMembersByIdService;
         private readonly IAddNewMemberService _addNewMemberService;
         private readonly IDataBaseContext _context;
-        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext, IDataBaseContext context)
+        private readonly IBaleMenuService _baleMenuService;
+        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext, IDataBaseContext context, IBaleMenuService baleMenuService)
         {
             _memberFacad = memberFacad;
             _dataBaseContext = dataBaseContext;
             _getMembersByIdService = getMembersByIdService;
             _addNewMemberService = addNewMemberService;
             _context = context;
+            _baleMenuService= baleMenuService;
         }
 
         [HttpGet]
@@ -105,6 +108,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Gender = q.Data.Gender,
                 MembershipStartDate = q.Data.MembershipStartDate,
                 MembershipEndDate = q.Data.MembershipEndDate,
+                // ✅ اضافه شدن مقدار IsActive هنگام ویرایش
+                IsActive = q.Data.IsActive
             };
             return View("CreateEdit", qq);
         }
@@ -114,7 +119,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         public IActionResult Edit(RequestEditMemberDto request)
         {
             var result = _memberFacad.EditMemberService.Execute(request);
-
+            if(result.IsSuccess)
+            {
+                long memberId = result.Data;
+                _baleMenuService.EditMemberInfoSend(memberId);
+            }
             return Json(result);
         }
 

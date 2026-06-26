@@ -1,0 +1,298 @@
+@using EndPoint.Site.Areas.Admin.Models
+@using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms
+@using FitCore.Common
+
+@model GetTrainingProgramsResultDto
+
+@{
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        PageQueryKey = "page",
+        PageSizeQueryKey = "PageSize"
+    };
+}
+
+@{
+    ViewData["Title"] = "لیست برنامه‌های تمرینی";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
+    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+}
+@section Modals {
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_CopyProgramModal.cshtml" />
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- عنوان صفحه -->
+    <div class="fc-page-header">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"لیست برنامه‌های تمرینی اعضاء"' />
+
+        <a asp-area="Admin"
+           asp-controller="Exercise"
+           asp-action="Index"
+           class="btn btn-outline-success">
+            <i class="fa fa-database"></i>
+            مدیریت بانک حرکات
+        </a>
+
+    </div>
+
+    <!-- جستجو -->
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
+             model="searchKey" />
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <div class="mb-3">
+
+        تعداد کل برنامه‌ها :
+
+        <strong>
+            @Model.RowCount
+        </strong>
+
+        @if (isFiltered)
+        {
+            <span class="ms-2">
+                (نتایج فیلتر: <strong>@Model.TrainingPrograms.Count</strong>)
+            </span>
+
+            <a href="/Admin/TrainingProgram" class="btn btn-warning btn-sm ms-2">
+                نمایش همه (@Model.RowCount)
+            </a>
+        }
+
+    </div>
+
+    @if (Model.TrainingPrograms != null && Model.TrainingPrograms.Any())
+    {
+        <table class="table table-striped table-hover">
+
+            <thead>
+                <tr>
+                    @if (User.IsAdmin())
+                    {
+                        <th>نام و نام خانوادگی عضو</th>
+                        <th>تلفن همراه</th>
+                    }
+
+                    <th>عنوان برنامه</th>
+                    <th>نوع برنامه</th>
+                    <th>هدف تمرینی</th>
+                    <th>جلسات/هفته</th>
+                    <th>تاریخ شروع</th>
+                    <th>تاریخ پایان</th>
+                    <th>فعـــال</th>
+                    <th width="180">عملیات</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.TrainingPrograms)
+                {
+                    <tr>
+
+                        @if (User.IsAdmin())
+                        {
+                            <td>
+                                <i class="fa fa-user-o"></i>
+                                <strong style="color:#520A0A;">@item.MemberName</strong>
+                            </td>
+
+                            <td>
+                                <i class="fa fa-mobile"></i>
+                                @item.MemberMobile
+                            </td>
+                        }
+
+                        <td>@item.Title</td>
+                        <td>@item.TrainingProgramType</td>
+                        <td>@item.TrainingGoalType</td>
+                        <td>@(item.SessionsPerWeek?.ToString() ?? "-")</td>
+                        <td>@item.StartDate</td>
+                        <td>@item.EndDate</td>
+
+                        <td>
+                            @(item.IsActive ? "بله" : "خیر")
+                        </td>
+
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle"
+                                        type="button"
+                                        id="trainingProgramActions_@item.Id"
+                                        data-toggle="dropdown"
+                                        data-boundary="viewport"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    عملیات
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-right text-right"
+                                     aria-labelledby="trainingProgramActions_@item.Id">
+
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="TrainingProgramBuilder"
+                                       asp-action="Index"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                        <i class="fa fa-th-list"></i>
+                                        مشاهده و ساخت برنامه
+                                        <span class="badge rounded-pill bg-success"
+                                              title="تعداد روزهای ثبت شده: @item.CountTrainingDays">
+                                            @item.CountTrainingDays
+                                        </span>
+                                    </a>
+
+                                    @if (User.IsAdmin())
+                                    {
+                                        <button type="button"
+                                                class="btn btn-outline-info"
+                                                onclick="openCopyProgramModal('-')">
+                                            <i class="fa fa-copy"></i>
+                                            کپی برنامه تمرینی
+                                        </button>
+
+                                        <!-- ارسال پیام به کاربر در ربات بله -->
+                                        @if (item.BaleChatId != null)
+                                        {
+
+                                            <button class="btn btn-sm btn-outline-primary px-2 py-0 text-nowrap"
+                                                    onclick="sendProgramNotificationToUser(@item.Id)">
+                                                <i class="fa fa-bell"></i>
+                                                <span class="d-none d-md-inline ms-1">ارسال پیام برنامه جدید به کاربر</span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-light-danger text-danger" title="کاربر در ربات بله عضو نیست">
+                                                <i class="fa fa-exclamation-triangle"></i> فاقد شناسه بله
+                                            </span>
+                                        }
+
+
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="TrainingProgram"
+                                           asp-action="Edit"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            ویرایش
+                                        </a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <button type="button"
+                                                class="dropdown-item text-danger"
+                                                onclick="DeleteTrainingProgram('@SecurityUtils.EncryptId(item.Id)')">
+                                            <i class="fa fa-times"></i>
+                                            حذف
+                                        </button>
+
+                                    }
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                 model='"هیچ برنامه تمرینی یافت نشد"' />
+    }
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>
+
+@section Scripts
+{
+    <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
+    <script>
+        function DeleteTrainingProgram(id) {
+            Swal.fire({
+                title: 'حذف برنامه تمرینی',
+                text: "آیا از حذف این برنامه تمرینی مطمئن هستید؟",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#7cacbe',
+                confirmButtonText: 'بله، حذف شود',
+                cancelButtonText: 'خیر'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        contentType: 'application/x-www-form-urlencoded',
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Admin/TrainingProgram/Delete",
+                        data: { Id: id },
+                        success: function (data) {
+                            if (data.isSuccess === true) {
+                                Swal.fire({
+                                    title: 'موفق!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('هشدار!', data.message, 'warning');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function sendProgramNotificationToUser(programId) {
+        // استفاده از پنجره تایید پیش‌فرض خود مرورگر
+        var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
+
+        if (isConfirmed) {
+        // گرفتن توکن امنیتی
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+        url: '/Admin/TrainingProgramBuilder/SendNotification',
+        type: 'POST',
+        data: {
+        __RequestVerificationToken: token,
+        programId: programId
+        },
+        success: function (response) {
+        if (response.isSuccess) {
+        alert('موفق: ' + response.message);
+        } else {
+        alert('خطا: ' + response.message);
+        }
+        },
+        error: function (xhr, status, error) {
+        alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
+        }
+        });
+        }
+        }
+    </script>
+}

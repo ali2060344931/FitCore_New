@@ -36,7 +36,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitCore App</title>
+    <title>FitCoreApp فیتکوراپ</title>
+
+        <!-- سایر متا تگ‌ها -->
+    <link rel="icon" type="image/png" href="/AdminTemplate/app-assets/img/logos/logo_1.png?v=2" sizes="16x16">
+
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -429,14 +433,11 @@
         <div class="fc-header-top">
             <!-- لوگو -->
             <a href="/" class="fc-logo">
-                <div class="fc-logo-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 9h4v12H4zM10 5h4v16h-4zM16 12h4v9h-4z"/>
-                    </svg>
-                </div>
-                <span class="fc-logo-text">Fit<em>Core</em></span>
-            </a>
-
+                <img src="AdminTemplate/app-assets/img/logos/logo_1.png"
+                     alt="FitCore Logo"
+                     class="fc-logo-image" />
+            </a>    
+            
             <!-- اطلاعات کاربر — نمایش دسکتاپ -->
             <div class="fc-header-desktop-user">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -464,10 +465,10 @@
                        onmouseout="this.style.background='transparent'">
                         <i class="fa fa-sign-in"></i> ورود
                     </a>
-                    <a href="~/admin/Auth/Register"
+                    @* <a href="~/admin/Auth/Register"
                        style="display:flex;align-items:center;gap:6px;color:var(--fc-primary);font-size:13px;padding:7px 16px;background:var(--fc-gold);border:none;border-radius:8px;font-weight:600;">
                         <i class="fa fa-user-plus"></i> ثبت نام
-                    </a>
+                    </a> *@
                 }
             </div>
 
@@ -521,10 +522,10 @@
                     <span class="fc-nav-icon"><i class="fa fa-sign-in" aria-hidden="true"></i></span>
                     ورود به حساب
                 </a>
-                <a href="~/admin/Auth/Register" class="fc-nav-item">
+                @* <a href="~/admin/Auth/Register" class="fc-nav-item">
                     <span class="fc-nav-icon"><i class="fa fa-user-plus" aria-hidden="true"></i></span>
                     ثبت نام
-                </a>
+                </a> *@
             }
         </nav>
     </header>

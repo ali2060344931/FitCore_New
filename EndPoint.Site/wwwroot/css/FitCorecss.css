@@ -371,12 +371,7 @@ body {
     overflow: visible !important;
 }
 
-.program-header-sticky-wrapper {
-    position: sticky;
-    top: 60px;
-    z-index: 1000;
-    background: #fff;
-}
+
 /*+++++++++++----------+++++++*/
 
 .program-meta-container {
@@ -1326,3 +1321,95 @@ tfoot tr td {
 }
 /*````````````````````````````````*/
 
+/* در فایل CSS شما */
+.cta-link {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+    .cta-link:hover {
+        color: #0056b3; /* تغییر رنگ ملایم هنگام هاور شدن */
+    }
+
+
+
+.fc-logo {
+    display: flex;
+    align-items: center;
+}
+
+
+.fc-logo-image {
+        height: 70px;
+    width: auto;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    padding: 4px;
+    background-color: white;
+}
+
+
+
+#code {
+    width: 160px !important;
+    height: 50px;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    border-radius: 8px;
+}
+
+/*++++++++++++++++++++++++++++++++*/
+.form-account-grid-container {
+    display: grid;
+    grid-template-columns: 150px 1fr; /* ستون اول برای لیبل، ستون دوم برای ورودی */
+    align-items: center; /* هم‌ترازی عمودی در مرکز */
+    gap: 10px; /* فاصله بین ستون‌ها */
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.form-account-title-grid label {
+    text-align: right; /* راست‌چین کردن متن لیبل */
+    padding-right: 10px; /* کمی فاصله از لبه */
+}
+
+.form-account-title-grid input {
+    width: 100%; /* ورودی عرض کامل ستون خود را اشغال کند */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+.registration-text {
+    font-size: 2.1rem; /* یا هر مقداری که مد نظر دارید مثل 18px */
+    line-height: 1.6; /* برای خوانایی بهتر */
+}
+
+.form-switch .form-check-label {
+    margin-right: 12px; /* یا مقدار دلخواه */
+}
+
+
+/*----------------++++++++++++++-----------*/
+
+
+/* تنظیم متن ثبت نام برای موبایل */
+@media (max-width: 576px) {
+    .registration-text {
+        font-size: 0.85rem; /* کمی کوچک کردن فونت در موبایل */
+        white-space: normal; /* اجازه شکستن طبیعی اگر خیلی کوچک بود */
+    }
+
+        /* اگر لینک باعث افتادن به سطر بعد شد، این را فعال کنید */
+        .registration-text .cta-link {
+            display: inline;
+            white-space: nowrap;
+        }
+}

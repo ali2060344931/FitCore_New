@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -100,16 +101,54 @@ namespace FitCore.Application.Services.Member.Queries
                 );
 
             //========================================
-            // Search
+            // Search (بهینه شده با پشتیبانی از Boolean و Enum)
             //========================================
 
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
+                // استانداردسازی کلمه جستجو شده
+                var searchKeyLower = request.SearchKey.Trim().ToLower();
+
+                // ۱. تنظیمات مربوط به IsActive (بولین)
+                var trueKeywords = new[] { "true", "1", "بله", "فعال" };
+                var falseKeywords = new[] { "false", "0", "خیر", "غیرفعال", "غیرفعــال" };
+
+                bool isTrueKey = trueKeywords.Contains(searchKeyLower);
+                bool isFalseKey = falseKeywords.Contains(searchKeyLower);
+
+                // ۲. تنظیمات مربوط به Gender (اینوم)
+                var genderMap = new Dictionary<string, Gender>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { "مرد", Gender.Male },
+                    { "آقا", Gender.Male },
+                    { "male", Gender.Male },
+                    { "زن", Gender.Female },
+                    { "خانم", Gender.Female },
+                    { "female", Gender.Female }
+                };
+
+                // بررسی اینکه آیا کلمه جستجو شده جزو کلمات جنسیت هست یا خیر
+                Gender? searchedGender = null;
+                if (genderMap.TryGetValue(searchKeyLower, out var genderValue))
+                {
+                    searchedGender = genderValue;
+                }
+
+                // ۳. اعمال فیلترها در کوئری
                 usersQuery = usersQuery.Where(x =>
 
                     x.FullName.Contains(request.SearchKey) ||
+                    x.PhoneNumber.Contains(request.SearchKey) ||
+                    x.Member.MembershipStartDate.Contains(request.SearchKey) ||
+                    x.Member.MembershipEndDate.Contains(request.SearchKey) ||
+                    x.Member.BirthDate.Contains(request.SearchKey) ||
 
-                    x.PhoneNumber.Contains(request.SearchKey)
+                    // فیلتر وضعیت فعالیت
+                    (isTrueKey && x.Member.IsActive == true) ||
+                    (isFalseKey && x.Member.IsActive == false) ||
+
+                    // فیلتر جنسیت
+                    (searchedGender.HasValue && x.Member.Gender == searchedGender.Value)
                 );
             }
 
@@ -128,8 +167,42 @@ namespace FitCore.Application.Services.Member.Queries
                 .OrderByDescending(x => x.Id)
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize)
-
                 .ToListAsync();
+
+            //========================================
+            // بهینه‌سازی شمارش برنامه‌ها (جلوگیری از مشکل N+1)
+            //========================================
+
+            // استخراج ID کاربران این صفحه
+            var userIds = users.Select(u => u.Id).ToList();
+
+            // استخراج ID اعضاء (Members) مرتبط با این کاربران
+            var memberIds = users
+                .Where(u => u.Member != null)
+                .Select(u => u.Member.Id)
+                .ToList();
+
+            // گرفتن تعداد برنامه‌های غذایی با یک کوئری گروه‌بندی شده
+            var nutritionCounts = await _context.NutritionPrograms
+                .Where(np => memberIds.Contains(np.MemberId))
+                .GroupBy(np => np.MemberId)
+                .Select(g => new { MemberId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(k => k.MemberId, v => v.Count);
+
+            // گرفتن تعداد برنامه‌های تمرینی با یک کوئری گروه‌بندی شده
+            var trainingCounts = await _context.TrainingPrograms
+                .Where(tp => memberIds.Contains(tp.MemberId))
+                .GroupBy(tp => tp.MemberId)
+                .Select(g => new { MemberId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(k => k.MemberId, v => v.Count);
+
+            // گرفتن تعداد اندازه‌گیری‌های بدنی با یک کوئری گروه‌بندی شده
+            var measurementCounts = await _context.memberBodyMeasurements
+                .Where(bm => memberIds.Contains(bm.MemberId))
+                .GroupBy(bm => bm.MemberId)
+                .Select(g => new { MemberId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(k => k.MemberId, v => v.Count);
+
 
             //========================================
             // DTO
@@ -148,13 +221,21 @@ namespace FitCore.Application.Services.Member.Queries
 
                     Gender = x.Member != null
                         ? x.Member.Gender : Gender.Male,
+
                     MembershipStartDate = x.Member?.MembershipStartDate,
                     MembershipEndDate = x.Member?.MembershipEndDate,
 
+                    IsActive = x.Member != null ? x.Member.IsActive : false,
 
-                    countNutritionProg = _context.NutritionPrograms.Count(c => c.MemberId == _context.Members.Where(p => p.AppUserId == x.Id).FirstOrDefault().Id),
-                    countTrainingProg = _context.TrainingPrograms.Count(c => c.MemberId == _context.Members.Where(p => p.AppUserId == x.Id).FirstOrDefault().Id),
-                    countBodyMeasurement = _context.memberBodyMeasurements.Count(c => c.MemberId == _context.Members.Where(p => p.AppUserId == x.Id).FirstOrDefault().Id),
+                    // خواندن مستقیم از دیکشنری‌های آماده شده در حافظه (سرعت فوق‌العاده بالا)
+                    countNutritionProg = x.Member != null && nutritionCounts.ContainsKey(x.Member.Id)
+                                        ? nutritionCounts[x.Member.Id] : 0,
+
+                    countTrainingProg = x.Member != null && trainingCounts.ContainsKey(x.Member.Id)
+                                       ? trainingCounts[x.Member.Id] : 0,
+
+                    countBodyMeasurement = x.Member != null && measurementCounts.ContainsKey(x.Member.Id)
+                                          ? measurementCounts[x.Member.Id] : 0,
                 })
                 .ToList();
 

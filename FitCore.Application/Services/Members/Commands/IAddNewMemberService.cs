@@ -191,7 +191,7 @@ public class AddNewMemberService : IAddNewMemberService
                 BirthDate = request.BirthDate,
                 MembershipStartDate=request.MembershipStartDate,
                 MembershipEndDate=request.MembershipEndDate,
-                IsActive = true
+                IsActive = request.IsActive
             };
 
             await _context.Members.AddAsync(member);
@@ -251,7 +251,7 @@ public class RequestAddNewMemberDto
     [DisplayName("تاریخ پایان عضویت")]
     public string MembershipEndDate { get; set; }
 
-
+    public bool IsActive { get; set; }
 
 
 }

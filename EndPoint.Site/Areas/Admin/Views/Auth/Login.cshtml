@@ -9,13 +9,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ورود</title>
+    <link rel="icon" type="image/png" href="/AdminTemplate/app-assets/img/logos/logo_1.png?v=2" sizes="50x50">
 
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/materialdesignicons.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
     <link rel="stylesheet" href="~/css/FitCorecss.css">
-
+    <!-- انتقال فایل CSS اسویت آلرت به هد -->
+    <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -26,11 +28,7 @@
                     <div class="col-lg-6 col-md-8 col-xs-12 mx-auto">
                         <div class="ds-userlogin">
 
-                            
-                            <a asp-area=""
-                               asp-controller="Home"
-                               asp-action="Index"
-                               class="account-box-logo">
+                            <a asp-area="" asp-controller="Home" asp-action="Index" class="account-box-logo">
                                 FitCore
                             </a>
 
@@ -40,7 +38,6 @@
                                         <span class="title">ورود</span>
                                         <span class="sub-title">ورود به باشگاه</span>
                                     </a>
-
                                     <a href="~/admin/Auth/Register" class="register-ds">
                                         <span class="title">ثبت نام</span>
                                         <span class="sub-title">ایجاد حساب</span>
@@ -54,24 +51,20 @@
                                         <div class="form-account text-right">
 
                                             <!-- Step 1: Mobile -->
-                                            <!-- Step 1: Mobile -->
                                             <div id="stepMobile">
                                                 <div class="form-group">
                                                     <label for="mobile">شماره موبایل</label>
-
-                                                    <!-- حذف کلاس mobile-row-container یا تغییر استایل آن -->
                                                     <div class="mobile-column-container">
                                                         <input type="text"
                                                                class="number-email-input form-control"
                                                                id="mobile"
                                                                placeholder="مثــال: 09123456789"
                                                                inputmode="numeric"
+                                                               maxlength="11"
                                                                autocomplete="tel" />
 
-                                                        <!-- اضافه کردن کلاس mt-3 برای فاصله گرفتن دکمه از فیلد بالا -->
                                                         <button id="btnSendOtp"
                                                                 type="button"
-                                                                onclick="SendOtp()"
                                                                 class="btn btn-primary btn-login btn-block mt-3">
                                                             ارسال کد
                                                         </button>
@@ -87,36 +80,34 @@
                                                     <span class="muted">
                                                         کد به شماره
                                                         <b id="mobilePreview"></b>
-                                                        در ربات بله فیتکور(FitCore) ارسال شد.
+                                                        در ربات بله
+                                                        <a href="https://web.bale.ai/chat" class="cta-link" target="_blank" rel="noopener noreferrer">فیتکور FitCore</a>
+                                                        ارسال شد.
                                                     </span>
-
-                                                    <a class="muted" onclick="EditMobile()">ویرایش شماره</a>
+                                                    <a id="btnEditMobile" class="muted" style="cursor: pointer;">ویرایش شماره</a>
                                                 </div>
 
-                                                <div class="form-account-title">
-                                                    <label>کد تایید</label>
-                                                    <input type="text"
-                                                           class="number-email-input"
-                                                           id="code"
-                                                           inputmode="numeric"
-                                                           autocomplete="one-time-code" />
+                                                <div class="form-account-grid-container d-flex justify-content-center">
+                                                    <div class="form-account-title-grid text-center" style="width: 100%; max-width: 280px;">
+                                                        <label for="code" class="d-block mb-2">کد تایید</label>
+                                                        <input type="text"
+                                                               class="number-email-input verification-code"
+                                                               id="code"
+                                                               inputmode="numeric"
+                                                               autocomplete="one-time-code" />
+                                                    </div>
                                                 </div>
-
-                                                <div class="form-row-account">
+                                                <div class="form-row-account d-flex justify-content-center">
                                                     <button id="btnVerifyOtp"
                                                             type="button"
-                                                            onclick="VerifyOtp()"
-                                                            class="btn btn-success btn-login">
+                                                            class="btn btn-success btn-login"
+                                                            style="width: auto; min-width: 150px; max-width: 200px;">
                                                         تایید و ورود
                                                     </button>
                                                 </div>
-
                                                 <div class="helper-row otp-meta">
                                                     <span id="resendInfo" class="muted"></span>
-                                                    <a id="btnResend"
-                                                       class="muted"
-                                                       onclick="ResendOtp()"
-                                                       style="display:none;">
+                                                    <a id="btnResend" class="muted" style="display:none; cursor: pointer;">
                                                         ارسال مجدد کد
                                                     </a>
                                                 </div>
@@ -125,14 +116,13 @@
                                             <!-- Step 3: Gym selection -->
                                             <div id="gymSelectionBox" style="display:none; margin-top:20px; border-top:1px solid #ccc; padding-top:15px;">
                                                 <div class="form-account-title">
-                                                    <label>انتخاب باشگاه</label>
+                                                    <label for="gymSelect">انتخاب باشگاه</label>
                                                     <select id="gymSelect" class="number-email-input" style="width:100%;padding:10px;"></select>
                                                 </div>
 
                                                 <div class="form-row-account">
                                                     <button id="btnCompleteLogin"
                                                             type="button"
-                                                            onclick="CompleteLogin()"
                                                             class="btn btn-info btn-login">
                                                         ورود به پنل
                                                     </button>
@@ -151,251 +141,241 @@
             </div>
         </div>
     </div>
+
+    <!-- گردهمایی تمامی اسکریپت‌ها در انتهای بادی -->
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
+    <script src="~/SiteTemplate/assets/js/main.js"></script>
+    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        const OTP_RESEND_SECONDS = 60;
+        let resendRemaining = 0;
+        let resendTimerId = null;
+
+        function setBtnLoading(btnId, isLoading, loadingText) {
+        let $btn = $("#" + btnId);
+        if (!$btn.length) return;
+
+        if (isLoading) {
+        if (!$btn.data("old-text")) {
+        $btn.data("old-text", $btn.html());
+        }
+        $btn.prop("disabled", true).html(loadingText || "در حال انجام...");
+        } else {
+        $btn.prop("disabled", false);
+        if ($btn.data("old-text")) {
+        $btn.html($btn.data("old-text"));
+        }
+        }
+        }
+
+        function stopResendTimer() {
+        if (resendTimerId) {
+        clearInterval(resendTimerId);
+        resendTimerId = null;
+        }
+        }
+
+        function startResendTimer() {
+        stopResendTimer();
+        resendRemaining = OTP_RESEND_SECONDS;
+
+        $("#btnResend").hide();
+        $("#resendInfo").text("ارسال مجدد تا " + resendRemaining + " ثانیه دیگر");
+
+        resendTimerId = setInterval(function () {
+        resendRemaining--;
+        if (resendRemaining > 0) {
+        $("#resendInfo").text("ارسال مجدد تا " + resendRemaining + " ثانیه دیگر");
+        } else {
+        stopResendTimer();
+        $("#resendInfo").text("");
+        $("#btnResend").show();
+        }
+        }, 1000);
+        }
+
+        function showOtpSection() {
+        $("#otpSection").show();
+        $("#stepMobile").hide();
+        $("#gymSelectionBox").hide();
+
+        $("#mobilePreview").text($("#mobile").val().trim());
+        $("#code").val("").focus();
+
+        startResendTimer();
+        setBtnLoading("btnSendOtp", false);
+        }
+
+        function EditMobile() {
+        stopResendTimer();
+        $("#otpSection").hide();
+        $("#gymSelectionBox").hide();
+        $("#stepMobile").show();
+        $("#code").val("");
+        $("#loginToken").val("");
+
+        setBtnLoading("btnSendOtp", false);
+        $("#mobile").focus();
+        }
+
+        function normalizeMobile(value) {
+        if (!value) return "";
+        value = value.trim();
+
+        if (value.startsWith("+98")) {
+        return "0" + value.substring(3);
+        }
+
+        if (value.startsWith("98") && value.length === 12) {
+        return "0" + value.substring(2);
+        }
+
+        return value;
+        }
+
+        function SendOtp() {
+        let mobile = normalizeMobile($("#mobile").val());
+        $("#mobile").val(mobile);
+
+        if (!/^09\d{9}$/.test(mobile)) {
+        swal.fire('خطا!', 'شماره موبایل معتبر نیست.', 'warning');
+        return;
+        }
+
+        setBtnLoading("btnSendOtp", true, "در حال ارسال...");
+
+        $.ajax({
+        type: "POST",
+        url: "/admin/Auth/SendOtpLogin",
+        dataType: "json",
+        data: { mobile: mobile },
+        success: function (data) {
+        if (data.isSuccess === true) {
+        swal.fire('موفق!', data.message, 'success');
+        showOtpSection();
+        } else {
+        swal.fire('خطا!', data.message, 'warning');
+        setBtnLoading("btnSendOtp", false);
+        }
+        },
+        error: function () {
+        swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
+        setBtnLoading("btnSendOtp", false);
+        }
+        });
+        }
+
+        function ResendOtp() {
+        SendOtp();
+        }
+
+        function VerifyOtp() {
+        let mobile = $("#mobile").val().trim();
+        let code = $("#code").val().trim();
+
+        if (!code) {
+        swal.fire('خطا!', 'لطفاً کد تایید ارسال شده در ربات بله فیتکور را وارد کنید.', 'warning');
+        return;
+        }
+
+        setBtnLoading("btnVerifyOtp", true, "در حال تایید...");
+
+        $.ajax({
+        type: "POST",
+        url: "/admin/Auth/VerifyOtp",
+        dataType: "json",
+        data: { mobile: mobile, code: code },
+        success: function (data) {
+        if (data.isSuccess) {
+        // اگر سرور گفت باید باشگاه انتخاب شود
+        if (data.needGymSelection) {
+        $("#loginToken").val(data.loginToken);
+
+        let gymSelect = $("#gymSelect").empty();
+        gymSelect.append(new Option("-- انتخاب کنید --", ""));
+
+        $.each(data.gyms, function (i, g) {
+        gymSelect.append(new Option(g.name, g.id));
+        });
+
+        $("#otpSection").hide();
+        $("#gymSelectionBox").show();
+        setBtnLoading("btnVerifyOtp", false);
+        swal.fire('انتخاب باشگاه', 'لطفاً باشگاه مورد نظر را انتخاب کنید.', 'info');
+        }
+        // اگر سرور گفت نیازی به انتخاب باشگاه نیست
+        else if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+        }
+        // fallback در صورتی که سرور اصلا redirectUrl هم نفرستاده بود
+        else {
+        window.location.href = "/";
+        }
+        } else {
+        swal.fire('خطا!', data.message, 'warning');
+        setBtnLoading("btnVerifyOtp", false);
+        }
+        },
+        error: function () {
+        swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
+        setBtnLoading("btnVerifyOtp", false);
+        }
+        });
+        }
+
+        function CompleteLogin() {
+        let gymId = $("#gymSelect").val();
+        let loginToken = $("#loginToken").val();
+
+        if (!gymId) {
+        swal.fire('خطا!', 'لطفاً باشگاه را انتخاب کنید.', 'warning');
+        return;
+        }
+
+        setBtnLoading("btnCompleteLogin", true, "در حال ورود...");
+
+        $.ajax({
+        type: "POST",
+        url: "/admin/Auth/CompleteLogin",
+        dataType: "json",
+        data: { loginToken: loginToken, gymId: gymId },
+        success: function (data) {
+        if (data.isSuccess) {
+        // استفاده از آدرس ارسالی از سمت سرور
+        window.location.href = data.redirectUrl || "/admin";
+        } else {
+        swal.fire('خطا!', data.message, 'warning');
+        setBtnLoading("btnCompleteLogin", false);
+        }
+        },
+        error: function () {
+        swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
+        setBtnLoading("btnCompleteLogin", false);
+        }
+        });
+        }
+
+        $(document).ready(function () {
+        // نرمال‌سازی شماره موبایل هنگام تایپ
+        let $mobile = $("#mobile");
+        $mobile.on("input", function () {
+        let v = $(this).val().trim();
+        if (v.startsWith("+98")) {
+        $(this).val("0" + v.substring(3));
+        } else if (v.startsWith("98") && v.length === 12) {
+        $(this).val("0" + v.substring(2));
+        }
+        });
+
+        // انتساب رویدادهای کلیک به جای onclick در HTML
+        $("#btnSendOtp").on("click", SendOtp);
+        $("#btnVerifyOtp").on("click", VerifyOtp);
+        $("#btnCompleteLogin").on("click", CompleteLogin);
+        $("#btnResend").on("click", ResendOtp);
+        $("#btnEditMobile").on("click", EditMobile);
+        });
+    </script>
 </body>
-
-<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
-<script src="~/SiteTemplate/assets/js/main.js"></script>
-
-<link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-<script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
 </html>
-
-<script>
-    var OTP_RESEND_SECONDS = 60;
-    var resendRemaining = 0;
-    var resendTimerId = null;
-
-    function setBtnLoading(btnId, isLoading, loadingText) {
-    var $btn = $("#" + btnId);
-
-    if (!$btn.length) return;
-
-    if (isLoading) {
-    if (!$btn.data("old-text")) {
-    $btn.data("old-text", $btn.html());
-    }
-    $btn.prop("disabled", true).html(loadingText || "در حال انجام...");
-    } else {
-    $btn.prop("disabled", false);
-    if ($btn.data("old-text")) {
-    $btn.html($btn.data("old-text"));
-    }
-    }
-    }
-
-    function stopResendTimer() {
-    if (resendTimerId) {
-    clearInterval(resendTimerId);
-    resendTimerId = null;
-    }
-    }
-
-    function startResendTimer() {
-    stopResendTimer();
-
-    resendRemaining = OTP_RESEND_SECONDS;
-    $("#btnResend").hide();
-    $("#resendInfo").text("ارسال مجدد تا " + resendRemaining + " ثانیه دیگر");
-
-    resendTimerId = setInterval(function () {
-    resendRemaining--;
-
-    if (resendRemaining > 0) {
-    $("#resendInfo").text("ارسال مجدد تا " + resendRemaining + " ثانیه دیگر");
-    } else {
-    stopResendTimer();
-    $("#resendInfo").text("");
-    $("#btnResend").show();
-    }
-    }, 1000);
-    }
-
-    function showOtpSection() {
-    $("#otpSection").show();
-    $("#stepMobile").hide();
-    $("#gymSelectionBox").hide();
-
-    $("#mobilePreview").text($("#mobile").val().trim());
-    $("#code").val("").focus();
-
-    startResendTimer();
-    setBtnLoading("btnSendOtp", false);
-    }
-
-    function EditMobile() {
-    stopResendTimer();
-    $("#otpSection").hide();
-    $("#gymSelectionBox").hide();
-    $("#stepMobile").show();
-    $("#code").val("");
-    $("#loginToken").val("");
-
-    setBtnLoading("btnSendOtp", false);
-    $("#mobile").focus();
-    }
-
-    function normalizeMobile(value) {
-    if (!value) return "";
-    value = value.trim();
-
-    if (value.startsWith("+98")) {
-    return "0" + value.substring(3);
-    }
-
-    if (value.startsWith("98") && value.length === 12) {
-    return "0" + value.substring(2);
-    }
-
-    return value;
-    }
-
-
-
-    function SendOtp() {
-    var mobile = normalizeMobile($("#mobile").val());
-
-    $("#mobile").val(mobile);
-
-    if (!/^09\d{9}$/.test(mobile)) {
-    swal.fire('خطا!', 'شماره موبایل معتبر نیست.', 'warning');
-    return;
-    }
-
-    setBtnLoading("btnSendOtp", true, "در حال ارسال...");
-
-    $.ajax({
-    type: "POST",
-    url: "/admin/Auth/SendOtpLogin",
-    dataType: "json",
-    data: { mobile: mobile },
-    success: function (data) {
-    if (data.isSuccess === true) {
-    swal.fire(
-    'موفق!',
-    data.message,
-    'success',
-
-    );
-    showOtpSection();
-    } else {
-    swal.fire('خطا!', data.message, 'warning');
-    setBtnLoading("btnSendOtp", false);
-    }
-    },
-    error: function () {
-    swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-    setBtnLoading("btnSendOtp", false);
-    }
-    });
-    }
-
-    function ResendOtp() {
-    SendOtp();
-    }
-
-    function VerifyOtp() {
-    var mobile = $("#mobile").val().trim();
-    var code = $("#code").val().trim();
-
-    if (!code) {
-    swal.fire('خطا!', 'لطفاً کد تایید ارسال شده در ربات بله فیتکور را وارد کنید.', 'warning');
-    return;
-    }
-
-    setBtnLoading("btnVerifyOtp", true, "در حال تایید...");
-
-    $.ajax({
-    type: "POST",
-    url: "/admin/Auth/VerifyOtp",
-    dataType: "json",
-    data: { mobile: mobile, code: code },
-    success: function (data) {
-    if (data.isSuccess) {
-    // اگر سرور گفت باید باشگاه انتخاب شود
-    if (data.needGymSelection) {
-    $("#loginToken").val(data.loginToken);
-
-    var gymSelect = $("#gymSelect").empty();
-    gymSelect.append(new Option("-- انتخاب کنید --", ""));
-
-    $.each(data.gyms, function (i, g) {
-    gymSelect.append(new Option(g.name, g.id));
-    });
-
-    $("#otpSection").hide();
-    $("#gymSelectionBox").show();
-    setBtnLoading("btnVerifyOtp", false);
-    swal.fire('انتخاب باشگاه', 'لطفاً باشگاه مورد نظر را انتخاب کنید.', 'info');
-    }
-    // اضافه شدن بلوک جدید: اگر سرور گفت نیازی به انتخاب باشگاه نیست
-    else if (data.redirectUrl) {
-    window.location.href = data.redirectUrl;
-    }
-    //fallback در صورتی که سرور اصلا redirectUrl هم نفرستاده بود
-    else {
-    window.location.href = "/";
-    }
-    } else {
-    swal.fire('خطا!', data.message, 'warning');
-    setBtnLoading("btnVerifyOtp", false);
-    }
-    },
-    error: function () {
-    swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-    setBtnLoading("btnVerifyOtp", false);
-    }
-    });
-    }
-
-
-
-
-    function CompleteLogin() {
-    var gymId = $("#gymSelect").val();
-    var loginToken = $("#loginToken").val();
-
-    if (!gymId) {
-    swal.fire('خطا!', 'لطفاً باشگاه را انتخاب کنید.', 'warning');
-    return;
-    }
-
-    setBtnLoading("btnCompleteLogin", true, "در حال ورود...");
-
-    $.ajax({
-    type: "POST",
-    url: "/admin/Auth/CompleteLogin",
-    dataType: "json",
-    data: { loginToken: loginToken, gymId: gymId },
-    success: function (data) {
-    if (data.isSuccess) {
-    // تغییر در این خط: استفاده از آدرس ارسالی از سمت سرور به جای "/"
-    window.location.href = data.redirectUrl || "/admin";
-    } else {
-    swal.fire('خطا!', data.message, 'warning');
-    setBtnLoading("btnCompleteLogin", false);
-    }
-    },
-    error: function () {
-    swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-    setBtnLoading("btnCompleteLogin", false);
-    }
-    });
-    }
-
-
-
-    $(document).ready(function () {
-    var $mobile = $("#mobile");
-
-    $mobile.on("input", function () {
-    var v = $(this).val().trim();
-    if (v.startsWith("+98")) {
-    $(this).val("0" + v.substring(3));
-    } else if (v.startsWith("98") && v.length === 12) {
-    $(this).val("0" + v.substring(2));
-    }
-    });
-    });
-</script>
-

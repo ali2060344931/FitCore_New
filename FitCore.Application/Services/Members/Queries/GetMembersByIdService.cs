@@ -108,7 +108,9 @@ namespace FitCore.Application.Services.Members.Queries
                     Gender = q.Gender,
                     Mobile = user.PhoneNumber,
                     MembershipEndDate = q.MembershipEndDate,
-                    MembershipStartDate = q.MembershipStartDate
+                    MembershipStartDate = q.MembershipStartDate,
+                    IsActive=q.IsActive,
+                    
                 },
 
                 IsSuccess = true

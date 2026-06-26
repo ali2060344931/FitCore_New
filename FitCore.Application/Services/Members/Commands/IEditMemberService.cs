@@ -11,7 +11,8 @@ namespace FitCore.Application.Services.Members.Commands
 {
     public interface IEditMemberService
     {
-        ResultDto Execute(RequestEditMemberDto request);
+        //ResultDto Execute(RequestEditMemberDto request);
+        ResultDto<long> Execute(RequestEditMemberDto request);
     }
     public class EditMemberService : IEditMemberService
     {
@@ -22,7 +23,7 @@ namespace FitCore.Application.Services.Members.Commands
             _context = context;
         }
 
-        public ResultDto Execute(RequestEditMemberDto request)
+        public ResultDto<long> Execute(RequestEditMemberDto request)
         {
             try
             {
@@ -32,11 +33,12 @@ namespace FitCore.Application.Services.Members.Commands
 
                 if (member == null)
                 {
-                    return new ResultDto
-                    {
-                        IsSuccess = false,
-                        Message = "عضو یافت نشد"
-                    };
+                    //return new ResultDto
+                    //{
+                    //    IsSuccess = false,
+                    //    Message = "عضو یافت نشد"
+                    //};
+                    return ResultDto<long>.Failure("عضو یافت نشد");
                 }
 
 
@@ -47,25 +49,27 @@ namespace FitCore.Application.Services.Members.Commands
                 member.MembershipStartDate=request.MembershipStartDate;
                 member.MembershipEndDate=request.MembershipEndDate;
                 member.UpdateTime = DateTime.Now;
+                member.IsActive = request.IsActive;
 
                  _context.SaveChanges();
 
-                return new ResultDto
-                {
-                    IsSuccess = true,
-                    Message = "ویرایش انجام شد"
-                };
-
+                //return new ResultDto
+                //{
+                //    IsSuccess = true,
+                //    Message = "ویرایش انجام شد",
+                //};
+                
+                return ResultDto<long>.Success(member.Id, "ویرایش انجام شد. پیامی از طریق ربات فیتکور برای "+ request.FullName + "  ارسال گردید.");
             }
             catch (Exception)
             {
 
-                return new ResultDto
-                {
-                    IsSuccess = false,
-                    Message = "ویرایش انجام نشـــد"
-                };
-
+                //return new ResultDto
+                //{
+                //    IsSuccess = false,
+                //    Message = "ویرایش انجام نشـــد"
+                //};
+                return ResultDto<long>.Failure("ویرایش انجام نشـــد");
 
             }
         }

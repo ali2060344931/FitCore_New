@@ -57,7 +57,7 @@ namespace FitCore.Domain.Entities.Members
         public string Injuries { get; set; }
 
 
-        [DisplayName("وضعیت عضویت")]
+        [DisplayName("وضعیت فعالیت عضویت")]
         public bool IsActive { get; set; } = true;
 
         [DisplayName("توضیحات")]

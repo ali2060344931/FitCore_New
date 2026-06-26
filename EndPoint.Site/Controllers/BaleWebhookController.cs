@@ -77,7 +77,7 @@ namespace EndPoint.Site.Controllers
             {
                 if (userText.ToLower() == "/start" || userText.ToLower() == "منوی اصلی")
                 {
-                    await _menuService.ShowMainMenu(chatId, userName);
+                    await _menuService.ShowMainMenu(chatId, userName,true);
                 }
                 else
                 {

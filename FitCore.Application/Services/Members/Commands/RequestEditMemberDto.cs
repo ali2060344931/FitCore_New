@@ -19,6 +19,6 @@ namespace FitCore.Application.Services.Members.Commands
         public string MembershipStartDate { get; set; }
 
         public string MembershipEndDate { get; set; }
-
+        public bool IsActive { get; set; }
     }
 }

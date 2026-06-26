@@ -5,11 +5,14 @@ using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.NutritionProgramReports.Queries;
 using FitCore.Application.Services.TrainingProgramReports.Queries;
+using FitCore.Common.Roles;
 using FitCore.Domain.Entities.ProgramRequest;
+using FitCore.Domain.Entities.Users;
 
 using GymBot.Models;
 using GymBot.Services;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -35,7 +38,8 @@ namespace EndPoint.Site.BaleBot.Handlers
         private readonly IGetTrainingProgramPdfService _trainingPdfService;
         private readonly IGetNutritionProgramPdfService _nutritionPdfService;
         private readonly ILogger<BaleCallbackHandler> _logger;
-
+        private readonly UserManager<AppUser> _userManager;
+        
         public BaleCallbackHandler(
             IDataBaseContext db,
             IBaleBotService baleBotService,
@@ -43,7 +47,8 @@ namespace EndPoint.Site.BaleBot.Handlers
             IBaleMenuService menuService,
             IGetTrainingProgramPdfService trainingPdfService,
             IGetNutritionProgramPdfService nutritionPdfService,
-            ILogger<BaleCallbackHandler> logger)
+            ILogger<BaleCallbackHandler> logger,
+            UserManager<AppUser> userManager)
         {
             _db = db;
             _baleBotService = baleBotService;
@@ -52,6 +57,7 @@ namespace EndPoint.Site.BaleBot.Handlers
             _trainingPdfService = trainingPdfService;
             _nutritionPdfService = nutritionPdfService;
             _logger = logger;
+            _userManager= userManager;
         }
 
         public async Task HandleAsync(long chatId, string data, string callbackId, string userName)
@@ -66,6 +72,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 await _menuService.ShowMainMenu(chatId, userName);
                 return;
             }
+            
             else if (data == "REQ_LINK_PHONE")
             {
                 await _baleBotService.AnswerCallbackQueryAsync(callbackId);
@@ -81,12 +88,14 @@ namespace EndPoint.Site.BaleBot.Handlers
                 await _baleBotService.SendMessageAsync(chatId, "زمانبندی کلاس‌ها:\n- ایروبیک: شنبه و سه‌شنبه ۱۸:۰۰\n- بدنسازی: روزهای زوج ۱۹:۰۰\n- یوگا: پنجشنبه ۱۰:۰۰");
                 return;
             }
+            
             else if (data == "SRV_SHOW")
             {
                 await _baleBotService.AnswerCallbackQueryAsync(callbackId);
                 await _menuService.SendSurveyToBale(chatId);
                 return;
             }
+            
             else if (data == "MYCHATID")
             {
                 await _baleBotService.AnswerCallbackQueryAsync(callbackId);
@@ -114,6 +123,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
                 responseText = "لطفاً استان محل باشگاه خود را انتخاب کنید:";
             }
+            
             else if (data.StartsWith("PROV_"))
             {
                 int provId = int.Parse(data.Split('_')[1]);
@@ -124,6 +134,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
                 responseText = "عالی! حالا شهر را انتخاب کنید:";
             }
+            
             else if (data.StartsWith("CITY_"))
             {
                 int cityId = int.Parse(data.Split('_')[1]);
@@ -141,6 +152,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 _cache.Set(chatId.ToString(), new BotState { Step = "WAITING_FOR_GYM", RegType = "Member" });
                 responseText = "لطفاً باشگاهی که می‌خواهید در آن عضو شوید را انتخاب کنید:";
             }
+            
             else if (data.StartsWith("GYM_"))
             {
                 long gymId = long.Parse(data.Split('_')[1]);
@@ -149,14 +161,15 @@ namespace EndPoint.Site.BaleBot.Handlers
                 responseText = "لطفاً نام و نام خانوادگی خود را تایپ کنید:";
             }
 
-
-
             // ---------------- درخواست و دریافت برنامه ----------------
             else if (data == "REQ_PLANS_MENU")
             {
-                keyboard = new InlineKeyboardMarkup { InlineKeyboard = new List<List<InlineKeyboardButton>> { new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🥩 درخواست برنامه غذایی", CallbackData = "SEND_REQ_NUTRITION" } }, new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "💪 درخواست برنامه تمرینی", CallbackData = "SEND_REQ_TRAINING" } }, new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔄 درخواست هر دو برنامه", CallbackData = "SEND_REQ_BOTH" } }, new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت", CallbackData = "MAIN_MENU" } } } };
+                keyboard = new InlineKeyboardMarkup {
+                    InlineKeyboard = new List<List<InlineKeyboardButton>> { new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🥩 درخواست برنامه غذایی", CallbackData = "SEND_REQ_NUTRITION" } }, new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "💪 درخواست برنامه تمرینی", CallbackData = "SEND_REQ_TRAINING" } }, new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔄 درخواست هر دو برنامه", CallbackData = "SEND_REQ_BOTH" } },
+                    new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت", CallbackData = "MAIN_MENU" } } } };
                 responseText = "لطفاً نوع برنامه‌ای که از مدیر باشگاه خود درخواست دارید را انتخاب کنید:";
             }
+            
             else if (data == "SEND_REQ_NUTRITION" || data == "SEND_REQ_TRAINING" || data == "SEND_REQ_BOTH")
             {
                 string reqType = data == "SEND_REQ_NUTRITION" ? "غذایی" : (data == "SEND_REQ_TRAINING" ? "تمرینی" : "غذایی و تمرینی");
@@ -171,7 +184,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 };
 
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
-                var memberid =  _db.Members.Where(c=>c.AppUserId== user.Id).First().Id;
+                var memberid = _db.Members.Where(c => c.AppUserId == user.Id).First().Id;
 
 
                 var today = DateTime.Today;
@@ -187,8 +200,8 @@ namespace EndPoint.Site.BaleBot.Handlers
 
                 if (q)
                 {
-                    responseText = "❌ شما امروز این درخواست را ارسال کرده اید."+'\n'+"امکان ارسال مجدد وجود ندارد";
-                   await _baleBotService.SendMessageAsync(chatId, responseText);
+                    responseText = "❌ شما امروز این درخواست را ارسال کرده اید." + '\n' + "امکان ارسال مجدد وجود ندارد";
+                    await _baleBotService.SendMessageAsync(chatId, responseText);
                     return;
                 }
                 if (user != null)
@@ -223,7 +236,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                     try
                     {
 
-                        long? AdminChatId =0;
+                        long? AdminChatId = 0;
 
                         AdminChatId = _db.UserRoles
     .Where(r => r.RoleId == 2)
@@ -339,11 +352,135 @@ namespace EndPoint.Site.BaleBot.Handlers
 
 
                     if (rows.Count == 0)
-
-                    { responseText = "ℹ️ شما هنوز هیچ برنامه‌ای دریافت نکرده‌اید."; }
-                    else { rows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت به منوی اصلی", CallbackData = "MAIN_MENU" } }); keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows }; responseText = "📥 لطفاً برنامه مورد نظر خود را برای دانلود انتخاب کنید:"; }
+                    {
+                        responseText = "ℹ️ شما هنوز هیچ برنامه‌ای دریافت نکرده‌اید.";
+                    }
+                    else
+                    {
+                        rows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت به منوی اصلی", CallbackData = "MAIN_MENU" } });
+                        keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows }; responseText = "📥 لطفاً برنامه مورد نظر خود را برای دانلود انتخاب کنید:";
+                    }
                 }
             }
+            
+            // ---------------- ارسال اطلاعات کاربر ----------------
+            else if (data == "MEMBER_INFO_MENU")
+            {
+                var rows = new List<List<InlineKeyboardButton>>();
+                var existingUser = await _db.Users.Include(u => u.Gym).FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+                if (existingUser != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(existingUser);
+                    bool isSuperAdmin = roles.Contains(UserRoles.SuperAdmin);
+                    bool isMember = roles.Contains(UserRoles.Member);
+
+                    // ==========================================================
+                    // ۱. استخراج اطلاعات عضویت زودتر از موعد برای بررسی اعتبار
+                    // ==========================================================
+                    bool isMembershipActive = false;
+                    int remainingDays = 0; // متغیر جدید برای نگهداری تعداد روزها
+                    var memberInfo = isMember ? await _db.Members.FirstOrDefaultAsync(m => m.AppUserId == existingUser.Id) : null;
+                    string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+                    if (memberInfo != null)
+                    {
+                        // اگر تاریخ پایان ثبت نشده باشد یا نامحدود باشد، فعال در نظر می‌گیریم
+                        if (string.IsNullOrEmpty(memberInfo.MembershipEndDate) || memberInfo.MembershipEndDate == "نامحدود")
+                        {
+                            isMembershipActive = false;
+                        }
+                        else
+                        {
+                            isMembershipActive = string.Compare(memberInfo.MembershipEndDate.Trim(), todayShamsi, StringComparison.Ordinal) >= 0;
+
+
+
+                        }
+                        // محاسبه اختلاف روز (تاریخ پایان منهای امروز)
+                        remainingDays = DateConverterMlladiToShamsi.GetDaysDifference(memberInfo.MembershipEndDate, todayShamsi);
+
+                        //// اگر بزرگتر مساوی صفر بود یعنی هنوز اعتبار دارد
+                        //isMembershipActive = remainingDays >= 0;
+                    }
+
+
+                    // استخراج قطعی نام باشگاه
+                    string gymName = "ثبت نشده";
+                    if (existingUser.GymId.HasValue && existingUser.GymId.Value > 0)
+                    {
+                        if (existingUser.Gym != null)
+                            gymName = existingUser.Gym.Name;
+                        else
+                        {
+                            var gymData = await _db.Gyms.FindAsync(existingUser.GymId.Value);
+                            if (gymData != null) gymName = gymData.Name;
+                        }
+                    }
+
+                    // تعیین نام نقش به فارسی
+                    string roleName = "کاربر";
+                    if (isSuperAdmin) roleName = "سوپر ادمین";
+                    else if (roles.Contains("Admin")) roleName = "مدیر باشگاه";
+                    else if (isMember) roleName = "عضو باشگاه";
+
+
+                    if (!memberInfo.IsActive)
+
+                    {
+
+                    }
+
+                    string welcomeText = "";
+
+                     // ساخت بدنه پیام
+                        welcomeText = $"👋 سلام مجدد {existingUser.FullName} عزیز!\n\n" +
+                                            $"👤 نقش شما: {roleName}\n" +
+                                            $"🏢 نام باشگاه: {gymName}\n" +
+                                            $"📱 شماره موبایل: {existingUser.PhoneNumber}\n" +
+                                            $"🆔 شناسه چت بله: {existingUser.BaleChatId}\n" +
+                                            $"🆔 شناسه چت بله: {existingUser.BaleChatId}\n"
+                                            ;
+
+                        // اطلاعات عضویت
+                        if (isMember)
+                        {
+                            if (memberInfo != null && !string.IsNullOrEmpty(memberInfo.MembershipStartDate))
+                            {
+                                welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(isMembershipActive && memberInfo.IsActive ? "✅فعال" : "❌غیرفعال")}\n" +
+                                    $"مدت زمان اعتبار: {(remainingDays > 0 ? remainingDays + " روز باقیمانده" : remainingDays + " روز منقضی شده")}\n" +
+                       $"📅 از تاریخ: {memberInfo.MembershipStartDate}\n" +
+                       $"📅 تا تاریخ: {memberInfo.MembershipEndDate ?? "نامحدود"}\n\n" +
+                       "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
+
+                            }
+                            else
+                            {
+                                welcomeText += "\n\nℹ️ وضعیت عضویت: هنوز دوره عضویتی برای شما تعریف نشده است.";
+                            }
+                        }
+
+                        //welcomeText += "\n\n✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
+                    rows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت به منوی اصلی", CallbackData = "MAIN_MENU" } });
+                    keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
+
+                    await _baleBotService.SendMessageAsync(chatId, welcomeText, keyboard);
+                }
+                else
+                {
+                    // ==========================================================
+                    // کاربر پیدا نشد -> درخواست وصل شدن با شماره موبایل
+                    // ==========================================================
+                    _cache.Set(chatId.ToString(), new BaleBot.Models.BotState { Step = "WAITING_FOR_LINK_PHONE" });
+
+                    await _baleBotService.SendMessageAsync(chatId, $"به سیستم مدیریت باشگاهای فیتکور FitCore خوش آمدید {userName} عزیز.\nبرای اتصال به حساب کاربری خود در سایت، لطفاً شماره موبایلی که با آن ثبت نام کرده‌اید را ارسال کنید:");
+                    await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "📱 ارسال شماره موبایل");
+
+                    await _menuService.ShowUnauthenticatedMenu(chatId, userName);
+                }
+
+
+
+            }
+            
             else if (data.StartsWith("DL_NUT_") || data.StartsWith("DL_TRN_"))
             {
                 await _baleBotService.AnswerCallbackQueryAsync(callbackId, "در حال ساخت فایل PDF...");
@@ -359,7 +496,8 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
 
             await _baleBotService.AnswerCallbackQueryAsync(callbackId);
-            if (keyboard != null) await _baleBotService.SendMessageAsync(chatId, responseText, keyboard);
+            if (keyboard != null)
+                await _baleBotService.SendMessageAsync(chatId, responseText, keyboard);
             else await _baleBotService.SendMessageAsync(chatId, responseText);
         }
     }

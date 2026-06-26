@@ -20,5 +20,6 @@ namespace EndPoint.Site.Areas.Admin.Models.Member
 
         [Display(Name ="تاریخ پایان عضویت")]
         public string MembershipEndDate { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

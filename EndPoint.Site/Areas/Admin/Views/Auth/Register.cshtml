@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Register";
     Layout = null;
+
+    bool isShoewregItem = false;
 }
 
 <!DOCTYPE html>
@@ -11,10 +13,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ثبت نام</title>
+    <link rel="icon" type="image/png" href="/AdminTemplate/app-assets/img/logos/logo_1.png?v=2" sizes="30x30">
+
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/font-awesome.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
     <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+    <style>
+            .account-small-icon {
+                width: 80px !important;
+                height: 80px !important;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 2px solid #007bff;
+                display: block;
+                margin: 0 auto;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -27,97 +44,127 @@
 
                             <div class="account-box">
                                 <div class="account-box-headline">
-                                    <a href="~/admin/Auth/Login" class="login-ds"><span class="title">ورود</span><span class="sub-title">ورود به حساب</span></a>
-                                    <a href="#" class="register-ds active"><span class="title">ثبت نام</span><span class="sub-title">ایجاد حساب</span></a>
+                                    <a href="~/admin/Auth/Login" class="login-ds">
+                                        <span class="title">ورود</span>
+                                        <span class="sub-title">ورود به حساب</span>
+                                    </a>
+                                    <a href="#" class="register-ds active">
+                                        <span class="title">ثبت نام</span>
+                                        <span class="sub-title">ایجاد حساب کاربری</span>
+                                    </a>
                                 </div>
 
-                                <div class="Login-to-account mt-4">
-                                    <div class="account-box-content">
-                                        <h4>ایجاد حساب کاربری جدید</h4>
+                                @if (isShoewregItem)
+                                {
+                                    <div class="Login-to-account mt-4">
+                                        <div class="account-box-content">
+                                            <h4>ایجاد حساب کاربری جدید</h4>
 
-                                        <!-- رادیو باتن‌های انتخاب نوع کاربر -->
-                                        <div class="form-group text-right" style="margin-bottom: 20px;">
-                                            <label class="d-block mb-2">نوع حساب کاربری:</label>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="userType" id="typeMember" value="member" checked>
-                                                <label class="form-check-label" for="typeMember">عضو باشگاه</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="userType" id="typeManager" value="manager">
-                                                <label class="form-check-label" for="typeManager">مدیر باشگاه</label>
-                                            </div>
-                                        </div>
-
-                                        <div id="registrationForm" class="registration-form">
-                                            <!-- فیلدهای مشترک -->
-                                            <div class="form-group">
-                                                <label>نام و نام خانوادگی</label>
-                                                <input type="text" class="form-control" id="fullname" placeholder="نام و نام خانوادگی خود را وارد کنید" />
-                                            </div>
-                                            <div class="form-group">
-                                                <label>شماره موبایل</label>
-                                                <input type="text" class="form-control" id="mobile" inputmode="numeric" placeholder="مثال: 09123456789" />
-                                            </div>
-
-                                            <!-- فیلدهای اختصاصی عضو -->
-                                            <div id="memberFields">
-                                                <div class="form-group">
-                                                    <label>انتخاب باشگاه</label>
-                                                    <select id="gymId" class="form-control">
-                                                        <option value="">-- انتخاب کنید --</option>
-                                                        @foreach (var gym in Model.Gyms)
-                                                        {
-                                                            <option value="@gym.Value">@gym.Text</option>
-                                                        }
-                                                    </select>
+                                            <!-- رادیو باتن‌های انتخاب نوع کاربر -->
+                                            <div class="form-group text-right" style="margin-bottom: 20px;">
+                                                <label class="d-block mb-2">نوع حساب کاربری:</label>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="userType" id="typeMember" value="member" checked>
+                                                    <label class="form-check-label" for="typeMember">عضو باشگاه</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="userType" id="typeManager" value="manager">
+                                                    <label class="form-check-label" for="typeManager">مدیر باشگاه</label>
                                                 </div>
                                             </div>
 
-                                            <!-- فیلدهای اختصاصی مدیر -->
-                                            <div id="managerFields" style="display: none;">
+                                            <div id="registrationForm" class="registration-form">
+                                                <!-- فیلدهای مشترک -->
                                                 <div class="form-group">
-                                                    <label>نام باشگاه</label>
-                                                    <input type="text" class="form-control" id="gymName" placeholder="نام باشگاه خود را وارد کنید" />
+                                                    <label for="fullname">نام و نام خانوادگی</label>
+                                                    <input type="text" class="form-control" id="fullname" name="fullname" placeholder="نام و نام خانوادگی خود را وارد کنید" />
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>انتخاب استان</label>
-                                                    <select id="provinceId" class="form-control">
-                                                        <option value="">-- انتخاب استان --</option>
-                                                        @foreach (var province in Model.Provinces)
-                                                        {
-                                                            <option value="@province.Value">@province.Text</option>
-                                                        }
-                                                    </select>
+                                                    <label for="mobile">شماره موبایل</label>
+                                                    <input type="text" class="form-control" id="mobile" name="mobile" inputmode="numeric" maxlength="11" placeholder="مثال: 09123456789" />
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>انتخاب شهر</label>
-                                                    <select id="cityId" class="form-control" disabled>
-                                                        <option value="">-- ابتدا استان را انتخاب کنید --</option>
-                                                    </select>
+
+                                                <!-- فیلدهای اختصاصی عضو -->
+                                                <div id="memberFields">
+                                                    <div class="form-group">
+                                                        <label for="gymId">انتخاب باشگاه</label>
+                                                        <select id="gymId" name="gymId" class="form-control">
+                                                            <option value="">-- انتخاب کنید --</option>
+                                                            @foreach (var gym in Model.Gyms)
+                                                            {
+                                                                <option value="@gym.Value">@gym.Text</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- فیلدهای اختصاصی مدیر -->
+                                                <div id="managerFields" style="display: none;">
+                                                    <div class="form-group">
+                                                        <label for="gymName">نام باشگاه</label>
+                                                        <input type="text" class="form-control" id="gymName" name="gymName" placeholder="نام باشگاه خود را وارد کنید" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="provinceId">انتخاب استان</label>
+                                                        <select id="provinceId" name="provinceId" class="form-control">
+                                                            <option value="">-- انتخاب استان --</option>
+                                                            @foreach (var province in Model.Provinces)
+                                                            {
+                                                                <option value="@province.Value">@province.Text</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="cityId">انتخاب شهر</label>
+                                                        <select id="cityId" name="cityId" class="form-control" disabled>
+                                                            <option value="">-- ابتدا استان را انتخاب کنید --</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group-actions">
+                                                    <button id="btnSendOtp" type="button" class="btn btn-primary btn-submit">ارسال کد تایید</button>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group-actions">
-                                                <button id="btnSendOtp" type="button" onclick="SendOtp()" class="btn btn-primary btn-submit">ارسال کد تایید</button>
-                                            </div>
-                                        </div>
-
-                                        <div id="otpSection" style="display:none;">
-                                            <hr />
-                                            <div class="form-account-title">
-                                                <label>کد تایید</label>
-                                                <input type="text" class="number-email-input" id="code" inputmode="numeric" />
-                                            </div>
-                                            <div class="form-row-account">
-                                                <button id="btnRegister" onclick="RegisterUser()" class="btn btn-success btn-login">ثبت نام نهایی</button>
-                                            </div>
-                                            <div class="helper-row">
-                                                <span id="resendInfo"></span>
-                                                <a id="btnResend" class="muted" onclick="ResendOtp()" style="display:none;">ارسال مجدد کد</a>
+                                            <div id="otpSection" style="display:none;">
+                                                <hr />
+                                                <div class="form-account-title">
+                                                    <label for="code">کد تایید</label>
+                                                    <input type="text" class="number-email-input" id="code" name="code" inputmode="numeric" />
+                                                </div>
+                                                <div class="form-row-account">
+                                                    <button id="btnRegister" type="button" class="btn btn-success btn-login">ثبت نام نهایی</button>
+                                                </div>
+                                                <div class="helper-row">
+                                                    <span id="resendInfo"></span>
+                                                    <a id="btnResend" class="muted" style="display:none; cursor: pointer;">ارسال مجدد کد</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
+                                else
+                                {
+                                    <div class="Login-to-account mt-4">
+                                        <div class="account-box-content text-center">
+                                            <h4>ایجاد حساب کاربری جدید</h4>
+
+                                            <div class="d-flex justify-content-center my-3">
+                                                <img src="/AdminTemplate/app-assets/img/logos/logo_1.png" alt="FitCore" class="account-small-icon">
+                                            </div>
+
+                                            <p class="registration-text">
+                                                برای ثبت‌نام، وارد پیام‌رسان «بله» شوید<br>
+                                                و از طریق ربات
+                                                <a href="https://web.bale.ai/chat" class="cta-link" target="_blank" rel="noopener noreferrer">
+                                                    فیتکور FitCore
+                                                </a>
+                                                اقدام کنید.
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -125,158 +172,206 @@
             </div>
         </div>
     </div>
-</body>
 
-<script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
-<script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
-<script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
+    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
 
-<script>
-    var resendTimerId = null;
-    var timerSeconds = 60;
+    <!-- با توجه به Layout = null بودن، سکشن اسکریپت حذف و مستقیماً قرار داده شد -->
+    <script>
+        let resendTimerId = null;
+        let timerSeconds = 60;
 
-    // تغییر فرم بر اساس رادیو باتن
-    $('input[name="userType"]').change(function () {
+        // تغییر فرم بر اساس رادیو باتن
+        $('input[name="userType"]').change(function () {
         if ($(this).val() === 'member') {
-            $('#memberFields').show();
-            $('#managerFields').hide();
+        $('#memberFields').show();
+        $('#managerFields').hide();
         } else {
-            $('#memberFields').hide();
-            $('#managerFields').show();
+        $('#memberFields').hide();
+        $('#managerFields').show();
         }
         // ریست کردن فرم به حالت اولیه هنگام تغییر نوع
         $("#registrationForm").show();
         $("#otpSection").hide();
-    });
+        });
 
-    // لود کردن شهرها به صورت ایجکس هنگام تغییر استان
-    $('#provinceId').change(function () {
-        var provinceId = $(this).val();
-        var $citySelect = $('#cityId');
+        // لود کردن شهرها به صورت ایجکس هنگام تغییر استان
+        $('#provinceId').change(function () {
+        let provinceId = $(this).val();
+        let $citySelect = $('#cityId');
 
         if (provinceId) {
-            $citySelect.prop('disabled', true).html('<option>در حال بارگذاری...</option>');
-            $.get("/Admin/Auth/GetCities", { provinceId: provinceId }, function (data) {
-                $citySelect.empty().append('<option value="">-- انتخاب شهر --</option>');
-                $.each(data, function (i, item) {
-                    $citySelect.append($('<option>', { value: item.value, text: item.text }));
-                });
-                $citySelect.prop('disabled', false);
-            }).fail(function() {
-                $citySelect.html('<option value="">خطا در دریافت شهرها</option>');
-            });
+        $citySelect.prop('disabled', true).html('<option>در حال بارگذاری...</option>');
+        $.get("/Admin/Auth/GetCities", { provinceId: provinceId }, function (data) {
+        $citySelect.empty().append('<option value="">-- انتخاب شهر --</option>');
+        $.each(data, function (i, item) {
+        $citySelect.append($('<option>', { value: item.value, text: item.text }));
+        });
+        $citySelect.prop('disabled', false);
+        }).fail(function() {
+        $citySelect.html('<option value="">خطا در دریافت شهرها</option>');
+        });
         } else {
-            $citySelect.empty().append('<option value="">-- ابتدا استان را انتخاب کنید --</option>').prop('disabled', true);
+        $citySelect.empty().append('<option value="">-- ابتدا استان را انتخاب کنید --</option>').prop('disabled', true);
         }
-    });
+        });
 
-    function setBtnLoading(id, loading, text) {
-        var $btn = $("#" + id);
+        function setBtnLoading(id, loading, text) {
+        let $btn = $("#" + id);
         if (!$btn.data("orig")) $btn.data("orig", $btn.text());
         $btn.prop("disabled", loading).text(loading ? (text || "در حال انجام...") : $btn.data("orig"));
-    }
+        }
 
-    function SendOtp() {
-        var userType = $('input[name="userType"]:checked').val();
-        var mobile = $("#mobile").val();
-        var fullname = $("#fullname").val();
+        function SendOtp() {
+        let userType = $('input[name="userType"]:checked').val();
+        let mobile = $("#mobile").val().trim();
+        let fullname = $("#fullname").val().trim();
 
-        if (!fullname || fullname.trim().length < 3) { swal.fire('خطا!', 'لطفاً نام و نام خانوادگی معتبر وارد کنید.', 'warning'); return; }
-        if (!/^09\d{9}$/.test(mobile)) { swal.fire('خطا!', 'شماره موبایل نامعتبر است.', 'warning'); return; }
+        if (!fullname || fullname.length < 3) {
+        swal.fire('خطا!', 'لطفاً نام و نام خانوادگی معتبر وارد کنید.', 'warning');
+        return;
+        }
+        if (!/^09\d{9}$/.test(mobile)) {
+        swal.fire('خطا!', 'شماره موبایل نامعتبر است.', 'warning');
+        return;
+        }
 
         setBtnLoading("btnSendOtp", true, "در حال ارسال...");
 
         if (userType === "member") {
-            var gymId = $("#gymId").val();
-            if (!gymId) { setBtnLoading("btnSendOtp", false); swal.fire('خطا!', 'لطفاً یک باشگاه انتخاب کنید.', 'warning'); return; }
+        let gymId = $("#gymId").val();
+        if (!gymId) {
+        setBtnLoading("btnSendOtp", false);
+        swal.fire('خطا!', 'لطفاً یک باشگاه انتخاب کنید.', 'warning');
+        return;
+        }
 
-            $.post("/Admin/Auth/SendOtpReg", { FullName: fullname, mobile: mobile, gymId: gymId }, function (data) {
-                handleOtpResponse(data);
-            }).fail(function() { setBtnLoading("btnSendOtp", false); swal.fire('خطا!', 'خطا در ارتباط با سرور', 'error'); });
+        $.post("/Admin/Auth/SendOtpReg", { FullName: fullname, mobile: mobile, gymId: gymId }, function (data) {
+        handleOtpResponse(data);
+        }).fail(function() {
+        setBtnLoading("btnSendOtp", false);
+        swal.fire('خطا!', 'خطا در ارتباط با سرور', 'error');
+        });
 
         } else { // manager
-            var gymName = $("#gymName").val();
-            var provinceId = $("#provinceId").val();
-            var cityId = $("#cityId").val();
+        let gymName = $("#gymName").val().trim();
+        let provinceId = $("#provinceId").val();
+        let cityId = $("#cityId").val();
 
-            if (!gymName) { setBtnLoading("btnSendOtp", false); swal.fire('خطا!', 'نام باشگاه را وارد کنید.', 'warning'); return; }
-            if (!provinceId || !cityId) { setBtnLoading("btnSendOtp", false); swal.fire('خطا!', 'استان و شهر را انتخاب کنید.', 'warning'); return; }
-
-            $.post("/Admin/Auth/SendOtpForManager", { FullName: fullname, GymName: gymName, mobile: mobile, provinceId: provinceId, cityId: cityId }, function (data) {
-                handleOtpResponse(data);
-            }).fail(function() { setBtnLoading("btnSendOtp", false); swal.fire('خطا!', 'خطا در ارتباط با سرور', 'error'); });
+        if (!gymName) {
+        setBtnLoading("btnSendOtp", false);
+        swal.fire('خطا!', 'نام باشگاه را وارد کنید.', 'warning');
+        return;
         }
-    }
+        if (!provinceId || !cityId) {
+        setBtnLoading("btnSendOtp", false);
+        swal.fire('خطا!', 'استان و شهر را انتخاب کنید.', 'warning');
+        return;
+        }
 
-    // تابع مشترک برای کنترل پاسخ ارسال پیامک
-    function handleOtpResponse(data) {
+        $.post("/Admin/Auth/SendOtpForManager", { FullName: fullname, GymName: gymName, mobile: mobile, provinceId: provinceId, cityId: cityId }, function (data) {
+        handleOtpResponse(data);
+        }).fail(function() {
+        setBtnLoading("btnSendOtp", false);
+        swal.fire('خطا!', 'خطا در ارتباط با سرور', 'error');
+        });
+        }
+        }
+
+        // تابع مشترک برای کنترل پاسخ ارسال پیامک
+        function handleOtpResponse(data) {
         setBtnLoading("btnSendOtp", false);
         if (data.isSuccess) {
-            swal.fire('موفق!', data.message, 'success');
-            $("#registrationForm").slideUp();
-            $("#otpSection").slideDown();
-            startTimer();
+        swal.fire('موفق!', data.message, 'success');
+        $("#registrationForm").slideUp();
+        $("#otpSection").slideDown();
+        startTimer();
         } else {
-            swal.fire('خطا!', data.message, 'warning');
+        swal.fire('خطا!', data.message, 'warning');
         }
-    }
+        }
 
-    function startTimer() { /* دقیقاً مثل قبل */
+        function startTimer() {
         timerSeconds = 60;
         $("#btnResend").hide();
         $("#resendInfo").text("ارسال مجدد تا " + timerSeconds + " ثانیه");
         if (resendTimerId) clearInterval(resendTimerId);
+
         resendTimerId = setInterval(function () {
-            timerSeconds--;
-            if (timerSeconds >= 0) {
-                $("#resendInfo").text("ارسال مجدد تا " + timerSeconds + " ثانیه");
-            } else {
-                clearInterval(resendTimerId);
-                $("#resendInfo").text("");
-                $("#btnResend").show();
-            }
+        timerSeconds--;
+        if (timerSeconds >= 0) {
+        $("#resendInfo").text("ارسال مجدد تا " + timerSeconds + " ثانیه");
+        } else {
+        clearInterval(resendTimerId);
+        $("#resendInfo").text("");
+        $("#btnResend").show();
+        }
         }, 1000);
-    }
+        }
 
-    function ResendOtp() { SendOtp(); }
+        // رویداد کلیک دکمه ارسال مجدد
+        $("#btnResend").on("click", function() {
+        SendOtp();
+        });
 
-    function RegisterUser() {
-        var userType = $('input[name="userType"]:checked').val();
-        var code = $("#code").val();
-        var mobile = $("#mobile").val();
-        var fullname = $("#fullname").val();
+        // رویداد کلیک دکمه ارسال کد تایید
+        $("#btnSendOtp").on("click", function() {
+        SendOtp();
+        });
 
-        if (!code) { swal.fire('خطا!', 'لطفاً کد تایید را وارد کنید.', 'warning'); return; }
+        // رویداد کلیک دکمه ثبت نام نهایی
+        $("#btnRegister").on("click", function() {
+        RegisterUser();
+        });
+
+        function RegisterUser() {
+        let userType = $('input[name="userType"]:checked').val();
+        let code = $("#code").val().trim();
+        let mobile = $("#mobile").val().trim();
+        let fullname = $("#fullname").val().trim();
+
+        if (!code) {
+        swal.fire('خطا!', 'لطفاً کد تایید را وارد کنید.', 'warning');
+        return;
+        }
 
         setBtnLoading("btnRegister", true, "در حال ثبت...");
 
         if (userType === "member") {
-            $.post("/Admin/Auth/RegisterUser", { fullName: fullname, mobile: mobile, code: code, gymId: $("#gymId").val() }, function (data) {
-                handleRegisterResponse(data);
-            }).fail(function() { setBtnLoading("btnRegister", false); swal.fire('خطا!', 'خطا در ثبت نام', 'error'); });
+        $.post("/Admin/Auth/RegisterUser", { fullName: fullname, mobile: mobile, code: code, gymId: $("#gymId").val() }, function (data) {
+        handleRegisterResponse(data);
+        }).fail(function() {
+        setBtnLoading("btnRegister", false);
+        swal.fire('خطا!', 'خطا در ثبت نام', 'error');
+        });
 
-        } 
-        
-        else { // manager
-            $.post("/Admin/Auth/RegisterManager", {
-                FullName: fullname,
-                Mobile: mobile,
-                Code: code,
-                GymName: $("#gymName").val(),
-                CitiesId: $("#cityId").val() // <--- تطابق با فیلد دیتابیس
-            }, function (data) {
-                handleRegisterResponse(data);
-            }).fail(function() { setBtnLoading("btnRegister", false); swal.fire('خطا!', 'خطا در ثبت نام', 'error'); });
+        } else { // manager
+        $.post("/Admin/Auth/RegisterManager", {
+        FullName: fullname,
+        Mobile: mobile,
+        Code: code,
+        GymName: $("#gymName").val().trim(),
+        CitiesId: $("#cityId").val()
+        }, function (data) {
+        handleRegisterResponse(data);
+        }).fail(function() {
+        setBtnLoading("btnRegister", false);
+        swal.fire('خطا!', 'خطا در ثبت نام', 'error');
+        });
         }
-    }
+        }
 
-    function handleRegisterResponse(data) {
+        function handleRegisterResponse(data) {
         if (data.isSuccess) {
-            swal.fire('موفق!', data.message, 'success').then(() => { window.location.href = "/"; });
+        swal.fire('موفق!', data.message, 'success').then(() => {
+        window.location.href = "/";
+        });
         } else {
-            swal.fire('خطا!', data.message, 'warning');
-            setBtnLoading("btnRegister", false);
+        swal.fire('خطا!', data.message, 'warning');
+        setBtnLoading("btnRegister", false);
         }
-    }
-</script>
+        }
+    </script>
+</body>
 </html>

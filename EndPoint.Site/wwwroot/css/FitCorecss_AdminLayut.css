@@ -750,3 +750,32 @@ html {
         transform: translateY(0);
     }
 }
+/*------------------------------------------------------------------*/
+.fc-main,
+.fc-content {
+    min-width: 0 !important;
+    overflow-x: auto !important;
+}
+
+    /* ۲. برداشتن محدودیت overflow از کارت‌ها (چون از پارشال لود می‌شوند احتمالاً overflow:hidden دارند) */
+    .fc-content .card,
+    .fc-content .table-responsive {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch; /* برای اسکرول نرم در آیفون */
+    }
+
+    /* ۳. اطمینان از اینکه کانتینر fluid مانع اسکرول نمی‌شود */
+    .fc-content .container-fluid {
+        overflow-x: visible !important;
+        max-width: 100%;
+    }
+/*    +++++----------++++++++++---------*/
+/* ثابت نگه داشتن هدر برنامه در بالای صفحه هنگام اسکرول */
+.program-header-sticky-wrapper {
+    position: -webkit-sticky; /* برای پشتیبانی در سافاری */
+    position: sticky;
+    top: 0; /* فاصله از بالای مرورگر هنگام چسبیدن */
+    z-index: 1020; /* زوم-index بالا تر از سایر المان ها */
+    background-color: #fff; /* بسیار مهم: جلوگیری از نفوذ متن‌های زیرین هنگام اسکرول */
+    padding-bottom: 5px; /* ایجاد فاصله کادر در پایین هدر چسبیده */
+}

@@ -115,6 +115,8 @@
                     <th>تاریخ تولد</th>
                     <th>تاریخ شروع عضویت</th>
                     <th>تاریخ پایان عضویت</th>
+                    <th>وضعیت فعالیت</th>
+
                     <th>مدت زمان اعتبار</th>
 
                     <th width="180">عملیات</th>
@@ -156,6 +158,13 @@
                         <td>
                             @(item.MembershipEndDate == default ? "---" : item.MembershipEndDate)
                         </td>
+
+
+                        <td>
+                            @(item.IsActive == true ? "فعال" : "غیرفعال")
+                        </td>
+
+
                         <td>
                             @if (remainDays >= 0)
                             {
