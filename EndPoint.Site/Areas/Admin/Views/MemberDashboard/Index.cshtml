@@ -1,8 +1,11 @@
+@using FitCore.Application.Services.Members.Queries
 @using FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
 @using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms
 @using FitCore.Domain.Entities.Members
 @using FitCore.Common
 @using EndPoint.Site.Areas.Admin.Controllers
+@using System.Security.Claims
+@inject IGetMemberByAppUserIdService _getMemberByAppUserIdService
 
 @{
     ViewData["Title"] = "داشبورد من";
@@ -21,6 +24,19 @@
     bool isProfileDone = member != null &&
                            !string.IsNullOrWhiteSpace(member.BirthDate) &&
                            member.Height != null;
+
+
+
+
+
+    bool isActivMember = false;
+
+    string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+    var difDay = DateConverterMlladiToShamsi.GetDaysDifference(member.MembershipEndDate, todayShamsi);
+    if (member.IsActive && difDay > 0)
+        isActivMember = true;
+
+
 }
 
 @* ============ استایل‌های واکنش‌گرا ============ *@
@@ -551,8 +567,8 @@
     }
 
     /* ==============================
-           واکنش‌گرایی - تبلت (768px)
-        ============================== */
+                               واکنش‌گرایی - تبلت (768px)
+                            ============================== */
     @@media (max-width: 991.98px) {
         .mb-header-card {
             padding: 16px;
@@ -584,8 +600,8 @@
     }
 
     /* ==============================
-           واکنش‌گرایی - موبایل (576px)
-        ============================== */
+                               واکنش‌گرایی - موبایل (576px)
+                            ============================== */
     @@media (max-width: 575.98px) {
         :root {
             --card-padding: 12px;
@@ -822,8 +838,8 @@
     }
 
     /* ==============================
-           موبایل خیلی کوچک (380px)
-        ============================== */
+                               موبایل خیلی کوچک (380px)
+                            ============================== */
     @@media (max-width: 380px) {
         .container-fluid {
             padding-left: 8px;
@@ -867,6 +883,7 @@
             }
     }
 </style>
+
 
 <div class="container-fluid" style="padding-top:16px;padding-bottom:24px;">
 
@@ -919,12 +936,49 @@
     </div>
 
     @* ============ وضعیت عضویت ============ *@
+
     @if (membershipStatus != null)
     {
-        string msClass = membershipStatus.Status switch { MembershipState.Active => "active", MembershipState.ExpiringSoon => "soon", MembershipState.Expired => "expired", _ => "unknown" };
-        string msIcon = membershipStatus.Status switch { MembershipState.Active => "fa-check-circle", MembershipState.ExpiringSoon => "fa-exclamation-circle", MembershipState.Expired => "fa-times-circle", _ => "fa-question-circle" };
-        string msIconColor = membershipStatus.Status switch { MembershipState.Active => "#00C896", MembershipState.ExpiringSoon => "#f6ad55", MembershipState.Expired => "#fc8181", _ => "#a0aec0" };
-        string msText = membershipStatus.Status switch { MembershipState.Active => $"عضویت فعال — {membershipStatus.DaysLeft} روز تا پایان", MembershipState.ExpiringSoon => $"⚠️ تا {membershipStatus.DaysLeft} روز دیگر منقضی می‌شود", MembershipState.Expired => "عضویت منقضی شده — با باشگاه تماس بگیرید", _ => "اطلاعات عضویت تعریف نشده" };
+        string msClass = membershipStatus.Status
+        switch
+        {
+            MembershipState.Active => "active",
+            MembershipState.ExpiringSoon => "soon",
+            MembershipState.Expired => "expired",
+            MembershipState.NotActive => "expired",
+            _ => "unknown"
+        };
+
+        string msIcon = membershipStatus.Status
+        switch
+        {
+            MembershipState.Active => "fa-check-circle",
+            MembershipState.ExpiringSoon => "fa-exclamation-circle",
+            MembershipState.Expired => "fa-times-circle",
+            MembershipState.NotActive => "fa-times-circle",
+            _ => "fa-question-circle"
+        };
+
+        string msIconColor = membershipStatus.Status
+        switch
+        {
+            MembershipState.Active => "#00C896",
+            MembershipState.ExpiringSoon => "#f6ad55",
+            MembershipState.Expired => "#fc8181",
+            MembershipState.NotActive => "#fc8181",
+            _ => "#a0aec0"
+        };
+
+        string msText = membershipStatus.Status
+        switch
+        {   
+            MembershipState.Active => $"عضویت فعال — {membershipStatus.DaysLeft} روز تا پایان",
+            MembershipState.ExpiringSoon => $"⚠️ تا {membershipStatus.DaysLeft} روز دیگر منقضی می‌شود",
+            MembershipState.Expired => "عضویت منقضی شده — با باشگاه تماس بگیرید",
+            MembershipState.NotActive => "عضویت شما توسط مدیریت باشگاه غیر فعال شد",
+
+            _ => "اطلاعات عضویت تعریف نشده"
+        };
 
         <div class="mb-membership-card @msClass" style="margin-bottom:15px;">
             <i class="fa @msIcon fa-2x" style="color:@msIconColor;flex-shrink:0;"></i>
@@ -934,24 +988,35 @@
                     <span><i class="fa fa-calendar-o me-1"></i>شروع: <strong>@membershipStatus.StartDate</strong></span>
                     <span><i class="fa fa-calendar-times-o me-1"></i>پایان: <strong>@membershipStatus.EndDate</strong></span>
                 </div>
+
             </div>
+
+
         </div>
+
     }
 
     @* ============ کارت‌های آمار ============ *@
     <div class="row g-2" style="margin-bottom:15px;">
-        <div class="col-6 col-md-3">
-            <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-stat" style="--c:#00C896;--cb:#edfaf5;">
-                <div class="mb-stat-icon"><i class="fa fa-cutlery"></i></div>
-                <div><div class="mb-stat-num">@(nutritionList?.Count ?? 0)</div><div class="mb-stat-lbl">برنامه غذایی</div></div>
-            </a>
-        </div>
-        <div class="col-6 col-md-3">
-            <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-stat" style="--c:#3182ce;--cb:#ebf8ff;">
-                <div class="mb-stat-icon"><i class="fa fa-heartbeat"></i></div>
-                <div><div class="mb-stat-num">@(trainingList?.Count ?? 0)</div><div class="mb-stat-lbl">برنامه تمرینی</div></div>
-            </a>
-        </div>
+
+
+
+        @if (isActivMember)
+        {
+            <div class="col-6 col-md-3">
+                <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-stat" style="--c:#00C896;--cb:#edfaf5;">
+                    <div class="mb-stat-icon"><i class="fa fa-cutlery"></i></div>
+                    <div><div class="mb-stat-num">@(nutritionList?.Count ?? 0)</div><div class="mb-stat-lbl">برنامه غذایی</div></div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-stat" style="--c:#3182ce;--cb:#ebf8ff;">
+                    <div class="mb-stat-icon"><i class="fa fa-heartbeat"></i></div>
+                    <div><div class="mb-stat-num">@(trainingList?.Count ?? 0)</div><div class="mb-stat-lbl">برنامه تمرینی</div></div>
+                </a>
+            </div>
+        }
+
         <div class="col-6 col-md-3">
             <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedId" class="mb-stat" style="--c:#9f7aea;--cb:#faf5ff;">
                 <div class="mb-stat-icon"><i class="fa fa-balance-scale"></i></div>
@@ -1208,85 +1273,88 @@
     }
 
     @* ============ برنامه‌ها ============ *@
-    <div class="row g-2" style="margin-bottom:15px;">
-        <div class="col-md-6">
-            <div class="mb-card">
-                <div class="d-flex align-items-center justify-content-between" style="margin-bottom:10px;">
-                    <div class="mb-card-title">
-                        <i class="fa fa-cutlery" style="color:#00C896;"></i>
-                        برنامه‌های غذایی
-                        <help key="MD05" />
+
+    @if (isActivMember)
+    {
+        <div class="row g-2" style="margin-bottom:15px;">
+            <div class="col-md-6">
+                <div class="mb-card">
+                    <div class="d-flex align-items-center justify-content-between" style="margin-bottom:10px;">
+                        <div class="mb-card-title">
+                            <i class="fa fa-cutlery" style="color:#00C896;"></i>
+                            برنامه‌های غذایی
+                            <help key="MD05" />
+                        </div>
+                        <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-card-link">مشاهده همه</a>
                     </div>
-                    <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-card-link">مشاهده همه</a>
-                </div>
-                @if (nutritionList != null && nutritionList.Any())
-                {
-                    @foreach (var p in nutritionList.Take(4))
+                    @if (nutritionList != null && nutritionList.Any())
                     {
-                        <div class="mb-program-item">
-                            <div class="mb-program-info">
-                                <div class="mb-program-title">@p.ProgramType</div>
-                                <div class="mb-program-meta">
-                                    <span><i class="fa fa-calendar-o me-1"></i>@p.StartDate — @p.EndDate</span>
-                                    <span class="badge" style="background:@(p.IsActive ? "#edfaf5" : "#f0f4f8");color:@(p.IsActive ? "#00C896" : "#718096");border:1px solid @(p.IsActive ? "#00C896" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
+                        @foreach (var p in nutritionList.Take(4))
+                        {
+                            <div class="mb-program-item">
+                                <div class="mb-program-info">
+                                    <div class="mb-program-title">@p.ProgramType</div>
+                                    <div class="mb-program-meta">
+                                        <span><i class="fa fa-calendar-o me-1"></i>@p.StartDate — @p.EndDate</span>
+                                        <span class="badge" style="background:@(p.IsActive ? "#edfaf5" : "#f0f4f8");color:@(p.IsActive ? "#00C896" : "#718096");border:1px solid @(p.IsActive ? "#00C896" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
+                                    </div>
                                 </div>
+                                <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)" target="_blank" class="mb-program-btn">
+                                    <i class="fa fa-print"></i>PDF
+                                </a>
                             </div>
-                            <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)" target="_blank" class="mb-program-btn">
-                                <i class="fa fa-print"></i>PDF
-                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="mb-empty">
+                            <i class="fa fa-inbox"></i>
+                            <div class="mb-empty-text">برنامه غذایی ثبت نشده</div>
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="mb-empty">
-                        <i class="fa fa-inbox"></i>
-                        <div class="mb-empty-text">برنامه غذایی ثبت نشده</div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="mb-card">
-                <div class="d-flex align-items-center justify-content-between" style="margin-bottom:10px;">
-                    <div class="mb-card-title">
-                        <i class="fa fa-heartbeat" style="color:#3182ce;"></i>
-                        برنامه‌های تمرینی
-                        <help key="MD06" />
-                    </div>
-                    <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-card-link blue">مشاهده همه</a>
                 </div>
-                @if (trainingList != null && trainingList.Any())
-                {
-                    @foreach (var p in trainingList.Take(4))
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-card">
+                    <div class="d-flex align-items-center justify-content-between" style="margin-bottom:10px;">
+                        <div class="mb-card-title">
+                            <i class="fa fa-heartbeat" style="color:#3182ce;"></i>
+                            برنامه‌های تمرینی
+                            <help key="MD06" />
+                        </div>
+                        <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-card-link blue">مشاهده همه</a>
+                    </div>
+                    @if (trainingList != null && trainingList.Any())
                     {
-                        <div class="mb-program-item">
-                            <div class="mb-program-info">
-                                <div class="mb-program-title" title="@p.Title">@p.Title</div>
-                                <div class="mb-program-meta">
-                                    <span><i class="fa fa-tag me-1"></i>@p.TrainingProgramType</span>
-                                    <span><i class="fa fa-calendar-o me-1"></i>@p.StartDate</span>
-                                    <span class="badge" style="background:@(p.IsActive ? "#ebf8ff" : "#f0f4f8");color:@(p.IsActive ? "#3182ce" : "#718096");border:1px solid @(p.IsActive ? "#3182ce" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
+                        @foreach (var p in trainingList.Take(4))
+                        {
+                            <div class="mb-program-item">
+                                <div class="mb-program-info">
+                                    <div class="mb-program-title" title="@p.Title">@p.Title</div>
+                                    <div class="mb-program-meta">
+                                        <span><i class="fa fa-tag me-1"></i>@p.TrainingProgramType</span>
+                                        <span><i class="fa fa-calendar-o me-1"></i>@p.StartDate</span>
+                                        <span class="badge" style="background:@(p.IsActive ? "#ebf8ff" : "#f0f4f8");color:@(p.IsActive ? "#3182ce" : "#718096");border:1px solid @(p.IsActive ? "#3182ce" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
+                                    </div>
                                 </div>
+                                <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)" target="_blank" class="mb-program-btn blue">
+                                    <i class="fa fa-print"></i>PDF
+                                </a>
                             </div>
-                            <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)" target="_blank" class="mb-program-btn blue">
-                                <i class="fa fa-print"></i>PDF
-                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="mb-empty">
+                            <i class="fa fa-inbox"></i>
+                            <div class="mb-empty-text">برنامه تمرینی ثبت نشده</div>
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="mb-empty">
-                        <i class="fa fa-inbox"></i>
-                        <div class="mb-empty-text">برنامه تمرینی ثبت نشده</div>
-                    </div>
-                }
+                </div>
             </div>
         </div>
-    </div>
-
+    }
     @* ============ اندازه‌گیری + اطلاعات جسمانی ============ *@
     <div class="row g-2" style="margin-bottom:15px;">
         <div class="col-md-6">
@@ -1388,12 +1456,16 @@
             <help key="MD09" />
         </div>
         <div class="row g-2">
-            <div class="col-4 col-sm-3 col-md-2">
-                <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-quick-btn"><i class="fa fa-cutlery" style="color:#00C896;"></i><span>غذایی</span></a>
-            </div>
-            <div class="col-4 col-sm-3 col-md-2">
-                <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-quick-btn"><i class="fa fa-heartbeat" style="color:#3182ce;"></i><span>تمرینی</span></a>
-            </div>
+
+            @if (isActivMember)
+            {
+                <div class="col-4 col-sm-3 col-md-2">
+                    <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-quick-btn"><i class="fa fa-cutlery" style="color:#00C896;"></i><span>غذایی</span></a>
+                </div>
+                <div class="col-4 col-sm-3 col-md-2">
+                    <a href="/Admin/MemberDashboard/MyTrainingPrograms" class="mb-quick-btn"><i class="fa fa-heartbeat" style="color:#3182ce;"></i><span>تمرینی</span></a>
+                </div>
+            }
             <div class="col-4 col-sm-3 col-md-2">
                 <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedId" class="mb-quick-btn"><i class="fa fa-balance-scale" style="color:#9f7aea;"></i><span>اندازه‌گیری</span></a>
             </div>
@@ -1421,115 +1493,115 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
-        Chart.defaults.font.size = 10;
+                        Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
+                        Chart.defaults.font.size = 10;
 
-        var wLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Label).ToList() ?? new List<string>()));
-        var wData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Value).ToList() ?? new List<decimal?>()));
-        var fLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Label).ToList() ?? new List<string>()));
-        var fData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Value).ToList() ?? new List<decimal?>()));
+                        var wLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Label).ToList() ?? new List<string>()));
+                        var wData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Value).ToList() ?? new List<decimal?>()));
+                        var fLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Label).ToList() ?? new List<string>()));
+                        var fData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Value).ToList() ?? new List<decimal?>()));
 
-        var macroData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                    analytics?.Nutrition != null ? new List<int> { analytics.Nutrition.ProteinPercent, analytics.Nutrition.CarbsPercent, analytics.Nutrition.FatPercent } : new List<int>()));
+                        var macroData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            analytics?.Nutrition != null ? new List<int> { analytics.Nutrition.ProteinPercent, analytics.Nutrition.CarbsPercent, analytics.Nutrition.FatPercent } : new List<int>()));
 
-        function createGradient(ctx, color1, color2) {
-        var gradient = ctx.createLinearGradient(0, 0, 0, 180);
-        gradient.addColorStop(0, color1);
-        gradient.addColorStop(1, color2);
-        return gradient;
-        }
+    function createGradient(ctx, color1, color2) {
+    var gradient = ctx.createLinearGradient(0, 0, 0, 180);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    return gradient;
+    }
 
-        // تنظیمات مشترک نمودار خطی
-        var lineOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-        y: { beginAtZero: false, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
-        x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 } }
-        },
-        elements: { point: { radius: 3, hoverRadius: 5 } }
-        };
+                        // تنظیمات مشترک نمودار خطی
+                        var lineOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                        y: { beginAtZero: false, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
+                        x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 } }
+                        },
+                        elements: { point: { radius: 3, hoverRadius: 5 } }
+                        };
 
-        var weightCtx = document.getElementById('weightChart');
-        if (weightCtx && wData.length > 1) {
-        new Chart(weightCtx, {
-        type: 'line',
-        data: {
-        labels: wLabels,
-        datasets: [{
-        label: 'وزن (kg)',
-        data: wData,
-        borderColor: '#3182ce',
-        backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(49, 130, 206, 0.2)', 'rgba(49, 130, 206, 0)'); },
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: '#3182ce',
-        pointBorderWidth: 2
-        }]
-        },
-        options: lineOptions
-        });
-        }
+                        var weightCtx = document.getElementById('weightChart');
+                        if (weightCtx && wData.length > 1) {
+                        new Chart(weightCtx, {
+                        type: 'line',
+                        data: {
+                        labels: wLabels,
+                        datasets: [{
+                        label: 'وزن (kg)',
+                        data: wData,
+                        borderColor: '#3182ce',
+                        backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(49, 130, 206, 0.2)', 'rgba(49, 130, 206, 0)'); },
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#3182ce',
+                        pointBorderWidth: 2
+                        }]
+                        },
+                        options: lineOptions
+                        });
+                        }
 
-        var fatCtx = document.getElementById('fatChart');
-        if (fatCtx && fData.length > 1) {
-        new Chart(fatCtx, {
-        type: 'line',
-        data: {
-        labels: fLabels,
-        datasets: [{
-        label: 'چربی (%)',
-        data: fData,
-        borderColor: '#9f7aea',
-        backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(159, 122, 234, 0.2)', 'rgba(159, 122, 234, 0)'); },
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: '#9f7aea',
-        pointBorderWidth: 2
-        }]
-        },
-        options: {
-        ...lineOptions,
-        scales: {
-        ...lineOptions.scales,
-        y: { ...lineOptions.scales.y, ticks: { ...lineOptions.scales.y.ticks, callback: function(v) { return v + '%'; } } }
-        }
-        }
-        });
-        }
+                        var fatCtx = document.getElementById('fatChart');
+                        if (fatCtx && fData.length > 1) {
+                        new Chart(fatCtx, {
+                        type: 'line',
+                        data: {
+                        labels: fLabels,
+                        datasets: [{
+                        label: 'چربی (%)',
+                        data: fData,
+                        borderColor: '#9f7aea',
+                        backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(159, 122, 234, 0.2)', 'rgba(159, 122, 234, 0)'); },
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#9f7aea',
+                        pointBorderWidth: 2
+                        }]
+                        },
+                        options: {
+                        ...lineOptions,
+                        scales: {
+                        ...lineOptions.scales,
+                        y: { ...lineOptions.scales.y, ticks: { ...lineOptions.scales.y.ticks, callback: function(v) { return v + '%'; } } }
+                        }
+                        }
+                        });
+                        }
 
-        var macroCtx = document.getElementById('macroChart');
-        if (macroCtx && macroData.length > 0) {
-        new Chart(macroCtx, {
-        type: 'doughnut',
-        data: {
-        labels: ['پروتئین', 'کربوهیدرات', 'چربی'],
-        datasets: [{
-        data: macroData,
-        backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'],
-        borderWidth: 0,
-        hoverOffset: 4
-        }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '65%',
-        plugins: {
-        legend: { display: false },
-        tooltip: {
-        callbacks: {
-        label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; }
-        }
-        }
-        }
-        }
-        });
-        }
+                        var macroCtx = document.getElementById('macroChart');
+                        if (macroCtx && macroData.length > 0) {
+                        new Chart(macroCtx, {
+                        type: 'doughnut',
+                        data: {
+                        labels: ['پروتئین', 'کربوهیدرات', 'چربی'],
+                        datasets: [{
+                        data: macroData,
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                        }]
+                        },
+                        options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                        callbacks: {
+                        label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; }
+                        }
+                        }
+                        }
+                        }
+                        });
+                        }
     </script>
 }

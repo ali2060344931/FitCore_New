@@ -1,13 +1,66 @@
 ﻿@using System.Security.Claims
+@using FitCore.Application.Contexts
 @using FitCore.Common
+@using FitCore.Application.Services.Members.Queries
+@using Swashbuckle.AspNetCore.SwaggerGen
+@using System.ComponentModel.DataAnnotations
+@inject IGetMemberByAppUserIdService _getMemberByAppUserIdService
+@inject IDataBaseContext _db
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
 }
 @{
+    bool isActivMember = false;
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var encryptedUserId = string.IsNullOrEmpty(userId) ? "" : SecurityUtils.EncryptId(long.Parse(userId));
+
+    long uid = 0;
+    if (!string.IsNullOrEmpty(userId))
+        uid = long.Parse(userId);
+
+    var member = _getMemberByAppUserIdService.Execute(uid);
+
+    if (User.IsMember())//برای اعضاء
+    {
+        string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+
+        var difDay = DateConverterMlladiToShamsi.GetDaysDifference(member.MembershipEndDate, todayShamsi);
+        if (member.IsActive && difDay > 0) isActivMember = true;
+    }
+
+
+    var encryptedUserId = string.IsNullOrEmpty(userId) ? "" : SecurityUtils.EncryptId(uid);
 }
+
+
+
+
+@{
+    bool isActivGYM = false;
+   
+    int difDay_ = 0;
+
+
+    var gid = _db.Users.Where(o => o.Id == uid).First().GymId;
+    var qgym = _db.Gyms.Where(o => o.Id == gid).First();
+
+
+     if (User.IsAdmin())
+    {
+        string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+
+        var difDay = DateConverterMlladiToShamsi.GetDaysDifference(qgym.SubscriptionExpireDate, todayShamsi);
+        if (qgym.IsActive && difDay > 0) isActivGYM = true;
+        difDay_ = difDay;
+
+
+    }
+
+}
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -36,9 +89,9 @@
 
     <!-- فقط استایل قفل اسکرول موبایل - بقیه کدهای موبایل در فایل CSS خارجی هستند -->
     <style>
-            body.mobile-menu-open {
-                overflow: hidden !important;
-            }
+        body.mobile-menu-open {
+            overflow: hidden !important;
+        }
     </style>
 </head>
 
@@ -80,10 +133,10 @@
 
 
             <!-- ناوبری -->
-            
-            
-            
-            
+
+
+
+
             <nav class="fc-nav">
                 <ul style="list-style:none; padding:0; margin:0;">
 
@@ -131,45 +184,50 @@
 
                         @if (User.IsAdmin())
                         {
-                            <li class="fc-nav-item has-sub" id="nav-members">
-                                <button class="fc-nav-link" data-title="اعضاء"
-                                        onclick="fcToggleMenu('nav-members')">
-                                    <span class="fc-nav-icon"><i class="icon-users"></i></span>
-                                    <span class="fc-nav-text">اعضاء باشگاه</span>
-                                    <i class="fa fa-angle-left fc-nav-arrow"></i>
-                                </button>
-                                <ul class="fc-nav-sub">
-                                    <li>
-                                        <a href="/admin/Members/index" class="fc-nav-sub-link">
-                                            <span class="fc-nav-sub-dot"></span>لیست اعضاء
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
 
-                            <div class="fc-nav-label">برنامه‌ها</div>
 
-                            <li class="fc-nav-item has-sub" id="nav-programs">
-                                <button class="fc-nav-link" data-title="برنامه‌ها"
-                                        onclick="fcToggleMenu('nav-programs')">
-                                    <span class="fc-nav-icon"><i class="fa fa-list-alt"></i></span>
-                                    <span class="fc-nav-text">برنامه‌های اعضاء</span>
-                                    <i class="fa fa-angle-left fc-nav-arrow"></i>
-                                </button>
-                                <ul class="fc-nav-sub">
-                                    <li>
-                                        <a href="/admin/NutritionProgram/index" class="fc-nav-sub-link">
-                                            <span class="fc-nav-sub-dot"></span>برنامه‌های غذایی
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/admin/TrainingProgram/index" class="fc-nav-sub-link">
-                                            <span class="fc-nav-sub-dot"></span>برنامه‌های تمرینی
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                            @if (isActivGYM)
 
+                            {
+                                <li class="fc-nav-item has-sub" id="nav-members">
+                                    <button class="fc-nav-link" data-title="اعضاء"
+                                    onclick="fcToggleMenu('nav-members')">
+                                        <span class="fc-nav-icon"><i class="icon-users"></i></span>
+                                        <span class="fc-nav-text">اعضاء باشگاه</span>
+                                        <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                    </button>
+                                    <ul class="fc-nav-sub">
+                                        <li>
+                                            <a href="/admin/Members/index" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>لیست اعضاء
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <div class="fc-nav-label">برنامه‌ها</div>
+
+                                <li class="fc-nav-item has-sub" id="nav-programs">
+                                    <button class="fc-nav-link" data-title="برنامه‌ها"
+                                    onclick="fcToggleMenu('nav-programs')">
+                                        <span class="fc-nav-icon"><i class="fa fa-list-alt"></i></span>
+                                        <span class="fc-nav-text">برنامه‌های اعضاء</span>
+                                        <i class="fa fa-angle-left fc-nav-arrow"></i>
+                                    </button>
+                                    <ul class="fc-nav-sub">
+                                        <li>
+                                            <a href="/admin/NutritionProgram/index" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>برنامه‌های غذایی
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/admin/TrainingProgram/index" class="fc-nav-sub-link">
+                                                <span class="fc-nav-sub-dot"></span>برنامه‌های تمرینی
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
                             <div class="fc-nav-label">بانک اطلاعات</div>
 
                             <li class="fc-nav-item">
@@ -193,7 +251,7 @@
                                     <span class="fc-nav-text">درخواست‌های برنامه</span>
                                     <span id="nav-pending-badge"
                                           style="display:none;background:#f6ad55;color:#fff;
-                                        border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                                                border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
                                     </span>
                                 </a>
                             </li>
@@ -210,22 +268,26 @@
                                 <span class="fc-nav-text">داشبورد من</span>
                             </a>
                         </li>
+                        @if (isActivMember)
+                        {
 
-                        <li class="fc-nav-item">
-                            <a href="/Admin/MemberDashboard/MyNutritionPrograms"
-                               class="fc-nav-link" data-title="برنامه غذایی">
-                                <span class="fc-nav-icon"><i class="fa fa-cutlery"></i></span>
-                                <span class="fc-nav-text">برنامه غذایی من</span>
-                            </a>
-                        </li>
+                            <li class="fc-nav-item">
+                                <a href="/Admin/MemberDashboard/MyNutritionPrograms"
+                                   class="fc-nav-link" data-title="برنامه غذایی">
+                                    <span class="fc-nav-icon"><i class="fa fa-cutlery"></i></span>
+                                    <span class="fc-nav-text">برنامه غذایی من</span>
+                                </a>
+                            </li>
 
-                        <li class="fc-nav-item">
-                            <a href="/Admin/MemberDashboard/MyTrainingPrograms"
-                               class="fc-nav-link" data-title="برنامه تمرینی">
-                                <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
-                                <span class="fc-nav-text">برنامه تمرینی من</span>
-                            </a>
-                        </li>
+                            <li class="fc-nav-item">
+                                <a href="/Admin/MemberDashboard/MyTrainingPrograms"
+                                   class="fc-nav-link" data-title="برنامه تمرینی">
+                                    <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
+                                    <span class="fc-nav-text">برنامه تمرینی من</span>
+                                </a>
+                            </li>
+
+                        }
 
                         <div class="fc-nav-label">پروفایل</div>
 
@@ -267,7 +329,7 @@
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های پشتیبانی</span>
                                 <span id="ticket-badge" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                            padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
@@ -279,7 +341,7 @@
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های مدیران باشگاه</span>
                                 <span id="ticket-badge-sa" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                            padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
@@ -317,7 +379,7 @@
                 <div class="fc-topbar-actions">
 
                     <!-- منوی کاربر -->
-@*                     <div class="fc-user-menu">
+                    @*                     <div class="fc-user-menu">
                         <button class="fc-user-trigger" id="fcUserTrigger">
                             <img src="~/AdminTemplate/app-assets/img/portrait/small/avatar-s-3.jpg"
                                  class="fc-user-avatar"

@@ -69,48 +69,52 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
-        //{
-        //    var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
-        //    return Json(result);
-        //}
+
         [HttpPost]
         public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
         {
-            // ---------------------------------------------------------
-            // تعیین مسیر هدایت بر اساس نقش کاربر
-            // ---------------------------------------------------------
-            string redirectUrl = "/"; // مسیر پیش‌فرض
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!string.IsNullOrEmpty(userId))
-            {
-                // استفاده از await به جای .Result برای جلوگیری از Deadlock
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user != null)
-                {
-                    var roles = await _userManager.GetRolesAsync(user);
-
-                    if (roles.Contains("Member"))
-                    {
-                        redirectUrl = "/Admin/MemberDashboard";
-                    }
-                    else if (roles.Contains("SuperAdmin") || roles.Contains("Admin"))
-                    {
-                        redirectUrl = "/Admin";
-                    }
-                }
-            }
-            // ---------------------------------------------------------
-
-            return Json(new
-            {
-                isSuccess = true,
-                redirectUrl = redirectUrl
-            });
+            var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
+            return Json(result);
         }
+
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
+        //{
+        //    // ---------------------------------------------------------
+        //    // تعیین مسیر هدایت بر اساس نقش کاربر
+        //    // ---------------------------------------------------------
+        //    string redirectUrl = "/"; // مسیر پیش‌فرض
+
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    if (!string.IsNullOrEmpty(userId))
+        //    {
+        //        // استفاده از await به جای .Result برای جلوگیری از Deadlock
+        //        var user = await _userManager.FindByIdAsync(userId);
+        //        if (user != null)
+        //        {
+        //            var roles = await _userManager.GetRolesAsync(user);
+
+        //            if (roles.Contains("Member"))
+        //            {
+        //                redirectUrl = "/Admin/MemberDashboard";
+        //            }
+        //            else if (roles.Contains("SuperAdmin") || roles.Contains("Admin"))
+        //            {
+        //                redirectUrl = "/Admin";
+        //            }
+        //        }
+        //    }
+        //    // ---------------------------------------------------------
+
+        //    return Json(new
+        //    {
+        //        isSuccess = true,
+        //        redirectUrl = redirectUrl
+        //    });
+        //}
 
         [HttpGet]
         public async Task<IActionResult> Register()

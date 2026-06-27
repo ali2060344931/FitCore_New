@@ -1,5 +1,15 @@
-@using FitCore.Application.Services.Dashboard
+@using System.Security.Claims
+@using FitCore.Application.Contexts
 @using FitCore.Common
+@using FitCore.Application.Services.Members.Queries
+@using Microsoft.EntityFrameworkCore
+@using Swashbuckle.AspNetCore.SwaggerGen
+@using System.ComponentModel.DataAnnotations
+@inject IGetMemberByAppUserIdService _getMemberByAppUserIdService
+@inject IDataBaseContext _db
+@using FitCore.Application.Services.Dashboard
+
+
 
 @model GymDashboardDto
 
@@ -8,37 +18,68 @@
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
+
+
+@{
+    bool isActivGYM = false;
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    int difDay_ = 0;
+    int difDay_abs = 0;
+
+    long uid = 0;
+    if (!string.IsNullOrEmpty(userId))
+        uid = long.Parse(userId);
+
+    var gid = _db.Users.Where(o => o.Id == uid).First().GymId;
+    var qgym = _db.Gyms.Where(o => o.Id == gid).First();
+
+
+    // if (User.IsAdmin())
+    {
+        string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+
+        var difDay = DateConverterMlladiToShamsi.GetDaysDifference(qgym.SubscriptionExpireDate, todayShamsi);
+        if (qgym.IsActive && difDay > 0) isActivGYM = true;
+        difDay_ = difDay;
+        difDay_abs = Math.Abs(difDay);
+
+
+    }
+
+}
+
+
 <style>
     /* =========================================================
-       FITCORE DASHBOARD — Design Tokens
-    ========================================================= */
+                           FITCORE DASHBOARD — Design Tokens
+                        ========================================================= */
     :root {
-        --d-green:        #00C896;
-        --d-green-bg:     #edfaf5;
-        --d-blue:         #3b82f6;
-        --d-blue-bg:      #eff6ff;
-        --d-orange:       #f59e0b;
-        --d-orange-bg:    #fffbeb;
-        --d-purple:       #8b5cf6;
-        --d-purple-bg:    #f5f3ff;
-        --d-red:          #ef4444;
-        --d-red-bg:       #fef2f2;
-        --d-text:         #111827;
-        --d-muted:        #6b7280;
-        --d-light:        #9ca3af;
-        --d-border:       #e5e7eb;
-        --d-surface:      #f9fafb;
-        --d-white:        #ffffff;
-        --d-radius:       14px;
-        --d-radius-sm:    8px;
-        --d-shadow:       0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-        --d-shadow-md:    0 4px 16px rgba(0,0,0,0.08);
-        --d-transition:   0.2s ease;
+        --d-green: #00C896;
+        --d-green-bg: #edfaf5;
+        --d-blue: #3b82f6;
+        --d-blue-bg: #eff6ff;
+        --d-orange: #f59e0b;
+        --d-orange-bg: #fffbeb;
+        --d-purple: #8b5cf6;
+        --d-purple-bg: #f5f3ff;
+        --d-red: #ef4444;
+        --d-red-bg: #fef2f2;
+        --d-text: #111827;
+        --d-muted: #6b7280;
+        --d-light: #9ca3af;
+        --d-border: #e5e7eb;
+        --d-surface: #f9fafb;
+        --d-white: #ffffff;
+        --d-radius: 14px;
+        --d-radius-sm: 8px;
+        --d-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        --d-shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+        --d-transition: 0.2s ease;
     }
 
     /* =========================================================
-       Layout
-    ========================================================= */
+                           Layout
+                        ========================================================= */
     .db-root {
         padding: 16px 12px 32px;
         direction: rtl;
@@ -46,8 +87,8 @@
     }
 
     /* =========================================================
-       Card base
-    ========================================================= */
+                           Card base
+                        ========================================================= */
     .db-card {
         background: var(--d-white);
         border-radius: var(--d-radius);
@@ -76,9 +117,12 @@
     }
 
     .db-card-title-icon {
-        width: 28px; height: 28px;
+        width: 28px;
+        height: 28px;
         border-radius: var(--d-radius-sm);
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 13px;
         flex-shrink: 0;
     }
@@ -91,11 +135,15 @@
         white-space: nowrap;
         transition: opacity var(--d-transition);
     }
-    .db-see-all:hover { opacity: 0.75; text-decoration: none; }
+
+        .db-see-all:hover {
+            opacity: 0.75;
+            text-decoration: none;
+        }
 
     /* =========================================================
-       Section divider / label
-    ========================================================= */
+                           Section divider / label
+                        ========================================================= */
     .db-section-label {
         font-size: 11px;
         font-weight: 700;
@@ -107,8 +155,8 @@
     }
 
     /* =========================================================
-       Gym header banner
-    ========================================================= */
+                           Gym header banner
+                        ========================================================= */
     .db-gym-banner {
         background: linear-gradient(135deg, #0f1117 0%, #1c2541 100%);
         border-radius: var(--d-radius);
@@ -122,28 +170,37 @@
         overflow: hidden;
     }
 
-    .db-gym-banner::after {
-        content: '';
-        position: absolute;
-        left: -40px; top: -40px;
-        width: 160px; height: 160px;
-        border-radius: 50%;
-        background: rgba(0,200,150,0.06);
-        pointer-events: none;
-    }
+        .db-gym-banner::after {
+            content: '';
+            position: absolute;
+            left: -40px;
+            top: -40px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(0,200,150,0.06);
+            pointer-events: none;
+        }
 
     .db-gym-logo {
-        width: 52px; height: 52px;
+        width: 52px;
+        height: 52px;
         border-radius: 14px;
         background: rgba(0,200,150,0.12);
         border: 2px solid rgba(0,200,150,0.25);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 22px; color: var(--d-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: var(--d-green);
         flex-shrink: 0;
         object-fit: cover;
     }
 
-    .db-gym-info { flex: 1; min-width: 0; }
+    .db-gym-info {
+        flex: 1;
+        min-width: 0;
+    }
 
     .db-gym-name {
         color: #fff;
@@ -164,7 +221,11 @@
         color: rgba(255,255,255,0.45);
     }
 
-    .db-gym-meta span { display: flex; align-items: center; gap: 4px; }
+        .db-gym-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
     .db-gym-pills {
         display: flex;
@@ -175,8 +236,8 @@
     }
 
     /* =========================================================
-       Pills / Badges
-    ========================================================= */
+                           Pills / Badges
+                        ========================================================= */
     .db-pill {
         display: inline-flex;
         align-items: center;
@@ -188,16 +249,39 @@
         white-space: nowrap;
     }
 
-    .db-pill-green   { background: rgba(0,200,150,0.15);  color: var(--d-green);  }
-    .db-pill-blue    { background: rgba(59,130,246,0.12); color: var(--d-blue);   }
-    .db-pill-purple  { background: rgba(139,92,246,0.12); color: var(--d-purple); }
-    .db-pill-orange  { background: rgba(245,158,11,0.15); color: var(--d-orange); }
-    .db-pill-red     { background: rgba(239,68,68,0.12);  color: var(--d-red);    }
-    .db-pill-gray    { background: #f3f4f6;                color: var(--d-muted);  }
+    .db-pill-green {
+        background: rgba(0,200,150,0.15);
+        color: var(--d-green);
+    }
+
+    .db-pill-blue {
+        background: rgba(59,130,246,0.12);
+        color: var(--d-blue);
+    }
+
+    .db-pill-purple {
+        background: rgba(139,92,246,0.12);
+        color: var(--d-purple);
+    }
+
+    .db-pill-orange {
+        background: rgba(245,158,11,0.15);
+        color: var(--d-orange);
+    }
+
+    .db-pill-red {
+        background: rgba(239,68,68,0.12);
+        color: var(--d-red);
+    }
+
+    .db-pill-gray {
+        background: #f3f4f6;
+        color: var(--d-muted);
+    }
 
     /* =========================================================
-       Stat cards
-    ========================================================= */
+                           Stat cards
+                        ========================================================= */
     .db-stat {
         background: var(--d-white);
         border-radius: var(--d-radius);
@@ -214,17 +298,20 @@
         height: 100%;
     }
 
-    .db-stat:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--d-shadow-md);
-        text-decoration: none;
-        color: inherit;
-    }
+        .db-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--d-shadow-md);
+            text-decoration: none;
+            color: inherit;
+        }
 
     .db-stat-icon {
-        width: 38px; height: 38px;
+        width: 38px;
+        height: 38px;
         border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 16px;
         margin-bottom: 12px;
         flex-shrink: 0;
@@ -256,11 +343,13 @@
         gap: 5px;
     }
 
-    .db-stat-foot.up { color: #10b981; }
+        .db-stat-foot.up {
+            color: #10b981;
+        }
 
     /* =========================================================
-       Alert: pending requests
-    ========================================================= */
+                           Alert: pending requests
+                        ========================================================= */
     .db-alert-pending {
         display: flex;
         align-items: center;
@@ -273,15 +362,22 @@
     }
 
     .db-alert-pending-icon {
-        width: 42px; height: 42px;
+        width: 42px;
+        height: 42px;
         border-radius: 12px;
         background: #fef3c7;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 18px; color: #d97706;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #d97706;
         flex-shrink: 0;
     }
 
-    .db-alert-pending-body { flex: 1; min-width: 0; }
+    .db-alert-pending-body {
+        flex: 1;
+        min-width: 0;
+    }
 
     .db-alert-pending-title {
         font-size: 13px;
@@ -312,11 +408,15 @@
         transition: opacity var(--d-transition);
     }
 
-    .db-alert-pending-btn:hover { opacity: 0.85; text-decoration: none; color: #fff; }
+        .db-alert-pending-btn:hover {
+            opacity: 0.85;
+            text-decoration: none;
+            color: #fff;
+        }
 
     /* =========================================================
-       Alert: critical members
-    ========================================================= */
+                           Alert: critical members
+                        ========================================================= */
     .db-critical {
         background: #fffaf0;
         border-right: 4px solid var(--d-orange);
@@ -344,7 +444,8 @@
 
     .db-critical-close {
         position: absolute;
-        left: 12px; top: 12px;
+        left: 12px;
+        top: 12px;
         background: none;
         border: none;
         font-size: 18px;
@@ -367,25 +468,25 @@
         width: 100%;
     }
 
-    .db-critical-table th {
-        background: #fffaf0;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 8px 10px;
-        white-space: nowrap;
-        color: #744210;
-    }
+        .db-critical-table th {
+            background: #fffaf0;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 8px 10px;
+            white-space: nowrap;
+            color: #744210;
+        }
 
-    .db-critical-table td {
-        padding: 8px 10px;
-        white-space: nowrap;
-        color: var(--d-text);
-        border-top: 1px solid #f0f4f8;
-    }
+        .db-critical-table td {
+            padding: 8px 10px;
+            white-space: nowrap;
+            color: var(--d-text);
+            border-top: 1px solid #f0f4f8;
+        }
 
     /* =========================================================
-       Super admin panel
-    ========================================================= */
+                           Super admin panel
+                        ========================================================= */
     .db-super {
         background: linear-gradient(135deg, #0f1117 0%, #1c2541 100%);
         color: #fff;
@@ -418,8 +519,8 @@
     }
 
     /* =========================================================
-       Members table
-    ========================================================= */
+                           Members table
+                        ========================================================= */
     .db-members-wrap {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -431,24 +532,26 @@
         min-width: 420px;
     }
 
-    .db-members-table th {
-        font-size: 11px;
-        font-weight: 700;
-        padding: 10px 10px;
-        color: var(--d-muted);
-        white-space: nowrap;
-        border-bottom: 1px solid var(--d-border);
-        background: var(--d-surface);
-    }
+        .db-members-table th {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 10px 10px;
+            color: var(--d-muted);
+            white-space: nowrap;
+            border-bottom: 1px solid var(--d-border);
+            background: var(--d-surface);
+        }
 
-    .db-members-table td {
-        padding: 10px 10px;
-        white-space: nowrap;
-        border-bottom: 1px solid var(--d-border);
-        vertical-align: middle;
-    }
+        .db-members-table td {
+            padding: 10px 10px;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--d-border);
+            vertical-align: middle;
+        }
 
-    .db-members-table tr:last-child td { border-bottom: none; }
+        .db-members-table tr:last-child td {
+            border-bottom: none;
+        }
 
     .db-member-row {
         display: flex;
@@ -457,33 +560,52 @@
     }
 
     .db-avatar {
-        width: 30px; height: 30px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         background: linear-gradient(135deg, #00C896, #0ea5e9);
         color: #fff;
         font-size: 12px;
         font-weight: 700;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
     }
 
     .db-count-badge {
         display: inline-flex;
-        align-items: center; justify-content: center;
-        width: 24px; height: 24px;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
         border-radius: 6px;
         font-size: 11px;
         font-weight: 700;
     }
 
-    .db-count-badge.green { background: #ecfdf5; color: #059669; }
-    .db-count-badge.blue  { background: #eff6ff; color: var(--d-blue); }
-    .db-count-badge.gray  { background: #f3f4f6; color: var(--d-light); }
+        .db-count-badge.green {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .db-count-badge.blue {
+            background: #eff6ff;
+            color: var(--d-blue);
+        }
+
+        .db-count-badge.gray {
+            background: #f3f4f6;
+            color: var(--d-light);
+        }
 
     /* =========================================================
-       Activity list
-    ========================================================= */
-    .db-activity-list { display: flex; flex-direction: column; }
+                           Activity list
+                        ========================================================= */
+    .db-activity-list {
+        display: flex;
+        flex-direction: column;
+    }
 
     .db-activity-item {
         display: flex;
@@ -493,15 +615,21 @@
         border-bottom: 1px solid var(--d-border);
     }
 
-    .db-activity-item:last-child { border-bottom: none; }
+        .db-activity-item:last-child {
+            border-bottom: none;
+        }
 
     .db-activity-dot {
-        width: 8px; height: 8px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         flex-shrink: 0;
     }
 
-    .db-activity-body { flex: 1; min-width: 0; }
+    .db-activity-body {
+        flex: 1;
+        min-width: 0;
+    }
 
     .db-activity-title {
         font-size: 12px;
@@ -522,8 +650,8 @@
     }
 
     /* =========================================================
-       Quick access
-    ========================================================= */
+                           Quick access
+                        ========================================================= */
     .db-quick-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -549,59 +677,154 @@
         text-align: center;
     }
 
-    .db-quick-btn i { font-size: 20px; color: var(--d-green); }
+        .db-quick-btn i {
+            font-size: 20px;
+            color: var(--d-green);
+        }
 
-    .db-quick-btn:hover {
-        background: var(--d-green-bg);
-        border-color: var(--d-green);
-        color: var(--d-green);
-        transform: translateY(-2px);
-        text-decoration: none;
-    }
+        .db-quick-btn:hover {
+            background: var(--d-green-bg);
+            border-color: var(--d-green);
+            color: var(--d-green);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
 
     /* =========================================================
-       Empty state
-    ========================================================= */
+                           Empty state
+                        ========================================================= */
     .db-empty {
         text-align: center;
         padding: 28px 16px;
         color: var(--d-light);
     }
 
-    .db-empty i { font-size: 26px; display: block; margin-bottom: 8px; opacity: 0.4; }
-    .db-empty-text { font-size: 12px; }
+        .db-empty i {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+
+    .db-empty-text {
+        font-size: 12px;
+    }
 
     /* =========================================================
-       Responsive
-    ========================================================= */
+                           Responsive
+                        ========================================================= */
     @@media (max-width: 575.98px) {
-        .db-root { padding: 12px 10px 24px; }
-        .db-card { padding: 14px; }
-        .db-gym-banner { padding: 14px; gap: 12px; }
-        .db-gym-name { font-size: 15px; }
-        .db-gym-logo { width: 44px; height: 44px; font-size: 18px; border-radius: 12px; }
-        .db-stat { padding: 12px; }
-        .db-stat-num { font-size: 22px; }
-        .db-stat-icon { width: 34px; height: 34px; font-size: 14px; }
-        .db-super { padding: 16px; }
-        .db-super-num { font-size: 26px; }
-        .db-super-title { font-size: 15px; }
-        .db-alert-pending { flex-wrap: wrap; }
-        .db-alert-pending-btn { width: 100%; justify-content: center; }
-        .db-quick-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .db-quick-btn { padding: 10px 4px; min-height: 62px; font-size: 10px; gap: 6px; }
-        .db-quick-btn i { font-size: 17px; }
-        .db-activity-title { font-size: 11px; }
-        .db-critical { padding: 12px; }
+        .db-root {
+            padding: 12px 10px 24px;
+        }
+
+        .db-card {
+            padding: 14px;
+        }
+
+        .db-gym-banner {
+            padding: 14px;
+            gap: 12px;
+        }
+
+        .db-gym-name {
+            font-size: 15px;
+        }
+
+        .db-gym-logo {
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .db-stat {
+            padding: 12px;
+        }
+
+        .db-stat-num {
+            font-size: 22px;
+        }
+
+        .db-stat-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 14px;
+        }
+
+        .db-super {
+            padding: 16px;
+        }
+
+        .db-super-num {
+            font-size: 26px;
+        }
+
+        .db-super-title {
+            font-size: 15px;
+        }
+
+        .db-alert-pending {
+            flex-wrap: wrap;
+        }
+
+        .db-alert-pending-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .db-quick-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .db-quick-btn {
+            padding: 10px 4px;
+            min-height: 62px;
+            font-size: 10px;
+            gap: 6px;
+        }
+
+            .db-quick-btn i {
+                font-size: 17px;
+            }
+
+        .db-activity-title {
+            font-size: 11px;
+        }
+
+        .db-critical {
+            padding: 12px;
+        }
     }
 
     @@media (max-width: 380px) {
-        .db-gym-logo { width: 38px; height: 38px; font-size: 16px; }
-        .db-gym-name { font-size: 13px; }
-        .db-stat-num { font-size: 20px; }
-        .db-super-num { font-size: 22px; }
-        .db-quick-btn { min-height: 56px; font-size: 9px; }
-        .db-quick-btn i { font-size: 15px; }
+        .db-gym-logo {
+            width: 38px;
+            height: 38px;
+            font-size: 16px;
+        }
+
+        .db-gym-name {
+            font-size: 13px;
+        }
+
+        .db-stat-num {
+            font-size: 20px;
+        }
+
+        .db-super-num {
+            font-size: 22px;
+        }
+
+        .db-quick-btn {
+            min-height: 56px;
+            font-size: 9px;
+        }
+
+            .db-quick-btn i {
+                font-size: 15px;
+            }
     }
 </style>
 
@@ -681,8 +904,8 @@
                     <tbody>
                         @foreach (var m in ViewBag.CriticalMembers)
                         {
-                            string statusClass  = m.RemainingDays < 0 ? "badge-danger"  : "badge-warning";
-                            string statusText   = m.RemainingDays < 0 ? "منقضی شده"      : $"{m.RemainingDays} روز مانده";
+                            string statusClass = m.RemainingDays < 0 ? "badge-danger" : "badge-warning";
+                            string statusText = m.RemainingDays < 0 ? "منقضی شده" : $"{m.RemainingDays} روز مانده";
                             <tr>
                                 <td>@m.FullName</td>
                                 <td style="direction:ltr;text-align:right;">@m.Mobile</td>
@@ -756,16 +979,31 @@
                 {
                     <span class="d-none d-sm-inline"><i class="fa fa-map-marker"></i> @Model.GymAddress</span>
                 }
+
             </div>
         </div>
 
         <div class="db-gym-pills">
             @if (!string.IsNullOrWhiteSpace(Model.SubscriptionExpireDate))
             {
-                <span class="db-pill db-pill-blue">
-                    <i class="fa fa-calendar-check-o"></i>
-                    تا @Model.SubscriptionExpireDate
-                </span>
+                if (difDay_ > 0)
+                {
+                    <span class="db-pill db-pill-blue">
+                        <i class="fa fa-calendar-check-o"></i>
+                        تاریخ اعتبار تا:  @Model.SubscriptionExpireDate
+                    </span>
+
+                }
+                else
+
+                {
+                    <span class="db-pill db-pill-red">
+                        <i class="fa fa-calendar-check-o"></i>
+                        تاریخ اعتبار منقضی شد، مدت:   @difDay_abs روز
+                    </span>
+
+                }
+
             }
             @if (Model.MaxMembers > 0)
             {
@@ -774,9 +1012,12 @@
                     @Model.TotalMembers / @Model.MaxMembers
                 </span>
             }
-            <span class="db-pill @(Model.IsActive ? "db-pill-green" : "db-pill-red")">
-                @(Model.IsActive ? "● فعال" : "● غیرفعال")
+
+            <span class="db-pill @(isActivGYM ? " db-pill-green" : "db-pill-red")">
+                @(isActivGYM ? "● فعال" : "● غیرفعال")
             </span>
+
+
         </div>
     </div>
 
@@ -784,55 +1025,60 @@
          کارت‌های آمار
     ===================================================== -->
     <div class="row g-2" style="margin-bottom:14px;">
-        <div class="col-6 col-md-3">
-            <a href="/Admin/Members" class="db-stat" style="--stat-accent:#00C896;">
-                <div class="db-stat-icon" style="background:var(--d-green-bg);">
-                    <i class="fa fa-users" style="color:var(--d-green);"></i>
-                </div>
-                <div class="db-stat-num">@Model.TotalMembers</div>
-                <div class="db-stat-label">کـــل اعضــا</div>
-                <div class="db-stat-foot @(Model.NewMembersThisMonth > 0 ? "up" : "")">
-                    @if (Model.NewMembersThisMonth > 0)
-                    {
-                        <i class="fa fa-arrow-up"></i>
-                        <span>@Model.NewMembersThisMonth این ماه</span>
-                    }
-                    else
-                    {
-                        <span style="color:var(--d-light);">بدون عضو جدید</span>
-                    }
-                </div>
-            </a>
-        </div>
 
-        <div class="col-6 col-md-3">
-            <a href="/Admin/NutritionProgram" class="db-stat" style="--stat-accent:#f59e0b;">
-                <div class="db-stat-icon" style="background:var(--d-orange-bg);">
-                    <i class="fa fa-cutlery" style="color:var(--d-orange);"></i>
-                </div>
-                <div class="db-stat-num">@Model.TotalNutritionPrograms</div>
-                <div class="db-stat-label">برنامه غذایی</div>
-                <div class="db-stat-foot @(Model.ActiveNutritionPrograms > 0 ? "up" : "")">
-                    <i class="fa fa-check-circle" style="color:#10b981;"></i>
-                    <span>@Model.ActiveNutritionPrograms فعال</span>
-                </div>
-            </a>
-        </div>
 
-        <div class="col-6 col-md-3">
-            <a href="/Admin/TrainingProgram" class="db-stat" style="--stat-accent:#3b82f6;">
-                <div class="db-stat-icon" style="background:var(--d-blue-bg);">
-                    <i class="fa fa-heartbeat" style="color:var(--d-blue);"></i>
-                </div>
-                <div class="db-stat-num">@Model.TotalTrainingPrograms</div>
-                <div class="db-stat-label">برنامه تمرینی</div>
-                <div class="db-stat-foot @(Model.ActiveTrainingPrograms > 0 ? "up" : "")">
-                    <i class="fa fa-check-circle" style="color:#10b981;"></i>
-                    <span>@Model.ActiveTrainingPrograms فعال</span>
-                </div>
-            </a>
-        </div>
+        @if (isActivGYM)
 
+        {
+            <div class="col-6 col-md-3">
+                <a href="/Admin/Members" class="db-stat" style="--stat-accent:#00C896;">
+                    <div class="db-stat-icon" style="background:var(--d-green-bg);">
+                        <i class="fa fa-users" style="color:var(--d-green);"></i>
+                    </div>
+                    <div class="db-stat-num">@Model.TotalMembers</div>
+                    <div class="db-stat-label">کـــل اعضــا</div>
+                    <div class="db-stat-foot @(Model.NewMembersThisMonth > 0 ? "up" : "")">
+                        @if (Model.NewMembersThisMonth > 0)
+                        {
+                            <i class="fa fa-arrow-up"></i>
+                            <span>@Model.NewMembersThisMonth این ماه</span>
+                        }
+                        else
+                        {
+                            <span style="color:var(--d-light);">بدون عضو جدید</span>
+                        }
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <a href="/Admin/NutritionProgram" class="db-stat" style="--stat-accent:#f59e0b;">
+                    <div class="db-stat-icon" style="background:var(--d-orange-bg);">
+                        <i class="fa fa-cutlery" style="color:var(--d-orange);"></i>
+                    </div>
+                    <div class="db-stat-num">@Model.TotalNutritionPrograms</div>
+                    <div class="db-stat-label">برنامه غذایی</div>
+                    <div class="db-stat-foot @(Model.ActiveNutritionPrograms > 0 ? "up" : "")">
+                        <i class="fa fa-check-circle" style="color:#10b981;"></i>
+                        <span>@Model.ActiveNutritionPrograms فعال</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <a href="/Admin/TrainingProgram" class="db-stat" style="--stat-accent:#3b82f6;">
+                    <div class="db-stat-icon" style="background:var(--d-blue-bg);">
+                        <i class="fa fa-heartbeat" style="color:var(--d-blue);"></i>
+                    </div>
+                    <div class="db-stat-num">@Model.TotalTrainingPrograms</div>
+                    <div class="db-stat-label">برنامه تمرینی</div>
+                    <div class="db-stat-foot @(Model.ActiveTrainingPrograms > 0 ? "up" : "")">
+                        <i class="fa fa-check-circle" style="color:#10b981;"></i>
+                        <span>@Model.ActiveTrainingPrograms فعال</span>
+                    </div>
+                </a>
+            </div>
+        }
         <div class="col-6 col-md-3">
             <div class="db-stat" style="--stat-accent:#8b5cf6;">
                 <div class="db-stat-icon" style="background:var(--d-purple-bg);">
@@ -907,6 +1153,8 @@
         <!-- آخرین اعضا -->
         <div class="col-md-7">
             <div class="db-card">
+
+
                 <div class="db-card-header">
                     <div class="db-card-title">
                         <div class="db-card-title-icon" style="background:var(--d-green-bg);">
@@ -915,7 +1163,12 @@
                         آخرین اعضا
                         <help key="H5" />
                     </div>
-                    <a href="/Admin/Members" class="db-see-all">مشاهده همه</a>
+                    @if (isActivGYM)
+                    {
+                        <a href="/Admin/Members" class="db-see-all">مشاهده همه</a>
+                    }
+
+
                 </div>
 
                 <div class="db-members-wrap">
@@ -1031,7 +1284,7 @@
                     }
 
                     @if ((Model.RecentNutritionPrograms == null || !Model.RecentNutritionPrograms.Any()) &&
-                         (Model.RecentTrainingPrograms  == null || !Model.RecentTrainingPrograms.Any()))
+                                        (Model.RecentTrainingPrograms == null || !Model.RecentTrainingPrograms.Any()))
                     {
                         <div class="db-empty">
                             <i class="fa fa-inbox"></i>
@@ -1060,21 +1313,26 @@
         </div>
 
         <div class="db-quick-grid">
-            <a href="/Admin/Members" class="db-quick-btn">
-                <i class="fa fa-users"></i>
-                <span>اعضا</span>
-                <help key="HD01" />
-            </a>
-            <a href="/Admin/NutritionProgram" class="db-quick-btn">
-                <i class="fa fa-cutlery"></i>
-                <span>برنامه غذایی</span>
-                <help key="HD02" />
-            </a>
-            <a href="/Admin/TrainingProgram" class="db-quick-btn">
-                <i class="fa fa-heartbeat"></i>
-                <span>برنامه تمرینی</span>
-                <help key="HD03" />
-            </a>
+            @if (isActivGYM)
+
+            {
+                <a href="/Admin/Members" class="db-quick-btn">
+                    <i class="fa fa-users"></i>
+                    <span>اعضا</span>
+                    <help key="HD01" />
+                </a>
+                <a href="/Admin/NutritionProgram" class="db-quick-btn">
+                    <i class="fa fa-cutlery"></i>
+                    <span>برنامه غذایی</span>
+                    <help key="HD02" />
+                </a>
+                <a href="/Admin/TrainingProgram" class="db-quick-btn">
+                    <i class="fa fa-heartbeat"></i>
+                    <span>برنامه تمرینی</span>
+                    <help key="HD03" />
+                </a>
+            }
+
             <a href="/Admin/Food" class="db-quick-btn">
                 <i class="fa fa-apple"></i>
                 <span>غذاها</span>
@@ -1085,11 +1343,13 @@
                 <span>حرکات</span>
                 <help key="HD05" />
             </a>
-            <a href="/Admin/Gym" class="db-quick-btn">
+
+            <!--  <a href="/Admin/Gym" class="db-quick-btn">
                 <i class="fa fa-building-o"></i>
                 <span>باشگاه</span>
                 <help key="HD06" />
-            </a>
+            </a> -->
+
         </div>
     </div>
 
@@ -1101,143 +1361,143 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        Chart.defaults.font.family = 'Vazirmatn, Vazir, Tahoma, sans-serif';
-        Chart.defaults.font.size   = 10;
-        Chart.defaults.plugins.legend.rtl = true;
+                        Chart.defaults.font.family = 'Vazirmatn, Vazir, Tahoma, sans-serif';
+                        Chart.defaults.font.size   = 10;
+                        Chart.defaults.plugins.legend.rtl = true;
 
-        // داده‌های سرور
-        var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                         Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
-                         ?? new System.Collections.Generic.List<string>()));
+                        // داده‌های سرور
+                        var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ?? new System.Collections.Generic.List<string>()));
 
-        var membersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                              Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
-                              ?? new System.Collections.Generic.List<int>()));
+    var membersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
-        var nutritionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
-                                ?? new System.Collections.Generic.List<int>()));
+    var nutritionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
-        var trainingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                               Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
-                               ?? new System.Collections.Generic.List<int>()));
+    var trainingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
-        var donutLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                              Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
-                              ?? new System.Collections.Generic.List<string>()));
+    var donutLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<string>()));
 
-        var donutData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                            Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
-                            ?? new System.Collections.Generic.List<int>()));
+    var donutData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
-        // تنظیمات مشترک محورها
-        var commonScales = {
-            x: {
-                grid: { display: false },
-                ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 }
-            },
-            y: {
-                beginAtZero: true,
-                ticks: { stepSize: 1, font: { size: 9 }, maxTicksLimit: 5 },
-                grid: { color: '#f3f4f6' }
-            }
-        };
+    // تنظیمات مشترک محورها
+    var commonScales = {
+        x: {
+            grid: { display: false },
+            ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 }
+        },
+        y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 9 }, maxTicksLimit: 5 },
+            grid: { color: '#f3f4f6' }
+        }
+    };
 
-        // نمودار خطی
-        var lineCtx = document.getElementById('lineChart');
-        if (lineCtx) {
-            new Chart(lineCtx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [
-                        {
-                            label: 'اعضای جدید',
-                            data: membersData,
-                            borderColor: '#00C896',
-                            backgroundColor: 'rgba(0,200,150,0.07)',
-                            tension: 0.4, fill: true,
-                            pointBackgroundColor: '#00C896',
-                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
-                        },
-                        {
-                            label: 'برنامه غذایی',
-                            data: nutritionData,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245,158,11,0.07)',
-                            tension: 0.4, fill: true,
-                            pointBackgroundColor: '#f59e0b',
-                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
-                        },
-                        {
-                            label: 'برنامه تمرینی',
-                            data: trainingData,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59,130,246,0.07)',
-                            tension: 0.4, fill: true,
-                            pointBackgroundColor: '#3b82f6',
-                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                        // نمودار خطی
+                        var lineCtx = document.getElementById('lineChart');
+                        if (lineCtx) {
+                            new Chart(lineCtx, {
+                                type: 'line',
+                                data: {
+                                    labels: months,
+                                    datasets: [
+                                        {
+                                            label: 'اعضای جدید',
+                                            data: membersData,
+                                            borderColor: '#00C896',
+                                            backgroundColor: 'rgba(0,200,150,0.07)',
+                                            tension: 0.4, fill: true,
+                                            pointBackgroundColor: '#00C896',
+                                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                                        },
+                                        {
+                                            label: 'برنامه غذایی',
+                                            data: nutritionData,
+                                            borderColor: '#f59e0b',
+                                            backgroundColor: 'rgba(245,158,11,0.07)',
+                                            tension: 0.4, fill: true,
+                                            pointBackgroundColor: '#f59e0b',
+                                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                                        },
+                                        {
+                                            label: 'برنامه تمرینی',
+                                            data: trainingData,
+                                            borderColor: '#3b82f6',
+                                            backgroundColor: 'rgba(59,130,246,0.07)',
+                                            tension: 0.4, fill: true,
+                                            pointBackgroundColor: '#3b82f6',
+                                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    interaction: { mode: 'index', intersect: false },
+                                    plugins: {
+                                        legend: {
+                                            position: 'top', align: 'end',
+                                            labels: { boxWidth: 10, padding: 12, font: { size: 10 } }
+                                        },
+                                        tooltip: { rtl: true }
+                                    },
+                                    scales: commonScales
+                                }
+                            });
                         }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: {
-                            position: 'top', align: 'end',
-                            labels: { boxWidth: 10, padding: 12, font: { size: 10 } }
-                        },
-                        tooltip: { rtl: true }
-                    },
-                    scales: commonScales
-                }
-            });
-        }
 
-        // نمودار دونات
-        var donutCtx = document.getElementById('donutChart');
-        if (donutCtx && donutData.length > 0) {
-            var colors = ['#00C896','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981'];
+                        // نمودار دونات
+                        var donutCtx = document.getElementById('donutChart');
+                        if (donutCtx && donutData.length > 0) {
+                            var colors = ['#00C896','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981'];
 
-            new Chart(donutCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: donutLabels,
-                    datasets: [{
-                        data: donutData,
-                        backgroundColor: colors.slice(0, donutData.length),
-                        borderWidth: 2,
-                        borderColor: '#fff',
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '62%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { rtl: true }
-                    }
-                }
-            });
+                            new Chart(donutCtx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: donutLabels,
+                                    datasets: [{
+                                        data: donutData,
+                                        backgroundColor: colors.slice(0, donutData.length),
+                                        borderWidth: 2,
+                                        borderColor: '#fff',
+                                        hoverOffset: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    cutout: '62%',
+                                    plugins: {
+                                        legend: { display: false },
+                                        tooltip: { rtl: true }
+                                    }
+                                }
+                            });
 
-            var legend = document.getElementById('donutLegend');
-            if (legend) {
-                var legendHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;">';
-                donutLabels.forEach(function(label, i) {
-                    legendHtml +=
-                        '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">' +
-                        '<div style="width:8px;height:8px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
-                        '<span style="font-size:11px;color:#4b5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + label + '</span>' +
-                        '<span style="font-size:11px;font-weight:700;color:#111827;flex-shrink:0;">' + donutData[i] + '</span>' +
-                        '</div>';
-                });
-                legendHtml += '</div>';
-                legend.innerHTML = legendHtml;
-            }
-        }
+                            var legend = document.getElementById('donutLegend');
+                            if (legend) {
+                                var legendHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;">';
+                                donutLabels.forEach(function(label, i) {
+                                    legendHtml +=
+                                        '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">' +
+                                        '<div style="width:8px;height:8px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
+                                        '<span style="font-size:11px;color:#4b5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + label + '</span>' +
+                                        '<span style="font-size:11px;font-weight:700;color:#111827;flex-shrink:0;">' + donutData[i] + '</span>' +
+                                        '</div>';
+                                });
+                                legendHtml += '</div>';
+                                legend.innerHTML = legendHtml;
+                            }
+                        }
     </script>
 }

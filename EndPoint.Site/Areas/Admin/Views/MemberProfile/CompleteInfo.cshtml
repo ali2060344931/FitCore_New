@@ -17,7 +17,7 @@
 
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
-                 model='"تکمیل اطلاعات پروفایل"' />
+                 model='"تکمیل اطلاعات جسمانی پروفایل"' />
 
         <form id="CompleteInfoForm">
             <input type="hidden" name="Id" value="@Model?.Id" />
@@ -43,7 +43,6 @@
                              Id = "BirthDate",
                              Name = "BirthDate",
                              LabelName = Html.DisplayNameFor(m => m.BirthDate),
-                             Placeholder = "مثال: 1370/05/20",
                              Value = Model.BirthDate, // مقدار فعلی از دیتابیس برای فرم ویرایش
                              Col = 2,
                              Disabled = true

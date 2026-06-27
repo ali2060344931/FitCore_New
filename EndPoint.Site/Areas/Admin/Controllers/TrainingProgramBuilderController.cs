@@ -233,7 +233,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 {
                     Value = x.Id.ToString(),
                     Text = x.PrimaryMuscleGroup.Name + " - " + x.EquipmentType.Name + " - " + x.Name +
-                           (x.GymId == null ? " (سراسری)" : "")
+                           (x.GymId == null ? " (عمومی)" : "")
                 })
                 .ToListAsync();
 

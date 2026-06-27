@@ -36,16 +36,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             IDataBaseContext context
            )
         {
-            _nutritionFacad      = nutritionFacad;
-            _trainingFacad       = trainingFacad;
+            _nutritionFacad = nutritionFacad;
+            _trainingFacad = trainingFacad;
             _nutritionPdfService = nutritionPdfService;
-            _trainingPdfService  = trainingPdfService;
-            _context             = context;
+            _trainingPdfService = trainingPdfService;
+            _context = context;
         }
 
 
 
-        
+
         private long GetCurrentUserId() =>
             long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -85,9 +85,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Execute(new RequestGetNutritionProgramsDto
                 {
                     AppUserId = appUserId,
-                    IsAdmin   = false,
-                    Page      = 1,
-                    PageSize  = 100
+                    IsAdmin = false,
+                    Page = 1,
+                    PageSize = 100
                 });
 
             // برنامه‌های تمرینی
@@ -95,9 +95,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Execute(new GetTrainingProgramsRequestDto
                 {
                     AppUserId = appUserId,
-                    IsAdmin   = false,
-                    Page      = 1,
-                    PageSize  = 100
+                    IsAdmin = false,
+                    Page = 1,
+                    PageSize = 100
                 });
 
             // آخرین اندازه‌گیری بدن
@@ -107,16 +107,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .FirstOrDefault();
 
             // محاسبه وضعیت عضویت
-            var membershipStatus = GetMembershipStatus(
-                member.MembershipStartDate,
-                member.MembershipEndDate);
+            var membershipStatus = GetMembershipStatus(member.MembershipStartDate, member.MembershipEndDate, member.IsActive);
 
-            ViewBag.Member              = member;
-            ViewBag.EncryptedUserId     = encryptedId;
-            ViewBag.NutritionPrograms   = nutritionResult?.NutritionPrograms;
-            ViewBag.TrainingPrograms    = trainingResult?.Data?.TrainingPrograms;
-            ViewBag.LastMeasurement     = lastMeasurement;
-            ViewBag.MembershipStatus    = membershipStatus;
+            ViewBag.Member = member;
+            ViewBag.EncryptedUserId = encryptedId;
+            ViewBag.NutritionPrograms = nutritionResult?.NutritionPrograms;
+            ViewBag.TrainingPrograms = trainingResult?.Data?.TrainingPrograms;
+            ViewBag.LastMeasurement = lastMeasurement;
+            ViewBag.MembershipStatus = membershipStatus;
 
             ViewData["Title"] = "داشبورد من";
 
@@ -139,9 +137,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Execute(new RequestGetNutritionProgramsDto
                 {
                     AppUserId = appUserId,
-                    IsAdmin   = false,
-                    Page      = page,
-                    PageSize  = PageSize,
+                    IsAdmin = false,
+                    Page = page,
+                    PageSize = PageSize,
                     SearchKey = SearchKey
                 });
 
@@ -162,9 +160,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Execute(new GetTrainingProgramsRequestDto
                 {
                     AppUserId = appUserId,
-                    IsAdmin   = false,
-                    Page      = page,
-                    PageSize  = PageSize,
+                    IsAdmin = false,
+                    Page = page,
+                    PageSize = PageSize,
                     SearchKey = SearchKey
                 });
 
@@ -181,7 +179,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(id)) return BadRequest();
 
             long programId = SecurityUtils.DecryptId(id);
-            var appUserId  = GetCurrentUserId();
+            var appUserId = GetCurrentUserId();
 
             var member = await _context.Members
                 .FirstOrDefaultAsync(m => m.AppUserId == appUserId);
@@ -209,7 +207,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(id)) return BadRequest();
 
             long programId = SecurityUtils.DecryptId(id);
-            var appUserId  = GetCurrentUserId();
+            var appUserId = GetCurrentUserId();
 
             var member = await _context.Members
                 .FirstOrDefaultAsync(m => m.AppUserId == appUserId);
@@ -231,24 +229,28 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //====================================================
         // Helper — وضعیت عضویت
         //====================================================
-        private MembershipStatusDto GetMembershipStatus(
-            string startDate, string endDate)
+        private MembershipStatusDto GetMembershipStatus(string startDate, string endDate, bool MemberIsActive = true)
         {
+
             var status = new MembershipStatusDto
             {
                 StartDate = startDate ?? "-",
-                EndDate   = endDate   ?? "-",
-                Status    = MembershipState.Unknown,
-                DaysLeft  = null
+                EndDate = endDate ?? "-",
+                Status = MembershipState.Unknown,
+                DaysLeft = null
             };
+
 
             if (string.IsNullOrWhiteSpace(endDate))
                 return status;
+
 
             // تبدیل تاریخ شمسی به میلادی برای محاسبه
             // (چون تاریخ‌ها به صورت رشته شمسی ذخیره می‌شوند)
             try
             {
+
+
                 var parts = endDate.Split('/');
                 if (parts.Length == 3)
                 {
@@ -259,18 +261,40 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                         int.Parse(parts[2]),
                         0, 0, 0, 0);
 
-                    var today   = DateTime.Today;
+                    var today = DateTime.Today;
                     var daysLeft = (endMiladi - today).Days;
 
                     status.DaysLeft = daysLeft;
 
                     if (daysLeft < 0)
+                    {
                         status.Status = MembershipState.Expired;
+                        return status;
+                    }
                     else if (daysLeft <= 7)
+                    {
                         status.Status = MembershipState.ExpiringSoon;
+                        return status;
+                    }
                     else
                         status.Status = MembershipState.Active;
+
+                    if (MemberIsActive)
+                        status.Status = MembershipState.Active;
+                    else
+                        status.Status = MembershipState.NotActive;
+
+
+
+
+                    return status;
                 }
+
+
+
+
+
+
             }
             catch
             {
@@ -415,7 +439,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     public class MembershipStatusDto
     {
         public string StartDate { get; set; }
-        public string EndDate   { get; set; }
+        public string EndDate { get; set; }
         public MembershipState Status { get; set; }
         public int? DaysLeft { get; set; }
     }
@@ -425,7 +449,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         Unknown,
         Active,
         ExpiringSoon,
-        Expired
+        Expired,
+        NotActive
     }
 
 }
