@@ -63,6 +63,7 @@ namespace EndPoint.Site.BaleBot.Services
 
                 var loggedKeyboardRows = new List<List<InlineKeyboardButton>>
                 {
+                    new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🧑‍💻 اطلاعات کاربر", CallbackData = "MEMBER_INFO_MENU" } },
                     new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📋 اطلاعات کلاس‌ها", CallbackData = "INFO_CLASSES" } },
                     new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📊 نظرسنجی", CallbackData = "SRV_SHOW" } }
                 };
@@ -100,7 +101,7 @@ namespace EndPoint.Site.BaleBot.Services
                 // ==========================================================
                 if (isMember && isMembershipActive && memberInfo.IsActive)
                 {
-                    loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🧑‍💻 اطلاعات کاربر", CallbackData = "MEMBER_INFO_MENU" } });
+                    //loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🧑‍💻 اطلاعات کاربر", CallbackData = "MEMBER_INFO_MENU" } });
                     loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📝 درخواست برنامه جدید از مدیر", CallbackData = "REQ_PLANS_MENU" } });
                     loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📥 دریافت لیست برنامه‌های من", CallbackData = "VIEW_PLANS_MENU" } });
                 }
@@ -108,7 +109,7 @@ namespace EndPoint.Site.BaleBot.Services
                 {
                     loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔑 ثبت چت آیدی مدیر", CallbackData = "MYCHATID" } });
                 }
-
+                /*
                 // استخراج قطعی نام باشگاه
                 string gymName = "ثبت نشده";
                 if (existingUser.GymId.HasValue && existingUser.GymId.Value > 0)
@@ -162,7 +163,7 @@ namespace EndPoint.Site.BaleBot.Services
                         }
                         else
                         {
-                            welcomeText += "\n\nℹ️ وضعیت عضویت: هنوز دوره عضویتی برای شما تعریف نشده است.";
+                            welcomeText += "\n\nℹ️ )وضعیت عضویت: در انتظار تائید (هنوز دوره عضویتی برای شما تعریف نشده است.";
                         }
                     }
 
@@ -170,10 +171,11 @@ namespace EndPoint.Site.BaleBot.Services
                 }
                 else
                 {
-                    welcomeText = "✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
+                    
                 }
+                */
 
-
+                string welcomeText = "✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
                 loggedKeyboardRows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "منوی اصلی", CallbackData = "MAIN_MENU" } });
 
                 var loggedKeyboard = new InlineKeyboardMarkup { InlineKeyboard = loggedKeyboardRows };
@@ -208,16 +210,16 @@ namespace EndPoint.Site.BaleBot.Services
                 InlineKeyboard = new List<List<InlineKeyboardButton>>
             {
                 new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "👥 ثبت‌نام مدیران باشگاه", CallbackData = "REG_MANAGER" } },
-                new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📜♂️ لیست باشگاه ها جهت ثبت نام", CallbackData = "GYM_LIST" } },
+                new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📜♂️ لیست باشگاه ها جهت ثبت نام اعضاء", CallbackData = "GYM_LIST" } },
                     new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "📝♂️ ثبت‌نام اعضاء باشگاه", CallbackData = "REG_MEMBER" } },
                 
                 
                 // دکمه زیر اختیاری است اما پیشنهاد می‌شود تا کاربرانی که قبلا در سایت ثبت نام کرده‌اند بتوانند اکانت خود را متصل کنند
-                new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔗 اتصال به حساب کاربری قبلی (ارسال شماره)", CallbackData = "REQ_LINK_PHONE" } }
+                //new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔗 اتصال به حساب کاربری قبلی (ارسال شماره)", CallbackData = "REQ_LINK_PHONE" } }
             }
             };
 
-            await _baleBotService.SendMessageAsync(chatId, $"به سیستم مدیریت باشگاه‌های فیتکور FitCore خوش آمدید {userName} عزیز.\nلطفاً یکی از گزینه‌های زیر را انتخاب کنید:", keyboard);
+            await _baleBotService.SendMessageAsync(chatId, $"به سیستم مدیریت باشگاه‌های فیتکور FitCore خوش آمدید {userName} عزیز.\nلطفا جهت ثبت نام در سایت فیتکور یکی از گزینه‌های زیر را انتخاب نمائید:", keyboard);
         }
 
 

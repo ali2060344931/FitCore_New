@@ -139,9 +139,20 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
         }
 
+
+        /// <summary>
+        /// ثبت نام اعضاء باشگاه
+        /// </summary>
+        /// <param name="chatId"></param>
+        /// <param name="phone"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private async Task RegisterMemberDirectly(long chatId, string phone, BotState state)
         {
-            if (!state.GymId.HasValue || state.GymId == 0) throw new Exception("GymId is missing");
+            if (!state.GymId.HasValue || state.GymId == 0)
+                throw new Exception("GymId is missing");
+
             if (await _db.Users.AnyAsync(u => u.PhoneNumber == phone && u.GymId == state.GymId))
             {
                 await _menuService.ShowErrorWithMenu(chatId, "❌ شما قبلاً در این باشگاه ثبت نام کرده‌اید.");
@@ -156,7 +167,7 @@ namespace EndPoint.Site.BaleBot.Handlers
             _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = true });
             await _db.SaveChangesAsync();
 
-            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.");
+            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.'\n' منتظر تائید ثبت نام از طرف مدیر باشگاه باشید");
             
             
             await _menuService.ShowMainMenu(chatId, state.FullName);
