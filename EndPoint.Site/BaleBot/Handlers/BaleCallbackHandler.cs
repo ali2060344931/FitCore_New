@@ -83,6 +83,63 @@ namespace EndPoint.Site.BaleBot.Handlers
                 await _menuService.ShowMainMenu(chatId);
                 return;
             }
+            //------------------------
+
+            // انتخاب باشگاه (جدید - قبلاً نبود)
+            else if (data.StartsWith("SEL_GYM_"))
+            {
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+
+                long userId = long.Parse(data.Substring("SEL_GYM_".Length));
+                var selectedUser = await _db.Users
+                    .Include(u => u.Gym)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+
+                if (selectedUser != null)
+                {
+                    _menuService.SetUserContext(chatId, selectedUser.Id, selectedUser.GymId);
+                    var gymName = selectedUser.Gym?.Name ?? "نامشخص";
+                    await _baleBotService.SendMessageAsync(chatId, $"✅ باشگاه «{gymName}» انتخاب شد.");
+                    await _menuService.ShowMainMenu(chatId, selectedUser.FullName ?? userName);
+                }
+                else
+                {
+                    await _menuService.ShowErrorWithMenu(chatId, "❌ یافت نشد.");
+                }
+                return;
+            }
+
+            // تغییر باشگاه (جدید - قبلاً نبود)
+            else if (data == "SWITCH_GYM")
+            {
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+
+                var allUsers = await _db.Users
+                    .Include(u => u.Gym)
+                    .Where(u => u.BaleChatId == chatId)
+                    .ToListAsync();
+
+                if (allUsers.Count > 1)
+                {
+                    await _menuService.ShowGymSelectionMenu(chatId, allUsers, "🔄 لطفاً باشگاه جدید را انتخاب کنید:");
+                }
+                else
+                {
+                    await _menuService.ShowMainMenu(chatId, userName);
+                }
+                return;
+            }
+
+            // بازگشت به منوی اولیه (رفع مشکل دکمه)
+            else if (data == "BACK_TO_UNAUTH")
+            {
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+                _cache.Remove(chatId.ToString());
+                await _menuService.ShowUnauthenticatedMenu(chatId, userName);
+                return;
+            }
+
+            //------------------------
 
             else if (data == "REQ_LINK_PHONE")
             {
@@ -222,19 +279,46 @@ namespace EndPoint.Site.BaleBot.Handlers
                 return;
             }
 
-            // ---------------- ثبت نام عضو ----------------
+            // ---------------- ثبت نام عضو (بروزرسانی شده) ----------------
             else if (data == "REG_MEMBER")
             {
-                var gyms = await _db.Gyms.Where(g => g.IsActive).OrderBy(g => g.Code).ToListAsync();
+                // توقف لودینگ دکمه
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
 
-                var rows = gyms.Select(g => new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "کد باشگاه:" + g.Code, CallbackData = $"GYM_{g.Id}" } }).ToList();
-                keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
+                var currentUser = await _menuService.GetContextUserAsync(chatId);
+                long? currentGymId = currentUser?.GymId;
+
+                // خواندن باشگاه‌های فعال، به جز باشگاه فعلی کاربر
+                var gyms = await _db.Gyms
+                    .Where(g => g.IsActive && g.Id != currentGymId)
+                    .OrderBy(g => g.Code)
+                    .ToListAsync();
+
+                if (!gyms.Any())
+                {
+                    await _baleBotService.SendMessageAsync(chatId, "❌ باشگاه فعال دیگری در سیستم وجود ندارد.");
+                    return;
+                }
+
+                var rows = gyms.Select(g => new List<InlineKeyboardButton> {
+                    new InlineKeyboardButton { Text = "کد باشگاه: " + g.Code, CallbackData = $"GYM_{g.Id}" }
+                }).ToList();
+
+                var gymKeyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
+
+                // ارسال مستقیم پیام و کیبورد
+                await _baleBotService.SendMessageAsync(chatId, "🆔 لطفاً کد باشگاهی که می‌خواهید در آن عضو شوید را انتخاب کنید:", gymKeyboard);
+
+                // شروع فلو ثبت نام در کش
                 _cache.Set(chatId.ToString(), new BotState { Step = "WAITING_FOR_GYM", RegType = "Member" });
-                responseText = "🆔لطفاً کد باشگاهی که می‌خواهید در آن عضو شوید را انتخاب کنید:";
+                return; // خروج تضمین‌شده
             }
 
             else if (data.StartsWith("GYM_"))
             {
+                // توقف لودینگ دکمه
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+
                 long gymId = long.Parse(data.Split('_')[1]);
                 var state = _cache.Get<BotState>(chatId.ToString());
                 if (state != null)
@@ -245,17 +329,30 @@ namespace EndPoint.Site.BaleBot.Handlers
                 }
 
                 var gym = _db.Gyms.Where(c => c.Id == gymId).First();
-                //ToDo نمایش اطلاعات مدیر باشگاه با داشتن آی دی باشگاه
                 var q = _db.UserRoles
-      .Where(r => r.RoleId == 2)
-      .Join(_db.Users,
-          r => r.UserId,
-          u => u.Id,
-          (r, u) => new { r, u })
-      .Where(x => x.u.GymId == gymId).FirstOrDefault();
-                //🏟️🧑‍💻
-                responseText = "ℹ️️اطلاعات باشگاه انتخاب شده:'\n'" + "🆔کد باشگاه:" + gym.Code + '\n'+"نام باشگاه: " + gym.Name+'\n' + "مدیرباشگاه: " + q.u.FullName+"-"+q.u.PhoneNumber + '\n'+'\n' + "👱‍♂️لطفاً نام و نام خانوادگی خود را وارد و ارسال نمائید:";
+                    .Where(r => r.RoleId == 2)
+                    .Join(_db.Users,
+                        r => r.UserId,
+                        u => u.Id,
+                        (r, u) => new { r, u })
+                    .Where(x => x.u.GymId == gymId).FirstOrDefault();
+
+                // ==========================================
+                // رفع خطای کرش: چک کردن نال بودن مدیر
+                // ==========================================
+                string adminInfo = (q != null) ? $"{q.u.FullName} - {q.u.PhoneNumber}" : "ثبت نشده";
+
+                 responseText = "ℹ️ اطلاعات باشگاه انتخاب شده:\n" +
+                    "🆔 کد باشگاه: " + gym.Code + "\n" +
+                    "نام باشگاه: " + gym.Name + "\n" +
+                    "مدیرباشگاه: " + adminInfo + "\n\n" +
+                    "👱‍♂️ لطفاً نام و نام خانوادگی خود را وارد و ارسال نمائید:";
+
+                // ارسال مستقیم پیام
+                await _baleBotService.SendMessageAsync(chatId, responseText);
+                return; // خروج تضمین‌شده
             }
+
 
             // ---------------- درخواست و دریافت برنامه ----------------
             else if (data == "REQ_PLANS_MENU")
@@ -281,7 +378,8 @@ namespace EndPoint.Site.BaleBot.Handlers
                     _ => 0
                 };
 
-                var user = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+                var user = await _menuService.GetContextUserAsync(chatId);
+                if (user == null) { await _menuService.ShowErrorWithMenu(chatId, "❌ خطا در شناسایی"); return; }
                 var memberid = _db.Members.Where(c => c.AppUserId == user.Id).First().Id;
 
 
@@ -375,7 +473,8 @@ namespace EndPoint.Site.BaleBot.Handlers
 
             else if (data == "VIEW_PLANS_MENU")
             {
-                var user = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+                var user = await _menuService.GetContextUserAsync(chatId);
+                if (user == null) { await _baleBotService.SendMessageAsync(chatId, "❌ خطا در شناسایی حساب کاربری."); return; }
                 var member = await _db.Members.FirstOrDefaultAsync(m => m.AppUserId == user.Id);
 
                 if (member == null)
@@ -466,7 +565,14 @@ namespace EndPoint.Site.BaleBot.Handlers
             else if (data == "MEMBER_INFO_MENU")
             {
                 var rows = new List<List<InlineKeyboardButton>>();
-                var existingUser = await _db.Users.Include(u => u.Gym).FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+                var existingUser = await _menuService.GetContextUserAsync(chatId);
+
+                if (existingUser == null)
+                {
+                    await _menuService.ShowErrorWithMenu(chatId, "❌ خطا در شناسایی حساب کاربری. لطفاً از منوی اصلی دوباره وارد شوید.");
+                    return;
+                }
+
                 if (existingUser != null)
                 {
                     var roles = await _userManager.GetRolesAsync(existingUser);
@@ -566,18 +672,6 @@ namespace EndPoint.Site.BaleBot.Handlers
                     keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
 
                     await _baleBotService.SendMessageAsync(chatId, welcomeText, keyboard);
-                }
-                else
-                {
-                    // ==========================================================
-                    // کاربر پیدا نشد -> درخواست وصل شدن با شماره موبایل
-                    // ==========================================================
-                    _cache.Set(chatId.ToString(), new BaleBot.Models.BotState { Step = "WAITING_FOR_LINK_PHONE" });
-
-                    await _baleBotService.SendMessageAsync(chatId, $"به سیستم مدیریت باشگاهای فیتکور FitCore خوش آمدید {userName} عزیز.\nبرای اتصال به حساب کاربری خود در سایت، لطفاً شماره موبایلی که با آن ثبت نام کرده‌اید را ارسال کنید:");
-                    await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "📱 ارسال شماره موبایل");
-
-                    await _menuService.ShowUnauthenticatedMenu(chatId, userName);
                 }
 
 

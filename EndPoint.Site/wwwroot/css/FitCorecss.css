@@ -1512,3 +1512,11 @@ tfoot tr td {
 .multi-card {
     height: 100%;
 }
+
+
+.fc-page-container {
+    margin-top: 28px;
+}
+.fc-page-offset {
+    padding-top: 40px !important;
+}

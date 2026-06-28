@@ -7,117 +7,118 @@
     ViewData["Title"] = "درخواست‌های من";
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
+<div class="fc-page-offset">
+    <div class="container-fluid mt-5">
 
-<div class="container-fluid mt-4">
-
-    <div class="fc-page-header mb-3">
-        <h5 class="fc-page-title mb-0">
-            <i class="fa fa-history me-2" style="color:#00C896;"></i>
-            درخواست‌های برنامه من
-        </h5>
-        <a href="/Admin/ProgramRequest/Submit"
-           class="btn btn-success"
-           style="border-radius:10px;font-size:13px;">
-            <i class="fa fa-plus me-1"></i> درخواست جدید
-        </a>
-    </div>
-
-    @if (Model == null || !Model.Any())
-    {
-        <div class="fc-card" style="text-align:center;padding:50px 20px;">
-            <i class="fa fa-inbox fa-3x" style="display:block;margin-bottom:12px;color:#a0aec0;opacity:.5;"></i>
-            <p style="color:#718096;font-size:14px;margin-bottom:16px;">هنوز درخواستی ارسال نکرده‌اید</p>
+        <div class="fc-page-header mb-3">
+            <h5 class="fc-page-title mb-0">
+                <i class="fa fa-history me-2" style="color:#00C896;"></i>
+                درخواست‌های برنامه من
+            </h5>
             <a href="/Admin/ProgramRequest/Submit"
                class="btn btn-success"
                style="border-radius:10px;font-size:13px;">
-                <i class="fa fa-paper-plane me-1"></i> ارسال اولین درخواست
+                <i class="fa fa-plus me-1"></i> درخواست جدید
             </a>
         </div>
-    }
-    else
-    {
-        <div class="row g-3">
-            @foreach (var r in Model)
-            {
-                string borderColor = r.Status switch
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="fc-card" style="text-align:center;padding:50px 20px;">
+                <i class="fa fa-inbox fa-3x" style="display:block;margin-bottom:12px;color:#a0aec0;opacity:.5;"></i>
+                <p style="color:#718096;font-size:14px;margin-bottom:16px;">هنوز درخواستی ارسال نکرده‌اید</p>
+                <a href="/Admin/ProgramRequest/Submit"
+                   class="btn btn-success"
+                   style="border-radius:10px;font-size:13px;">
+                    <i class="fa fa-paper-plane me-1"></i> ارسال اولین درخواست
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var r in Model)
                 {
-                    ProgramRequestStatus.Pending    => "#f6ad55",
-                    ProgramRequestStatus.InProgress => "#63b3ed",
-                    ProgramRequestStatus.Done       => "#00C896",
-                    _                               => "#fc8181"
-                };
+                    string borderColor = r.Status switch
+                    {
+                        ProgramRequestStatus.Pending => "#f6ad55",
+                        ProgramRequestStatus.InProgress => "#63b3ed",
+                        ProgramRequestStatus.Done => "#00C896",
+                        _ => "#fc8181"
+                    };
 
-                string statusIcon = r.Status switch
-                {
-                    ProgramRequestStatus.Pending    => "fa-clock-o",
-                    ProgramRequestStatus.InProgress => "fa-cog fa-spin",
-                    ProgramRequestStatus.Done       => "fa-check-circle",
-                    _                               => "fa-times-circle"
-                };
+                    string statusIcon = r.Status switch
+                    {
+                        ProgramRequestStatus.Pending => "fa-clock-o",
+                        ProgramRequestStatus.InProgress => "fa-cog fa-spin",
+                        ProgramRequestStatus.Done => "fa-check-circle",
+                        _ => "fa-times-circle"
+                    };
 
-                string statusText = r.StatusLabel;
-                string statusColor = borderColor;
+                    string statusText = r.StatusLabel;
+                    string statusColor = borderColor;
 
-                string typeIcon = r.RequestType switch
-                {
-                    ProgramRequestType.Nutrition => "fa-cutlery",
-                    ProgramRequestType.Training  => "fa-heartbeat",
-                    _                            => "fa-star"
-                };
+                    string typeIcon = r.RequestType switch
+                    {
+                        ProgramRequestType.Nutrition => "fa-cutlery",
+                        ProgramRequestType.Training => "fa-heartbeat",
+                        _ => "fa-star"
+                    };
 
-                <div class="col-md-6 col-lg-4">
-                    <div style="border:2px solid @borderColor;border-radius:14px;
-                                padding:18px;background:#fff;
-                                box-shadow:0 2px 10px rgba(0,0,0,0.06);height:100%;">
+                    <div class="col-md-6 col-lg-4">
+                        <div style="border:2px solid @borderColor;border-radius:14px;
+                            padding:18px;background:#fff;
+                            box-shadow:0 2px 10px rgba(0,0,0,0.06);height:100%;">
 
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <div style="width:38px;height:38px;border-radius:10px;
-                                            background:@(borderColor + "22");
-                                            display:flex;align-items:center;justify-content:center;
-                                            font-size:16px;color:@borderColor;">
-                                    <i class="fa @typeIcon"></i>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:38px;height:38px;border-radius:10px;
+                                        background:@(borderColor + "22");
+                                        display:flex;align-items:center;justify-content:center;
+                                        font-size:16px;color:@borderColor;">
+                                        <i class="fa @typeIcon"></i>
+                                    </div>
+                                    <div style="font-size:14px;font-weight:700;">@r.RequestTypeLabel</div>
                                 </div>
-                                <div style="font-size:14px;font-weight:700;">@r.RequestTypeLabel</div>
+                                <div style="display:flex;align-items:center;gap:5px;
+                                    font-size:11.5px;font-weight:600;color:@statusColor;">
+                                    <i class="fa @statusIcon"></i>
+                                    @statusText
+                                </div>
                             </div>
-                            <div style="display:flex;align-items:center;gap:5px;
-                                        font-size:11.5px;font-weight:600;color:@statusColor;">
-                                <i class="fa @statusIcon"></i>
-                                @statusText
+
+                            @if (!string.IsNullOrWhiteSpace(r.MemberNote))
+                            {
+                                <div style="background:#f8fafd;border-radius:8px;
+                                    padding:10px 12px;font-size:12.5px;
+                                    color:#4a5568;margin-bottom:12px;">
+                                    <i class="fa fa-quote-right me-1 text-muted"></i>
+                                    @r.MemberNote
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(r.AdminNote))
+                            {
+                                <div style="background:#edfaf5;border:1px solid #00C896;
+                                    border-radius:8px;padding:10px 12px;
+                                    font-size:12.5px;color:#276749;margin-bottom:12px;">
+                                    <strong style="font-size:11px;">
+                                        <i class="fa fa-reply me-1"></i>پاسخ مربی:
+                                    </strong>
+                                    <div style="margin-top:4px;">@r.AdminNote</div>
+                                </div>
+                            }
+
+                            <div style="font-size:11px;color:#a0aec0;margin-top:auto;">
+                                <i class="fa fa-clock-o me-1"></i>
+                                @r.InsertTime.ToString("yyyy/MM/dd  HH:mm")
                             </div>
+
                         </div>
-
-                        @if (!string.IsNullOrWhiteSpace(r.MemberNote))
-                        {
-                            <div style="background:#f8fafd;border-radius:8px;
-                                        padding:10px 12px;font-size:12.5px;
-                                        color:#4a5568;margin-bottom:12px;">
-                                <i class="fa fa-quote-right me-1 text-muted"></i>
-                                @r.MemberNote
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrWhiteSpace(r.AdminNote))
-                        {
-                            <div style="background:#edfaf5;border:1px solid #00C896;
-                                        border-radius:8px;padding:10px 12px;
-                                        font-size:12.5px;color:#276749;margin-bottom:12px;">
-                                <strong style="font-size:11px;">
-                                    <i class="fa fa-reply me-1"></i>پاسخ مربی:
-                                </strong>
-                                <div style="margin-top:4px;">@r.AdminNote</div>
-                            </div>
-                        }
-
-                        <div style="font-size:11px;color:#a0aec0;margin-top:auto;">
-                            <i class="fa fa-clock-o me-1"></i>
-                            @r.InsertTime.ToString("yyyy/MM/dd  HH:mm")
-                        </div>
-
                     </div>
-                </div>
-            }
-        </div>
-    }
+                }
+            </div>
+        }
 
+    </div>
 </div>

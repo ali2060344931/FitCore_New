@@ -886,3 +886,20 @@ html {
     .fc-logout-btn i {
         font-size: 12px;
     }
+/*    +++++++++--------------+++++++++++++*/
+.fc-topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 62px;
+    z-index: 1100;
+}
+
+.fc-main {
+    margin-top: 62px !important;
+}
+
+.fc-content {
+    padding: 28px 24px 24px !important;
+}

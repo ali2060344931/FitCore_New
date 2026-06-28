@@ -85,60 +85,77 @@ namespace EndPoint.Site.BaleBot.Handlers
         public async Task HandleContactAsync(long chatId, string rawPhone)
         {
             var state = _cache.Get<BotState>(chatId.ToString());
-            var existingUser = await _db.Users.FirstOrDefaultAsync(u => u.BaleChatId == chatId);
+            string standardPhone = NormalizePhoneNumber(rawPhone);
 
-            if (existingUser == null)
+            // ==============================================================
+            // حالت ۱: در مرحله ثبت‌نام است
+            // ==============================================================
+            if (state != null && state.Step == "WAITING_FOR_PHONE")
             {
-                var userByPhone = await _db.Users.FirstOrDefaultAsync(u => u.PhoneNumber == NormalizePhoneNumber(rawPhone));
-
-                if (userByPhone != null)
+                try
                 {
-                    userByPhone.BaleChatId = chatId;
-                    await _db.SaveChangesAsync();
+                    if (state.RegType == "Member")
+                        await RegisterMemberDirectly(chatId, standardPhone, state);
+                    else if (state.RegType == "Manager")
+                        await RegisterManagerDirectly(chatId, standardPhone, state);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in direct Bale registration");
+                    await _menuService.ShowErrorWithMenu(chatId, $"❌ خطای جزئی:\n{ex.Message}");
                     _cache.Remove(chatId.ToString());
-                    await _baleBotService.SendMessageAsync(chatId, "✅ حساب کاربری شما با موفقیت در ربات متصل شد.");
-                    await _menuService.ShowMainMenu(chatId, userByPhone.FullName ?? "کاربر");
-                    return;
                 }
-                else
-                {
-                    if (state == null || state.Step != "WAITING_FOR_PHONE")
-                    {
-                        _cache.Remove(chatId.ToString());
-
-                        // تغییر اصلی اینجا است: بجای ShowErrorWithMenu، منوی ثبت نام نمایش داده می‌شود
-                        await _menuService.ShowUnauthenticatedMenu(chatId, "کاربر");
-                        return;
-                    }
-                }
-            }
-
-            if (existingUser != null && (state == null || state.Step != "WAITING_FOR_PHONE"))
-            {
-                await _menuService.ShowErrorWithMenu(chatId, "❌ درخواست ارسال شماره وجود ندارد. لطفاً از منوی اصلی اقدام کنید.");
                 return;
             }
 
-            string standardPhone = NormalizePhoneNumber(rawPhone);
+            // ==============================================================
+            // حالت ۲: اتصال اکانت قبلی (WAITING_FOR_LINK_PHONE)
+            // ==============================================================
+            if (state != null && state.Step == "WAITING_FOR_LINK_PHONE")
+            {
+                // تمام کاربران با این شماره را پیدا کن (چند باشگاهی)
+                var usersByPhone = await _db.Users
+                    .Include(u => u.Gym)
+                    .Where(u => u.PhoneNumber == standardPhone)
+                    .ToListAsync();
 
-            try
-            {
-                if (state.RegType == "Member")
-                    await RegisterMemberDirectly(chatId, standardPhone, state);
-                else if (state.RegType == "Manager")
-                    await RegisterManagerDirectly(chatId, standardPhone, state);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in direct Bale registration");
-                await _menuService.ShowErrorWithMenu(chatId, $"❌ خطای جزئی:\n{ex.Message}");
-            }
-            finally
-            {
+                if (!usersByPhone.Any())
+                {
+                    _cache.Remove(chatId.ToString());
+                    await _menuService.ShowUnauthenticatedMenu(chatId, "کاربر");
+                    return;
+                }
+
+                // BaleChatId را روی همه تنظیم کن
+                foreach (var u in usersByPhone)
+                {
+                    if (u.BaleChatId != chatId)
+                        u.BaleChatId = chatId;
+                }
+                await _db.SaveChangesAsync();
                 _cache.Remove(chatId.ToString());
-            }
-        }
 
+                if (usersByPhone.Count == 1)
+                {
+                    var singleUser = usersByPhone.First();
+                    _menuService.SetUserContext(chatId, singleUser.Id, singleUser.GymId);
+                    await _baleBotService.SendMessageAsync(chatId, "✅ حساب کاربری شما با موفقیت در ربات متصل شد.");
+                    await _menuService.ShowMainMenu(chatId, singleUser.FullName ?? "کاربر");
+                    return;
+                }
+
+                // چند اکانت → منوی انتخاب
+                await _baleBotService.SendMessageAsync(chatId, "✅ حساب‌های شما پیدا شد:");
+                await _menuService.ShowGymSelectionMenu(chatId, usersByPhone);
+                return;
+            }
+
+            // ==============================================================
+            // حالت ۳: شماره ارسال شده ولی state معتبری نیست
+            // ==============================================================
+            _cache.Remove(chatId.ToString());
+            await _menuService.ShowUnauthenticatedMenu(chatId, "کاربر");
+        }
 
         /// <summary>
         /// ثبت نام اعضاء باشگاه
@@ -164,9 +181,13 @@ namespace EndPoint.Site.BaleBot.Handlers
             if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
             await _userManager.AddToRoleAsync(newUser, UserRoles.Member);
+            _menuService.SetUserContext(chatId, newUser.Id, state.GymId.Value);
             _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = true });
+
+
             await _db.SaveChangesAsync();
 
+            _menuService.SetUserContext(chatId, newUser.Id, state.GymId.Value);
 
             var q = _db.UserRoles
   .Where(r => r.RoleId == 2)
@@ -179,8 +200,10 @@ namespace EndPoint.Site.BaleBot.Handlers
 
 
             //ارسال پیام به مدیر باشگاه جهت اطلاع رسانی ثبت نام جدید ورزشکار
-            await _baleBotService.SendMessageAsync((long)q.u.BaleChatId, "🙋‍♂️ ثبت نام جدید انجام شد." + '\n'+"نام و نام خانوادگی: "+ state.FullName +'\n'+"تلفن همراه: "+ phone);
-
+            if (q?.u != null && q.u.BaleChatId > 0)
+            {
+                await _baleBotService.SendMessageAsync((long)q.u.BaleChatId, "🙋‍♂️ ثبت نام جدید انجام شد.\nنام و نام خانوادگی: " + state.FullName + "\nتلفن همراه: " + phone);
+            }
 
 
             await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.'\n' منتظر تائید ثبت نام از طرف مدیر باشگاه باشید");
@@ -221,7 +244,7 @@ namespace EndPoint.Site.BaleBot.Handlers
 
 
             await _userManager.AddToRoleAsync(newUser, "Admin");
-
+            _menuService.SetUserContext(chatId, newUser.Id, newGym.Id);
             await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان مدیر باشگاه انجام شد.\nحساب شما توسط ادمین سیستم بررسی و تایید نهایی می‌شود.");
             
             
@@ -235,6 +258,55 @@ namespace EndPoint.Site.BaleBot.Handlers
             if (rawPhone.StartsWith("+98")) return "0" + rawPhone.Substring(3);
             if (rawPhone.StartsWith("98") && rawPhone.Length == 12) return "0" + rawPhone.Substring(2);
             return rawPhone;
+        }
+
+
+        /// <summary>
+        /// پردازش فلو اتصال اکانت قبلی
+        /// </summary>
+        private async Task ProcessLinkAccountFlow(long chatId, string phone, BotState state)
+        {
+            var usersByPhone = await _db.Users
+                .Include(u => u.Gym)
+                .Where(u => u.PhoneNumber == phone)
+                .ToListAsync();
+
+            if (!usersByPhone.Any())
+            {
+                _cache.Remove(chatId.ToString());
+                await _menuService.ShowErrorWithMenu(chatId,
+                    "❌ شماره موبایل وارد شده در سیستم یافت نشد.\nلطفاً ابتدا در سایت ثبت‌نام کنید یا از گزینه‌های ثبت‌نام ربات استفاده کنید.");
+                return;
+            }
+
+            // BaleChatId را روی تمام اکانت‌ها تنظیم کن
+            foreach (var u in usersByPhone)
+            {
+                if (u.BaleChatId != chatId)
+                {
+                    u.BaleChatId = chatId;
+                }
+            }
+            await _db.SaveChangesAsync();
+
+            _cache.Remove(chatId.ToString());
+
+            // فقط یک اکانت
+            if (usersByPhone.Count == 1)
+            {
+                var singleUser = usersByPhone.First();
+                _menuService.SetUserContext(chatId, singleUser.Id, singleUser.GymId);
+
+                await _baleBotService.SendMessageAsync(chatId,
+                    "✅ حساب کاربری شما با موفقیت در ربات متصل شد.");
+                await _menuService.ShowMainMenu(chatId, singleUser.FullName ?? "کاربر");
+                return;
+            }
+
+            // چند اکانت → منوی انتخاب
+            await _baleBotService.SendMessageAsync(chatId,
+                "✅ حساب‌های کاربری شما پیدا شد.\nشما در چند باشگاه ثبت‌نام کرده‌اید:");
+            await _menuService.ShowGymSelectionMenu(chatId, usersByPhone);
         }
     }
 }
