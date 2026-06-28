@@ -67,14 +67,14 @@
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
                  model='"لیست اعضای باشگاه"' />
 
-        <a asp-area="Admin"
-           asp-controller="Members"
-           asp-action="Create"
-           class="btn btn-success">
-
-            + ثبت عضو جدید
-        </a>
-
+<a asp-area="Admin"
+   asp-controller="Members"
+   asp-action="Create"
+   class="btn btn-success disabled"
+   aria-disabled="true"
+   style="pointer-events: none; opacity: 0.65;">
+    + ثبت عضو جدید
+</a>
     </div>
 
     <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
@@ -256,15 +256,15 @@
 
                                     <div class="dropdown-divider"></div>
 
-                                    <button type="button"
-                                            class="dropdown-item text-danger"
-                                            onclick="DeleteMember(@item.Id)">
+<button type="button"
+        class="dropdown-item text-danger"
+        disabled
+        style="opacity: 0.5; cursor: not-allowed;">
 
-                                        <i class="fa fa-times"></i>
-                                        حذف
+    <i class="fa fa-times"></i>
+    حذف
 
-                                    </button>
-
+</button>
                                 </div>
 
                             </div>

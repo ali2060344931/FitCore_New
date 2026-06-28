@@ -159,7 +159,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 return;
             }
 
-            var newUser = new AppUser { FullName = state.FullName, UserName = $"{phone}_{state.GymId}", PhoneNumber = phone, IsActive = true, GymId = state.GymId.Value, BaleChatId = chatId };
+            var newUser = new AppUser { FullName = state.FullName, UserName = $"{phone}_{state.GymId}", PhoneNumber = phone, IsActive = false, GymId = state.GymId.Value, BaleChatId = chatId };
             var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
             if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
@@ -167,12 +167,36 @@ namespace EndPoint.Site.BaleBot.Handlers
             _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = true });
             await _db.SaveChangesAsync();
 
+
+            var q = _db.UserRoles
+  .Where(r => r.RoleId == 2)
+  .Join(_db.Users,
+      r => r.UserId,
+      u => u.Id,
+      (r, u) => new { r, u })
+  .Where(x => x.u.GymId == state.GymId).FirstOrDefault();
+
+
+
+            //ارسال پیام به مدیر باشگاه جهت اطلاع رسانی ثبت نام جدید ورزشکار
+            await _baleBotService.SendMessageAsync((long)q.u.BaleChatId, "🙋‍♂️ ثبت نام جدید انجام شد." + '\n'+"نام و نام خانوادگی: "+ state.FullName +'\n'+"تلفن همراه: "+ phone);
+
+
+
             await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.'\n' منتظر تائید ثبت نام از طرف مدیر باشگاه باشید");
             
             
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
 
+        /// <summary>
+        /// ثبت نام نهایی مدیران باشگاها
+        /// </summary>
+        /// <param name="chatId"></param>
+        /// <param name="phone"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private async Task RegisterManagerDirectly(long chatId, string phone, BotState state)
         {
             if (await _db.Gyms.AnyAsync(g => g.Name == state.GymName))
@@ -194,9 +218,14 @@ namespace EndPoint.Site.BaleBot.Handlers
             var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
             if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
+
+
             await _userManager.AddToRoleAsync(newUser, "Admin");
 
             await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان مدیر باشگاه انجام شد.\nحساب شما توسط ادمین سیستم بررسی و تایید نهایی می‌شود.");
+            
+            
+            
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
 

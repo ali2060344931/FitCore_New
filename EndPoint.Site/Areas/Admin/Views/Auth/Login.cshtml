@@ -97,6 +97,7 @@
                                                                autocomplete="one-time-code" />
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="form-row-account d-flex justify-content-center">
                                                     <button id="btnVerifyOtp"
                                                             type="button"
@@ -105,6 +106,7 @@
                                                         تایید و ورود
                                                     </button>
                                                 </div>
+
                                                 <div class="helper-row otp-meta">
                                                     <span id="resendInfo" class="muted"></span>
                                                     <a id="btnResend" class="muted" style="display:none; cursor: pointer;">
@@ -253,7 +255,24 @@
         data: { mobile: mobile },
         success: function (data) {
         if (data.isSuccess === true) {
-        swal.fire('موفق!', data.message, 'success');
+
+                Swal.mixin({
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        }).fire({
+          icon: "موفق",
+          title: "کد با موفقیت به ربات فیتکور در اپلیکیشن «بــله» ارسال شد"
+        });
+
+
+
         showOtpSection();
         } else {
         swal.fire('خطا!', data.message, 'warning');
@@ -271,59 +290,90 @@
         SendOtp();
         }
 
+
+
+
+
+
         function VerifyOtp() {
-        let mobile = $("#mobile").val().trim();
-        let code = $("#code").val().trim();
 
-        if (!code) {
-        swal.fire('خطا!', 'لطفاً کد تایید ارسال شده در ربات بله فیتکور را وارد کنید.', 'warning');
-        return;
-        }
+            let mobile = $("#mobile").val().trim();
+            let code = $("#code").val().trim();
 
-        setBtnLoading("btnVerifyOtp", true, "در حال تایید...");
+            if (!code) {
+                Swal.fire('خطا!', 'لطفاً کد تایید ارسال شده در ربات بله فیتکور را وارد کنید.', 'warning');
+                return;
+            }
 
-        $.ajax({
-        type: "POST",
-        url: "/admin/Auth/VerifyOtp",
-        dataType: "json",
-        data: { mobile: mobile, code: code },
-        success: function (data) {
-        if (data.isSuccess) {
-        // اگر سرور گفت باید باشگاه انتخاب شود
-        if (data.needGymSelection) {
-        $("#loginToken").val(data.loginToken);
+            setBtnLoading("btnVerifyOtp", true, "در حال تایید...");
 
-        let gymSelect = $("#gymSelect").empty();
-        gymSelect.append(new Option("-- انتخاب کنید --", ""));
+            $.ajax({
+                type: "POST",
+                url: "/admin/Auth/VerifyOtp",
+                dataType: "json",
+                data: { mobile: mobile, code: code },
 
-        $.each(data.gyms, function (i, g) {
-        gymSelect.append(new Option(g.name, g.id));
+                success: function (data) {
+
+                    if (data.isSuccess) {
+
+                        if (data.needGymSelection) {
+
+                            $("#loginToken").val(data.loginToken);
+
+                            let gymSelect = $("#gymSelect").empty();
+                            gymSelect.append(new Option("-- انتخاب کنید --", ""));
+
+                            $.each(data.gyms, function (i, g) {
+                                gymSelect.append(new Option(g.name, g.id));
+                            });
+
+                            $("#otpSection").hide();
+                            $("#gymSelectionBox").show();
+                            setBtnLoading("btnVerifyOtp", false);
+
+                            Swal.fire('انتخاب باشگاه', 'لطفاً باشگاه مورد نظر را انتخاب کنید.', 'info');
+                        }
+
+                        else if (data.redirectUrl) {
+
+        Swal.fire({
+            position: "center",
+            icon: "success",
+            html: `
+                به وب سایت مدیریت باشگاهای فیتکور خوش آمدید <br>
+                ورود با موفقیت انجام شد <br>
+                در حال انتقال به داشبورد...
+            `,
+            showConfirmButton: false,
+            timer: 5000
+        }).then(() => {
+            window.location.href = data.redirectUrl;
         });
 
-        $("#otpSection").hide();
-        $("#gymSelectionBox").show();
-        setBtnLoading("btnVerifyOtp", false);
-        swal.fire('انتخاب باشگاه', 'لطفاً باشگاه مورد نظر را انتخاب کنید.', 'info');
+                        }
+
+                        else {
+                            window.location.href = "/";
+                        }
+
+                    } else {
+
+                        Swal.fire('خطا!', data.message, 'warning');
+                        setBtnLoading("btnVerifyOtp", false);
+                    }
+                },
+
+                error: function () {
+                    Swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
+                    setBtnLoading("btnVerifyOtp", false);
+                }
+            });
         }
-        // اگر سرور گفت نیازی به انتخاب باشگاه نیست
-        else if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
-        }
-        // fallback در صورتی که سرور اصلا redirectUrl هم نفرستاده بود
-        else {
-        window.location.href = "/";
-        }
-        } else {
-        swal.fire('خطا!', data.message, 'warning');
-        setBtnLoading("btnVerifyOtp", false);
-        }
-        },
-        error: function () {
-        swal.fire('خطا!', 'خطا در ارتباط با سرور.', 'error');
-        setBtnLoading("btnVerifyOtp", false);
-        }
-        });
-        }
+
+
+
+
 
         function CompleteLogin() {
         let gymId = $("#gymSelect").val();
@@ -375,6 +425,25 @@
         $("#btnCompleteLogin").on("click", CompleteLogin);
         $("#btnResend").on("click", ResendOtp);
         $("#btnEditMobile").on("click", EditMobile);
+        });
+
+
+
+                $("#mobile").on("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                $("#btnSendOtp").click();
+            }
+        });
+
+
+
+
+                $("#code").on("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                $("#btnVerifyOtp").click();
+            }
         });
     </script>
 </body>

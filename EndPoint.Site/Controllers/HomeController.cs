@@ -20,7 +20,29 @@ namespace EndPoint.Site.Controllers
 
         public IActionResult Index()
         {
-            return View();
+
+            //if (User.Identity != null && User.Identity.IsAuthenticated)
+            //{
+            //    return RedirectToAction("GettingStarted", "Home", new { area = "Admin" });
+            //}
+
+            //return View(); // Landing Page
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    //return RedirectToAction("GettingStarted", "Home", new { area = "Admin" }); // View A
+                    return RedirectToAction("index", "Home", new { area = "Admin" }); // View A
+                }
+
+                if (User.IsInRole("Member"))
+                {
+                    return RedirectToAction("Index", "MemberDashboard", new { area = "Admin" }); // View B
+                }
+            }
+
+            return View(); // Landing Page
+
         }   
 
         public IActionResult Privacy()
@@ -33,5 +55,6 @@ namespace EndPoint.Site.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

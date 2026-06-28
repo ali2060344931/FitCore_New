@@ -779,3 +779,110 @@ html {
     background-color: #fff; /* بسیار مهم: جلوگیری از نفوذ متن‌های زیرین هنگام اسکرول */
     padding-bottom: 5px; /* ایجاد فاصله کادر در پایین هدر چسبیده */
 }
+
+/*----------------**************---------------*/
+/* ============================
+   FitCore Topbar User
+============================ */
+
+.fc-topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 60px;
+    background: #0f0f0f;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    z-index: 1200;
+}
+
+/* عنوان صفحه */
+.fc-topbar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* بخش کاربر */
+.fc-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* آواتار */
+.fc-topbar-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* اطلاعات */
+.fc-topbar-userinfo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.fc-topbar-username {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.fc-topbar-gym {
+    font-size: 11px;
+    color: #bdbdbd;
+}
+
+/* نقش */
+.fc-role-badge {
+    background: #f59e0b;
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+/* ============================
+   Logout Button
+============================ */
+
+.fc-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #1f1f1f;
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all .2s ease;
+}
+
+    .fc-logout-btn:hover {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+        transform: translateY(-1px);
+    }
+
+    .fc-logout-btn i {
+        font-size: 12px;
+    }

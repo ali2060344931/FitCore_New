@@ -424,6 +424,27 @@
         ========================================================= */
         .fc-spacer { height: var(--fc-header-h, 0px); }
 
+        .fc-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .fc-logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .fc-logo-core {
+            color: #e94560;
+        }
+
+
+
+
     </style>
 </head>
 <body>
@@ -436,8 +457,12 @@
                 <img src="AdminTemplate/app-assets/img/logos/logo_1.png"
                      alt="FitCore Logo"
                      class="fc-logo-image" />
-            </a>    
-            
+
+                <span class="fc-logo-text">
+                    Fit <span class="fc-logo-core">Core</span>
+                </span>
+            </a>
+
             <!-- اطلاعات کاربر — نمایش دسکتاپ -->
             <div class="fc-header-desktop-user">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -553,7 +578,7 @@
             </div>
 
             <div class="fc-footer-bottom">
-                <span class="fc-footer-copy">تمامی مطالب، عکس‌ها و... متعلق به سایت فیتکور می‌باشد.</span>
+                <span class="fc-footer-copy">تمامی مطالب، عکس‌ها و... متعلق به سایت فیتکور (فیروزجایی 09021161996) می‌باشد.</span>
                 <div class="fc-footer-badges">
                     <a href="#"><img src="~/SiteTemplate/assets/images/footer/license/L-1.png" alt="مجوز ۱"></a>
                     <a href="#"><img src="~/SiteTemplate/assets/images/footer/license/L-2.png" alt="مجوز ۲"></a>

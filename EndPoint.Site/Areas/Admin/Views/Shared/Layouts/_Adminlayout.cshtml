@@ -37,7 +37,7 @@
 
 @{
     bool isActivGYM = false;
-   
+
     int difDay_ = 0;
 
 
@@ -45,7 +45,7 @@
     var qgym = _db.Gyms.Where(o => o.Id == gid).First();
 
 
-     if (User.IsAdmin())
+    if (User.IsAdmin())
     {
         string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
 
@@ -59,6 +59,32 @@
 }
 
 
+@{
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+    string persianRole = role switch
+    {
+        "SuperAdmin" => "مدیر سایت",
+        "Admin" => "مدیر باشگاه و سیستم",
+        "GymManager" => "مدیر باشگاه",
+        "Coach" => "مربی",
+        "Member" => "عضو",
+        _ => "نامشخص"
+    };
+
+    var gymName = User.FindFirst("GymName")?.Value;
+    var userName = User.Identity?.Name;
+
+    string initials = "؟";
+
+    if (!string.IsNullOrEmpty(userName))
+    {
+        var parts = userName.Trim().Split(' ');
+        initials = parts.Length >= 2
+            ? $"{parts[0][0]}{parts[1][0]}"
+            : $"{parts[0][0]}";
+    }
+}
 
 
 
@@ -71,7 +97,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>@(ViewData["Title"] != null ? ViewData["Title"] + " | " : "")پنل مدیریت FitCore</title>
 
-    <link rel="shortcut icon" type="image/png" href="~/AdminTemplate/app-assets/img/ico/favicon-32.png" />
+    <link rel="shortcut icon" type="image/png" href="~/AdminTemplate/app-assets/img/ico/logo_1.png" />
 
     <!-- فونت‌ها و آیکون‌ها -->
     <link rel="stylesheet" href="~/AdminTemplate/app-assets/fonts/font-awesome/css/font-awesome.min.css" />
@@ -86,6 +112,9 @@
     <link rel="stylesheet" href="~/css/FitCorecss_AdminLayut.css" />
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <link href="~/lib/select2/css/select2-bootstrap4.min.css" rel="stylesheet" />
+
+
+
 
     <!-- فقط استایل قفل اسکرول موبایل - بقیه کدهای موبایل در فایل CSS خارجی هستند -->
     <style>
@@ -191,7 +220,7 @@
                             {
                                 <li class="fc-nav-item has-sub" id="nav-members">
                                     <button class="fc-nav-link" data-title="اعضاء"
-                                    onclick="fcToggleMenu('nav-members')">
+                                            onclick="fcToggleMenu('nav-members')">
                                         <span class="fc-nav-icon"><i class="icon-users"></i></span>
                                         <span class="fc-nav-text">اعضاء باشگاه</span>
                                         <i class="fa fa-angle-left fc-nav-arrow"></i>
@@ -209,7 +238,7 @@
 
                                 <li class="fc-nav-item has-sub" id="nav-programs">
                                     <button class="fc-nav-link" data-title="برنامه‌ها"
-                                    onclick="fcToggleMenu('nav-programs')">
+                                            onclick="fcToggleMenu('nav-programs')">
                                         <span class="fc-nav-icon"><i class="fa fa-list-alt"></i></span>
                                         <span class="fc-nav-text">برنامه‌های اعضاء</span>
                                         <i class="fa fa-angle-left fc-nav-arrow"></i>
@@ -251,7 +280,7 @@
                                     <span class="fc-nav-text">درخواست‌های برنامه</span>
                                     <span id="nav-pending-badge"
                                           style="display:none;background:#f6ad55;color:#fff;
-                                                                border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                                                        border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
                                     </span>
                                 </a>
                             </li>
@@ -329,7 +358,7 @@
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های پشتیبانی</span>
                                 <span id="ticket-badge" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                            padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                                padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
@@ -341,17 +370,13 @@
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های مدیران باشگاه</span>
                                 <span id="ticket-badge-sa" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                            padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                                padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
 
-                    <li class="fc-nav-item" style="margin-top: auto;">
-                        <a href="/" class="fc-nav-link" data-title="بازگشت به سایت اصلی">
-                            <span class="fc-nav-icon"><i class="fa fa-sign-out" style="color: #f56565;"></i></span>
-                            <span class="fc-nav-text">بازگشت به سایت</span>
-                        </a>
-                    </li>
+
+
                 </ul>
             </nav>
 
@@ -375,39 +400,58 @@
                     @(ViewData["Title"] ?? "داشبورد")
                 </div>
 
-                <!-- آیکون‌های راست -->
+
+
+                <!-- اطلاعات کاربر -->
                 <div class="fc-topbar-actions">
 
-                    <!-- منوی کاربر -->
-                    @*                     <div class="fc-user-menu">
-                        <button class="fc-user-trigger" id="fcUserTrigger">
-                            <img src="~/AdminTemplate/app-assets/img/portrait/small/avatar-s-3.jpg"
-                                 class="fc-user-avatar"
-                                 alt="کاربر" />
-                            <span class="fc-user-name">
-                                @User.Identity?.Name
-                            </span>
-                            <i class="fa fa-angle-down" style="font-size:11px;color:var(--fc-text-muted);"></i>
-                        </button>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <div class="fc-topbar-user">
 
-                        <div class="fc-user-dropdown" id="fcUserDropdown">
-                            <a href="#">
-                                <i class="fa fa-user-o" style="width:16px;"></i>
-                                پروفایل من
-                            </a>
-                            <a href="javascript:;">
-                                <i class="fa fa-cog" style="width:16px;"></i>
-                                تنظیمات
-                            </a>
-                            <div class="fc-user-dropdown-divider"></div>
-                            <a href="/" class="danger">
-                                <i class="fa fa-sign-out" style="width:16px;"></i>
-                                خروج
-                            </a>
+                            <div class="fc-topbar-avatar">
+                                @initials
+                            </div>
+
+                            <div class="fc-topbar-userinfo">
+                                <div class="fc-topbar-username">
+                                    @userName
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(gymName))
+                                {
+                                    <div class="fc-topbar-gym">
+                                        باشگاه: <strong>@gymName</strong>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="fc-role-badge">
+                                @persianRole
+                            </div>
+
                         </div>
-                    </div>
- *@
+                    }
+
                 </div>
+
+
+                <form asp-area="Admin"
+                      asp-controller="Auth"
+                      asp-action="Logout"
+                      method="post"
+                      class="d-inline"
+                      onsubmit="confirmLogout(event)">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="fc-logout-btn">
+                        <i class="fa fa-sign-out-alt"></i>
+                        خروج
+                    </button>
+
+                </form>
+
 
             </header>
 
@@ -449,6 +493,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/select2/js/select2.min.js"></script>
     <script src="~/lib/select2/js/i18n/fa.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @RenderSection("Scripts", false)
     @RenderSection("Modals", false)
@@ -592,7 +637,43 @@
         }
         });
         }
+
+
+
+
+
+
+                // برای خروج از سایت
+        function confirmLogout(e) {
+
+            e.preventDefault();
+
+            const form = e.target;
+
+            Swal.fire({
+                title: "آیا مطمئن هستید؟",
+                text: "می‌خواهید از حساب کاربری خارج شوید",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#ef4444",
+                cancelButtonColor: "#64748b",
+                confirmButtonText: "بله، خروج",
+                cancelButtonText: "انصراف"
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+
+            });
+        }
+
+
+
+
+
     </script>
+
 
 </body>
 </html>

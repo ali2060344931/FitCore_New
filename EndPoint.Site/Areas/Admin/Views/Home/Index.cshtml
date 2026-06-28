@@ -50,9 +50,6 @@
 
 
 <style>
-    /* =========================================================
-                           FITCORE DASHBOARD — Design Tokens
-                        ========================================================= */
     :root {
         --d-green: #00C896;
         --d-green-bg: #edfaf5;
@@ -81,7 +78,7 @@
                            Layout
                         ========================================================= */
     .db-root {
-        padding: 16px 12px 32px;
+        padding: 40px 12px 32px;
         direction: rtl;
         font-family: 'Vazirmatn', 'Tahoma', sans-serif;
     }
@@ -967,7 +964,9 @@
         <div class="db-gym-info">
             <div class="db-gym-name">
                 @Model.GymName
-                <help key="H2" />
+                <span class="db-help-inline">
+                    <help key="H2" />
+                </span>
             </div>
             <div class="db-gym-meta">
                 <span><i class="fa fa-barcode"></i> کد: @Model.GymCode</span>
@@ -1106,7 +1105,10 @@
                             <i class="fa fa-line-chart" style="color:var(--d-green);font-size:13px;"></i>
                         </div>
                         روند ۶ ماه گذشته
-                        <help key="H3" />
+                       
+                        <span class="db-help-inline">
+                            <help key="H3" />
+                        </span>
                     </div>
                 </div>
                 <div style="position:relative;height:220px;">
@@ -1123,7 +1125,9 @@
                             <i class="fa fa-pie-chart" style="color:var(--d-blue);font-size:13px;"></i>
                         </div>
                         اهداف تمرینی
-                        <help key="H4" />
+                        <span class="db-help-inline">
+                            <help key="H4" />
+                        </span>
                     </div>
                 </div>
                 @if (Model.TrainingGoalTypes != null && Model.TrainingGoalTypes.Any())
@@ -1161,7 +1165,10 @@
                             <i class="fa fa-user-plus" style="color:var(--d-green);font-size:12px;"></i>
                         </div>
                         آخرین اعضا
-                        <help key="H5" />
+
+                        <span class="db-help-inline">
+                            <help key="H5" />
+                        </span>
                     </div>
                     @if (isActivGYM)
                     {
@@ -1237,7 +1244,10 @@
                             <i class="fa fa-clock-o" style="color:var(--d-orange);font-size:13px;"></i>
                         </div>
                         آخرین فعالیت‌ها
-                        <help key="H6" />
+
+                        <span class="db-help-inline">
+                            <help key="H6" />
+                        </span>
                     </div>
                 </div>
 
@@ -1308,7 +1318,11 @@
                     <i class="fa fa-bolt" style="color:var(--d-orange);font-size:13px;"></i>
                 </div>
                 دسترسی سریع
-                <help key="HD00" />
+
+                <span class="db-help-inline">
+                    <help key="HD00" />
+
+                </span>
             </div>
         </div>
 
@@ -1316,33 +1330,69 @@
             @if (isActivGYM)
 
             {
-                <a href="/Admin/Members" class="db-quick-btn">
-                    <i class="fa fa-users"></i>
-                    <span>اعضا</span>
-                    <help key="HD01" />
-                </a>
-                <a href="/Admin/NutritionProgram" class="db-quick-btn">
-                    <i class="fa fa-cutlery"></i>
-                    <span>برنامه غذایی</span>
-                    <help key="HD02" />
-                </a>
-                <a href="/Admin/TrainingProgram" class="db-quick-btn">
-                    <i class="fa fa-heartbeat"></i>
-                    <span>برنامه تمرینی</span>
-                    <help key="HD03" />
-                </a>
+                <div class="db-quick-card">
+
+                    <a href="/Admin/Members" class="db-quick-btn">
+                        <i class="fa fa-users"></i>
+                        <span>اعضا</span>
+                    </a>
+
+                    <div class="db-help-badge">
+                        <help key="HD01" />
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="db-quick-card">
+                    <a href="/Admin/NutritionProgram" class="db-quick-btn">
+                        <i class="fa fa-cutlery"></i>
+                        <span>برنامه غذایی</span>
+                    </a>
+                    <div class="db-help-badge">
+                        <help key="HD02" />
+                    </div>
+                </div>
+
+
+                <div class="db-quick-card">
+                    <a href="/Admin/TrainingProgram" class="db-quick-btn">
+                        <i class="fa fa-heartbeat"></i>
+                        <span>برنامه تمرینی</span>
+                    </a>
+                    <div class="db-help-badge">
+                        <help key="HD03" />
+                    </div>
+                </div>
+            
+            
+            
+            
+            
             }
 
-            <a href="/Admin/Food" class="db-quick-btn">
-                <i class="fa fa-apple"></i>
-                <span>غذاها</span>
-                <help key="HD04" />
-            </a>
-            <a href="/Admin/Exercise" class="db-quick-btn">
-                <i class="fa fa-list-ul"></i>
-                <span>حرکات</span>
-                <help key="HD05" />
-            </a>
+            <div class="db-quick-card">
+                <a href="/Admin/Food" class="db-quick-btn">
+                    <i class="fa fa-apple"></i>
+                    <span>غذاها</span>
+                </a>
+                <div class="db-help-badge">
+                    <help key="HD04" />
+                </div>
+            </div>
+
+
+            <div class="db-quick-card">
+                <a href="/Admin/Exercise" class="db-quick-btn">
+                    <i class="fa fa-list-ul"></i>
+                    <span>حرکات</span>
+                </a>
+                <div class="db-help-badge">
+                    <help key="HD05" />
+                </div>
+            </div>
 
             <!--  <a href="/Admin/Gym" class="db-quick-btn">
                 <i class="fa fa-building-o"></i>

@@ -3,6 +3,7 @@ using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Auth.Dto;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -61,20 +62,57 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return Json(result); // فقط نتیجه سرویس را برمی‌گرداند
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> VerifyOtp(string mobile, string code)
         {
             var result = await _verifyOtpService.Execute(mobile, code);
+
+            if (result.IsSuccess)
+            {
+                string redirectUrl = "";
+
+                if (User.IsInRole("Admin"))
+                {
+                    redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
+                }
+                else if (User.IsInRole("Member"))
+                {
+                    redirectUrl = Url.Action("Index", "MemberDashboard", new { area = "Admin" });
+                }
+
+                return Json(new
+                {
+                    isSuccess = true,
+                    redirectUrl = redirectUrl
+                });
+            }
+
             return Json(result);
         }
+
 
 
 
         [HttpPost]
         public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
         {
+            //var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
+            //return Json(result);
             var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
+
+            if (result.IsSuccess)
+            {
+                return Json(new
+                {
+                    isSuccess = true,
+                    redirectUrl = Url.Action("GettingStarted", "Home", new { area = "Admin" })
+                });
+            }
+
             return Json(result);
+
         }
 
 
@@ -161,6 +199,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return Json(result);
         }
 
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -170,11 +212,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             {
                 Response.Cookies.Delete(cookie);
             }
-            return RedirectToAction("Login", "Auth");
+            //return RedirectToAction("Login", "Auth");
             //return RedirectToAction("Login", "Auth", new { area = "Admin" });
+            return RedirectToAction("Index", "Home", new { area = "" });
 
         }
-
 
 
 

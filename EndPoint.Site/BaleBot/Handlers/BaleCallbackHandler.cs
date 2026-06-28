@@ -230,7 +230,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 var rows = gyms.Select(g => new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "کد باشگاه:" + g.Code, CallbackData = $"GYM_{g.Id}" } }).ToList();
                 keyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
                 _cache.Set(chatId.ToString(), new BotState { Step = "WAITING_FOR_GYM", RegType = "Member" });
-                responseText = "لطفاً کد باشگاهی که می‌خواهید در آن عضو شوید را انتخاب کنید:";
+                responseText = "🆔لطفاً کد باشگاهی که می‌خواهید در آن عضو شوید را انتخاب کنید:";
             }
 
             else if (data.StartsWith("GYM_"))
@@ -244,7 +244,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                     _cache.Set(chatId.ToString(), state);
                 }
 
-                var gymName = _db.Gyms.Where(c => c.Id == gymId).First().Name;
+                var gym = _db.Gyms.Where(c => c.Id == gymId).First();
                 //ToDo نمایش اطلاعات مدیر باشگاه با داشتن آی دی باشگاه
                 var q = _db.UserRoles
       .Where(r => r.RoleId == 2)
@@ -254,7 +254,7 @@ namespace EndPoint.Site.BaleBot.Handlers
           (r, u) => new { r, u })
       .Where(x => x.u.GymId == gymId).FirstOrDefault();
                 //🏟️🧑‍💻
-                responseText = "نام باشگاه و مدیر انتخابی شما: "+'\n' + gymName + " - " + q.u.FullName + '\n'+'\n' + "لطفاً نام و نام خانوادگی خود را وارد و ارسال نمائید:";
+                responseText = "ℹ️️اطلاعات باشگاه انتخاب شده:'\n'" + "🆔کد باشگاه:" + gym.Code + '\n'+"نام باشگاه: " + gym.Name+'\n' + "مدیرباشگاه: " + q.u.FullName+"-"+q.u.PhoneNumber + '\n'+'\n' + "👱‍♂️لطفاً نام و نام خانوادگی خود را وارد و ارسال نمائید:";
             }
 
             // ---------------- درخواست و دریافت برنامه ----------------
@@ -599,6 +599,7 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
 
             await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+            
             if (keyboard != null)
                 await _baleBotService.SendMessageAsync(chatId, responseText, keyboard);
             else await _baleBotService.SendMessageAsync(chatId, responseText);

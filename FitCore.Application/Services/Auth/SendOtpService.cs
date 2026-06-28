@@ -165,6 +165,7 @@ namespace FitCore.Application.Services.Auth
 
                     // ارسال به ادمین (Fire and Forget)
                     _ = _baleBotService.SendMessageAsync(adminSetting.SuperAdminChatId.Value, adminMessage);
+                    
                 }
 
             }

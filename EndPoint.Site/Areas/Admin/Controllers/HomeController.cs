@@ -2,6 +2,7 @@ using FitCore.Application.Contexts;
 using FitCore.Application.Services.Dashboard;
 using FitCore.Common;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -131,5 +132,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             // مرتب‌سازی: کسانی که زودتر منقضی می‌شوند اول بیایند
             return criticalList.OrderBy(x => x.RemainingDays).ToList();
         }
+
+        [Authorize]
+        public IActionResult GettingStarted()
+        {
+            return View();
+        }
+
     }
 }
