@@ -16,7 +16,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -75,6 +77,51 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             };
 
             ViewBag.EncryptedId = id;
+            // ==================================================================
+            // خواندن اطلاعات عضو و محاسبه سن
+            // ==================================================================
+            long? memberId = _context.TrainingPrograms
+                .Where(p => p.Id == Id)
+                .Select(p => p.MemberId)
+                .FirstOrDefault();
+
+            int? memberAge = null;
+
+            if (memberId.HasValue && memberId.Value > 0)
+            {
+                vm.MemberDetails = _context.Members
+                    .Include(m => m.memberBodyMeasurements)
+                    .FirstOrDefault(m => m.Id == memberId.Value);
+
+                if (vm.MemberDetails != null && !string.IsNullOrEmpty(vm.MemberDetails.BirthDate))
+                {
+                    try
+                    {
+                        string[] parts = vm.MemberDetails.BirthDate.Split(new[] { '/', '-' });
+                        if (parts.Length >= 3)
+                        {
+                            int y = int.Parse(parts[0]);
+                            int m = int.Parse(parts[1]);
+                            int d = int.Parse(parts[2]);
+
+                            PersianCalendar pc = new PersianCalendar();
+                            var birthDate = pc.ToDateTime(y, m, d,0,0,0,0);
+
+                            int years = DateTime.Today.Year - birthDate.Year;
+                            if (birthDate.Date > DateTime.Today) years--;
+
+                            int days = (DateTime.Today - birthDate.AddYears(years)).Days;
+
+                            if (years >= 0)
+                            {
+                                vm.MemberAge = years;
+                            }
+                        }
+                    }
+                    catch { /* در صورت خطای تاریخ، سن محاسبه نمی‌شود */ }
+                }
+            }
+            // ==================================================================
 
             return View(vm);
         }

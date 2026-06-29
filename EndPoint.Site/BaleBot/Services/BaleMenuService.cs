@@ -330,7 +330,7 @@ namespace EndPoint.Site.BaleBot.Services
             // ==========================================================
             loggedKeyboardRows.Add(new List<InlineKeyboardButton>
             {
-                new InlineKeyboardButton { Text = "منوی اصلی", CallbackData = "MAIN_MENU" }
+                new InlineKeyboardButton { Text = minemenu, CallbackData = "MAIN_MENU" }
             });
 
             string welcomeText = "✅ از منوی زیر خدمات مورد نظر خود را انتخاب کنید:";
@@ -360,6 +360,11 @@ namespace EndPoint.Site.BaleBot.Services
                     {
                         new InlineKeyboardButton { Text = "📝♂️ ثبت‌نام اعضاء باشگاه", CallbackData = "REG_MEMBER" }
                     },
+                    new List<InlineKeyboardButton>
+                    {
+                        new InlineKeyboardButton { Text = minemenu, CallbackData = "MAIN_MENU" }
+                    },
+
                 }
             };
 
@@ -368,7 +373,7 @@ namespace EndPoint.Site.BaleBot.Services
                 $"به سیستم مدیریت باشگاه‌های فیتکور FitCore خوش آمدید {userName} عزیز.\nلطفاً جهت ثبت‌نام در سایت فیتکور یکی از گزینه‌های زیر را انتخاب نمائید:",
                 keyboard);
         }
-
+        string minemenu = "🏢 منوی اصلی";
         /// <summary>
         /// منوی ساده (بدون تغییر)
         /// </summary>
@@ -380,12 +385,12 @@ namespace EndPoint.Site.BaleBot.Services
                 {
                     new List<InlineKeyboardButton>
                     {
-                        new InlineKeyboardButton { Text = "🏢 منوی اصلی", CallbackData = "MAIN_MENU_2" }
+                        new InlineKeyboardButton { Text = minemenu, CallbackData = "MAIN_MENU_2" }
                     },
                 }
             };
 
-            await _baleBotService.SendMessageAsync(chatId, "منو اصلی", keyboard);
+            await _baleBotService.SendMessageAsync(chatId, minemenu, keyboard);
         }
 
         /// <summary>
@@ -440,7 +445,7 @@ namespace EndPoint.Site.BaleBot.Services
                 },
                 new List<InlineKeyboardButton>
                 {
-                    new InlineKeyboardButton { Text = "منوی اصلی", CallbackData = "MAIN_MENU" }
+                    new InlineKeyboardButton { Text = minemenu, CallbackData = "MAIN_MENU" }
                 }
             };
             var loggedKeyboard = new InlineKeyboardMarkup { InlineKeyboard = loggedKeyboardRows };

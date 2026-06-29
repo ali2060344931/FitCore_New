@@ -15,6 +15,10 @@ namespace EndPoint.Site.Areas.Admin.Models
         public List<SelectListItem> DayTypes { get; set; }
 
         public List<SelectListItem> Exercises { get; set; }
+        // استفاده از مسیر کامل برای جلوگیری از هرگونه تداخل فضای نام
+        public FitCore.Domain.Entities.Members.Member MemberDetails { get; set; }
+        public int? MemberAge { get; set; }
+
     }
 
     public class ExerciseCreateEditViewModel

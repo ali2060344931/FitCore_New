@@ -151,7 +151,9 @@
                                             <h4>ایجاد حساب کاربری جدید</h4>
 
                                             <div class="d-flex justify-content-center my-3">
-                                                <img src="/AdminTemplate/app-assets/img/logos/logo_1.png" alt="FitCore" class="account-small-icon">
+                                                <a href="https://ble.ir/FitCoreBot" target="_blank" class="logo-link-3d">
+                                                    <img src="/AdminTemplate/app-assets/img/logos/logo_1.png" alt="FitCore" class="account-small-icon">
+                                                </a>
                                             </div>
 
                                             <p class="registration-text">
@@ -173,6 +175,40 @@
         </div>
     </div>
 
+    <style>
+            .logo-link-3d {
+                display: inline-block;
+                perspective: 1500px;
+            }
+
+                .logo-link-3d img {
+                    display: block;
+                    transition: transform 0.45s cubic-bezier(.2,.8,.2,1), filter 0.35s ease, box-shadow 0.35s ease;
+                }
+
+                /* Hover */
+                .logo-link-3d:hover img {
+                    transform: rotateX(12deg) rotateY(25deg) scale(2.5); /* دو برابر شدن */
+
+                    filter: brightness(1.15);
+                    box-shadow: 0 15px 30px rgba(0,0,0,0.45), 0 0 20px rgba(0, 200, 255, 0.45), 0 0 40px rgba(0, 200, 255, 0.25);
+                }
+
+                /* هنگام کلیک */
+                .logo-link-3d:active img {
+                    transform: scale(1.6);
+                }
+
+            /* موبایل */
+            @@media (max-width:768px) {
+
+                .logo-link-3d:active img {
+                    transform: scale(1.4);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 20px rgba(0,200,255,0.35);
+                }
+            }
+
+    </style>
     <script src="~/SiteTemplate/assets/js/vendor/jquery-3.2.1.min.js"></script>
     <script src="~/SiteTemplate/assets/js/vendor/bootstrap.js"></script>
     <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>

@@ -1,6 +1,5 @@
 ﻿using EndPoint.Site.Areas.Admin.Models;
 
-
 using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Common;
@@ -56,18 +55,20 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                                       && u.GymId == currentUser.GymId
                                       && u.BaleChatId.HasValue
                                       && u.BaleChatId > 0
-                                      && u.IsActive == true
+                                   // توجه: فیلتر u.IsActive == true حذف شد تا کاربران غیرفعال هم لود شوند
                                    select new MemberSelectItem
                                    {
                                        Id = u.Id,
                                        BaleChatId = u.BaleChatId.Value,
                                        FullName = u.FullName ?? "بدون نام",
                                        PhoneNumber = u.PhoneNumber,
-                                       IsExpired = m != null &&
+                                       // اگر اکانت غیرفعال باشد OR تاریخش گذشته باشد، جزو منقضی‌هاست
+                                       IsExpired = u.IsActive == false ||
+                                                   (m != null &&
                                                    !string.IsNullOrEmpty(m.MembershipEndDate) &&
                                                    m.MembershipEndDate != "نامحدود" &&
-                                                   string.Compare(m.MembershipEndDate.Trim(), todayShamsi, StringComparison.Ordinal) < 0
-                                   }).ToListAsync();
+                                                   string.Compare(m.MembershipEndDate.Trim(), todayShamsi, StringComparison.Ordinal) < 0)
+                                   }).OrderBy(m=>m.FullName).ToListAsync();
 
             return View(model);
         }
@@ -78,9 +79,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             var selectedMembers = model.Members?.Where(m => m.IsSelected).ToList();
 
-            // ==========================================================
             // فیلتر امنیتی سمت سرور بر اساس انتخاب رادیوباتن
-            // ==========================================================
             if (selectedMembers != null && selectedMembers.Any())
             {
                 switch (model.FilterType)
@@ -93,7 +92,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                         break;
                     case MemberFilterType.All:
                     default:
-                        break; // نیازی به فیلتر نیست
+                        break;
                 }
             }
 
@@ -110,8 +109,18 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                                            join r in _db.Roles on ur.RoleId equals r.Id
                                            join m in _db.Members on u.Id equals m.AppUserId into memberGroup
                                            from m in memberGroup.DefaultIfEmpty()
-                                           where r.Name == "Member" && u.GymId == currentUser.GymId && u.BaleChatId.HasValue && u.IsActive == true
-                                           select new MemberSelectItem { Id = u.Id, BaleChatId = u.BaleChatId.Value, FullName = u.FullName ?? "بدون نام", PhoneNumber = u.PhoneNumber, IsExpired = m != null && !string.IsNullOrEmpty(m.MembershipEndDate) && m.MembershipEndDate != "نامحدود" && string.Compare(m.MembershipEndDate.Trim(), todayShamsi, StringComparison.Ordinal) < 0 }).ToListAsync();
+                                           where r.Name == "Member"
+                                              && u.GymId == currentUser.GymId
+                                              && u.BaleChatId.HasValue
+                                           // توجه: اینجا هم فیلتر حذف شد
+                                           select new MemberSelectItem
+                                           {
+                                               Id = u.Id,
+                                               BaleChatId = u.BaleChatId.Value,
+                                               FullName = u.FullName ?? "بدون نام",
+                                               PhoneNumber = u.PhoneNumber,
+                                               IsExpired = u.IsActive == false || (m != null && !string.IsNullOrEmpty(m.MembershipEndDate) && m.MembershipEndDate != "نامحدود" && string.Compare(m.MembershipEndDate.Trim(), todayShamsi, StringComparison.Ordinal) < 0)
+                                           }).ToListAsync();
                 }
                 return View(model);
             }
@@ -122,9 +131,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View(model);
             }
 
-            // ==========================================================
             // دریافت نام باشگاه برای قرار دادن در متن پیام
-            // ==========================================================
             var adminUser = await _userManager.GetUserAsync(User);
             var gym = await _db.Gyms.FirstOrDefaultAsync(g => g.Id == adminUser.GymId);
             string gymName = gym?.Name ?? "نامشخص";
@@ -137,7 +144,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             {
                 try
                 {
-                    // ارسال پیام نهایی که نام باشگاه به آن اضافه شده است
                     await _baleBotService.SendMessageAsync(member.BaleChatId, finalMessage);
                     sentCount++;
                 }

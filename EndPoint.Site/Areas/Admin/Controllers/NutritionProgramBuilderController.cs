@@ -24,6 +24,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -103,9 +105,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             long Id = SecurityUtils.DecryptId(id);
 
-
-
-
             var builderResult = _getProgramBuilderService.Execute(Id);
 
             if (!builderResult.IsSuccess || builderResult.Data == null)
@@ -122,9 +121,56 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Lookups = lookupResult.Data ?? new BuilderLookupDto()
             };
 
+
+            // ==================================================================
+            // خواندن اطلاعات عضو و محاسبه سن
+            // ==================================================================
+            long? memberId = _Context.NutritionPrograms
+                .Where(p => p.Id == Id)
+                .Select(p => p.MemberId)
+                .FirstOrDefault();
+
+            int? memberAge = null;
+
+            if (memberId.HasValue && memberId.Value > 0)
+            {
+                vm.MemberDetails = _Context.Members
+                    .Include(m => m.memberBodyMeasurements)
+                    .FirstOrDefault(m => m.Id == memberId.Value);
+
+                // محاسبه سن دقیق با در نظر گرفتن سال کبیسه
+                if (vm.MemberDetails != null && !string.IsNullOrEmpty(vm.MemberDetails.BirthDate))
+                {
+                    try
+                    {
+                        string[] parts = vm.MemberDetails.BirthDate.Split(new[] { '/', '-' });
+                        if (parts.Length >= 3)
+                        {
+                            int y = int.Parse(parts[0]);
+                            int m = int.Parse(parts[1]);
+                            int d = int.Parse(parts[2]);
+
+                            PersianCalendar pc = new PersianCalendar();
+                            var birthDate = pc.ToDateTime(y, m, d,0,0,0,0);
+
+                            int years = DateTime.Today.Year - birthDate.Year;
+                            if (birthDate.Date > DateTime.Today) years--;
+
+                            int days = (DateTime.Today - birthDate.AddYears(years)).Days;
+
+                            if (years >= 0)
+                            {
+                                vm.MemberAge = years;
+                            }
+                        }
+                    }
+                    catch { /* در صورت خطای تاریخ، سن محاسبه نمی‌شود */ }
+                }
+            }
+            // ==================================================================
+
             return View(vm);
         }
-
         [HttpPost]
         public JsonResult AddDay(RequestAddNutritionProgramDayDto request)
         {
