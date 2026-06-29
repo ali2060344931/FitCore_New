@@ -20,5 +20,11 @@ namespace FitCore.Application.Services.Tickets
         public async Task<int> ForSuperAdmin() =>
             await _context.Tickets.CountAsync(t => !t.IsRemoved &&
                 t.SenderRole == UserRoles.Admin && t.Status == TicketStatus.Open);
+
+
+        public async Task<int> ForMember(long appUserId)
+        {
+            return await _context.Tickets.CountAsync(t => t.SenderUserId == appUserId && t.Status != TicketStatus.Closed);
+        }
     }
 }

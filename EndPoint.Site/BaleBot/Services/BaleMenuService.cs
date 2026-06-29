@@ -29,7 +29,7 @@ namespace EndPoint.Site.BaleBot.Services
         Task ShowErrorWithMenu(long chatId, string errorMessage);
         Task SendSurveyToBale(long chatId);
         Task ShowUnauthenticatedMenu(long chatId, string userName);
-        Task EditMemberInfoSend(long memberId);
+        Task EditMemberInfoSend(long BaleChatId, string massege);
         Task ShowMainMenu(long memberId);
 
 
@@ -428,9 +428,9 @@ namespace EndPoint.Site.BaleBot.Services
         }
 
         /// <summary>
-        /// ارسال پیام به کاربران پس از ویرایش اطلاعات عضو توسط مدیر (بدون تغییر)
+        /// ارسال پیام به کاربران پس از ویرایش اطلاعات عضو توسط مدیر
         /// </summary>
-        public async Task EditMemberInfoSend(long memberId)
+        public async Task EditMemberInfoSend(long BaleChatId, string massege)
         {
             var loggedKeyboardRows = new List<List<InlineKeyboardButton>>
             {
@@ -444,19 +444,17 @@ namespace EndPoint.Site.BaleBot.Services
                 }
             };
             var loggedKeyboard = new InlineKeyboardMarkup { InlineKeyboard = loggedKeyboardRows };
-            var member = _db.Members
-                           .Include(x => x.AppUser)
-                           .FirstOrDefault(x => x.Id == memberId);
+            //var member = _db.Members
+            //               .Include(x => x.AppUser)
+            //               .FirstOrDefault(x => x.Id == memberId);
 
-            if (member?.AppUser?.BaleChatId != null)
-            {
-                await _baleBotService.SendMessageAsync(
-                    (long)member.AppUser.BaleChatId,
-                    "تغییراتی در پنل کاربری از طرف مدیر باشگاه انجام شد\nلطفاً بخش اطلاعات کاربر، موارد ویرایش شده را مشاهده نمائید",
-                    loggedKeyboard);
-            }
+
+
+            await _baleBotService.SendMessageAsync(
+                (long)BaleChatId,
+                massege,
+                loggedKeyboard);
         }
-
         #endregion
     }
 }

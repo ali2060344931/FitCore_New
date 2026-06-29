@@ -7,6 +7,8 @@ namespace FitCore.Application.Services.Tickets
     public interface IGetOpenTicketsCountService
     {
         Task<int> ForAdmin(long gymId);
+        Task<int> ForMember(long appUserId);
         Task<int> ForSuperAdmin();
+
     }
 }

@@ -284,6 +284,45 @@
                                     </span>
                                 </a>
                             </li>
+
+
+
+                            <li class="fc-nav-item">
+                                <a href="/Admin/ProgramRequest" class="fc-nav-link" data-title="درخواست‌های برنامه"
+                                   id="nav-requests-link">
+                                    <span class="fc-nav-icon"><i class="fa fa-bell"></i></span>
+                                    <span class="fc-nav-text">درخواست‌های برنامه</span>
+                                    <span id="nav-pending-badge"
+                                          style="display:none;background:#f6ad55;color:#fff;
+                                                                        border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                    </span>
+                                </a>
+
+                            </li>
+
+                            <li class="fc-nav-item">
+                                <a class="fc-nav-link" asp-area="Admin" asp-controller="BotMessage" asp-action="SendBulkMessage"
+                                   data-title="ارسال پیام گروهی بله" id="nav-bale-broadcast-link">
+
+                                    <span class="fc-nav-icon">
+                                        <i class="fa fa-bullhorn"></i>
+                                    </span>
+
+                                    <span class="fc-nav-text">
+                                        ارسال پیام گروهی بله
+                                    </span>
+
+                                    <span id="nav-bale-broadcast-badge"
+                                          style="display:none;background:#f6ad55;color:#fff;
+                             border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                    </span>
+
+                                </a>
+                            </li>
+
+
+
+
                         }
                     }
 
@@ -617,7 +656,7 @@
         });
         }
 
-        // بارگذاری تعداد تیکت‌های باز
+        // بارگذاری تعداد تیکت‌های باز برای مدیر باشگاه و ورزشکار
         if (document.getElementById('ticket-badge')) {
         fetch('/Admin/Ticket/OpenCount').then(function(r) { return r.json(); }).then(function(res) {
         if (res.count > 0) {
@@ -627,7 +666,7 @@
         }
         });
         }
-
+        // بارگذاری تعداد تیکت‌های باز برای مدیر سایت
         if (document.getElementById('ticket-badge-sa')) {
         fetch('/Admin/Ticket/OpenCount').then(function(r) { return r.json(); }).then(function(res) {
         if (res.count > 0) {

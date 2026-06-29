@@ -11,6 +11,7 @@ using FitCore.Common;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.RulesetToEditorconfig;
+using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.Linq;
@@ -118,11 +119,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(RequestEditMemberDto request)
         {
+            string msg = "تغییراتی در پنل کاربری از طرف مدیر باشگاه انجام شد\nلطفاً بخش اطلاعات کاربر، موارد ویرایش شده را مشاهده نمائید";
             var result = _memberFacad.EditMemberService.Execute(request);
             if(result.IsSuccess)
             {
                 long memberId = result.Data;
-                _baleMenuService.EditMemberInfoSend(memberId);
+
+                var member = _context.Members
+                               .Include(x => x.AppUser)
+                               .FirstOrDefault(x => x.Id == memberId);
+
+                _baleMenuService.EditMemberInfoSend((long)member.AppUser.BaleChatId, msg);
             }
             return Json(result);
         }

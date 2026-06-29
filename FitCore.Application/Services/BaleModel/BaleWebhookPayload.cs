@@ -123,19 +123,32 @@ namespace GymBot.Models
     {
         [JsonPropertyName("keyboard")]
         public List<List<KeyboardButton>> Keyboard { get; set; }
+
         [JsonPropertyName("resize_keyboard")]
         public bool ResizeKeyboard { get; set; } = true;
+
         [JsonPropertyName("one_time_keyboard")]
-        public bool OneTimeKeyboard { get; set; } = true;
+        public bool OneTimeKeyboard { get; set; } = false;
     }
 
     public class KeyboardButton
     {
-        [JsonPropertyName("request_contact")]
-        public bool RequestContact { get; set; }
-
         [JsonPropertyName("text")]
         public string Text { get; set; }
-    }
 
+        [JsonPropertyName("request_contact")]
+        public bool RequestContact { get; set; } = false;
+
+        [JsonPropertyName("request_location")]
+        public bool RequestLocation { get; set; } = false;
+    }
+    public class ReplyKeyboardRemove
+    {
+        [JsonPropertyName("remove_keyboard")]
+        public bool RemoveKeyboard { get; set; } = true;
+
+        [JsonPropertyName("selective")]
+        public bool Selective { get; set; } = false;
+    }
 }
+

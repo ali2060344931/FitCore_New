@@ -71,15 +71,12 @@ namespace FitCore.Application.Services.Auth
                 };
             }
 
+
             // 3) اگر فقط یک باشگاه: ورود مستقیم
             if (accounts.Count == 1)
             {
                 var user = await _userManager.FindByIdAsync(accounts[0].Id.ToString());
                 await _signInManager.SignInAsync(user, isPersistent: true);
-
-                // مصرف OTP
-                otp.IsUsed = true;
-                await _db.SaveChangesAsync(cancellationToken);
 
                 return new VerifyOtpResultDto
                 {
@@ -88,6 +85,25 @@ namespace FitCore.Application.Services.Auth
                     NeedGymSelection = false
                 };
             }
+            // 3) اگر فقط یک باشگاه: ورود مستقیم
+            //if (accounts.Count == 1)
+            //{
+            //    var user = await _userManager.FindByIdAsync(accounts[0].Id.ToString());
+            //    await _signInManager.SignInAsync(user, isPersistent: true);
+
+            //    // مصرف OTP
+            //    otp.IsUsed = true;
+            //    await _db.SaveChangesAsync(cancellationToken);
+
+            //    return new VerifyOtpResultDto
+            //    {
+            //        IsSuccess = true,
+            //        Message = "ورود با موفقیت انجام شد",
+            //        NeedGymSelection = false
+            //    };
+            //}
+
+
 
             // 4) چند باشگاه: لیست باشگاه‌ها را بده + یک توکن کوتاه‌عمر
             var gymIds = accounts.Select(x => x.GymId).Distinct().ToList();

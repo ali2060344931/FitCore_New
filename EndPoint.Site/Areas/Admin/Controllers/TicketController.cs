@@ -1,10 +1,14 @@
-﻿using FitCore.Application.Contexts;
+﻿using EndPoint.Site.BaleBot.Services;
+
+using FitCore.Application.Contexts;
 using FitCore.Application.Services.Tickets;
 using FitCore.Common;
 using FitCore.Common.Roles;
+using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Tickets;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +29,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IGetTicketsService _getTicketsService;
         private readonly IGetTicketDetailService _getDetailService;
         private readonly IGetOpenTicketsCountService _getCountService;
+        private readonly IBaleMenuService _baleMenuService;
 
         public TicketController(
             IDataBaseContext context,
@@ -33,7 +38,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             ICloseTicketService closeService,
             IGetTicketsService getTicketsService,
             IGetTicketDetailService getDetailService,
-            IGetOpenTicketsCountService getCountService)
+            IGetOpenTicketsCountService getCountService,
+            IBaleMenuService baleMenuService)
         {
             _context = context;
             _createService = createService;
@@ -42,6 +48,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _getTicketsService = getTicketsService;
             _getDetailService = getDetailService;
             _getCountService = getCountService;
+            _baleMenuService = baleMenuService;
         }
 
         private long CurrentUserId => long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -96,13 +103,13 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create() => View();
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string subject, string body, TicketPriority priority)
         {
             string senderRole = User.IsInRole(UserRoles.Admin) ? UserRoles.Admin : UserRoles.Member;
             var gymId = await CurrentGymIdAsync();
-
             var result = await _createService.Execute(new CreateTicketDto
             {
                 SenderUserId = CurrentUserId,
@@ -112,6 +119,62 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Body = body,
                 Priority = priority
             });
+
+
+
+            #region ارسال پیام به ربات جهت اطلاع رسانی
+
+            //ToDo نمایش اطلاعات مدیر باشگاه با داشتن آی دی باشگاه
+            var q = (from r in _context.UserRoles
+                     join u in _context.Users on r.UserId equals u.Id
+                     join g in _context.Gyms on u.GymId equals g.Id
+                     //join m in _context.Members on u.Id equals m.AppUserId
+                     where r.RoleId == 2 && u.GymId == gymId
+                     select new
+                     {
+                         u,
+                         g,
+                         r,
+                         //m
+                     }).FirstOrDefault();
+
+
+
+
+
+            string priorityTitle = "";
+            if (priority == TicketPriority.Low)
+            {
+                priorityTitle = "کم";
+            }
+            else if (priority == TicketPriority.Normal)
+            {
+                priorityTitle = "متوسط";
+            }
+            else
+            {
+                priorityTitle = "زیاد";
+
+            }
+            var SenderUser = _context.Users.Where(c => c.Id == CurrentUserId).First();
+
+            long BaleChatId = 0;
+            string msg = "📨تیکت برای شما ارسال گردید.\n➖نام و نام خانوادگی ارسال کننده: " + SenderUser.FullName + "\n➖شماره تماس: " + SenderUser.PhoneNumber + "\n➖باشگاه: " + q.g.Name + "\n➖موضوع: " + subject + "\n➖میزان اهمیت: " + priorityTitle;
+
+            if (senderRole == UserRoles.Member)
+            {
+                BaleChatId = (long)q.u.BaleChatId;//مربوط به مدیر باشگاه
+            }
+            else if (senderRole == UserRoles.Admin)
+            {
+                BaleChatId = (long)_context.Setings.Where(c => c.Code == "01").First().SuperAdminChatId;//مربوط به مدیر سایت
+            }
+
+            await _baleMenuService.EditMemberInfoSend((long)BaleChatId, msg);
+
+
+            #endregion
+
 
             return Json(new { isSuccess = result.IsSuccess, message = result.Message, ticketId = result.Data });
         }
@@ -134,6 +197,54 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 CloseTicket = closeTicket
             });
 
+
+            #region ارسال پیام به ربات جهت اطلاع رسانی
+            
+                var Ticket = _context.Tickets.Where(c => c.Id == ticketId).FirstOrDefault();
+        
+            var q = (from r in _context.UserRoles
+                     join u in _context.Users on r.UserId equals u.Id
+                     join g in _context.Gyms on u.GymId equals g.Id
+                     where r.RoleId == 2 && u.GymId == Ticket.GymId
+                     select new
+                     {
+                         u,
+                         g,
+                         r,
+                     }).FirstOrDefault();
+
+
+
+            long BaleChatId = 0;
+            var SenderUser = _context.Users.Where(c => c.Id == CurrentUserId).First();
+           
+            //var Resiver = _context.Tickets.Where(c => c.Id == ticketId).First();
+
+
+
+            if (senderRole == UserRoles.Member)
+            {
+                BaleChatId = (long)q.u.BaleChatId;//مربوط به مدیر باشگاه
+            }
+            else if (senderRole == UserRoles.Admin && Ticket.SenderRole== UserRoles.Member)
+            {
+                BaleChatId = (long)_context.Users.Where(c => c.Id == Ticket.SenderUserId).First().BaleChatId;//برای عضو باشگاه
+            }
+            else 
+            {
+                BaleChatId = (long)_context.Setings.Where(c => c.Code == "01").First().SuperAdminChatId;//مربوط به مدیر سایت
+            }
+
+
+
+
+            string msg = "📩پاسخ تیکت برای شما ارسال گردید.\n➖نام و نام خانوادگی ارسال کننده: " + SenderUser.FullName + "\n➖شماره تماس: " + SenderUser.PhoneNumber + "\n➖موضوع: *" + Ticket.Subject + "*\n➖پاسخ: " + body;
+
+            await _baleMenuService.EditMemberInfoSend((long)BaleChatId, msg);
+
+            #endregion
+
+
             return Json(new { isSuccess = result.IsSuccess, message = result.Message });
         }
 
@@ -153,12 +264,23 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         public async Task<IActionResult> OpenCount()
         {
             int count;
+
             if (User.IsInRole(UserRoles.SuperAdmin))
+            {
                 count = await _getCountService.ForSuperAdmin();
+            }
             else if (User.IsInRole(UserRoles.Admin))
+            {
                 count = await _getCountService.ForAdmin((await CurrentGymIdAsync()) ?? 0);
+            }
+            else if (User.IsInRole(UserRoles.Member))
+            {
+                count = await _getCountService.ForMember((CurrentUserId));
+            }
             else
+            {
                 count = 0;
+            }
 
             return Json(new { count });
         }
