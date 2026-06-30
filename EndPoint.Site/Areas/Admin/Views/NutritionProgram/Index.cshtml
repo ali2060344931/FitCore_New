@@ -204,6 +204,7 @@
 {
     <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script>
+    
     <script>
         function NutritionProgram(id) {
         Swal.fire({
@@ -247,31 +248,88 @@
         });
         }
 
+        // function sendProgramNotificationToUser(programId) {
+        // var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
+
+        // if (isConfirmed) {
+        // var token = $('input[name="__RequestVerificationToken"]').val();
+
+        // $.ajax({
+        // url: '/Admin/NutritionProgramBuilder/SendNotification',
+        // type: 'POST',
+        // data: {
+        // __RequestVerificationToken: token,
+        // programId: programId
+        // },
+        // success: function (response) {
+        // if (response.isSuccess) {
+        // alert('موفق: ' + response.message);
+        // } else {
+        // alert('خطا: ' + response.message);
+        // }
+        // },
+        // error: function (xhr, status, error) {
+        // alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
+        // }
+        // });
+        // }
+        // }
+
+
         function sendProgramNotificationToUser(programId) {
-        var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
+            Swal.fire({
+                title: 'اطلاع‌رسانی برنامه',
+                text: 'آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله، ارسال شود',
+                cancelButtonText: 'انصراف',
+                allowOutsideClick: false
+            }).then((result) => {
 
-        if (isConfirmed) {
-        var token = $('input[name="__RequestVerificationToken"]').val();
+                // فقط این خط تغییر کرد (value به جای isConfirmed)
+                if (result.value) {
 
-        $.ajax({
-        url: '/Admin/NutritionProgramBuilder/SendNotification',
-        type: 'POST',
-        data: {
-        __RequestVerificationToken: token,
-        programId: programId
-        },
-        success: function (response) {
-        if (response.isSuccess) {
-        alert('موفق: ' + response.message);
-        } else {
-        alert('خطا: ' + response.message);
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+
+                    $.ajax({
+                        url: '/Admin/NutritionProgramBuilder/SendNotification',
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: token,
+                            programId: programId
+                        },
+                        success: function (response) {
+                            if (response.isSuccess) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'موفق',
+                                    text: response.message,
+                                    confirmButtonText: 'باشه'
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text: response.message,
+                                    confirmButtonText: 'متوجه شدم'
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطای سرور',
+                                text: 'درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')',
+                                confirmButtonText: 'بستن'
+                            });
+                        }
+                    });
+                }
+            });
         }
-        },
-        error: function (xhr, status, error) {
-        alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
-        }
-        });
-        }
-        }
+
     </script>
 }

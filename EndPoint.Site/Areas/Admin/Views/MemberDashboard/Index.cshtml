@@ -31,8 +31,8 @@
 
     bool isActivMember = false;
 
-    string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
-    var difDay = DateConverterMlladiToShamsi.GetDaysDifference(member.MembershipEndDate, todayShamsi);
+    string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
+    var difDay = PersianDateCalse.GetDaysDifference(member.MembershipEndDate, todayShamsi);
     if (member.IsActive && difDay > 0)
         isActivMember = true;
 
@@ -914,7 +914,7 @@
                     <span>@genderLabel</span>
                     @if (!string.IsNullOrWhiteSpace(member?.BirthDate))
                     {
-                        <span><i class="fa fa-birthday-cake me-1"></i>@member.BirthDate</span>
+                        <span><i class="fa fa-birthday-cake me-1"></i>  تاریخ تولد: @member.BirthDate     <i class="fa fa-calendar" aria-hidden="true"></i>  سن: @ViewBag.MemberBirthDate</span>
                     }
                 </div>
             </div>
@@ -988,6 +988,10 @@
                     <span><i class="fa fa-calendar-o me-1"></i>شروع: <strong>@membershipStatus.StartDate</strong></span>
                     <span><i class="fa fa-calendar-times-o me-1"></i>پایان: <strong>@membershipStatus.EndDate</strong></span>
                 </div>
+
+                @*<div class="mb-membership-dates">
+                    <span><i class="fa fa-calendar-times-o me-1"></i>سن: <strong>@ViewBag.MemberBirthDate</strong></span>
+                </div>*@
 
             </div>
 

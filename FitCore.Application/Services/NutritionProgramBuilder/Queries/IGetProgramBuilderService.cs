@@ -47,7 +47,7 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
             var result = new ProgramBuilderDto
             {
                 ProgramId = program.Id,
-                MemberName = $"{program.Member?.AppUser?.FullName ?? ""} {program.Member?.AppUser?.PhoneNumber ?? ""}".Trim(),
+                MemberName = $"{program.Member?.AppUser?.FullName ?? ""} - {program.Member?.AppUser?.PhoneNumber ?? ""}".Trim(),
                 ProgramType = program.ProgramType?.Name ?? "",
                 GoalType = program.GoalType?.Name ?? "",
                 StartDate = program.StartDate,

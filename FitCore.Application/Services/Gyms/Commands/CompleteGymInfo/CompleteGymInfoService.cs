@@ -31,6 +31,7 @@ namespace FitCore.Application.Services.Gyms.Commands
                 };
             }
 
+            gym.Name = dto.GymName;
             gym.BrandName = dto.BrandName;
             gym.SubDomain = dto.SubDomain;
             gym.PhoneNumber = dto.PhoneNumber;

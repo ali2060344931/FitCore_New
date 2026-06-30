@@ -15,6 +15,8 @@ namespace FitCore.Application.Services.Gyms.Commands.EditGym
         {
             public long Id { get; set; }
 
+            [Display(Name = "نام باشگاه")]
+            public string GymName { get; set; }
             [Display(Name = "نام برند")]
             public string BrandName { get; set; }
 

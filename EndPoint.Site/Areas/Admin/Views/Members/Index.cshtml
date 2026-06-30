@@ -60,21 +60,129 @@
     var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
 }
 
+<style>
+    /* تنظیمات کانتینر اسکرول و هدر ثابت */
+    .custom-table-container {
+        max-height: 80vh; /* ارتفاع جدول تا 80 درصد صفحه */
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    /* استایل جدول - کاهش فونت base */
+    .compact-table {
+        margin-bottom: 0;
+        font-size: 12px; /* فونت کل جدول را کوچکتر کردیم */
+    }
+
+    /* هدر ثابت (Sticky) */
+    .compact-table thead th {
+        background-color: #2c3e50;
+        color: #ffffff;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 2px solid #1a252f;
+        white-space: nowrap;
+        padding: 6px 8px !important; /* کاهش شدید پدینگ هدر */
+        font-weight: 500;
+        line-height: 1.2 !important;
+        font-size: 12px !important;
+    }
+
+    /* کاهش ارتفاع ردیف‌ها به حداقل ممکن */
+    .compact-table tbody td {
+        padding: 3px 8px !important; /* حداقل پدینگ ممکن */
+        vertical-align: middle;
+        line-height: 1.1 !important; /* فشرده کردن خطوط */
+        border-top: 1px solid #f4f4f4;
+        font-size: 12px !important;
+    }
+
+    /* --- بخش بسیار مهم: کوچک کردن اجزای داخل سلول ها --- */
+    
+    /* کوچک کردن بج‌ها (وضعیت فعال/غیرفعال و روزهای مانده) */
+    .compact-table .badge {
+        padding: 2px 6px !important; 
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+    }
+
+    /* کوچک کردن دکمه عملیات (Dropdown) */
+    .compact-table .btn {
+        padding: 2px 8px !important;
+        font-size: 11px !important;
+        line-height: 1.2 !important;
+    }
+
+    /* کوچک کردن آیکون‌ها */
+    .compact-table i {
+        font-size: 11px;
+    }
+
+    /* ------------------------------------------------ */
+
+    /* بک‌گراند قرمز ملایم برای اعضای غیرفعال */
+    .compact-table tbody tr.row-inactive {
+        background-color: #fff0f0 !important;
+    }
+
+    /* هاور ماوس روی ردیف‌های غیرفعال */
+    .compact-table tbody tr.row-inactive:hover {
+        background-color: #ffe0e0 !important;
+    }
+
+    /* هاور ماوس روی ردیف‌های عادی */
+    .compact-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* رفع مشکل افتادن منوی کشویی زیر سایر ردیف‌ها در حالت اسکرول */
+    .compact-table tbody tr {
+        position: relative;
+        z-index: 1;
+    }
+    .compact-table tbody tr.show-dropdown {
+        z-index: 20 !important;
+    }
+
+    /* زیبایی بج‌ها (رنگ‌های پاستلی ملایم) */
+    .badge-soft-success {
+        color: #0f5132;
+        background-color: #d1e7dd;
+        border: 1px solid #badbcc;
+    }
+    .badge-soft-danger {
+        color: #842029;
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+    }
+    .badge-soft-primary {
+        color: #084298;
+        background-color: #cfe2ff;
+        border: 1px solid #b6d4fe;
+    }
+    .badge-soft-warning {
+        color: #664d03;
+        background-color: #fff3cd;
+        border: 1px solid #ffecb5;
+    }
+</style>
 <div class="container-fluid mt-4">
 
-    <div class="fc-page-header">
-
+    <div class="fc-page-header d-flex justify-content-between align-items-center mb-3">
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
                  model='"لیست اعضای باشگاه"' />
 
-<a asp-area="Admin"
-   asp-controller="Members"
-   asp-action="Create"
-   class="btn btn-success disabled"
-   aria-disabled="true"
-   style="pointer-events: none; opacity: 0.65;">
-    + ثبت عضو جدید
-</a>
+        <a asp-area="Admin"
+           asp-controller="Members"
+           asp-action="Create"
+           class="btn btn-success disabled"
+           aria-disabled="true"
+           style="pointer-events: none; opacity: 0.65;">
+            + ثبت عضو جدید
+        </a>
     </div>
 
     <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
@@ -83,7 +191,6 @@
     <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
 
     <div class="mb-3">
-
         تعداد کل اعضا :
         <strong>@Model.RowCount</strong>
 
@@ -97,190 +204,179 @@
                 نمایش همه (@Model.RowCount)
             </a>
         }
-
     </div>
 
     @if (Model.Members != null && Model.Members.Any())
     {
-
-        <table class="table table-striped table-hover">
-
-            <thead>
-                <tr>
-
-                    <th>نام و نام خانوادگی</th>
-                    <th>تلفن همراه</th>
-                    <th>جنسیت</th>
-
-                    <th>تاریخ تولد</th>
-                    <th>تاریخ شروع عضویت</th>
-                    <th>تاریخ پایان عضویت</th>
-                    <th>وضعیت فعالیت</th>
-
-                    <th>مدت زمان اعتبار</th>
-
-                    <th width="180">عملیات</th>
-
-                </tr>
-            </thead>
-
-            <tbody>
-
-                @foreach (var item in Model.Members)
-                {
-
-                    var remainDays = GetRemainDays(item.MembershipEndDate);
-
+        <!-- کانتینر اسکرول پذیر -->
+        <div class="custom-table-container">
+            <table class="table table-hover compact-table">
+                <thead>
                     <tr>
-
-                        <td>
-                            <i class="fa fa-user"></i>
-                            <strong>@item.FullName</strong>
-                        </td>
-
-                        <td>
-                            <i class="fa fa-mobile"></i>
-                            @item.Mobile
-                        </td>
-
-                        <td>
-                            @(item.Gender == Gender.Male ? "مرد" : "زن")
-                        </td>
-
-                        <td>
-                            @(item.BirthDate == default ? "---" : item.BirthDate)
-                        </td>
-
-                        <td>
-                            @(item.MembershipStartDate == default ? "---" : item.MembershipStartDate)
-                        </td>
-
-                        <td>
-                            @(item.MembershipEndDate == default ? "---" : item.MembershipEndDate)
-                        </td>
-
-
-                        <td>
-                            @(item.IsActive == true ? "فعال" : "غیرفعال")
-                        </td>
-
-
-                        <td>
-                            @if (remainDays >= 0)
-                            {
-                                <span class="badge rounded-pill bg-success">
-                                    @remainDays روز
-                                    </span>
-                            }
-                            else
-                            {
-                                <span class="badge rounded-pill bg-danger">
-                                    @remainDays روز
-                                    </span>
-                            }
-                        </td>
-
-                       
-
-                        <td>
-
-                            <div class="dropdown">
-
-                                <button class="btn btn-secondary btn-sm dropdown-toggle"
-                                        type="button"
-                                        id="memberActions_@item.Id"
-                                        data-toggle="dropdown"
-                                        data-boundary="viewport"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-
-                                    عملیات
-
-                                </button>
-
-                                <div class="dropdown-menu dropdown-menu-right text-right"
-                                     aria-labelledby="memberActions_@item.Id">
-
-                                    <a class="dropdown-item"
-                                       asp-area="Admin"
-                                       asp-controller="NutritionProgram"
-                                       asp-action="Create"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-
-                                        <i class="fa fa-th-list"></i>
-                                        ثبت برنامه غذایی
-                                        <span class="badge rounded-pill bg-success"
-                                              title="تعداد برنامه های ثبت شده غذایی: @item.countNutritionProg">
-                                            @item.countNutritionProg
-                                        </span>
-
-                                    </a>
-
-                                    <a class="dropdown-item"
-                                       asp-area="Admin"
-                                       asp-controller="TrainingProgram"
-                                       asp-action="Create"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-
-                                        <i class="fa fa-heartbeat"></i>
-                                        ثبت برنامه تمرینی
-                                        <span class="badge rounded-pill bg-success"
-                                              title="تعداد برنامه‌های تمرینی ثبت شده: @item.countTrainingProg">
-                                            @item.countTrainingProg
-                                        </span>
-
-                                    </a>
-                                    <a class="dropdown-item"
-                                       asp-area="Admin"
-                                       asp-controller="MemberProfile"
-                                       asp-action="BodyMeasurement"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-
-                                        <i class="fa fa-heartbeat"></i>
-                                        لیست وضعیت جسمانی
-                                        <span class="badge rounded-pill badge-grey"
-                                              title="تعداد وضعیت جسمانی: @item.countBodyMeasurement">
-                                            @item.countBodyMeasurement
-                                        </span>
-                                    </a>
-
-                                    <a class="dropdown-item"
-                                       asp-area="Admin"
-                                       asp-controller="Members"
-                                       asp-action="Edit"
-                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
-
-                                        <i class="fa fa-pencil-square-o"></i>
-                                        ویرایش
-                                    </a>
-
-                                    <div class="dropdown-divider"></div>
-
-<button type="button"
-        class="dropdown-item text-danger"
-        disabled
-        style="opacity: 0.5; cursor: not-allowed;">
-
-    <i class="fa fa-times"></i>
-    حذف
-
-</button>
-                                </div>
-
-                            </div>
-
-                        </td>
-
+                        <th>نام و نام خانوادگی</th>
+                        <th>تلفن همراه</th>
+                        <th>جنسیت</th>
+                        <th>تاریخ تولد</th>
+                        <th>سن</th>
+                        <th>شروع عضویت</th>
+                        <th>پایان عضویت</th>
+                        <th>وضعیت</th>
+                        <th>اعتبار مانده</th>
+                        <th width="160">عملیات</th>
                     </tr>
-                }
+                </thead>
 
-            </tbody>
+                <tbody>
+                    @foreach (var item in Model.Members)
+                    {
+                        var remainDays = GetRemainDays(item.MembershipEndDate);
 
-        </table>
+                        /* اضافه کردن کلاس قرمز در صورت غیرفعال بودن */
+                        <tr class="@(item.IsActive == false ? "row-inactive" : "")">
 
-        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml"
-                 model="pagingVm" />
+                            <td>
+                                <i class="fa fa-user text-muted me-1"></i>
+                                <strong>@item.FullName</strong>
+                            </td>
 
+                            <td dir="ltr" class="text-center">
+                                @item.Mobile
+                            </td>
+
+                            <td class="text-center">
+                                @(item.Gender == Gender.Male ? "مرد" : "زن")
+                            </td>
+
+                            <td class="text-center">
+                                @(item.BirthDate == default ? "---" : item.BirthDate)
+                            </td>
+                            
+                            <td class="text-center">
+                                @(item.Age == "" ? "-" : item.Age) ساله
+                            </td>
+
+                            <td class="text-center">
+                                @(item.MembershipStartDate == default ? "---" : item.MembershipStartDate)
+                            </td>
+
+                            <td class="text-center">
+                                @(item.MembershipEndDate == default ? "---" : item.MembershipEndDate)
+                            </td>
+
+                            <td class="text-center">
+                                @if (item.IsActive == true)
+                                {
+                                    <span class="badge badge-soft-success rounded-pill px-2 py-1">فعال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft-danger rounded-pill px-2 py-1">غیرفعال</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                @if (remainDays >= 0)
+                                {
+                                    <span class="badge badge-soft-primary rounded-pill px-2 py-1">
+                                        @remainDays روز
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft-danger rounded-pill px-2 py-1">
+                                        @remainDays روز
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                            type="button"
+                                            id="memberActions_@item.Id"
+                                            data-toggle="dropdown"
+                                            data-boundary="viewport"
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                            onclick="this.closest('tr').classList.add('show-dropdown')">
+                                        عملیات
+                                    </button>
+
+                                    <div class="dropdown-menu dropdown-menu-end text-right"
+                                         aria-labelledby="memberActions_@item.Id"
+                                         onmouseleave="this.closest('tr').classList.remove('show-dropdown')">
+
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="NutritionProgram"
+                                           asp-action="Create"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-th-list text-success me-2"></i>
+                                            ثبت برنامه غذایی
+                                            <span class="badge badge-soft-success rounded-pill float-end" title="تعداد برنامه های ثبت شده غذایی: @item.countNutritionProg">
+                                                @item.countNutritionProg
+                                            </span>
+                                        </a>
+
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="TrainingProgram"
+                                           asp-action="Create"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-heartbeat text-danger me-2"></i>
+                                            ثبت برنامه تمرینی
+                                            <span class="badge badge-soft-success rounded-pill float-end" title="تعداد برنامه‌های تمرینی ثبت شده: @item.countTrainingProg">
+                                                @item.countTrainingProg
+                                            </span>
+                                        </a>
+
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="MemberProfile"
+                                           asp-action="BodyMeasurement"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-heartbeat text-warning me-2"></i>
+                                            لیست وضعیت جسمانی
+                                            <span class="badge badge-soft-warning rounded-pill float-end" title="تعداد وضعیت جسمانی: @item.countBodyMeasurement">
+                                                @item.countBodyMeasurement
+                                            </span>
+                                        </a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <a class="dropdown-item"
+                                           asp-area="Admin"
+                                           asp-controller="Members"
+                                           asp-action="Edit"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-pencil-square-o text-primary me-2"></i>
+                                            ویرایش
+                                        </a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <button type="button"
+                                                class="dropdown-item text-danger"
+                                                disabled
+                                                style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fa fa-times me-2"></i>
+                                            حذف
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- پایان کانتینر اسکرول پذیر -->
+
+        <div class="mt-3">
+            <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml"
+                     model="pagingVm" />
+        </div>
     }
     else
     {

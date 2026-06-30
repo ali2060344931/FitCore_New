@@ -44,7 +44,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser?.GymId == null) return BadRequest();
 
-            string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+            string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
 
             model.Members = await (from ur in _db.UserRoles
                                    join u in _db.Users on ur.UserId equals u.Id
@@ -103,7 +103,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 var currentUser = await _userManager.GetUserAsync(User);
                 if (currentUser?.GymId != null)
                 {
-                    string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+                    string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
                     model.Members = await (from ur in _db.UserRoles
                                            join u in _db.Users on ur.UserId equals u.Id
                                            join r in _db.Roles on ur.RoleId equals r.Id
@@ -112,7 +112,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                                            where r.Name == "Member"
                                               && u.GymId == currentUser.GymId
                                               && u.BaleChatId.HasValue
-                                           // توجه: اینجا هم فیلتر حذف شد
+
                                            select new MemberSelectItem
                                            {
                                                Id = u.Id,

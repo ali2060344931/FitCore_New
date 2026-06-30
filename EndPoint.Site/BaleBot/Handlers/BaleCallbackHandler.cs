@@ -236,7 +236,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                     .ToListAsync();
 
                 string messagText = "";
-                int i= 0;
+                int i = 0;
                 foreach (var item in gyms)
                 {
                     i++;
@@ -248,8 +248,8 @@ namespace EndPoint.Site.BaleBot.Handlers
                             (r, u) => new { r, u })
                         .Where(x => x.u.GymId == item.Id)
                         .FirstOrDefaultAsync();
-                    
-                    messagText +=i +": "+ "🆔کد باشگاه: " + item.Code + "\n";
+
+                    messagText += i + ": " + "🆔کد باشگاه: " + item.Code + "\n";
 
                     messagText += "➖نام باشگاه: " + item.Name + "\n";
                     messagText += "➖نام مدیر: " + (user?.u?.FullName ?? "ثبت نشده") + "\n";
@@ -342,11 +342,11 @@ namespace EndPoint.Site.BaleBot.Handlers
                 // ==========================================
                 string adminInfo = (q != null) ? $"{q.u.FullName} - {q.u.PhoneNumber}" : "ثبت نشده";
 
-                 responseText = "ℹ️ اطلاعات باشگاه انتخاب شده:\n" +
-                    "🆔 کد باشگاه: " + gym.Code + "\n" +
-                    "نام باشگاه: " + gym.Name + "\n" +
-                    "مدیرباشگاه: " + adminInfo + "\n\n" +
-                    "👱‍♂️ لطفاً نام و نام خانوادگی خود را وارد و ارسال نمائید:";
+                responseText = "ℹ️ اطلاعات باشگاه انتخاب شده:\n" +
+                   "🆔 کد باشگاه: " + gym.Code + "\n" +
+                   "نام باشگاه: " + gym.Name + "\n" +
+                   "مدیرباشگاه: " + adminInfo + "\n\n" +
+                   "👱‍♂️ لطفاً نام و نام خانوادگی خود را وارد و ارسال نمائید:";
 
                 // ارسال مستقیم پیام
                 await _baleBotService.SendMessageAsync(chatId, responseText);
@@ -573,19 +573,21 @@ namespace EndPoint.Site.BaleBot.Handlers
                     return;
                 }
 
-                if (existingUser != null)
-                {
-                    var roles = await _userManager.GetRolesAsync(existingUser);
-                    bool isSuperAdmin = roles.Contains(UserRoles.SuperAdmin);
-                    bool isMember = roles.Contains(UserRoles.Member);
 
-                    // ==========================================================
-                    // ۱. استخراج اطلاعات عضویت زودتر از موعد برای بررسی اعتبار
-                    // ==========================================================
+                var roles = await _userManager.GetRolesAsync(existingUser);
+                bool isSuperAdmin = roles.Contains(UserRoles.SuperAdmin);
+                bool isMember = roles.Contains(UserRoles.Member);
+
+
+
+                if (isMember)
+                {// ==========================================================
+                 // ۱. استخراج اطلاعات عضویت زودتر از موعد برای بررسی اعتبار
+                 // ==========================================================
                     bool isMembershipActive = false;
                     int remainingDays = 0; // متغیر جدید برای نگهداری تعداد روزها
                     var memberInfo = isMember ? await _db.Members.FirstOrDefaultAsync(m => m.AppUserId == existingUser.Id) : null;
-                    string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+                    string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
                     if (memberInfo != null)
                     {
                         // اگر تاریخ پایان ثبت نشده باشد یا نامحدود باشد، فعال در نظر می‌گیریم
@@ -601,7 +603,7 @@ namespace EndPoint.Site.BaleBot.Handlers
 
                         }
                         // محاسبه اختلاف روز (تاریخ پایان منهای امروز)
-                        remainingDays = DateConverterMlladiToShamsi.GetDaysDifference(memberInfo.MembershipEndDate, todayShamsi);
+                        remainingDays = PersianDateCalse.GetDaysDifference(memberInfo.MembershipEndDate, todayShamsi);
 
                         //// اگر بزرگتر مساوی صفر بود یعنی هنوز اعتبار دارد
                         //isMembershipActive = remainingDays >= 0;
@@ -626,13 +628,6 @@ namespace EndPoint.Site.BaleBot.Handlers
                     if (isSuperAdmin) roleName = "سوپر ادمین";
                     else if (roles.Contains("Admin")) roleName = "مدیر باشگاه";
                     else if (isMember) roleName = "عضو باشگاه";
-
-
-                    if (!memberInfo.IsActive)
-
-                    {
-
-                    }
 
                     string welcomeText = "";
 
@@ -673,6 +668,11 @@ namespace EndPoint.Site.BaleBot.Handlers
 
                     await _baleBotService.SendMessageAsync(chatId, welcomeText, keyboard);
                 }
+                else if (isSuperAdmin)
+                {
+                    await _baleBotService.SendMessageAsync(chatId, "شما به عنوان مدیر باشگاه وارد شده اید", keyboard);
+
+                }
 
 
 
@@ -693,7 +693,7 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
 
             await _baleBotService.AnswerCallbackQueryAsync(callbackId);
-            
+
             if (keyboard != null)
                 await _baleBotService.SendMessageAsync(chatId, responseText, keyboard);
             else await _baleBotService.SendMessageAsync(chatId, responseText);

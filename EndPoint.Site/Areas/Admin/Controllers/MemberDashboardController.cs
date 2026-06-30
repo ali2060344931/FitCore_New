@@ -115,6 +115,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             ViewBag.TrainingPrograms = trainingResult?.Data?.TrainingPrograms;
             ViewBag.LastMeasurement = lastMeasurement;
             ViewBag.MembershipStatus = membershipStatus;
+            ViewBag.MemberBirthDate = PersianDateCalse.GetAge( member.BirthDate,PersianDateCalse.AgeDisplayMode.YearMonthDay);
+
 
             ViewData["Title"] = "داشبورد من";
 

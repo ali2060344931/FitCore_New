@@ -22,32 +22,37 @@
 
 @{
     bool isActivGYM = false;
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     int difDay_ = 0;
     int difDay_abs = 0;
+
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
     long uid = 0;
     if (!string.IsNullOrEmpty(userId))
         uid = long.Parse(userId);
 
-    var gid = _db.Users.Where(o => o.Id == uid).First().GymId;
-    var qgym = _db.Gyms.Where(o => o.Id == gid).First();
-
-
-    // if (User.IsAdmin())
+    // ---------------------------------------------------------
+    // کد اصلاح شده: کوئری دیتابیس فقط برای ادمین باشگاه اجرا شود
+    // ---------------------------------------------------------
+    if (User.IsAdmin())
     {
-        string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+        var userGymId = _db.Users.Where(o => o.Id == uid).Select(u => u.GymId).FirstOrDefault();
 
-        var difDay = DateConverterMlladiToShamsi.GetDaysDifference(qgym.SubscriptionExpireDate, todayShamsi);
-        if (qgym.IsActive && difDay > 0) isActivGYM = true;
-        difDay_ = difDay;
-        difDay_abs = Math.Abs(difDay);
+        if (userGymId.HasValue)
+        {
+            var qgym = _db.Gyms.FirstOrDefault(o => o.Id == userGymId.Value);
 
-
+            if (qgym != null)
+            {
+                string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
+                var difDay = PersianDateCalse.GetDaysDifference(qgym.SubscriptionExpireDate, todayShamsi);
+                if (qgym.IsActive && difDay > 0) isActivGYM = true;
+                difDay_ = difDay;
+                difDay_abs = Math.Abs(difDay);
+            }
+        }
     }
-
 }
-
 
 <style>
     :root {
@@ -75,8 +80,8 @@
     }
 
     /* =========================================================
-                           Layout
-                        ========================================================= */
+                               Layout
+                            ========================================================= */
     .db-root {
         padding: 40px 12px 32px;
         direction: rtl;
@@ -84,8 +89,8 @@
     }
 
     /* =========================================================
-                           Card base
-                        ========================================================= */
+                               Card base
+                            ========================================================= */
     .db-card {
         background: var(--d-white);
         border-radius: var(--d-radius);
@@ -139,8 +144,8 @@
         }
 
     /* =========================================================
-                           Section divider / label
-                        ========================================================= */
+                               Section divider / label
+                            ========================================================= */
     .db-section-label {
         font-size: 11px;
         font-weight: 700;
@@ -152,8 +157,8 @@
     }
 
     /* =========================================================
-                           Gym header banner
-                        ========================================================= */
+                               Gym header banner
+                            ========================================================= */
     .db-gym-banner {
         background: linear-gradient(135deg, #0f1117 0%, #1c2541 100%);
         border-radius: var(--d-radius);
@@ -233,8 +238,8 @@
     }
 
     /* =========================================================
-                           Pills / Badges
-                        ========================================================= */
+                               Pills / Badges
+                            ========================================================= */
     .db-pill {
         display: inline-flex;
         align-items: center;
@@ -277,8 +282,8 @@
     }
 
     /* =========================================================
-                           Stat cards
-                        ========================================================= */
+                               Stat cards
+                            ========================================================= */
     .db-stat {
         background: var(--d-white);
         border-radius: var(--d-radius);
@@ -345,8 +350,8 @@
         }
 
     /* =========================================================
-                           Alert: pending requests
-                        ========================================================= */
+                               Alert: pending requests
+                            ========================================================= */
     .db-alert-pending {
         display: flex;
         align-items: center;
@@ -412,8 +417,8 @@
         }
 
     /* =========================================================
-                           Alert: critical members
-                        ========================================================= */
+                               Alert: critical members
+                            ========================================================= */
     .db-critical {
         background: #fffaf0;
         border-right: 4px solid var(--d-orange);
@@ -482,8 +487,8 @@
         }
 
     /* =========================================================
-                           Super admin panel
-                        ========================================================= */
+                               Super admin panel
+                            ========================================================= */
     .db-super {
         background: linear-gradient(135deg, #0f1117 0%, #1c2541 100%);
         color: #fff;
@@ -516,8 +521,8 @@
     }
 
     /* =========================================================
-                           Members table
-                        ========================================================= */
+                               Members table
+                            ========================================================= */
     .db-members-wrap {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -597,8 +602,8 @@
         }
 
     /* =========================================================
-                           Activity list
-                        ========================================================= */
+                               Activity list
+                            ========================================================= */
     .db-activity-list {
         display: flex;
         flex-direction: column;
@@ -647,8 +652,8 @@
     }
 
     /* =========================================================
-                           Quick access
-                        ========================================================= */
+                               Quick access
+                            ========================================================= */
     .db-quick-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -688,8 +693,8 @@
         }
 
     /* =========================================================
-                           Empty state
-                        ========================================================= */
+                               Empty state
+                            ========================================================= */
     .db-empty {
         text-align: center;
         padding: 28px 16px;
@@ -708,8 +713,8 @@
     }
 
     /* =========================================================
-                           Responsive
-                        ========================================================= */
+                               Responsive
+                            ========================================================= */
     @@media (max-width: 575.98px) {
         .db-root {
             padding: 12px 10px 24px;
@@ -822,7 +827,6 @@
             .db-quick-btn i {
                 font-size: 15px;
             }
-    }
 </style>
 
 @* ============================================================
@@ -1105,7 +1109,7 @@
                             <i class="fa fa-line-chart" style="color:var(--d-green);font-size:13px;"></i>
                         </div>
                         روند ۶ ماه گذشته
-                       
+
                         <span class="db-help-inline">
                             <help key="H3" />
                         </span>
@@ -1184,6 +1188,7 @@
                             <tr>
                                 <th>نام</th>
                                 <th>موبایل</th>
+                                <th>سن</th>
                                 <th class="text-center">غذایی</th>
                                 <th class="text-center">تمرینی</th>
                                 <th>تاریخ</th>
@@ -1204,6 +1209,7 @@
                                             </div>
                                         </td>
                                         <td style="color:var(--d-muted);">@m.Mobile</td>
+                                        <td style="color:var(--d-muted);">@m.Age سال</td>
                                         <td class="text-center">
                                             <span class="db-count-badge @(m.NutritionCount > 0 ? "green" : "gray")">
                                                 @m.NutritionCount
@@ -1255,7 +1261,8 @@
 
                     @if (Model.RecentNutritionPrograms != null)
                     {
-                        @foreach (var p in Model.RecentNutritionPrograms)
+                        // اضافه شدن .Take(5) در این خط
+                        @foreach (var p in Model.RecentNutritionPrograms.Take(3))
                         {
                             <div class="db-activity-item">
                                 <div class="db-activity-dot" style="background:var(--d-orange);"></div>
@@ -1275,7 +1282,8 @@
 
                     @if (Model.RecentTrainingPrograms != null)
                     {
-                        @foreach (var p in Model.RecentTrainingPrograms)
+                        // اضافه شدن .Take(5) در این خط
+                        @foreach (var p in Model.RecentTrainingPrograms.Take(3))
                         {
                             <div class="db-activity-item">
                                 <div class="db-activity-dot" style="background:var(--d-blue);"></div>
@@ -1305,7 +1313,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- =====================================================
@@ -1366,11 +1373,11 @@
                         <help key="HD03" />
                     </div>
                 </div>
-            
-            
-            
-            
-            
+
+
+
+
+
             }
 
             <div class="db-quick-card">
@@ -1411,34 +1418,34 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-                        Chart.defaults.font.family = 'Vazirmatn, Vazir, Tahoma, sans-serif';
-                        Chart.defaults.font.size   = 10;
-                        Chart.defaults.plugins.legend.rtl = true;
+                            Chart.defaults.font.family = 'Vazirmatn, Vazir, Tahoma, sans-serif';
+                            Chart.defaults.font.size   = 10;
+                            Chart.defaults.plugins.legend.rtl = true;
 
-                        // داده‌های سرور
-                        var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ?? new System.Collections.Generic.List<string>()));
+                            // داده‌های سرور
+                            var months = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Model.MonthlyNewMembers?.Select(m => m.Label).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ?? new System.Collections.Generic.List<string>()));
 
     var membersData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyNewMembers?.Select(m => m.Value).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
     var nutritionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyNutritionPrograms?.Select(m => m.Value).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
     var trainingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.MonthlyTrainingPrograms?.Select(m => m.Value).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
     var donutLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<string>()));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.TrainingGoalTypes?.Select(t => t.Label).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<string>()));
 
     var donutData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Model.TrainingGoalTypes?.Select(t => t.Count).ToList()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?? new System.Collections.Generic.List<int>()));
 
     // تنظیمات مشترک محورها
     var commonScales = {
@@ -1453,101 +1460,101 @@
         }
     };
 
-                        // نمودار خطی
-                        var lineCtx = document.getElementById('lineChart');
-                        if (lineCtx) {
-                            new Chart(lineCtx, {
-                                type: 'line',
-                                data: {
-                                    labels: months,
-                                    datasets: [
-                                        {
-                                            label: 'اعضای جدید',
-                                            data: membersData,
-                                            borderColor: '#00C896',
-                                            backgroundColor: 'rgba(0,200,150,0.07)',
-                                            tension: 0.4, fill: true,
-                                            pointBackgroundColor: '#00C896',
-                                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
-                                        },
-                                        {
-                                            label: 'برنامه غذایی',
-                                            data: nutritionData,
-                                            borderColor: '#f59e0b',
-                                            backgroundColor: 'rgba(245,158,11,0.07)',
-                                            tension: 0.4, fill: true,
-                                            pointBackgroundColor: '#f59e0b',
-                                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
-                                        },
-                                        {
-                                            label: 'برنامه تمرینی',
-                                            data: trainingData,
-                                            borderColor: '#3b82f6',
-                                            backgroundColor: 'rgba(59,130,246,0.07)',
-                                            tension: 0.4, fill: true,
-                                            pointBackgroundColor: '#3b82f6',
-                                            pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
-                                        }
-                                    ]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    interaction: { mode: 'index', intersect: false },
-                                    plugins: {
-                                        legend: {
-                                            position: 'top', align: 'end',
-                                            labels: { boxWidth: 10, padding: 12, font: { size: 10 } }
-                                        },
-                                        tooltip: { rtl: true }
+                            // نمودار خطی
+                            var lineCtx = document.getElementById('lineChart');
+                            if (lineCtx) {
+                                new Chart(lineCtx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: months,
+                                        datasets: [
+                                            {
+                                                label: 'اعضای جدید',
+                                                data: membersData,
+                                                borderColor: '#00C896',
+                                                backgroundColor: 'rgba(0,200,150,0.07)',
+                                                tension: 0.4, fill: true,
+                                                pointBackgroundColor: '#00C896',
+                                                pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                                            },
+                                            {
+                                                label: 'برنامه غذایی',
+                                                data: nutritionData,
+                                                borderColor: '#f59e0b',
+                                                backgroundColor: 'rgba(245,158,11,0.07)',
+                                                tension: 0.4, fill: true,
+                                                pointBackgroundColor: '#f59e0b',
+                                                pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                                            },
+                                            {
+                                                label: 'برنامه تمرینی',
+                                                data: trainingData,
+                                                borderColor: '#3b82f6',
+                                                backgroundColor: 'rgba(59,130,246,0.07)',
+                                                tension: 0.4, fill: true,
+                                                pointBackgroundColor: '#3b82f6',
+                                                pointRadius: 4, pointHoverRadius: 6, borderWidth: 2.5
+                                            }
+                                        ]
                                     },
-                                    scales: commonScales
-                                }
-                            });
-                        }
-
-                        // نمودار دونات
-                        var donutCtx = document.getElementById('donutChart');
-                        if (donutCtx && donutData.length > 0) {
-                            var colors = ['#00C896','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981'];
-
-                            new Chart(donutCtx, {
-                                type: 'doughnut',
-                                data: {
-                                    labels: donutLabels,
-                                    datasets: [{
-                                        data: donutData,
-                                        backgroundColor: colors.slice(0, donutData.length),
-                                        borderWidth: 2,
-                                        borderColor: '#fff',
-                                        hoverOffset: 4
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    cutout: '62%',
-                                    plugins: {
-                                        legend: { display: false },
-                                        tooltip: { rtl: true }
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        interaction: { mode: 'index', intersect: false },
+                                        plugins: {
+                                            legend: {
+                                                position: 'top', align: 'end',
+                                                labels: { boxWidth: 10, padding: 12, font: { size: 10 } }
+                                            },
+                                            tooltip: { rtl: true }
+                                        },
+                                        scales: commonScales
                                     }
-                                }
-                            });
-
-                            var legend = document.getElementById('donutLegend');
-                            if (legend) {
-                                var legendHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;">';
-                                donutLabels.forEach(function(label, i) {
-                                    legendHtml +=
-                                        '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">' +
-                                        '<div style="width:8px;height:8px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
-                                        '<span style="font-size:11px;color:#4b5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + label + '</span>' +
-                                        '<span style="font-size:11px;font-weight:700;color:#111827;flex-shrink:0;">' + donutData[i] + '</span>' +
-                                        '</div>';
                                 });
-                                legendHtml += '</div>';
-                                legend.innerHTML = legendHtml;
                             }
-                        }
+
+                            // نمودار دونات
+                            var donutCtx = document.getElementById('donutChart');
+                            if (donutCtx && donutData.length > 0) {
+                                var colors = ['#00C896','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981'];
+
+                                new Chart(donutCtx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: donutLabels,
+                                        datasets: [{
+                                            data: donutData,
+                                            backgroundColor: colors.slice(0, donutData.length),
+                                            borderWidth: 2,
+                                            borderColor: '#fff',
+                                            hoverOffset: 4
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        cutout: '62%',
+                                        plugins: {
+                                            legend: { display: false },
+                                            tooltip: { rtl: true }
+                                        }
+                                    }
+                                });
+
+                                var legend = document.getElementById('donutLegend');
+                                if (legend) {
+                                    var legendHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;">';
+                                    donutLabels.forEach(function(label, i) {
+                                        legendHtml +=
+                                            '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">' +
+                                            '<div style="width:8px;height:8px;border-radius:50%;background:' + colors[i] + ';flex-shrink:0;"></div>' +
+                                            '<span style="font-size:11px;color:#4b5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + label + '</span>' +
+                                            '<span style="font-size:11px;font-weight:700;color:#111827;flex-shrink:0;">' + donutData[i] + '</span>' +
+                                            '</div>';
+                                    });
+                                    legendHtml += '</div>';
+                                    legend.innerHTML = legendHtml;
+                                }
+                            }
     </script>
 }

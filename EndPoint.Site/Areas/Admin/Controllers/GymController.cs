@@ -165,6 +165,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var model = new CompleteGymInfoDto()
             {
                 Id = gym.Id,
+                GymName = gym.Name,
 
                 BrandName = gym.BrandName,
 

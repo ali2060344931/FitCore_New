@@ -11,6 +11,10 @@ namespace FitCore.Application.Services.Member.Queries
         public string Mobile { get; set; }
         public Gender? Gender { get; set; }
         public string BirthDate { get; set; }
+        /// <summary>
+        /// سن
+        /// </summary>
+        public string Age { get; set; }
         public int countNutritionProg { get; set; }
         public int countTrainingProg { get; set; }
         public int countBodyMeasurement { get; set; }

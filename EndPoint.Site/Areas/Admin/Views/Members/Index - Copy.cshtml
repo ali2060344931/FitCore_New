@@ -1,0 +1,297 @@
+﻿@using EndPoint.Site.Areas.Admin.Models
+@using FitCore.Application.Services.Member.Queries
+@using FitCore.Common
+@using FitCore.Domain.Entities.Members
+@using System.Globalization
+
+@model ResultGetMembersDto
+
+@functions {
+
+@functions{
+
+    public int GetRemainDays(string persianDate)
+    {
+        if (string.IsNullOrEmpty(persianDate))
+            return 0;
+
+        try
+        {
+            var parts = persianDate.Split('/');
+
+            int year = int.Parse(parts[0]);
+            int month = int.Parse(parts[1]);
+            int day = int.Parse(parts[2]);
+
+            PersianCalendar pc = new PersianCalendar();
+
+            DateTime endDate = pc.ToDateTime(year, month, day, 0, 0, 0, 0);
+
+            int days = (endDate.Date - DateTime.Now.Date).Days;
+
+            return days; // دیگر منفی را صفر نمی‌کنیم
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+}
+
+}
+
+@{
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        PageQueryKey = "page",
+        PageSizeQueryKey = "PageSize"
+    };
+}
+
+@{
+    ViewData["Title"] = "اعضای باشگاه";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
+    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="fc-page-header">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"لیست اعضای باشگاه"' />
+
+<a asp-area="Admin"
+   asp-controller="Members"
+   asp-action="Create"
+   class="btn btn-success disabled"
+   aria-disabled="true"
+   style="pointer-events: none; opacity: 0.65;">
+    + ثبت عضو جدید
+</a>
+    </div>
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
+             model="searchKey" />
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <div class="mb-3">
+
+        تعداد کل اعضا :
+        <strong>@Model.RowCount</strong>
+
+        @if (isFiltered)
+        {
+            <span class="ms-2">
+                (نتایج فیلتر: <strong>@Model.Members.Count</strong>)
+            </span>
+
+            <a href="/Admin/Members" class="btn btn-warning btn-sm ms-2">
+                نمایش همه (@Model.RowCount)
+            </a>
+        }
+
+    </div>
+
+    @if (Model.Members != null && Model.Members.Any())
+    {
+
+        <table class="table table-striped table-hover">
+
+            <thead>
+                <tr>
+
+                    <th>نام و نام خانوادگی</th>
+                    <th>تلفن همراه</th>
+                    <th>جنسیت</th>
+
+                    <th>تاریخ تولد</th>
+                    <th>سن</th>
+                    <th>تاریخ شروع عضویت</th>
+                    <th>تاریخ پایان عضویت</th>
+                    <th>وضعیت فعالیت</th>
+
+                    <th>مدت زمان اعتبار</th>
+
+                    <th width="180">عملیات</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model.Members)
+                {
+
+                    var remainDays = GetRemainDays(item.MembershipEndDate);
+
+                    <tr>
+
+                        <td>
+                            <i class="fa fa-user"></i>
+                            <strong>@item.FullName</strong>
+                        </td>
+
+                        <td>
+                            <i class="fa fa-mobile"></i>
+                            @item.Mobile
+                        </td>
+
+                        <td>
+                            @(item.Gender == Gender.Male ? "مرد" : "زن")
+                        </td>
+
+                        <td>
+                            @(item.BirthDate == default ? "---" : item.BirthDate)
+                        </td>
+                        <td>
+                           @(item.Age == "" ? "-" : item.Age) ساله
+                        </td>
+
+                        <td>
+                            @(item.MembershipStartDate == default ? "---" : item.MembershipStartDate)
+                        </td>
+
+                        <td>
+                            @(item.MembershipEndDate == default ? "---" : item.MembershipEndDate)
+                        </td>
+
+
+                        <td>
+                            @(item.IsActive == true ? "فعال" : "غیرفعال")
+                        </td>
+
+
+                        <td>
+                            @if (remainDays >= 0)
+                            {
+                                <span class="badge rounded-pill bg-success">
+                                    @remainDays روز
+                                    </span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill bg-danger">
+                                    @remainDays روز
+                                    </span>
+                            }
+                        </td>
+
+                       
+
+                        <td>
+
+                            <div class="dropdown">
+
+                                <button class="btn btn-secondary btn-sm dropdown-toggle"
+                                        type="button"
+                                        id="memberActions_@item.Id"
+                                        data-toggle="dropdown"
+                                        data-boundary="viewport"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+
+                                    عملیات
+
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-right text-right"
+                                     aria-labelledby="memberActions_@item.Id">
+
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="NutritionProgram"
+                                       asp-action="Create"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+
+                                        <i class="fa fa-th-list"></i>
+                                        ثبت برنامه غذایی
+                                        <span class="badge rounded-pill bg-success"
+                                              title="تعداد برنامه های ثبت شده غذایی: @item.countNutritionProg">
+                                            @item.countNutritionProg
+                                        </span>
+
+                                    </a>
+
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="TrainingProgram"
+                                       asp-action="Create"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+
+                                        <i class="fa fa-heartbeat"></i>
+                                        ثبت برنامه تمرینی
+                                        <span class="badge rounded-pill bg-success"
+                                              title="تعداد برنامه‌های تمرینی ثبت شده: @item.countTrainingProg">
+                                            @item.countTrainingProg
+                                        </span>
+
+                                    </a>
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="MemberProfile"
+                                       asp-action="BodyMeasurement"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+
+                                        <i class="fa fa-heartbeat"></i>
+                                        لیست وضعیت جسمانی
+                                        <span class="badge rounded-pill badge-grey"
+                                              title="تعداد وضعیت جسمانی: @item.countBodyMeasurement">
+                                            @item.countBodyMeasurement
+                                        </span>
+                                    </a>
+
+                                    <a class="dropdown-item"
+                                       asp-area="Admin"
+                                       asp-controller="Members"
+                                       asp-action="Edit"
+                                       asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        ویرایش
+                                    </a>
+
+                                    <div class="dropdown-divider"></div>
+
+<button type="button"
+        class="dropdown-item text-danger"
+        disabled
+        style="opacity: 0.5; cursor: not-allowed;">
+
+    <i class="fa fa-times"></i>
+    حذف
+
+</button>
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml"
+                 model="pagingVm" />
+
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                 model='"هیچ عضوی یافت نشد"' />
+    }
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>

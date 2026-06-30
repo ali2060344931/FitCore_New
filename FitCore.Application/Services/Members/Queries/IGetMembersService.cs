@@ -218,7 +218,7 @@ namespace FitCore.Application.Services.Member.Queries
                     Mobile = x.PhoneNumber,
 
                     BirthDate = x.Member?.BirthDate,
-
+                    Age= PersianDateCalse.GetAge(x.Member?.BirthDate,PersianDateCalse.AgeDisplayMode.Year),
                     Gender = x.Member != null
                         ? x.Member.Gender : Gender.Male,
 

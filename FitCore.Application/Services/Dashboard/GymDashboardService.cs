@@ -75,6 +75,7 @@ namespace FitCore.Application.Services.Dashboard
         public long Id { get; set; }
         public string FullName { get; set; }
         public string Mobile { get; set; }
+        public string Age { get; set; }
         public DateTime InsertTime { get; set; }
         public int NutritionCount { get; set; }
         public int TrainingCount { get; set; }
@@ -130,6 +131,7 @@ namespace FitCore.Application.Services.Dashboard
 
             var membersQuery = _context.Members
                 .Include(m => m.AppUser)
+                
                 .Where(m => memberIds.Contains(m.AppUserId));
 
             var allMembers = await membersQuery
@@ -187,6 +189,7 @@ namespace FitCore.Application.Services.Dashboard
                     Id            = m.Id,
                     FullName      = m.FullName,
                     Mobile        = m.Mobile,
+                    Age=PersianDateCalse.GetAge(_context.Members.Where(c=>c.Id==m.Id).First().BirthDate,PersianDateCalse.AgeDisplayMode.Year),
                     InsertTime    = m.InsertTime,
                     NutritionCount = nutritionPrograms.Count(p => p.MemberId == m.Id),
                     TrainingCount  = trainingPrograms.Count(p => p.MemberId == m.Id)

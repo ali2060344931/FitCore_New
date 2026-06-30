@@ -143,26 +143,28 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 {
                     try
                     {
-                        string[] parts = vm.MemberDetails.BirthDate.Split(new[] { '/', '-' });
-                        if (parts.Length >= 3)
-                        {
-                            int y = int.Parse(parts[0]);
-                            int m = int.Parse(parts[1]);
-                            int d = int.Parse(parts[2]);
+                        //string[] parts = vm.MemberDetails.BirthDate.Split(new[] { '/', '-' });
+                        //if (parts.Length >= 3)
+                        //{
+                        //    int y = int.Parse(parts[0]);
+                        //    int m = int.Parse(parts[1]);
+                        //    int d = int.Parse(parts[2]);
 
-                            PersianCalendar pc = new PersianCalendar();
-                            var birthDate = pc.ToDateTime(y, m, d,0,0,0,0);
+                        //    PersianCalendar pc = new PersianCalendar();
+                        //    var birthDate = pc.ToDateTime(y, m, d,0,0,0,0);
 
-                            int years = DateTime.Today.Year - birthDate.Year;
-                            if (birthDate.Date > DateTime.Today) years--;
+                        //    int years = DateTime.Today.Year - birthDate.Year;
+                        //    if (birthDate.Date > DateTime.Today) years--;
 
-                            int days = (DateTime.Today - birthDate.AddYears(years)).Days;
+                        //    int days = (DateTime.Today - birthDate.AddYears(years)).Days;
 
-                            if (years >= 0)
-                            {
-                                vm.MemberAge = years;
-                            }
-                        }
+                        //    if (years >= 0)
+                        //    {
+                        //        vm.MemberAge = years;
+                        //    }
+                        //}
+
+                        vm.MemberAge=Convert.ToInt32( PersianDateCalse.GetAge(vm.MemberDetails.BirthDate, PersianDateCalse.AgeDisplayMode.Year));
                     }
                     catch { /* در صورت خطای تاریخ، سن محاسبه نمی‌شود */ }
                 }
@@ -335,7 +337,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                                  $"📅 تاریخ پایان: " + program.EndDate + '\n' +
 
                                  
-                                 $"🗓️ تاریخ ثبت: " + DateConverterMlladiToShamsi.ToShamsi(program.InsertTime) + '\n' +
+                                 $"🗓️ تاریخ ثبت: " + PersianDateCalse.ToShamsi(program.InsertTime) + '\n' +
                                  $"🔔 لطفاً وارد ربات بله شوید و از بخش «دریافت لیست برنامه‌های من» برنامه خود را دانلود کنید.";
 
                 await _baleBotService.SendMessageAsync(program.Member.AppUser.BaleChatId.Value, message);

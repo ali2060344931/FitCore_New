@@ -86,6 +86,7 @@ namespace EndPoint.Site.BaleBot.Services
         {
             // ۱. اول از کش بخوان
             var state = _cache.Get<BotState>(chatId.ToString());
+            
             if (state != null && state.SelectedUserId.HasValue)
             {
                 var cachedUser = await _db.Users
@@ -257,7 +258,7 @@ namespace EndPoint.Site.BaleBot.Services
             var memberInfo = isMember
                 ? await _db.Members.FirstOrDefaultAsync(m => m.AppUserId == existingUser.Id)
                 : null;
-            string todayShamsi = DateConverterMlladiToShamsi.ToShamsi(DateTime.Now);
+            string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
 
             if (memberInfo != null)
             {
@@ -269,7 +270,7 @@ namespace EndPoint.Site.BaleBot.Services
                 {
                     isMembershipActive = string.Compare(memberInfo.MembershipEndDate.Trim(), todayShamsi, StringComparison.Ordinal) >= 0;
                 }
-                remainingDays = DateConverterMlladiToShamsi.GetDaysDifference(memberInfo.MembershipEndDate, todayShamsi);
+                remainingDays = PersianDateCalse.GetDaysDifference(memberInfo.MembershipEndDate, todayShamsi);
             }
 
             // ==========================================================
