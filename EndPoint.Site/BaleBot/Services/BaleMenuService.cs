@@ -306,15 +306,15 @@ namespace EndPoint.Site.BaleBot.Services
             {
                 loggedKeyboardRows.Add(new List<InlineKeyboardButton>
                 {
-                    new InlineKeyboardButton { Text = "🔑 درخواست های برنامه", CallbackData = "Program_Request" }
+                    new InlineKeyboardButton { Text = "🫲 درخواست های برنامه", CallbackData = "Program_Request" }
                 });
                 loggedKeyboardRows.Add(new List<InlineKeyboardButton>
                 {
-                    new InlineKeyboardButton { Text = "🔑 تیکت ها", CallbackData = "Tickets" }
+                    new InlineKeyboardButton { Text = "📨 تیکت ها", CallbackData = "Tickets" }
                 });
                 loggedKeyboardRows.Add(new List<InlineKeyboardButton>
                 {
-                    new InlineKeyboardButton { Text = "🔑 لیست اعضاء", CallbackData = "Member_List" }
+                    new InlineKeyboardButton { Text = "📜 لیست اعضاء", CallbackData = "Member_List" }
                 });
             }
 

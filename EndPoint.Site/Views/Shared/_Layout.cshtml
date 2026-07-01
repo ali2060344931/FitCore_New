@@ -41,7 +41,6 @@
         <!-- سایر متا تگ‌ها -->
     <link rel="icon" type="image/png" href="/AdminTemplate/app-assets/img/logos/logo_1.png?v=2" sizes="16x16">
 
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,7 +51,7 @@
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/bootstrap.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/owl.carousel.min.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/vendor/nice-select.css">
-
+    <link rel="stylesheet"
     <!-- Main Styles -->
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/main.css">
     <link rel="stylesheet" href="~/SiteTemplate/assets/css/responsive.css">
@@ -445,8 +444,41 @@
 
 
 
+
+
     </style>
+
+
+
+
+
+
+    <!-- ----------------------------------------- -->
+    <!-- کد یاندکس متریکا را دقیقاً اینجا پیست کنید -->
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110307425', 'ym');
+
+        ym(110307425, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110307425" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <!-- ----------------------------------------- -->
+
+
+
 </head>
+
+
+
+
+
+
 <body>
 
     <!-- ==================== HEADER ==================== -->
@@ -454,13 +486,23 @@
         <div class="fc-header-top">
             <!-- لوگو -->
             <a href="/" class="fc-logo">
-                <img src="AdminTemplate/app-assets/img/logos/logo_1.png"
+                @* <img src="AdminTemplate/app-assets/img/logos/logo_1.png"
+                     alt="FitCore Logo"
+                     class="fc-logo-image" /> *@
+
+                <img src="~/AdminTemplate/app-assets/img/logos/logo_1.png"
+                     asp-append-version="true"
                      alt="FitCore Logo"
                      class="fc-logo-image" />
 
                 <span class="fc-logo-text">
-                    Fit <span class="fc-logo-core">Core</span>
+                    فیت<span class="fc-logo-core">کور</span>
                 </span>
+
+                <span class="fc-logo-text">
+                    Fit<span class="fc-logo-core">Core</span>
+                </span>
+
             </a>
 
             <!-- اطلاعات کاربر — نمایش دسکتاپ -->
@@ -484,12 +526,38 @@
                 }
                 else
                 {
+
+                    <a href="~/Home/Contact"
+                       style="display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:13px;font-weight:500;padding:9px 20px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);text-decoration:none;transition:all .3s ease;"
+                       onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)';this.style.borderColor='rgba(255,255,255,0.3)'"
+                       onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.transform='translateY(0)';this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.15)'">
+                        <i class="fa fa-phone"></i> تماس با ما
+                    </a>
+
+                    <a href="~/admin/Auth/Login"
+                       style="display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:13px;font-weight:500;padding:9px 20px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);text-decoration:none;transition:all .3s ease;"
+                       onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)';this.style.borderColor='rgba(255,255,255,0.3)'"
+                       onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.transform='translateY(0)';this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.15)'">
+                        <i class="fa fa-sign-in"></i> ورود
+                    </a>                    @* <a href="~/Home/Contact"
+                       style="display:flex;align-items:center;gap:6px;color:#fff;font-size:13px;padding:7px 16px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;transition:background .2s;"
+                       onmouseover="this.style.background='rgba(255,255,255,0.08)'"
+                       onmouseout="this.style.background='transparent'">
+                        <i class="fa fa-phone" aria-hidden="true"></i> تماس با ما
+                    </a>
+
+
                     <a href="~/admin/Auth/Login"
                        style="display:flex;align-items:center;gap:6px;color:#fff;font-size:13px;padding:7px 16px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;transition:background .2s;"
                        onmouseover="this.style.background='rgba(255,255,255,0.08)'"
                        onmouseout="this.style.background='transparent'">
                         <i class="fa fa-sign-in"></i> ورود
-                    </a>
+                    </a> *@
+
+
+
+
+
                     @* <a href="~/admin/Auth/Register"
                        style="display:flex;align-items:center;gap:6px;color:var(--fc-primary);font-size:13px;padding:7px 16px;background:var(--fc-gold);border:none;border-radius:8px;font-weight:600;">
                         <i class="fa fa-user-plus"></i> ثبت نام
@@ -547,6 +615,13 @@
                     <span class="fc-nav-icon"><i class="fa fa-sign-in" aria-hidden="true"></i></span>
                     ورود به حساب
                 </a>
+                <a href="~/Home/Contact" class="fc-nav-item">
+                    <span class="fc-nav-icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
+                    تماس با ما
+                </a>
+
+
+
                 @* <a href="~/admin/Auth/Register" class="fc-nav-item">
                     <span class="fc-nav-icon"><i class="fa fa-user-plus" aria-hidden="true"></i></span>
                     ثبت نام
@@ -654,4 +729,8 @@
 
     @RenderSection("Scripts", required: false)
 </body>
+
+
+
+
 </html>

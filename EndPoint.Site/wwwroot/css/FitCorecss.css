@@ -1524,6 +1524,21 @@ tfoot tr td {
 /*    ..................................*/
 
 
+.step-number {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#0d6efd,#4f8cff);
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(13,110,253,.25);
+}
+
 
 
 

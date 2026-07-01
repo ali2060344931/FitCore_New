@@ -8,6 +8,15 @@
 
 <style>
 
+    .hero,
+    .section {
+        max-width: 1200px; /* این مقدار را می‌توانید تغییر دهید (مثلاً 1140px یا 1320px) */
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     body {
         background: #0f172a;
         color: #e2e8f0;
@@ -21,6 +30,9 @@
     .hero {
         padding: 140px 0;
         background: radial-gradient(circle at top,#1e293b,#020617);
+        /* border-radius برای گرد کردن گوشه‌های سکشن (اختیاری) */
+        border-radius: 20px;
+        margin-top: 20px; /* فاصله از بالا */
     }
 
         .hero h1 {
@@ -42,7 +54,13 @@
 
     .section {
         padding: 100px 0;
+        /* فاصله بین سکشن‌ها */
+        margin-top: 30px;
+        /* اگر می‌خواهید بقیه سکشن‌ها هم گوشه‌گرد داشته باشند (اختیاری) */
+        border-radius: 20px;
+        overflow: hidden; /* برای اینکه محتوای داخل از گوشه‌های گرد نزن بیرون */
     }
+
 
     .feature-card {
         background: #020617;
@@ -67,7 +85,7 @@
 
         .stat-box h2 {
             font-size: 38px;
-            color: #6366f1;
+            color: #e52d2d;
         }
 
     .bot-section {
@@ -130,30 +148,49 @@
         margin-bottom: 40px;
     }
 
-        .features-header h2 {
-            font-size: 28px;
-            font-weight: 700;
+.features-header h2 {
+            font-weight: 700; /* خطا در اینجا برطرف شد */
             margin-bottom: 10px;
         }
+
 
         .features-header p {
             color: #9ca3af;
             font-size: 14px;
         }
+    
 
 
 </style>
+
+
 
 <section class="hero">
 
     <div class="container text-center">
 
         <h1 data-aos="fade-up">
+            <span class="d-block">مدیریت هوشمند باشگاه های بدنسازی با</span>
 
-            مدیریت هوشمند باشگاه با
-            <span class="gradient-text">فیتــکور FitCore </span>
+            <span class="gradient-text d-flex align-items-center justify-content-center gap-2">
+
+                فیتــکور FitCore
+            </span>
+
+
+
+
+            <span class="gradient-text d-flex align-items-center justify-content-center gap-3">
+
+                <img src="~/AdminTemplate/app-assets/img/logos/logo_1.png"
+                     asp-append-version="true"
+                     alt="FitCore Logo"
+                     class="fc-logo-image" />
+            </span>
+
 
         </h1>
+
 
         <p class="mt-4 lead" data-aos="fade-up">
 
@@ -237,7 +274,7 @@
                             <li><i class="fa fa-check-circle"></i> ثبت اندازه‌های بدنی توسط ورزشکار</li>
                             <li><i class="fa fa-check-circle"></i> پیگیری پیشرفت ورزشکاران</li>
                             <li><i class="fa fa-check-circle"></i> مدیریت کامل اعضای باشگاه</li>
-                            <li><i class="fa fa-check-circle"></i> نمایش اطلاعات ورزشکاران با نمودارها</li>
+                            <li><i class="fa fa-check-circle"></i> نمایش اطلاعات ورزشکاران با نارها</li>
                         </ul>
                     </div>
                 </div>
@@ -250,7 +287,2798 @@
 
 </section>
 
+@* ------------------------- *@
+<section class="section bg-light">
 
+    <div class="container">
+
+        <div class="text-center mb-5" data-aos="fade-up">
+
+            <span class="badge bg-primary px-4 py-2 mb-3">
+
+                چرا FitCore؟
+
+            </span>
+
+            <h2 class="display-5 fw-bold mb-4" style="color:#000;">
+
+                همه چیز برای مدیریت یک باشگاه حرفه‌ای، در یک سامانه
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                FitCore فقط یک نرم افزار مدیریت باشگاه نیست؛
+                بلکه یک پلتفرم جامع برای مدیریت هوشمند باشگاه‌های بدنسازی است.
+                از لحظه ثبت نام اعضا تا طراحی برنامه‌های تمرینی و غذایی،
+                ارتباط با ورزشکاران، گزارش‌گیری مدیریتی و حتی ارائه خدمات از طریق ربات بله،
+                همه چیز در یک محیط ساده، سریع و کاملاً آنلاین در اختیار شما قرار می‌گیرد.
+
+            </p>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-users feature-icon"></i>
+
+                    <h4>
+
+                        مدیریت نامحدود اعضا
+
+                    </h4>
+
+                    <p>
+
+                        اطلاعات کامل اعضا، سوابق،
+                        تمدید عضویت، پرونده شخصی،
+                        وضعیت اشتراک و تاریخچه فعالیت هر ورزشکار
+                        تنها با چند کلیک در اختیار شما خواهد بود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-heartbeat feature-icon"></i>
+
+                    <h4>
+
+                        برنامه تمرینی حرفه‌ای
+
+                    </h4>
+
+                    <p>
+
+                        برای هر ورزشکار برنامه‌های اختصاصی ایجاد کنید،
+                        حرکات، ست‌ها، تکرارها،
+                        زمان استراحت و توضیحات مربی را ثبت نمایید
+                        و در هر زمان آنها را بروزرسانی کنید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-cutlery feature-icon"></i>
+
+                    <h4>
+
+                        برنامه غذایی Meal-Based
+
+                    </h4>
+
+                    <p>
+
+                        طراحی حرفه‌ای برنامه غذایی
+                        بر اساس روز، وعده و مواد غذایی،
+                        با امکان تعریف مقدار هر ماده غذایی
+                        و مدیریت نسخه‌های مختلف برنامه.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-comments feature-icon"></i>
+
+                    <h4>
+
+                        ربات هوشمند بله
+
+                    </h4>
+
+                    <p>
+
+                        اعضای باشگاه بدون ورود به سایت،
+                        تنها از طریق ربات بله می‌توانند
+                        برنامه‌های تمرینی،
+                        برنامه غذایی،
+                        اعلان‌های باشگاه
+                        و اطلاعات حساب کاربری خود را مشاهده کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-bar-chart feature-icon"></i>
+
+                    <h4>
+
+                        گزارش‌های مدیریتی
+
+                    </h4>
+
+                    <p>
+
+                        همیشه از وضعیت باشگاه خود مطلع باشید.
+                        گزارش اعضای فعال،
+                        اشتراک‌ها،
+                        برنامه‌های صادر شده
+                        و روند فعالیت باشگاه را مشاهده کنید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-lock feature-icon"></i>
+
+                    <h4>
+
+                        امنیت و پایداری
+
+                    </h4>
+
+                    <p>
+
+                        توسعه یافته با ASP.NET Core و SQL Server،
+                        همراه با سطوح دسترسی،
+                        امنیت اطلاعات،
+                        سرعت بالا
+                        و قابلیت توسعه برای آینده.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* ------------------------- *@
+
+
+@* **************************** *@
+<!-- =======================================
+        HOW FITCORE WORKS
+======================================== -->
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5" data-aos="fade-up">
+
+            <span class="badge bg-success px-4 py-2 mb-3">
+
+                مسیر هوشمندسازی باشگاه
+
+            </span>
+
+            <h2 class="display-5 fw-bold" style="color:#000;">
+
+                FitCore چگونه باشگاه شما را متحول می‌کند؟
+
+            </h2>
+
+            <p class="lead text-muted mt-3 mx-auto" style="max-width:900px">
+
+                از اولین ثبت نام یک عضو تا طراحی برنامه‌های تمرینی و غذایی،
+                ارتباط از طریق ربات بله و گزارش‌گیری مدیریتی،
+                همه چیز در یک مسیر ساده، سریع و کاملاً هوشمند انجام می‌شود.
+
+            </p>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-primary mb-3">
+
+                        <i class="fa fa-user-plus"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۱. ثبت نام عضو
+
+                    </h4>
+
+                    <p>
+
+                        عضو تنها با وارد کردن اطلاعات اولیه،
+                        شماره موبایل و انتخاب باشگاه،
+                        حساب کاربری اختصاصی خود را ایجاد می‌کند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-success mb-3">
+
+                        <i class="fa fa-folder-open"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۲. تشکیل پرونده
+
+                    </h4>
+
+                    <p>
+
+                        تمامی اطلاعات فردی،
+                        سوابق،
+                        اندازه‌های بدنی،
+                        تصاویر،
+                        یادداشت‌های مربی
+                        و تاریخچه فعالیت ورزشکار
+                        در پرونده اختصاصی وی ذخیره می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-danger mb-3">
+
+                        <i class="fa fa-heartbeat"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۳. برنامه تمرینی
+
+                    </h4>
+
+                    <p>
+
+                        مربی برای هر عضو
+                        برنامه تمرینی اختصاصی ایجاد می‌کند
+                        و تمامی حرکات،
+                        ست‌ها،
+                        تکرارها،
+                        زمان استراحت
+                        و توضیحات لازم را ثبت می‌نماید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-warning mb-3">
+
+                        <i class="fa fa-cutlery"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۴. برنامه غذایی
+
+                    </h4>
+
+                    <p>
+
+                        رژیم غذایی روزانه،
+                        هفتگی یا ماهانه
+                        با ساختار حرفه‌ای Meal-Based
+                        برای هر عضو طراحی و ثبت می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-4 mt-2">
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-info mb-3">
+
+                        <i class="fa fa-telegram"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۵. ارسال به ربات بله
+
+                    </h4>
+
+                    <p>
+
+                        برنامه‌های تمرینی،
+                        برنامه غذایی،
+                        اعلان‌ها
+                        و پیام‌های باشگاه
+                        از طریق ربات بله
+                        در اختیار اعضا قرار می‌گیرد.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-primary mb-3">
+
+                        <i class="fa fa-line-chart"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۶. پیگیری پیشرفت
+
+                    </h4>
+
+                    <p>
+
+                        مدیر باشگاه و مربی
+                        روند پیشرفت هر ورزشکار را
+                        بررسی کرده
+                        و در صورت نیاز
+                        برنامه‌ها را بروزرسانی می‌کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-success mb-3">
+
+                        <i class="fa fa-credit-card"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۷. مدیریت اشتراک
+
+                    </h4>
+
+                    <p>
+
+                        تمدید عضویت،
+                        مدیریت وضعیت اشتراک،
+                        مشاهده تاریخ پایان اعتبار
+                        و اطلاع رسانی خودکار
+                        به اعضا انجام می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="feature-card h-100 text-center">
+
+                    <div class="display-4 text-danger mb-3">
+
+                        <i class="fa fa-dashboard"></i>
+
+                    </div>
+
+                    <h4>
+
+                        ۸. گزارش‌های مدیریتی
+
+                    </h4>
+
+                    <p>
+
+                        مدیر باشگاه
+                        در هر لحظه می‌تواند
+                        وضعیت اعضا،
+                        برنامه‌ها،
+                        اشتراک‌ها
+                        و عملکرد باشگاه را
+                        به صورت یکجا مشاهده نماید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* **************************** *@
+
+
+@* 111111111111111111111111111 *@
+<section class="section py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5" data-aos="fade-up">
+
+            <span class="badge bg-danger px-4 py-2 mb-3">
+
+                تفاوت را احساس کنید
+
+            </span>
+
+            <h2 class="display-5 fw-bold" style="color:#000;">
+
+                یک روز کاری مدیر باشگاه قبل و بعد از FitCore
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                مدیریت باشگاه نباید زمان شما را صرف کارهای تکراری کند.
+                FitCore فرآیندهای روزمره باشگاه را ساده، سریع و کاملاً هوشمند می‌کند.
+
+            </p>
+
+        </div>
+
+
+        <div class="row g-5 align-items-center">
+
+
+            <!-- BEFORE -->
+
+
+            <div class="col-lg-5">
+
+                <div class="card shadow border-0 h-100">
+
+                    <div class="card-header bg-danger text-white text-center">
+
+                        <h3 class="mb-0">
+
+                            <i class="fa fa-times-circle"></i>
+
+                            قبل از FitCore
+
+                        </h3>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-file-text-o fa-2x text-danger me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>دفتر و کاغذ</h5>
+
+                                <p class="text-muted">
+
+                                    اطلاعات اعضا در دفترهای مختلف ثبت می‌شود
+                                    و پیدا کردن سوابق زمان زیادی می‌گیرد.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-whatsapp fa-2x text-danger me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>ارسال برنامه در پیام‌رسان‌ها</h5>
+
+                                <p class="text-muted">
+
+                                    برنامه‌های غذایی و تمرینی
+                                    بین پیام‌ها گم می‌شوند
+                                    و همیشه نسخه آخر در دسترس نیست.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-clock-o fa-2x text-danger me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>اتلاف زمان</h5>
+
+                                <p class="text-muted">
+
+                                    بخش زیادی از زمان مدیر باشگاه
+                                    صرف پاسخگویی به سوالات تکراری اعضا می‌شود.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-warning fa-2x text-danger me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>فراموش شدن تمدید عضویت</h5>
+
+                                <p class="text-muted">
+
+                                    پایان اعتبار اعضا فراموش می‌شود
+                                    و پیگیری آنها دشوار است.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex">
+
+                            <i class="fa fa-random fa-2x text-danger me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>اطلاعات پراکنده</h5>
+
+                                <p class="text-muted">
+
+                                    اطلاعات در دفتر،
+                                    فایل اکسل،
+                                    واتساپ
+                                    و حافظه افراد پراکنده است.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CENTER -->
+
+            <div class="col-lg-2 text-center">
+
+                <div class="display-1 text-primary">
+
+                    <i class="fa fa-long-arrow-left"></i>
+
+                </div>
+
+                <div class="fw-bold mt-3">
+
+                    تحول با
+
+                    <br>
+
+                    <span class="text-primary">
+
+                        FitCore
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- AFTER -->
+
+
+            <div class="col-lg-5">
+
+                <div class="card shadow border-0 h-100">
+
+                    <div class="card-header bg-success text-white text-center">
+
+                        <h3 class="mb-0">
+
+                            <i class="fa fa-check-circle"></i>
+
+                            بعد از FitCore
+
+                        </h3>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-users fa-2x text-success me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>پرونده دیجیتال اعضا</h5>
+
+                                <p class="text-muted">
+
+                                    تمامی اطلاعات اعضا
+                                    در یک پرونده اختصاصی
+                                    همیشه در دسترس است.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-cutlery fa-2x text-success me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>برنامه‌های همیشه در دسترس</h5>
+
+                                <p class="text-muted">
+
+                                    اعضا در هر زمان
+                                    برنامه غذایی و تمرینی
+                                    خود را از سایت یا ربات بله مشاهده می‌کنند.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-bell fa-2x text-success me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>اطلاع رسانی هوشمند</h5>
+
+                                <p class="text-muted">
+
+                                    اعلان‌ها،
+                                    پیام‌ها
+                                    و اطلاعات مهم
+                                    به صورت سریع در اختیار اعضا قرار می‌گیرد.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex mb-4">
+
+                            <i class="fa fa-line-chart fa-2x text-success me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>مدیریت حرفه‌ای</h5>
+
+                                <p class="text-muted">
+
+                                    گزارش‌ها،
+                                    آمار،
+                                    وضعیت اعضا
+                                    و عملکرد باشگاه
+                                    تنها با چند کلیک قابل مشاهده است.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex">
+
+                            <i class="fa fa-smile-o fa-2x text-success me-3 mt-1"></i>
+
+                            <div>
+
+                                <h5>رضایت بیشتر اعضا</h5>
+
+                                <p class="text-muted">
+
+                                    خدمات سریع‌تر،
+                                    برنامه‌های منظم‌تر
+                                    و ارتباط بهتر،
+                                    باعث افزایش رضایت و وفاداری اعضای باشگاه خواهد شد.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="text-center mt-5" data-aos="zoom-in">
+
+            <h3 class="fw-bold mb-3" style="color:#000;">
+
+                FitCore فقط یک نرم‌افزار نیست...
+
+            </h3>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                FitCore به شما کمک می‌کند زمان کمتری صرف مدیریت روزمره کنید،
+                ارتباط بهتری با اعضای باشگاه داشته باشید،
+                خدمات حرفه‌ای‌تری ارائه دهید
+                و با یک سامانه یکپارچه، باشگاه خود را هوشمند مدیریت کنید.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+@* 111111111111111111111111111 *@
+
+@* 22222222222222222222222222 *@
+<!-- ==========================================
+            PROBLEMS
+=========================================== -->
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5" data-aos="fade-up">
+
+            <span class="badge bg-danger px-4 py-2 mb-3">
+
+                آیا این مشکلات برای شما آشناست؟
+
+            </span>
+
+            <h2 class="display-5 fw-bold mb-4" style="color:#000;">
+
+                اگر مدیر باشگاه هستید، احتمالاً هر روز با این چالش‌ها روبه‌رو می‌شوید...
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                بسیاری از مدیران باشگاه‌های ورزشی زمان زیادی را صرف انجام کارهای تکراری،
+                جستجوی اطلاعات و پاسخگویی به اعضا می‌کنند.
+                اگر حتی یکی از موارد زیر را تجربه کرده‌اید،
+                وقت آن رسیده است که روش مدیریت باشگاه خود را تغییر دهید.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+
+                <div class="card border-danger shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <div class="display-3 text-danger mb-3">
+
+                            ❌
+
+                        </div>
+
+                        <h4>
+
+                            اعضا برنامه خود را گم می‌کنند
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            هر بار باید دوباره برنامه تمرینی یا غذایی
+                            برای اعضا ارسال شود
+                            یا نسخه جدید چاپ گردد.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-lg-4">
+
+                <div class="card border-danger shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <div class="display-3 text-danger mb-3">
+
+                            ❌
+
+                        </div>
+
+                        <h4>
+
+                            مربی فراموش می‌کند برنامه جدید ثبت کند
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            زمان بروزرسانی برنامه‌ها مشخص نیست
+                            و گاهی اعضا هفته‌ها با برنامه قدیمی تمرین می‌کنند.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-lg-4">
+
+                <div class="card border-danger shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <div class="display-3 text-danger mb-3">
+
+                            ❌
+
+                        </div>
+
+                        <h4>
+
+                            تمدید عضویت‌ها فراموش می‌شود
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            پایان اعتبار اعضا به موقع پیگیری نمی‌شود
+                            و درآمد باشگاه تحت تأثیر قرار می‌گیرد.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="row g-4 mt-1">
+
+            <div class="col-lg-4">
+
+                <div class="card border-danger shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <div class="display-3 text-danger mb-3">
+
+                            ❌
+
+                        </div>
+
+                        <h4>
+
+                            اطلاعات اعضا در دفتر یا فایل اکسل نگهداری می‌شود
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            جستجو،
+                            بروزرسانی
+                            و نگهداری اطلاعات
+                            دشوار و زمان‌بر است.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-lg-4">
+
+                <div class="card border-danger shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <div class="display-3 text-danger mb-3">
+
+                            ❌
+
+                        </div>
+
+                        <h4>
+
+                            ارتباط با اعضا سخت و زمان‌بر است
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            تماس‌های تلفنی،
+                            پیام‌های متعدد
+                            و پاسخگویی مداوم
+                            زمان زیادی از مدیر باشگاه می‌گیرد.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-lg-4">
+
+                <div class="card border-danger shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <div class="display-3 text-danger mb-3">
+
+                            ❌
+
+                        </div>
+
+                        <h4>
+
+                            هیچ گزارش دقیقی از وضعیت باشگاه وجود ندارد
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            آمار اعضا،
+                            اشتراک‌ها،
+                            برنامه‌ها
+                            و عملکرد باشگاه
+                            به سادگی قابل مشاهده نیست.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="text-center mt-5" data-aos="zoom-in">
+
+            <div class="alert alert-success shadow-lg p-5 rounded-4">
+
+                <h2 class="fw-bold mb-4" style="color:#000;">
+
+                    <i class="fa fa-check-circle text-success"></i>
+
+                    خبر خوب اینجاست...
+
+                </h2>
+
+                <p class="lead mb-4">
+
+                    <strong>FitCore</strong>
+
+                    تمام این مشکلات را با یک سامانه یکپارچه حل می‌کند.
+
+                </p>
+
+                <div class="row text-start mt-4">
+
+                    <div class="col-md-6">
+
+                        <ul class="list-unstyled">
+
+                            <li class="mb-3">
+
+                                ✅ پرونده دیجیتال اعضا
+
+                            </li>
+
+                            <li class="mb-3">
+
+                                ✅ برنامه تمرینی حرفه‌ای
+
+                            </li>
+
+                            <li class="mb-3">
+
+                                ✅ برنامه غذایی Meal-Based
+
+                            </li>
+
+                            <li class="mb-3">
+
+                                ✅ مدیریت اشتراک‌ها
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <ul class="list-unstyled">
+
+                            <li class="mb-3">
+
+                                ✅ ربات هوشمند بله
+
+                            </li>
+
+                            <li class="mb-3">
+
+                                ✅ گزارش‌های مدیریتی
+
+                            </li>
+
+                            <li class="mb-3">
+
+                                ✅ دسترسی آنلاین از هرجا
+
+                            </li>
+
+                            <li class="mb-3">
+
+                                ✅ افزایش رضایت اعضا
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* 22222222222222222222222222 *@
+
+@* 44444444444444444444444444444 *@
+<!-- ==========================================
+        WHY GYM OWNERS CHOOSE FITCORE
+=========================================== -->
+
+<section class="section py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="badge bg-primary px-4 py-2 mb-3">
+
+                چرا مدیران باشگاه FitCore را انتخاب می‌کنند؟
+
+            </span>
+
+            <h2 class="display-5 fw-bold mb-4" style="color:#000;">
+
+                نرم افزاری که فقط کار شما را آسان نمی‌کند...
+                بلکه باعث رشد باشگاه شما می‌شود.
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                FitCore حاصل بررسی نیازهای واقعی مدیران باشگاه‌های بدنسازی است.
+                هدف ما تنها ثبت اطلاعات نیست؛
+                بلکه کمک به شما برای مدیریت حرفه‌ای‌تر،
+                صرفه‌جویی در زمان،
+                افزایش رضایت اعضا
+                و توسعه کسب‌وکار باشگاه است.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="row g-4">
+
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-clock-o feature-icon"></i>
+
+                    <h4>
+
+                        صرفه‌جویی در زمان
+
+                    </h4>
+
+                    <p>
+
+                        کارهای تکراری حذف می‌شوند.
+                        ثبت اطلاعات،
+                        صدور برنامه،
+                        جستجوی اعضا
+                        و مدیریت پرونده‌ها
+                        در چند ثانیه انجام می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-users feature-icon"></i>
+
+                    <h4>
+
+                        مدیریت نامحدود اعضا
+
+                    </h4>
+
+                    <p>
+
+                        فرقی نمی‌کند
+                        ۵۰ عضو داشته باشید
+                        یا ۵۰۰۰ عضو،
+                        تمام اطلاعات
+                        به صورت منظم،
+                        سریع
+                        و همیشه در دسترس خواهد بود.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-heartbeat feature-icon"></i>
+
+                    <h4>
+
+                        برنامه‌های حرفه‌ای
+
+                    </h4>
+
+                    <p>
+
+                        برای هر ورزشکار
+                        برنامه تمرینی و غذایی
+                        کاملاً اختصاصی ایجاد کنید
+                        و در هر زمان
+                        آن را بروزرسانی نمایید.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-comments feature-icon"></i>
+
+                    <h4>
+
+                        ارتباط بهتر با اعضا
+
+                    </h4>
+
+                    <p>
+
+                        اعضا همیشه
+                        آخرین برنامه‌ها،
+                        اطلاعیه‌ها
+                        و پیام‌های باشگاه را
+                        از طریق سایت و ربات بله
+                        دریافت می‌کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-line-chart feature-icon"></i>
+
+                    <h4>
+
+                        گزارش‌های مدیریتی
+
+                    </h4>
+
+                    <p>
+
+                        در هر لحظه
+                        از وضعیت باشگاه،
+                        اعضا،
+                        اشتراک‌ها
+                        و برنامه‌های صادر شده
+                        اطلاع داشته باشید.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-mobile feature-icon"></i>
+
+                    <h4>
+
+                        دسترسی از هر مکان
+
+                    </h4>
+
+                    <p>
+
+                        فقط کافیست اینترنت داشته باشید.
+                        باشگاه خود را
+                        از خانه،
+                        محل کار،
+                        یا حتی سفر
+                        مدیریت کنید.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-lock feature-icon"></i>
+
+                    <h4>
+
+                        امنیت اطلاعات
+
+                    </h4>
+
+                    <p>
+
+                        اطلاعات اعضا،
+                        برنامه‌ها
+                        و سوابق باشگاه
+                        به صورت ایمن نگهداری می‌شوند
+                        و تنها افراد مجاز به آن دسترسی دارند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-refresh feature-icon"></i>
+
+                    <h4>
+
+                        همیشه به‌روز
+
+                    </h4>
+
+                    <p>
+
+                        FitCore به صورت مستمر توسعه داده می‌شود
+                        و امکانات جدید،
+                        بهبودهای عملکرد
+                        و قابلیت‌های تازه
+                        به آن اضافه خواهد شد.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-database feature-icon"></i>
+
+                    <h4>
+
+                        حذف دفتر و اکسل
+
+                    </h4>
+
+                    <p>
+
+                        همه اطلاعات
+                        در یک سامانه واحد ذخیره می‌شود
+                        و دیگر نیازی به
+                        دفتر،
+                        پرونده کاغذی
+                        یا فایل‌های پراکنده نخواهید داشت.
+
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-smile-o feature-icon"></i>
+
+                    <h4>
+
+                        افزایش رضایت اعضا
+
+                    </h4>
+
+                    <p>
+
+                        اعضا همیشه
+                        به برنامه‌های خود دسترسی دارند
+                        و خدمات سریع‌تر و منظم‌تری
+                        از باشگاه دریافت می‌کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-cloud feature-icon"></i>
+
+                    <h4>
+
+                        کاملاً تحت وب
+
+                    </h4>
+
+                    <p>
+
+                        بدون نصب نرم افزار،
+                        بدون محدودیت سیستم عامل،
+                        از طریق موبایل،
+                        تبلت
+                        یا کامپیوتر
+                        به سامانه متصل شوید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <i class="fa fa-rocket feature-icon"></i>
+
+                    <h4>
+
+                        آماده رشد باشگاه شما
+
+                    </h4>
+
+                    <p>
+
+                        FitCore فقط برای امروز طراحی نشده است.
+                        با رشد باشگاه،
+                        سامانه نیز همراه شما توسعه پیدا می‌کند
+                        و پاسخگوی نیازهای آینده خواهد بود.
+
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row mt-5">
+
+            <div class="col-lg-10 mx-auto">
+
+                <div class="p-5 rounded-4 bg-primary text-white text-center shadow">
+
+                    <h2 class="fw-bold mb-4" style="color:#000;">
+
+                        مدیران موفق، زمان خود را صرف مدیریت هوشمند می‌کنند؛
+                        نه کارهای تکراری.
+
+                    </h2>
+
+                    <p class="lead mb-4">
+
+                        FitCore به شما کمک می‌کند تا با صرف زمان کمتر،
+                        خدمات حرفه‌ای‌تری ارائه دهید،
+                        رضایت اعضای باشگاه را افزایش دهید
+                        و کسب‌وکار خود را با اطمینان توسعه دهید.
+
+                    </p>
+
+                    <a asp-area="Admin"
+                       asp-controller="Auth"
+                       asp-action="Register"
+                       class="btn btn-light btn-lg px-5">
+
+                        همین امروز باشگاه خود را هوشمند کنید
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* 44444444444444444444444444444 *@
+
+
+@* 55555555555555555555555555555555555555555 *@
+<!-- ==========================================
+        BALE BOT
+=========================================== -->
+
+<section class="section py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="badge bg-success px-4 py-2 mb-3">
+
+                ربات هوشمند بله
+
+            </span>
+
+            <h2 class="display-5 fw-bold mb-4" style="color:#000;">
+
+                باشگاه شما همیشه در جیب اعضاست!
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                FitCore فقط یک پنل مدیریت نیست.
+                اعضای باشگاه بدون نیاز به تماس با باشگاه،
+                بدون مراجعه حضوری
+                و حتی بدون ورود به سایت،
+                از طریق ربات بله به خدمات باشگاه دسترسی خواهند داشت.
+
+            </p>
+
+        </div>
+
+
+
+
+
+        <div class="row align-items-center g-5">
+
+
+
+
+            <div class="col-lg-5 text-center">
+
+                <img src="~/images/bale-bot-mobile.png"
+                     class="img-fluid rounded-4 shadow-lg"
+                     style="max-height:650px">
+
+            </div>
+
+
+
+
+
+            <div class="col-lg-7">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+
+                        <div class="feature-card h-100">
+
+                            <i class="fa fa-cutlery feature-icon"></i>
+
+                            <h4>
+
+                                مشاهده برنامه غذایی
+
+                            </h4>
+
+                            <p>
+
+                                آخرین برنامه غذایی همیشه در دسترس عضو قرار دارد
+                                و دیگر نیازی به چاپ یا ارسال مجدد فایل نیست.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="col-md-6">
+
+                        <div class="feature-card h-100">
+
+                            <i class="fa fa-heartbeat feature-icon"></i>
+
+                            <h4>
+
+                                مشاهده برنامه تمرینی
+
+                            </h4>
+
+                            <p>
+
+                                ورزشکار در هر زمان
+                                برنامه تمرینی خود را مشاهده می‌کند
+                                و همیشه آخرین نسخه برنامه را در اختیار دارد.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="col-md-6">
+
+                        <div class="feature-card h-100">
+
+                            <i class="fa fa-key feature-icon"></i>
+
+                            <h4>
+
+                                دریافت کد ورود
+
+                            </h4>
+
+                            <p>
+
+                                کد تایید ورود
+                                به صورت مستقیم در ربات ارسال می‌شود
+                                و ورود کاربران سریع‌تر انجام خواهد شد.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="col-md-6">
+
+                        <div class="feature-card h-100">
+
+                            <i class="fa fa-bell feature-icon"></i>
+
+                            <h4>
+
+                                اعلان‌های باشگاه
+
+                            </h4>
+
+                            <p>
+
+                                اطلاعیه‌ها،
+                                پیام‌های مربی،
+                                تمدید عضویت
+                                و اخبار باشگاه
+                                در لحظه برای اعضا ارسال می‌شود.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="col-md-6">
+
+                        <div class="feature-card h-100">
+
+                            <i class="fa fa-user feature-icon"></i>
+
+                            <h4>
+
+                                مشاهده اطلاعات حساب
+
+                            </h4>
+
+                            <p>
+
+                                عضو می‌تواند اطلاعات حساب،
+                                مشخصات فردی
+                                و وضعیت عضویت خود را مشاهده نماید.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="col-md-6">
+
+                        <div class="feature-card h-100">
+
+                            <i class="fa fa-clock-o feature-icon"></i>
+
+                            <h4>
+
+                                دسترسی ۲۴ ساعته
+
+                            </h4>
+
+                            <p>
+
+                                مهم نیست اعضا چه ساعتی از شبانه‌روز
+                                به اطلاعات خود نیاز داشته باشند،
+                                ربات همیشه پاسخگو است.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="row mt-5">
+
+            <div class="col-lg-10 mx-auto">
+
+                <div class="rounded-4 bg-primary text-white p-5 shadow">
+
+                    <div class="row align-items-center">
+
+                        <div class="col-lg-8">
+
+                            <h2 class="fw-bold mb-4" style="color:#000;">
+
+                                چرا ربات بله یک مزیت بزرگ برای باشگاه شماست؟
+
+                            </h2>
+
+                            <p class="lead">
+
+                                اعضای باشگاه دیگر برای دریافت برنامه،
+                                اطلاع از وضعیت عضویت،
+                                مشاهده برنامه غذایی،
+                                برنامه تمرینی
+                                یا دریافت پیام‌های باشگاه
+                                نیازی به تماس تلفنی یا مراجعه حضوری ندارند.
+
+                                تمام خدمات تنها با چند لمس در ربات بله در اختیار آن‌ها قرار می‌گیرد.
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-lg-4 text-center">
+
+                            <i class="fa fa-comments-o"
+                               style="font-size:130px;color:white;opacity:.9">
+
+                            </i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="row mt-5">
+
+            <div class="col-lg-12">
+
+                <div class="text-center">
+
+                    <h3 class="fw-bold mb-4" style="color:#000;">
+
+                        با FitCore، ارتباط باشگاه و اعضا هیچ‌وقت قطع نمی‌شود.
+
+                    </h3>
+
+                    <p class="lead text-muted mx-auto"
+                       style="max-width:900px">
+
+                        ربات بله FitCore به عنوان یک دستیار هوشمند،
+                        همیشه کنار اعضای باشگاه است.
+                        هر زمان که بخواهند،
+                        بدون تماس،
+                        بدون انتظار
+                        و بدون مراجعه حضوری،
+                        به اطلاعات مورد نیاز خود دسترسی خواهند داشت.
+
+                    </p>
+
+                    <a asp-area="Admin"
+                       asp-controller="Auth"
+                       asp-action="Register"
+                       class="btn btn-success btn-lg px-5 mt-3">
+
+                        باشگاه خود را هوشمند کنید
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* 55555555555555555555555555555555555555555 *@
+
+
+
+
+@* 6666666666666666666666666666666666666666666*@
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5" data-aos="fade-up">
+
+            <span class="badge bg-primary px-4 py-2 mb-3">
+
+                شروع همکاری با FitCore
+
+            </span>
+
+            <h2 class="display-5 fw-bold mb-4" style="color:#000;">
+
+                تنها در چند مرحله، باشگاه خود را هوشمند مدیریت کنید
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                برای استفاده از FitCore نیازی به دانش فنی یا نصب نرم‌افزار ندارید.
+                تنها کافی است باشگاه خود را ثبت کنید تا در کمتر از چند دقیقه،
+                پنل اختصاصی شما آماده استفاده باشد.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="row g-4">
+
+            <!-- STEP 1 -->
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="feature-card text-center h-100">
+
+                    <div class="step-number">
+
+                        01
+
+                    </div>
+
+                    <div class="feature-icon my-4">
+
+                        <i class="fa fa-user-plus"></i>
+
+                    </div>
+
+                    <h5>
+
+                        ثبت درخواست
+
+                    </h5>
+
+                    <p>
+
+                        درخواست عضویت باشگاه را ثبت کنید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- STEP 2 -->
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="feature-card text-center h-100">
+
+                    <div class="step-number">
+
+                        02
+
+                    </div>
+
+                    <div class="feature-icon my-4">
+
+                        <i class="fa fa-building"></i>
+
+                    </div>
+
+                    <h5>
+
+                        ایجاد پنل اختصاصی
+
+                    </h5>
+
+                    <p>
+
+                        پنل مدیریتی مخصوص باشگاه شما ایجاد می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- STEP 3 -->
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="feature-card text-center h-100">
+
+                    <div class="step-number">
+
+                        03
+
+                    </div>
+
+                    <div class="feature-icon my-4">
+
+                        <i class="fa fa-users"></i>
+
+                    </div>
+
+                    <h5>
+
+                        ثبت اعضا
+
+                    </h5>
+
+                    <p>
+
+                        اعضای باشگاه را ثبت کنید یا اجازه دهید خودشان ثبت نام کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- STEP 4 -->
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="feature-card text-center h-100">
+
+                    <div class="step-number">
+
+                        04
+
+                    </div>
+
+                    <div class="feature-icon my-4">
+
+                        <i class="fa fa-heartbeat"></i>
+
+                    </div>
+
+                    <h5>
+
+                        ایجاد برنامه‌ها
+
+                    </h5>
+
+                    <p>
+
+                        برنامه‌های تمرینی و غذایی را برای اعضا تعریف کنید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- STEP 5 -->
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="feature-card text-center h-100">
+
+                    <div class="step-number">
+
+                        05
+
+                    </div>
+
+                    <div class="feature-icon my-4">
+
+                        <i class="fa fa-comments"></i>
+
+                    </div>
+
+                    <h5>
+
+                        دسترسی اعضا
+
+                    </h5>
+
+                    <p>
+
+                        اعضا از طریق سایت یا ربات بله برنامه‌های خود را مشاهده می‌کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- STEP 6 -->
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="feature-card text-center h-100">
+
+                    <div class="step-number">
+
+                        06
+
+                    </div>
+
+                    <div class="feature-icon my-4">
+
+                        <i class="fa fa-line-chart"></i>
+
+                    </div>
+
+                    <h5>
+
+                        مدیریت هوشمند
+
+                    </h5>
+
+                    <p>
+
+                        گزارش‌ها، اعضا و عملکرد باشگاه را به صورت لحظه‌ای مدیریت کنید.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="row mt-5">
+
+            <div class="col-lg-10 mx-auto">
+
+                <div class="alert alert-primary p-5 rounded-4 shadow text-center">
+
+                    <h3 class="fw-bold mb-4">
+
+                        راه‌اندازی سریع، بدون پیچیدگی
+
+                    </h3>
+
+                    <p class="lead mb-4">
+
+                        پس از فعال‌سازی پنل، همه چیز برای شروع آماده است.
+                        اعضای باشگاه می‌توانند ثبت‌نام کنند، مربیان برنامه‌های تمرینی و غذایی ایجاد کنند و ورزشکاران از طریق سایت یا ربات بله به خدمات باشگاه دسترسی داشته باشند.
+
+                    </p>
+
+                    <a asp-area="Admin"
+                       asp-controller="Auth"
+                       asp-action="Register"
+                       class="btn btn-primary btn-lg px-5">
+
+                        همین حالا باشگاه خود را ثبت کنید
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* 6666666666666666666666666666666666666666666*@
+
+
+@* 9999999999999999999999999999 *@
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="badge bg-primary px-4 py-2 mb-3">
+
+                چرا FitCore؟
+
+            </span>
+
+            <h2 class="display-5 fw-bold mb-4" style="color:#000;">
+
+                چه چیزی FitCore را از سایر نرم‌افزارهای مدیریت باشگاه متمایز می‌کند؟
+
+            </h2>
+
+            <p class="lead text-muted mx-auto" style="max-width:900px">
+
+                ما فقط یک نرم‌افزار برای ثبت اطلاعات طراحی نکرده‌ایم.
+                FitCore با هدف ساده‌سازی مدیریت باشگاه، افزایش رضایت اعضا
+                و فراهم کردن ابزارهای حرفه‌ای برای مربیان و مدیران توسعه یافته است.
+
+            </p>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <div class="feature-icon mb-3">
+
+                        <i class="fa fa-sitemap"></i>
+
+                    </div>
+
+                    <h4>
+
+                        معماری حرفه‌ای برنامه غذایی
+
+                    </h4>
+
+                    <p>
+
+                        طراحی برنامه غذایی بر اساس
+                        <strong>روز → وعده → غذا</strong>
+                        انجام می‌شود و امکان تعریف چندین وعده و چندین ماده غذایی
+                        برای هر روز وجود دارد.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <div class="feature-icon mb-3">
+
+                        <i class="fa fa-heartbeat"></i>
+
+                    </div>
+
+                    <h4>
+
+                        برنامه تمرینی کاملاً اختصاصی
+
+                    </h4>
+
+                    <p>
+
+                        برای هر ورزشکار می‌توان برنامه تمرینی منحصر‌به‌فرد ایجاد کرد،
+                        همراه با حرکات، ست، تکرار، زمان استراحت و توضیحات مربی.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <div class="feature-icon mb-3">
+
+                        <i class="fa fa-comments"></i>
+
+                    </div>
+
+                    <h4>
+
+                        یکپارچگی با ربات بله
+
+                    </h4>
+
+                    <p>
+
+                        اعضای باشگاه بدون نیاز به ورود به سایت،
+                        برنامه‌ها و اعلان‌های خود را از طریق ربات بله دریافت می‌کنند.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <div class="feature-icon mb-3">
+
+                        <i class="fa fa-building"></i>
+
+                    </div>
+
+                    <h4>
+
+                        مناسب برای چندین باشگاه
+
+                    </h4>
+
+                    <p>
+
+                        هر باشگاه پنل اختصاصی خود را دارد،
+                        اطلاعات کاملاً از سایر باشگاه‌ها جدا بوده
+                        و مدیریت مستقل انجام می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <div class="feature-icon mb-3">
+
+                        <i class="fa fa-user-circle"></i>
+
+                    </div>
+
+                    <h4>
+
+                        پنل اختصاصی اعضا
+
+                    </h4>
+
+                    <p>
+
+                        هر ورزشکار حساب کاربری اختصاصی دارد
+                        و همیشه به برنامه‌های تمرینی،
+                        برنامه‌های غذایی،
+                        سوابق و اطلاعات عضویت خود دسترسی خواهد داشت.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="feature-card h-100">
+
+                    <div class="feature-icon mb-3">
+
+                        <i class="fa fa-cloud"></i>
+
+                    </div>
+
+                    <h4>
+
+                        کاملاً تحت وب
+
+                    </h4>
+
+                    <p>
+
+                        بدون نصب نرم‌افزار،
+                        از طریق موبایل،
+                        تبلت یا کامپیوتر،
+                        در هر زمان و هر مکان به سامانه دسترسی خواهید داشت.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr class="my-5">
+
+        <div class="row text-center g-4">
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="p-4" style="color:#000;">
+
+                    <div class="display-4 text-primary mb-3">
+
+                        <i class="fa fa-shield"></i>
+
+                    </div>
+
+                    <h5>
+
+                        امنیت بالا
+
+                    </h5>
+
+                    <p>
+
+                        توسعه یافته با ASP.NET Core و SQL Server
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="p-4" style="color:#000;">
+
+                    <div class="display-4 text-success mb-3">
+
+                        <i class="fa fa-refresh"></i>
+
+                    </div>
+
+                    <h5>
+
+                        توسعه مداوم
+
+                    </h5>
+
+                    <p>
+
+                        امکانات جدید به صورت مستمر به سیستم اضافه می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="p-4" style="color:#000;">
+
+                    <div class="display-4 text-warning mb-3">
+
+                        <i class="fa fa-support"></i>
+
+                    </div>
+
+                    <h5>
+
+                        پشتیبانی واقعی
+
+                    </h5>
+
+                    <p>
+
+                        همراه شما از شروع راه‌اندازی تا استفاده روزانه.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="p-4" style="color:#000;">
+
+                    <div class="display-4 text-danger mb-3">
+
+                        <i class="fa fa-rocket"></i>
+
+                    </div>
+
+                    <h5>
+
+                        آماده رشد
+
+                    </h5>
+
+                    <p>
+
+                        مناسب باشگاه‌های کوچک، متوسط و زنجیره‌ای.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="mt-5">
+
+            <div class="rounded-4 bg-dark text-white p-5 shadow-lg text-center">
+
+                <h2 class="fw-bold mb-4">
+
+                    FitCore فقط یک نرم‌افزار نیست...
+
+                </h2>
+
+                <p class="lead mb-4">
+
+                    FitCore نتیجه تجربه، شناخت نیازهای واقعی باشگاه‌های بدنسازی و طراحی یک سامانه یکپارچه است.
+                    هدف ما این است که مدیر باشگاه زمان کمتری صرف کارهای اداری کند،
+                    مربیان ابزارهای حرفه‌ای‌تری در اختیار داشته باشند
+                    و اعضا تجربه‌ای سریع، ساده و مدرن از خدمات باشگاه داشته باشند.
+
+                </p>
+
+                <a asp-area="Admin"
+                   asp-controller="Auth"
+                   asp-action="Register"
+                   class="btn btn-success btn-lg px-5">
+
+                    همین امروز باشگاه خود را هوشمند کنید
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* 9999999999999999999999999999 *@
+
+@* 10101010101010101010 *@
+<!-- ==========================================
+        FINAL CTA
+=========================================== -->
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <div class="rounded-5 shadow-lg overflow-hidden">
+
+            <div class="row g-0 align-items-center">
+
+                <!-- RIGHT -->
+
+                <div class="col-lg-8">
+
+                    <div class="p-5 p-lg-6">
+
+                        <span class="badge bg-success px-4 py-2 mb-4">
+
+                            وقت آن رسیده باشگاه خود را هوشمند کنید
+
+                        </span>
+
+                        <h2 class="display-4 fw-bold mb-4" style="color:#000;">
+
+                            مدیریت باشگاه نباید سخت، زمان‌بر و پراسترس باشد.
+
+                        </h2>
+
+                        <p class="lead text-muted mb-5">
+
+                            با FitCore تمام اطلاعات اعضا،
+                            برنامه‌های تمرینی،
+                            برنامه‌های غذایی،
+                            اشتراک‌ها،
+                            گزارش‌ها
+                            و ارتباط با اعضای باشگاه
+                            در یک سامانه مدرن و کاملاً تحت وب مدیریت می‌شود.
+
+                        </p>
+
+                        <div class="row mb-5">
+
+                            <div class="col-md-6">
+
+                                <ul class="list-unstyled">
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        پنل اختصاصی برای هر باشگاه
+
+                                    </li>
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        ثبت نام آنلاین اعضا
+
+                                    </li>
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        برنامه تمرینی حرفه‌ای
+
+                                    </li>
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        برنامه غذایی Meal-Based
+
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <ul class="list-unstyled">
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        ربات هوشمند بله
+
+                                    </li>
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        دسترسی اعضا از هر مکان
+
+                                    </li>
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        گزارش‌های مدیریتی
+
+                                    </li>
+
+                                    <li class="mb-3" style="color:#000;">
+
+                                        <i class="fa fa-check-circle text-success me-2"></i>
+
+                                        امنیت بالا و توسعه مداوم
+
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3">
+
+                            <a asp-area="Admin"
+                               asp-controller="Auth"
+                               asp-action="Register"
+                               class="btn btn-success btn-lg px-5">
+
+                                Contact                   <i class="fa fa-rocket me-2"></i>
+
+                                درخواست پنل باشگاه
+
+                            </a>
+
+                            <a href="Home/Contact"
+                               class="btn btn-outline-primary btn-lg px-5">
+
+                                <i class="fa fa-phone me-2"></i>
+
+                                مشاوره رایگان
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- LEFT -->
+
+                <div class="col-lg-4 bg-primary text-white text-center">
+
+                    <div class="p-5 h-100 d-flex flex-column justify-content-center">
+
+                        <div class="mb-4">
+
+                            <i class="fa fa-trophy"
+                               style="font-size:90px"></i>
+
+                        </div>
+
+                        <h3 class="fw-bold mb-4">
+
+                            FitCore
+
+                        </h3>
+
+                        <p class="mb-4">
+
+                            نسل جدید مدیریت باشگاه‌های بدنسازی
+
+                        </p>
+
+                        <hr class="border-light">
+
+                        <div class="mb-3">
+
+                            <h5>
+
+                                ✔ کاملاً آنلاین
+
+                            </h5>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <h5>
+
+                                ✔ بدون نیاز به نصب
+
+                            </h5>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <h5>
+
+                                ✔ پنل اختصاصی هر باشگاه
+
+                            </h5>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <h5>
+
+                                ✔ ربات بله
+
+                            </h5>
+
+                        </div>
+
+                        <div>
+
+                            <h5>
+
+                                ✔ پشتیبانی مستمر
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+@* 10101010101010101010 *@
 
 <section class="section">
 
@@ -322,7 +3150,7 @@
 
             <div class="col-md-6">
 
-                <h2 class="mb-4">
+                <h2 class="mb-4" style="color:#000;">
 
                     ربات بله FitCore
 
@@ -366,7 +3194,6 @@
     </div>
 
 </section>
-
 
 
 <section class="section">
@@ -420,7 +3247,7 @@
 
     <div class="container">
 
-        <h2 class="mb-4">
+        <h2 class="mb-4" style="color:#000;">
 
             باشگاه خود را هوشمند مدیریت کنید
 
