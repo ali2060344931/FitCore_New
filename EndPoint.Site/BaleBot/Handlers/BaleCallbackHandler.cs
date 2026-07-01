@@ -565,6 +565,7 @@ namespace EndPoint.Site.BaleBot.Handlers
             else if (data == "MEMBER_INFO_MENU")
             {
                 var rows = new List<List<InlineKeyboardButton>>();
+
                 var existingUser = await _menuService.GetContextUserAsync(chatId);
 
                 if (existingUser == null)
@@ -576,10 +577,11 @@ namespace EndPoint.Site.BaleBot.Handlers
 
                 var roles = await _userManager.GetRolesAsync(existingUser);
                 bool isSuperAdmin = roles.Contains(UserRoles.SuperAdmin);
+                bool isAdmin = roles.Contains(UserRoles.Admin);
                 bool isMember = roles.Contains(UserRoles.Member);
 
 
-
+                //عضو باشگاه
                 if (isMember)
                 {// ==========================================================
                  // ۱. استخراج اطلاعات عضویت زودتر از موعد برای بررسی اعتبار
@@ -626,7 +628,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                     // تعیین نام نقش به فارسی
                     string roleName = "کاربر";
                     if (isSuperAdmin) roleName = "سوپر ادمین";
-                    else if (roles.Contains("Admin")) roleName = "مدیر باشگاه";
+                    else if (isAdmin) roleName = "مدیر باشگاه";
                     else if (isMember) roleName = "عضو باشگاه";
 
                     string welcomeText = "";
@@ -642,23 +644,20 @@ namespace EndPoint.Site.BaleBot.Handlers
                                         $"🆔 شناسه چت بله: {existingUser.BaleChatId}\n"
                                         ;
 
-                    // اطلاعات عضویت
-                    if (isMember)
+                    if (memberInfo != null && !string.IsNullOrEmpty(memberInfo.MembershipStartDate))
                     {
-                        if (memberInfo != null && !string.IsNullOrEmpty(memberInfo.MembershipStartDate))
-                        {
-                            welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(isMembershipActive && memberInfo.IsActive ? "✅فعال" : "❌غیرفعال")}\n" +
-                                $"مدت زمان اعتبار: {(remainingDays > 0 ? remainingDays + " روز باقیمانده" : remainingDays + " روز منقضی شده")}\n" +
-                   $"📅 از تاریخ: {memberInfo.MembershipStartDate}\n" +
-                   $"📅 تا تاریخ: {memberInfo.MembershipEndDate ?? "نامحدود"}\n\n" +
-                   "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
+                        welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(isMembershipActive && memberInfo.IsActive ? "✅فعال" : "❌غیرفعال")}\n" +
+                            $"مدت زمان اعتبار: {(remainingDays > 0 ? remainingDays + " روز باقیمانده" : remainingDays + " روز منقضی شده")}\n" +
+               $"📅 از تاریخ: {memberInfo.MembershipStartDate}\n" +
+               $"📅 تا تاریخ: {memberInfo.MembershipEndDate ?? "نامحدود"}\n\n" +
+               "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
 
-                        }
-                        else
-                        {//⛔🚫
-                            welcomeText += "\n\nℹ️ وضعیت عضویت: 🚫در انتظار تائید. هنوز دوره عضویتی برای شما تعریف نشده است.";
-                        }
                     }
+                    else
+                    {//⛔🚫
+                        welcomeText += "\n\nℹ️ وضعیت عضویت: 🚫در انتظار تائید. هنوز دوره عضویتی برای شما تعریف نشده است.";
+                    }
+
 
                     welcomeText += "\n\n👇 جهت ادامه *بازگشت به منوی اصلی* را کلیک نمائید:";
 
@@ -668,14 +667,64 @@ namespace EndPoint.Site.BaleBot.Handlers
 
                     await _baleBotService.SendMessageAsync(chatId, welcomeText, keyboard);
                 }
+                //مدیرباشگاه
+                else if (isAdmin)
+                {
+                    string gymName = "ثبت نشده";
+                    if (existingUser.GymId.HasValue && existingUser.GymId.Value > 0)
+                    {
+                        if (existingUser.Gym != null)
+                            gymName = existingUser.Gym.Name;
+                        else
+                        {
+                            var gymData = await _db.Gyms.FindAsync(existingUser.GymId.Value);
+                            if (gymData != null) gymName = gymData.Name;
+                        }
+                    }
+                    string welcomeText = "";
+
+                    var activeMembers = await _db.Members
+                        .CountAsync(m => m.IsActive && m.AppUser.GymId == existingUser.GymId);
+
+                    var inactiveMembers = await _db.Members
+                        .CountAsync(m => !m.IsActive && m.AppUser.GymId == existingUser.GymId);
+
+
+
+                    welcomeText = $"👋 سلام مجدد {existingUser.FullName} عزیز!\n\n" +
+                                        $"🏢 نام باشگاه: {gymName}\n" +
+                                        $"👤 نقش شما: مدیر باشگاه\n" +
+                                        $"📱 شماره موبایل: {existingUser.PhoneNumber}\n" +
+
+                                        $"🆔 شناسه چت بله: {existingUser.BaleChatId}\n"
+                                        ;
+
+
+                    int day = PersianDateCalse.GetDaysDifference(existingUser.Gym.SubscriptionExpireDate,PersianDateCalse.ToShamsi(DateTime.Now));
+                    
+                    if (existingUser.IsActive)
+                    {
+                        welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(day>0 ? "✅فعال" : "❌غیرفعال")}\n" +
+                            $"مدت زمان اعتبار: {(day > 0 ? day + " روز باقیمانده" : day + " روز منقضی شده")}\n" +
+               $"📅 تا تاریخ: {existingUser.Gym.SubscriptionExpireDate}\n" +
+               
+               $"📅 تعداد عضوهای فعال باشگاه: {activeMembers}\n" +
+               $"📅 تعداد عضوهای غیرفعال باشگاه: {inactiveMembers}\n" +
+               "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
+
+                    }
+                    else
+                    {//⛔🚫
+                        welcomeText += "\n\nℹ️ وضعیت عضویت: 🚫در انتظار تائید. هنوز دوره عضویتی برای شما تعریف نشده است.";
+                    }
+                    await _baleBotService.SendMessageAsync(chatId, welcomeText, keyboard);
+                }
+                //مدیرسایت
                 else if (isSuperAdmin)
                 {
-                    await _baleBotService.SendMessageAsync(chatId, "شما به عنوان مدیر باشگاه وارد شده اید", keyboard);
+                    await _baleBotService.SendMessageAsync(chatId, "شما به عنوان مدیر سایت وارد شده اید", keyboard);
 
                 }
-
-
-
             }
 
             else if (data.StartsWith("DL_NUT_") || data.StartsWith("DL_TRN_"))
@@ -690,6 +739,26 @@ namespace EndPoint.Site.BaleBot.Handlers
                 }
                 catch (Exception ex) { _logger.LogError(ex, "Error generating or sending PDF for Bale"); await _baleBotService.SendMessageAsync(chatId, "❌ خطایی در ساخت یا ارسال فایل PDF رخ داد."); }
                 return;
+            }
+
+            //لیست درخواست ها
+            else if (data== "Program_Request")
+            {
+                await _baleBotService.SendMessageAsync(chatId, "لیست درخواست ها");
+            }
+
+            //تیکت ها
+            else if (data== "Tickets")
+            {
+                await _baleBotService.SendMessageAsync(chatId, "لیست تیکت ها");
+
+            }
+
+            //لیست اعضاء
+            else if (data== "Member_List")
+            {
+                await _baleBotService.SendMessageAsync(chatId, "لیست اعضاء باشگاه");
+
             }
 
             await _baleBotService.AnswerCallbackQueryAsync(callbackId);

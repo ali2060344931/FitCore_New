@@ -233,6 +233,7 @@ namespace EndPoint.Site.BaleBot.Services
             var roles = await _userManager.GetRolesAsync(existingUser);
             bool isSuperAdmin = roles.Contains(UserRoles.SuperAdmin);
             bool isMember = roles.Contains(UserRoles.Member);
+            bool isAdmin = roles.Contains(UserRoles.Admin);
 
             var loggedKeyboardRows = new List<List<InlineKeyboardButton>>
             {
@@ -240,14 +241,14 @@ namespace EndPoint.Site.BaleBot.Services
                 {
                     new InlineKeyboardButton { Text = "🧑‍💻 اطلاعات کاربر", CallbackData = "MEMBER_INFO_MENU" }
                 },
-                new List<InlineKeyboardButton>
-                {
-                    new InlineKeyboardButton { Text = "📋 اطلاعات کلاس‌ها", CallbackData = "INFO_CLASSES" }
-                },
-                new List<InlineKeyboardButton>
-                {
-                    new InlineKeyboardButton { Text = "📊 نظرسنجی", CallbackData = "SRV_SHOW" }
-                }
+                //new List<InlineKeyboardButton>
+                //{
+                //    new InlineKeyboardButton { Text = "📋 اطلاعات کلاس‌ها", CallbackData = "INFO_CLASSES" }
+                //},
+                //new List<InlineKeyboardButton>
+                //{
+                //    new InlineKeyboardButton { Text = "📊 نظرسنجی", CallbackData = "SRV_SHOW" }
+                //}
             };
 
             // ==========================================================
@@ -298,6 +299,24 @@ namespace EndPoint.Site.BaleBot.Services
                     new InlineKeyboardButton { Text = "🔑 ثبت چت آیدی مدیر", CallbackData = "MYCHATID" }
                 });
             }
+            // ==========================================================
+            // دکمه‌های ادمین
+            // ==========================================================
+            if (isAdmin)
+            {
+                loggedKeyboardRows.Add(new List<InlineKeyboardButton>
+                {
+                    new InlineKeyboardButton { Text = "🔑 درخواست های برنامه", CallbackData = "Program_Request" }
+                });
+                loggedKeyboardRows.Add(new List<InlineKeyboardButton>
+                {
+                    new InlineKeyboardButton { Text = "🔑 تیکت ها", CallbackData = "Tickets" }
+                });
+                loggedKeyboardRows.Add(new List<InlineKeyboardButton>
+                {
+                    new InlineKeyboardButton { Text = "🔑 لیست اعضاء", CallbackData = "Member_List" }
+                });
+            }
 
             // ==========================================================
             // دکمه‌های چند باشگاهی
@@ -327,7 +346,7 @@ namespace EndPoint.Site.BaleBot.Services
             }
 
             // ==========================================================
-            // دکمه بازگشت
+            // دکمه منوی اصلی
             // ==========================================================
             loggedKeyboardRows.Add(new List<InlineKeyboardButton>
             {
