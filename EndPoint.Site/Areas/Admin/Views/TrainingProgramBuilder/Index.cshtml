@@ -65,9 +65,15 @@
                             <span class="meta-value-Fullmamu">@program.MemberName</span>
                             @if (Model.MemberAge.HasValue)
                             {
-                                <span class="badge bg-info text-dark px-2 py-1 rounded-pill" style="font-size:11px;">
+                                @* <span class="badge bg-info text-dark px-2 py-1 rounded-pill" style="font-size:11px;">
+                                    🎂 سن: @Model.MemberAge سال
+                                </span> *@
+
+                                <span class="badge px-2 py-1 rounded-pill"
+                                      style="font-size:11px; background-color: #000000; color: #ffffff; border: 1px solid #333;">
                                     🎂 سن: @Model.MemberAge سال
                                 </span>
+
                             }
                         </div> 
                         <div class="program-meta-item">
@@ -912,8 +918,16 @@
 
 @section Scripts {
 
-    <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
+    @* <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script> *@
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.js"></script>
+
+
 
     <!-- SortableJS برای جابجایی (Drag & Drop) حرکات هر روز -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
@@ -1444,34 +1458,62 @@
 
 
         function sendProgramNotificationToUser(programId) {
-        // استفاده از پنجره تایید پیش‌فرض خود مرورگر
-        var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
 
-        if (isConfirmed) {
-        // گرفتن توکن امنیتی
-        var token = $('input[name="__RequestVerificationToken"]').val();
+            // ۱. نمایش پنجره تایید با SweetAlert
+            Swal.fire({
+                title: 'ارسال اطلاع‌رسانی',
+                text: "آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#00C896',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله، ارسال شود',
+                cancelButtonText: 'انصراف'
+            }).then((result) => {
 
-        $.ajax({
-        url: '/Admin/TrainingProgramBuilder/SendNotification',
-        type: 'POST',
-        data: {
-        __RequestVerificationToken: token,
-        programId: programId
-        },
-        success: function (response) {
-        if (response.isSuccess) {
-        alert('موفق: ' + response.message);
-        } else {
-        alert('خطا: ' + response.message);
-        }
-        },
-        error: function (xhr, status, error) {
-        alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
-        }
-        });
-        }
-        }
+                // ۲. اگر کاربر روی دکمه تایید کلیک کرد
+                if (result.isConfirmed) {
 
+                    // گرفتن توکن امنیتی
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+
+                    // ۳. شروع درخواست AJAX
+                    $.ajax({
+                        url: '/Admin/TrainingProgramBuilder/SendNotification', // آدرس دقیق شما
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: token,
+                            programId: programId
+                        },
+                        success: function (response) {
+                            if (response.isSuccess) {
+                                Swal.fire({
+                                    title: 'موفق!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#00C896'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'انجام نشد!',
+                                    text: response.message,
+                                    icon: 'warning',
+                                    confirmButtonColor: '#f6ad55'
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: 'خطای سرور!',
+                                text: 'درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')',
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    });
+                }
+            });
+        }
     </script>
 
     <style>

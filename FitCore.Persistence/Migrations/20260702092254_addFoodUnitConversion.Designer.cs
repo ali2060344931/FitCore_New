@@ -4,6 +4,7 @@ using FitCore.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitCore.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260702092254_addFoodUnitConversion")]
+    partial class addFoodUnitConversion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,9 +417,6 @@ namespace FitCore.Persistence.Migrations
                     b.Property<long>("FoodId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GymId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("InsertTime")
                         .HasColumnType("datetime2");
 
@@ -435,8 +435,6 @@ namespace FitCore.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FoodId");
-
-                    b.HasIndex("GymId");
 
                     b.HasIndex("UnitTypeId");
 
@@ -1619,10 +1617,6 @@ namespace FitCore.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitCore.Domain.Entities.Gyms.Gym", "Gym")
-                        .WithMany()
-                        .HasForeignKey("GymId");
-
                     b.HasOne("FitCore.Domain.Entities.NutritionProgram.Food.NutritionUnitType", "UnitType")
                         .WithMany()
                         .HasForeignKey("UnitTypeId")
@@ -1630,8 +1624,6 @@ namespace FitCore.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Food");
-
-                    b.Navigation("Gym");
 
                     b.Navigation("UnitType");
                 });

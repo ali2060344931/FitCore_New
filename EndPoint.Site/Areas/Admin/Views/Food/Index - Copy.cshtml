@@ -28,7 +28,6 @@
 }
 
 <style>
-    /* ... تمام کدهای CSS قبلی شما که در اینجا بود (بدون تغییر) ... */
     .fc-filter-section {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         border-radius: 12px;
@@ -143,6 +142,7 @@
             gap: 6px;
         }
 
+    /* جدول فشرده */
     .fc-compact-table {
         font-size: 13px;
     }
@@ -205,17 +205,6 @@
         font-size: 11px;
         font-weight: 600;
         display: inline-block;
-    }
-
-    /* استایل اختصاصی برای کمبوباکس ضرایب تبدیل در جدول */
-    .fc-conversion-select {
-        font-size: 11px !important;
-        padding: 4px 8px !important;
-        border-radius: 6px !important;
-        border: 1px solid #dee2e6 !important;
-        background-color: #f8f9fa;
-        max-width: 180px;
-        cursor: default;
     }
 
     .fc-macro-value {
@@ -413,6 +402,7 @@
             margin: 0;
         }
 
+    /* Pagination */
     .fc-pagination {
         display: flex;
         justify-content: center;
@@ -465,17 +455,20 @@
         }
 
     @@media (max-width: 768px) {
-        .fc-filter-row {
-            flex-direction: column;
-        }
+        .fc-filter-row
 
-        .fc-filter-group {
-            min-width: 100%;
-        }
+    {
+        flex-direction: column;
+    }
 
-        .fc-macro-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    .fc-filter-group {
+        min-width: 100%;
+    }
+
+    .fc-macro-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     }
 </style>
 
@@ -530,6 +523,7 @@
                         }
                     </select>
                 </div>
+
 
                 <div class="fc-filter-group" style="flex: 1;">
                     <label for="isGlobalFilter">
@@ -605,8 +599,6 @@
                                 <th>نام غذا</th>
                                 <th>گروه غذایی</th>
                                 <th>واحد</th>
-                                <!-- ستون جدید اضافه شد -->
-                                <th>واحدهای تبدیل</th>
                                 <th>ارزش غذایی (در واحد)</th>
                                 <th>مالکیت</th>
                                 <th>وضعیت</th>
@@ -637,23 +629,6 @@
                                         </span>
                                     </td>
 
-                                    <!-- ستون جدید کمبوباکس واحد تبدیل -->
-                                    <td>
-                                        @if (item.Conversions != null && item.Conversions.Any())
-                                        {
-                                            <select class="form-select form-select-sm fc-conversion-select">
-                                                <option value="">واحدهای جایگزین (کلیک کنید)...</option>
-                                                @foreach (var conv in item.Conversions)
-                                                {
-                                                    <option>1 @conv.UnitName = @conv.ConversionFactor @item.DefaultUnitName</option>
-                                                }
-                                            </select>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted" style="font-size: 11px;">فقط واحد پیش‌فرض</span>
-                                        }
-                                    </td>
                                     <td>
                                         <div class="fc-macro-grid">
                                             <div class="fc-macro-item calories">
@@ -765,6 +740,7 @@
                         }
                     }
 
+                    @* دکمه قبلی *@
                     @if (currentPage > 1)
                     {
                         <a href="@BuildPaginationUrl(1)" class="page-btn" title="اولین صفحه">
@@ -784,6 +760,7 @@
                         </span>
                     }
 
+                    @* شماره صفحات *@
                     @for (int i = startPage; i <= endPage; i++)
                     {
                         if (i == currentPage)
@@ -796,6 +773,7 @@
                         }
                     }
 
+                    @* دکمه بعدی *@
                     @if (currentPage < pageCount)
                     {
                         <a href="@BuildPaginationUrl(currentPage + 1)" class="page-btn" title="صفحه بعد">
@@ -845,11 +823,16 @@
 </div>
 
 @functions {
+    /// <summary>
+    /// ساخت URL صفحه‌بندی با حفظ پارامترهای فیلتر
+    /// </summary>
     public string BuildPaginationUrl(int pageNumber)
     {
         var searchKey = Context.Request.Query["SearchKey"].ToString();
         var categoryTypeId = Context.Request.Query["CategoryTypeId"].ToString();
         var isGlobalFilter = Context.Request.Query["isGlobalFilter"].ToString();
+
+        // استفاده از pageSize فعلی مدل
         var pSize = Model.PageSize.ToString();
 
         var queryParams = new List<string>();
@@ -864,6 +847,7 @@
         if (!string.IsNullOrWhiteSpace(isGlobalFilter))
             queryParams.Add($"isGlobalFilter={isGlobalFilter}");
 
+        // همیشه pageSize را در URL نگه می‌داریم
         queryParams.Add($"pageSize={pSize}");
 
         return $"/Admin/Food?{string.Join("&", queryParams)}";
@@ -872,12 +856,19 @@
 
 @section Scripts
 {
-    <!-- SweetAlert2 CSS -->
+    @* <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script> *@
+
+        <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.js"></script>
 
+
+
     <script>
+        // جستجو با زدن دکمه Enter
         document.getElementById('SearchKey').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -885,14 +876,17 @@
             }
         });
 
+        // تغییر دسته‌بندی - اعمال فیلتر
         document.getElementById('CategoryTypeId').addEventListener('change', function () {
             document.getElementById('filterForm').submit();
         });
 
+        // تغییر مالکیت - اعمال فیلتر (جدید)
         document.getElementById('isGlobalFilter').addEventListener('change', function () {
             document.getElementById('filterForm').submit();
         });
 
+        // حذف غذا
         function foodPr(id) {
             Swal.fire({
                 title: 'حذف غذا',
@@ -922,13 +916,13 @@
                                 }).then(function () {
                                     const searchKey = '@searchKey';
                                     const categoryId = '@selectedCategoryId';
-                                    const isGlobalFilter = '@selectedOwnership';
+                                    const isGlobalFilter = '@selectedOwnership'; // جدید
                                     let url = '/Admin/Food?';
                                     const params = [];
 
                                     if (searchKey) params.push('SearchKey=' + encodeURIComponent(searchKey));
                                     if (categoryId) params.push('CategoryTypeId=' + categoryId);
-                                    if (isGlobalFilter) params.push('isGlobalFilter=' + isGlobalFilter);
+                                    if (isGlobalFilter) params.push('isGlobalFilter=' + isGlobalFilter); // جدید
 
                                     location.href = url + params.join('&');
                                 });
@@ -944,12 +938,15 @@
             });
         }
 
+
+                // تغییر تعداد آیتم در صفحه
         document.getElementById('pageSizeSelector').addEventListener('change', function () {
             const searchKey = '@searchKey';
             const categoryId = '@selectedCategoryId';
             const isGlobalFilter = '@selectedOwnership';
             const newPageSize = this.value;
 
+            // هنگام تغییر تعداد، همیشه به صفحه اول برمی‌گردیم
             let url = '/Admin/Food?page=1';
             const params = [];
 
@@ -957,6 +954,7 @@
             if (categoryId) params.push('CategoryTypeId=' + categoryId);
             if (isGlobalFilter) params.push('isGlobalFilter=' + isGlobalFilter);
 
+            // اعمال تعداد صفحه جدید
             params.push('pageSize=' + newPageSize);
 
             if (params.length > 0) {

@@ -21,6 +21,16 @@
         public bool IsAdmin { get; set; }
 
 
+        /// <summary>
+        /// فیلتر بر اساس دسته‌بندی غذایی
+        /// </summary>
+        public int? CategoryTypeId { get; set; }
+
+        /// <summary>
+        /// فیلتر مالکیت: true = عمومی، false = متعلق به باشگاه، null = همه
+        /// </summary>
+        public bool? IsGlobalFilter { get; set; }
+
 
     }
 }

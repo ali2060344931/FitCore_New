@@ -31,6 +31,8 @@ public static class SeederRunner
             new EquipmentTypeSeeder(),
             new ExerciseDifficultyLevelSeeder(),
             new ExerciseSeeder(),
+            
+            new FoodSeeder(),
         };
 
         foreach (var seeder in seeders)

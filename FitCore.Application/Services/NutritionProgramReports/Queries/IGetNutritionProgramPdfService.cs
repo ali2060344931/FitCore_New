@@ -152,15 +152,15 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                     // تعریف ستون‌ها (معکوس برای RTL)
                                                     table.ColumnsDefinition(columns =>
                                                     {
-                                                        columns.ConstantColumn(30);//ردیف
-                                                        columns.RelativeColumn(1); // غذا
-                                                        columns.RelativeColumn(1); // مقدار
-                                                        columns.RelativeColumn(1); // واحد
-                                                        columns.RelativeColumn(2); // توضیحات
-                                                        //columns.RelativeColumn(1); // چربی
-                                                        //columns.RelativeColumn(1); // کربوهیدرات
-                                                        //columns.RelativeColumn(1); // پروتئین
-                                                        //columns.RelativeColumn(1); // کالری
+                                                        columns.ConstantColumn(30);      // ردیف
+                                                        columns.RelativeColumn(3);       // غذا (می‌تواند تا جایی که ممکن است بزرگ شود)
+                                                        columns.ConstantColumn(60);      // مقدار (عرض محدود و ثابت - مثلا 60 پیکسل)
+                                                        columns.ConstantColumn(60);      // واحد (عرض محدود و ثابت - مثلا 60 پیکسل)
+                                                        columns.RelativeColumn(2);//توضیحات
+                                                        columns.RelativeColumn(1); // چربی
+                                                        columns.RelativeColumn(1); // کربوهیدرات
+                                                        columns.RelativeColumn(1); // پروتئین
+                                                        columns.RelativeColumn(1); // کالری
 
                                                     });
 
@@ -171,10 +171,10 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                         header.Cell().Element(CellStyleR).Text("مقدار");
                                                         header.Cell().Element(CellStyleR).Text("واحد");
                                                         header.Cell().Element(CellStyleR).Text("توضیحات");
-                                                        //header.Cell().Element(CellStyleR).Text("چربی");
-                                                        //header.Cell().Element(CellStyleR).Text("کربوهیدرات");
-                                                        //header.Cell().Element(CellStyleR).Text("پروتئین");
-                                                        //header.Cell().Element(CellStyleR).Text("کالری");
+                                                        header.Cell().Element(CellStyleR).Text("چربی");
+                                                        header.Cell().Element(CellStyleR).Text("کربوهیدرات");
+                                                        header.Cell().Element(CellStyleR).Text("پروتئین");
+                                                        header.Cell().Element(CellStyleR).Text("کالری");
 
                                                     });
                                                     int rowNumber = 1;
@@ -185,19 +185,19 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                         table.Cell().Element(CellBody).Text($"{item.Amount:0.##} ");
                                                         table.Cell().Element(CellBodyU).Text($"{item.UnitType?.Name}");
                                                         table.Cell().Element(CellBodyU).Text($"{item.Description}");
-                                                        //table.Cell().Element(CellBody).Text(item.Fat.ToString("0.##"));
-                                                        //table.Cell().Element(CellBody).Text(item.Carbohydrate.ToString("0.##")).FontSize(10).SemiBold();
-                                                        //table.Cell().Element(CellBody).Text(item.Protein.ToString("0.##"));
-                                                        //table.Cell().Element(CellBody).Text(item.Calories.ToString("0.##"));
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal) item.Fat,0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Carbohydrate,0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Protein,0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Calories,0).ToString());
                                                         rowNumber++;
                                                     }
 
-                                                    //table.Cell().ColumnSpan(4).Element(CellStyle).Text("جمع");
-                                                    //table.Cell().Element(CellStyle).Text(totalFat.ToString("0.##"));
-                                                    //table.Cell().Element(CellStyle).Text(totalCarbs.ToString("0.##"));
-                                                    //table.Cell().Element(CellStyle).Text(totalProtein.ToString("0.##"));
-                                                    //table.Cell().Element(CellStyle).Text(totalCalories.ToString("0.##"));
-                                                    
+                                                    table.Cell().ColumnSpan(5).Element(CellStyle).Text("جمع");
+                                                    table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalFat,0).ToString());
+                                                    table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalCarbs, 0).ToString());
+                                                    table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalProtein, 0).ToString());
+                                                    table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalCalories, 0).ToString());
+
                                                 });
                                             });
                                         }
@@ -225,7 +225,7 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                     .Background(Colors.Green.Lighten4)
                     .Border(1)
                     .BorderColor(Colors.Grey.Lighten1)
-                    .AlignCenter()
+                    .AlignRight()
                     .DefaultTextStyle(x => x.FontSize(10)) // اندازه فونت
                     ; // تیترها وسط‌چین باشند بهتر است، اگر خواستی راست‌چین کنی AlignRight کن
             IContainer CellStyleR(IContainer container)

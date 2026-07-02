@@ -76,6 +76,12 @@ namespace FitCore.Application.Services.Exercises.Queries
         /// در این صورت همه حرکات (همه باشگاه‌ها + سراسری) قابل مشاهده است.
         /// </summary>
         public bool IsAdmin { get; set; }
+
+
+        /// <summary>
+        /// فیلتر مالکیت: true = عمومی، false = متعلق به باشگاه، null = همه
+        /// </summary>
+        public bool? IsGlobalFilter { get; set; }
     }
 
     public class GetExercisesService : IGetExercisesService
@@ -99,37 +105,20 @@ namespace FitCore.Application.Services.Exercises.Queries
                 .Include(x => x.Gym)
                 .AsQueryable();
 
-            //====================================
-            // فیلتر باشگاه
-            //====================================
-            // مدیر کل (SuperAdmin): همه حرکات (همه باشگاه‌ها + سراسری)
-            // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری (GymId == null)
-
-            if (!request.IsAdmin)
-            {
-                exercises =
-                    exercises.Where(x =>
-                        x.GymId == null ||
-                        x.GymId == request.GymId);
-            }
+            // در متد Execute سرویس، بخش فیلترها را دقیقاً به این شکل تغییر دهید:
 
             //====================================
-            // فیلتر جستجو
+            // فیلتر جستجو (فقط نام فارسی)
             //====================================
-
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
                 exercises =
-                    exercises.Where(x =>
-                        x.Name.Contains(request.SearchKey) ||
-                        x.EnglishName.Contains(request.SearchKey) ||
-                        x.PrimaryMuscleGroup.Name.Contains(request.SearchKey));
+                    exercises.Where(x => x.Name.Contains(request.SearchKey));
             }
 
             //====================================
             // فیلتر گروه عضلانی
             //====================================
-
             if (request.MuscleGroupId.HasValue)
             {
                 exercises =
@@ -139,11 +128,25 @@ namespace FitCore.Application.Services.Exercises.Queries
             //====================================
             // فیلتر نوع تجهیزات
             //====================================
-
             if (request.EquipmentTypeId.HasValue)
             {
                 exercises =
                     exercises.Where(x => x.EquipmentTypeId == request.EquipmentTypeId.Value);
+            }
+
+            //====================================
+            // فیلتر مالکیت (جدید)
+            //====================================
+            if (request.IsGlobalFilter.HasValue)
+            {
+                if (request.IsGlobalFilter.Value)
+                {
+                    exercises = exercises.Where(x => x.GymId == null);
+                }
+                else
+                {
+                    exercises = exercises.Where(x => x.GymId != null);
+                }
             }
 
             int rowCount = await exercises.CountAsync();

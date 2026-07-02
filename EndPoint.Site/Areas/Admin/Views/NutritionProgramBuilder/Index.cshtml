@@ -52,16 +52,21 @@
                     </div>
 
                     <div class="program-meta-container d-flex align-items-center gap-2 flex-wrap">
-                        
+
                         <div class="program-meta-item">
                             <i class="fa-user meta-icon"></i>
                             <span class="meta-label">عضو:</span>
                             <span class="meta-value-Fullmamu">@program.MemberName</span>
                             @if (Model.MemberAge.HasValue)
                             {
-                                <span class="badge bg-info text-dark px-2 py-1 rounded-pill" style="font-size:11px;">
+                                @* <span class="badge bg-info text-dark px-2 py-1 rounded-pill" style="font-size:11px;">
+                                    🎂 سن: @Model.MemberAge سال
+                                </span> *@
+                                <span class="badge px-2 py-1 rounded-pill"
+                                      style="font-size:11px; background-color: #000000; color: #ffffff; border: 1px solid #333;">
                                     🎂 سن: @Model.MemberAge سال
                                 </span>
+
                             }
                         </div>
 
@@ -272,21 +277,21 @@
                                                                     class="meal-btn meal-btn-add"
                                                                     onclick="openAddMealItemModal('@meal.MealId',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`,`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.MealType ?? ""))`)">
                                                                 <i class="fa fa-plus me-4"></i>
-                                                                <i class="fa fa-cutlery text-primary"></i>
+                                                                @* <i class="fa fa-cutlery text-primary"></i> *@
                                                             </button>
 
                                                             <button type="button"
                                                                     class="meal-btn meal-btn-edit"
                                                                     onclick="openEditMealModal('@meal.MealId','@day.Id','@meal.MealTypeId',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.Title ?? ""))`,`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(day.Title ?? ""))`,`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.MealType ?? ""))`)">
                                                                 <i class="fa fa-pencil"></i>
-                                                                <i class="fa fa-cutlery text-primary"></i>
+                                                                @* <i class="fa fa-cutlery text-primary"></i> *@
                                                             </button>
 
                                                             <button type="button"
                                                                     class="meal-btn meal-btn-delete"
                                                                     onclick="openDeleteMealModal('@meal.MealId',`@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(meal.MealType ?? ""))`)">
                                                                 <i class="fa fa-trash"></i>
-                                                                <i class="fa fa-cutlery text-primary"></i>
+                                                                @* <i class="fa fa-cutlery text-primary"></i> *@
                                                             </button>
 
                                                         </div>
@@ -555,14 +560,14 @@
                 </div>
 
                 <div id="addMealSuccessBanner" style="display:none;
-                    background:#edfaf5;border-bottom:2px solid #00C896;
-                    padding:10px 20px;font-size:13px;color:#276749;">
+                        background:#edfaf5;border-bottom:2px solid #00C896;
+                        padding:10px 20px;font-size:13px;color:#276749;">
                     <i class="fa fa-check-circle me-2" style="color:#00C896;"></i>
                     <span id="addMealSuccessText"></span>
                 </div>
 
                 <div id="addedMealsPanel" style="display:none;
-                    background:#f8fafd;border-bottom:1px solid #e2e8f0;padding:10px 20px;">
+                        background:#f8fafd;border-bottom:1px solid #e2e8f0;padding:10px 20px;">
                     <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:6px;">
                         <i class="fa fa-list me-1" style="color:#00C896;"></i> وعده‌های ثبت‌شده:
                     </div>
@@ -601,7 +606,7 @@
                     </button>
                     <button type="button" id="btnSaveMeal"
                             style="border-radius:9px;font-size:13px;padding:7px 22px;
-                        background:#00C896;border:none;color:#fff;font-weight:600;min-width:110px;">
+                            background:#00C896;border:none;color:#fff;font-weight:600;min-width:110px;">
                         <i class="fa fa-plus me-1" id="btnSaveMealIcon"></i>
                         <span id="btnSaveMealText">ثبت وعده</span>
                     </button>
@@ -719,15 +724,15 @@
                 </div>
 
                 <div id="addMealItemSuccessBanner" style="display:none;
-                    background:#edfaf5;border-bottom:2px solid #00C896;
-                    padding:10px 20px;font-size:13px;color:#276749;">
+                        background:#edfaf5;border-bottom:2px solid #00C896;
+                        padding:10px 20px;font-size:13px;color:#276749;">
                     <i class="fa fa-check-circle me-2" style="color:#00C896;"></i>
                     <span id="addMealItemSuccessText"></span>
                     <span style="color:#718096;font-size:12px;margin-right:8px;">— می‌توانید غذای بعدی را ثبت کنید</span>
                 </div>
 
                 <div id="addedFoodsPanel" style="display:none;
-                    background:#f8fafd;border-bottom:1px solid #e2e8f0;padding:10px 20px;">
+                        background:#f8fafd;border-bottom:1px solid #e2e8f0;padding:10px 20px;">
                     <div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:6px;">
                         <i class="fa fa-list me-1" style="color:#00C896;"></i> غذاهای ثبت‌شده در این جلسه:
                     </div>
@@ -800,7 +805,7 @@
                     </button>
                     <button type="button" id="btnSaveMealItem"
                             style="border-radius:9px;font-size:13px;padding:7px 22px;
-                        background:#00C896;border:none;color:#fff;font-weight:600;min-width:120px;">
+                            background:#00C896;border:none;color:#fff;font-weight:600;min-width:120px;">
                         <i class="fa fa-plus me-1" id="btnSaveMealItemIcon"></i>
                         <span id="btnSaveMealItemText">ثبت غذا</span>
                     </button>
@@ -1045,7 +1050,8 @@
                                 <span class="info-value">@(Model.MemberDetails.ExperienceLevel?.Name ?? "-")</span>
 
                                 <span class="info-label">وضعیت عضویت:</span>
-<span class="info-value">@Html.Raw(Model.MemberDetails.IsActive == true ? "<span class='text-success'>فعال</span>" : "<span class='text-danger'>غیرفعال</span>")</span>                            </div>
+                                <span class="info-value">@Html.Raw(Model.MemberDetails.IsActive == true ? "<span class='text-success'>فعال</span>" : "<span class='text-danger'>غیرفعال</span>")</span>
+                            </div>
                         </div>
 
                         <!-- اطلاعات پزشکی -->
@@ -1132,37 +1138,44 @@
 
 @section Scripts {
 
-    <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
+    @* <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script> *@
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.js"></script>
+
 
     <style>
         @@keyframes fcShake {
-        0%, 100% {
-        transform: translateX(0)
-        }
+            0%, 100% {
+                transform: translateX(0)
+            }
 
-        20% {
-        transform: translateX(-5px)
-        }
+            20% {
+                transform: translateX(-5px)
+            }
 
-        40% {
-        transform: translateX(5px)
-        }
+            40% {
+                transform: translateX(5px)
+            }
 
-        60% {
-        transform: translateX(-4px)
-        }
+            60% {
+                transform: translateX(-4px)
+            }
 
-        80% {
-        transform: translateX(4px)
-        }
+            80% {
+                transform: translateX(4px)
+            }
         }
 
         #btnSaveMealItem:not(:disabled):hover,
         #btnSaveMeal:not(:disabled):hover {
-        background: #00a87d !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(0,200,150,0.3);
+            background: #00a87d !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0,200,150,0.3);
         }
     </style>
 
@@ -1683,6 +1696,8 @@
         $(document).on('change', '#FoodId', function () { loadDefaultUnit($(this).val()); });
         $(document).on('select2:select', '#FoodId', function () { loadDefaultUnit($(this).val()); });
 
+
+
         // ============================================================
         // ایجاد خودکار روزها
         // ============================================================
@@ -1724,7 +1739,8 @@
         var response = result.value;
 
         if (response.isSuccess) {
-        Swal.fire({
+        
+            Swal.fire({
         icon: 'success',
         title: 'موفق',
         text: response.message
@@ -1930,36 +1946,100 @@
 
 
 
-        function sendProgramNotificationToUser(programId) {
+        // function sendProgramNotificationToUser(programId) {
         // استفاده از پنجره تایید پیش‌فرض خود مرورگر
-        var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
+        // var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
 
-        if (isConfirmed) {
+        // if (isConfirmed) {
         // گرفتن توکن امنیتی
-        var token = $('input[name="__RequestVerificationToken"]').val();
+        // var token = $('input[name="__RequestVerificationToken"]').val();
 
-        $.ajax({
-        url: '/Admin/NutritionProgramBuilder/SendNotification',
-        type: 'POST',
-        data: {
-        __RequestVerificationToken: token,
-        programId: programId
-        },
-        success: function (response) {
-        if (response.isSuccess) {
-        alert('موفق: ' + response.message);
-        } else {
-        alert('خطا: ' + response.message);
-        }
-        },
-        error: function (xhr, status, error) {
-        alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
-        }
-        });
-        }
+        // $.ajax({
+        // url: '/Admin/NutritionProgramBuilder/SendNotification',
+        // type: 'POST',
+        // data: {
+        // __RequestVerificationToken: token,
+        // programId: programId
+        // },
+        // success: function (response) {
+        // if (response.isSuccess) {
+        // alert('موفق: ' + response.message);
+        // } else {
+        // alert('خطا: ' + response.message);
+        // }
+        // },
+        // error: function (xhr, status, error) {
+        // alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
+        // }
+        // });
+        // }
+        // }
+                function sendProgramNotificationToUser(programId) {
+
+            // ۱. نمایش پنجره تایید با SweetAlert
+            Swal.fire({
+                title: 'ارسال اطلاع‌رسانی',
+                text: "آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#00C896', // رنگ دلخواه مطابق سایت شما
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله، ارسال شود',
+                cancelButtonText: 'انصراف',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp animate__faster'
+                }
+            }).then((result) => {
+
+                // ۲. اگر کاربر روی دکمه تایید کلیک کرد
+                if (result.isConfirmed) {
+
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+
+                    // ۳. شروع درخواست AJAX
+                    $.ajax({
+                        url: '/Admin/NutritionProgramBuilder/SendNotification',
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: token,
+                            programId: programId
+                        },
+                        success: function (response) {
+                            // ۴. بررسی پاسخ موفقیت‌آمیز از سمت سرور
+                            if (response.isSuccess) {
+                                Swal.fire({
+                                    title: 'موفق!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#00C896'
+                                });
+                            } else {
+                                // نمایش خطای منطقی (مثل ثبت نبودن کاربر در بله)
+                                Swal.fire({
+                                    title: 'انجام نشد!',
+                                    text: response.message,
+                                    icon: 'warning',
+                                    confirmButtonColor: '#f6ad55'
+                                });
+                            }
+                        },
+                        error: function (xhr) {
+                            // ۵. نمایش خطای سمت سرور (مثل قطعی ارتباط یا 500)
+                            Swal.fire({
+                                title: 'خطای سرور!',
+                                text: 'درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')',
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    });
+                }
+            });
         }
 
-        
+
     </script>
 }
-

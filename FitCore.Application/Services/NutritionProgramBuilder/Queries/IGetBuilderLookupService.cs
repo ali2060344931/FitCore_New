@@ -31,19 +31,19 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
                 {
                     Id = x.Id,
                     Name = x.Title
-                }).ToList();
+                }).OrderBy(c=>c.Name).ToList();
 
             var units = _context.NutritionUnitTypes
                 .Select(x => new LookupItemDto
                 {
                     Id = x.Id,
                     Name = x.Name
-                }).ToList();
+                }).OrderBy(c=>c.Name).ToList();
 
 
             var mealTypes = _context.MealTypes
                 .AsNoTracking()
-                .OrderBy(x => x.Id)
+                .OrderBy(x => x.Name)
                 .Select(x => new LookupItemDto
                 {
                     Id = x.Id,

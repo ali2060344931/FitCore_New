@@ -23,10 +23,6 @@ public class ExerciseSeeder : ISeeder
         var equipmentTypes = await context.Set<EquipmentType>().ToListAsync();
         var difficultyLevels = await context.Set<ExerciseDifficultyLevel>().ToListAsync();
 
-        //int MG(string name) => muscleGroups.First(x => x.Name == name).Id;
-        //int EQ(string name) => equipmentTypes.First(x => x.Name == name).Id;
-        //int DL(string name) => difficultyLevels.First(x => x.Name == name).Id;
-
          int MG(string name)
     {
         var found = muscleGroups.FirstOrDefault(x => x.Name == name);

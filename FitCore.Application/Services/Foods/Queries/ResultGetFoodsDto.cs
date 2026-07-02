@@ -1,6 +1,4 @@
-﻿using FitCore.Application.Services.NutritionProgramBuilder.Queries;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FitCore.Application.Services.Foods.Queries
 {
@@ -24,5 +22,8 @@ namespace FitCore.Application.Services.Foods.Queries
         /// </summary>
         public string GymName { get; set; }
 
+
     }
+
+
 }

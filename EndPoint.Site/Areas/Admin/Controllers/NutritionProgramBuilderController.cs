@@ -94,8 +94,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _autoGenerateNutritionDaysService = autoGenerateNutritionDaysService;
             _removeNutritionAllDayService = removeNutritionAllDayService;
             _foodService = foodService;
-            _baleBotService= baleBotService;
-            _menuService= menuService;
+            _baleBotService = baleBotService;
+            _menuService = menuService;
 
         }
         public IActionResult Index(string id)
@@ -164,7 +164,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                         //    }
                         //}
 
-                        vm.MemberAge=Convert.ToInt32( PersianDateCalse.GetAge(vm.MemberDetails.BirthDate, PersianDateCalse.AgeDisplayMode.Year));
+                        vm.MemberAge = Convert.ToInt32(PersianDateCalse.GetAge(vm.MemberDetails.BirthDate, PersianDateCalse.AgeDisplayMode.Year));
                     }
                     catch { /* در صورت خطای تاریخ، سن محاسبه نمی‌شود */ }
                 }
@@ -317,7 +317,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             var program = await _Context.NutritionPrograms
                 .Include(p => p.Member)
-                
+
 
                     .ThenInclude(m => m.AppUser)
                     .Include(p => p.GoalType)
@@ -326,23 +326,23 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var programGymName = _Context.Gyms.Where(c => c.Id == program.GymId).First().Name;
 
-            if (program?.Member?. AppUser != null && program.Member.AppUser.BaleChatId.HasValue)
+            if (program?.Member?.AppUser != null && program.Member.AppUser.BaleChatId.HasValue)
             {
                 string message = $"📋 *برنامه جدید برای شما*\n" +
                     $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
                                  $"🍔 نوع برنامه: برنامه غذایی\n" +
-                                 $"⏰ عنوان برنامه:" + program.ProgramType.Name +'\n'+
+                                 $"⏰ عنوان برنامه:" + program.ProgramType.Name + '\n' +
                                  $"🚴‍♂️ موضوع برنامه: " + program.GoalType.Name + '\n' +
-                                 $"📅 تاریخ شروع: " + program.StartDate  + '\n' +
+                                 $"📅 تاریخ شروع: " + program.StartDate + '\n' +
                                  $"📅 تاریخ پایان: " + program.EndDate + '\n' +
 
-                                 
+
                                  $"🗓️ تاریخ ثبت: " + PersianDateCalse.ToShamsi(program.InsertTime) + '\n' +
                                  $"🔔 لطفاً وارد ربات بله شوید و از بخش «دریافت لیست برنامه‌های من» برنامه خود را دانلود کنید.";
 
                 await _baleBotService.SendMessageAsync(program.Member.AppUser.BaleChatId.Value, message);
 
-                await _menuService.ShowMainMenu(program.Member.AppUser.BaleChatId.Value,"-");
+                await _menuService.ShowMainMenu(program.Member.AppUser.BaleChatId.Value, "-");
                 return Json(new { isSuccess = true, message = "پیام با موفقیت در ربات ارسال شد." });
             }
 

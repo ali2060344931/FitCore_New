@@ -43,13 +43,9 @@ using FitCore.Application.Services.Tickets;
 using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveAllTrainingDays;
 using FitCore.Application.Services.TrainingProgramBuilder.TrainingProgramBuilderFacad;
 using FitCore.Application.Services.TrainingPrograms.TrainingProgramsFacad;
-using FitCore.Common.Roles;
-using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 using FitCore.Persistence.Contexts;
-using FitCore.Persistence.Seed;
 
-using FluentValidation;
 using FluentValidation.AspNetCore;
 
 using GymBot.Services;

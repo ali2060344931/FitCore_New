@@ -1,4 +1,6 @@
-﻿namespace FitCore.Application.Services.Foods.Queries
+﻿using System.Collections.Generic;
+
+namespace FitCore.Application.Services.Foods.Queries
 {
     public class FoodDto
     {
@@ -24,5 +26,17 @@
         /// </summary>
         public string GymName { get; set; }
 
+        public List<FoodUnitConversionDto> Conversions { get; set; } = new List<FoodUnitConversionDto>();
+
+
+    }
+
+
+
+
+    public class FoodUnitConversionDto
+    {
+        public string UnitName { get; set; }
+        public decimal ConversionFactor { get; set; }
     }
 }

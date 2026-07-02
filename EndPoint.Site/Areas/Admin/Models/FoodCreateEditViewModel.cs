@@ -35,5 +35,15 @@ namespace EndPoint.Site.Areas.Admin.Models.Foods
         /// </summary>
         public bool IsGlobal { get; set; } = false;
 
+
+        // در کلاس FoodCreateEditViewModel اضافه کنید:
+        public List<FoodUnitConversionItemDto> Conversions { get; set; } = new List<FoodUnitConversionItemDto>();
+
+    }
+
+    public class FoodUnitConversionItemDto
+    {
+        public int UnitTypeId { get; set; }
+        public decimal ConversionFactor { get; set; }
     }
 }

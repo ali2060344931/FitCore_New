@@ -1,0 +1,242 @@
+@using FitCore.Application.Services.Exercises.Queries
+@using FitCore.Common
+@using EndPoint.Site.Areas.Admin.Models
+
+@model GetExercisesResultDto
+
+@{
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = Model.CurrentPage,
+        PageSize = Model.PageSize,
+        PageQueryKey = "page",
+        PageSizeQueryKey = "pageSize"  // تغییر از PageSize به pageSize
+    };
+}
+
+@{
+    ViewData["Title"] = "بانک حرکات تمرینی";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var searchKey = Context.Request.Query["SearchKey"].ToString();
+    var isFiltered = !string.IsNullOrWhiteSpace(searchKey);
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="fc-page-header">
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
+                 model='"بانک حرکات تمرینی"' />
+
+        <a asp-area="Admin"
+           asp-controller="Exercise"
+           asp-action="Create"
+           class="btn btn-success">
+            <i class="fa fa-plus"></i>
+            افزودن حرکت جدید
+        </a>
+
+    </div>
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"
+             model="searchKey" />
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardStart.cshtml" />
+
+    <div class="mb-3">
+
+        تعداد کل حرکات :
+
+        <strong>
+            @Model.RowCount
+        </strong>
+
+        @if (isFiltered)
+        {
+            <span class="ms-2">
+                (نتایج فیلتر: <strong>@Model.Exercises.Count</strong>)
+            </span>
+
+            <a href="/Admin/Exercise" class="btn btn-warning btn-sm ms-2">
+                نمایش همه (@Model.RowCount)
+            </a>
+        }
+
+    </div>
+
+    @if (Model.Exercises != null && Model.Exercises.Any())
+    {
+        <table class="table table-striped table-hover">
+
+            <thead>
+                <tr>
+                    <th style="width: 70px;">تصویر</th>
+                    <th>نام حرکت</th>
+                    <th>نام انگلیسی</th>
+                    <th>گروه عضلانی</th>
+                    <th>تجهیزات</th>
+                    <th>سطح دشواری</th>
+                    <th>مالکیت</th>
+                    <th>فعـــال</th>
+                    <th width="150">عملیات</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.Exercises)
+                {
+                    bool canManage = User.IsAdmin() || !item.IsGlobal;
+
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(item.ImagePath))
+                            {
+                                <img src="@item.ImagePath" alt="@item.Name" class="rounded" style="width:48px;height:48px;object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="width:48px;height:48px;">
+                                    <i class="fa fa-heartbeat text-muted"></i>
+                                </div>
+                            }
+                        </td>
+                        <td><strong>@item.Name</strong></td>
+                        <td class="text-muted">@(item.EnglishName ?? "-")</td>
+                        <td>@item.MuscleGroup</td>
+                        <td>@item.EquipmentType</td>
+                        <td>@item.DifficultyLevel</td>
+                        <td>
+                            @if (item.IsGlobal)
+                            {
+                                <span class="badge bg-info text-dark" title="این حرکت سراسری است و در همه باشگاه‌ها قابل استفاده است">
+                                    <i class="fa fa-globe"></i>
+                                    عمومی
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-light text-dark border" title="مخصوص باشگاه: @item.GymName">
+                                    <i class="fa fa-building-o"></i>
+                                    @(item.GymName ?? "باشگاه")
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success">بله</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">خیر</span>
+                            }
+                        </td>
+                        <td>
+                            @if (canManage)
+                            {
+                                @if (!item.IsGlobal)
+                                {
+
+                                    <div class="d-flex align-items-center gap-1">
+                                        <a class="btn btn-sm btn-outline-warning btn-modern"
+                                           asp-area="Admin"
+                                           asp-controller="Exercise"
+                                           asp-action="Edit"
+                                           asp-route-id="@SecurityUtils.EncryptId(item.Id)">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            ویرایش
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger btn-modern"
+                                                onclick="DeleteExercise('@SecurityUtils.EncryptId(item.Id)')">
+                                            <i class="fa fa-times"></i>
+                                            حذف
+                                        </button>
+
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">
+                                    <i class="fa fa-lock"></i>
+                                    فقط مشاهده
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml" model="pagingVm" />
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                 model='"هیچ حرکتی در بانک ثبت نشده است"' />
+    }
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
+
+</div>
+
+@section Scripts
+{
+    @* <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script> *@
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.js"></script>
+
+
+    <script>
+        function DeleteExercise(id) {
+        Swal.fire({
+        title: 'حذف حرکت',
+        text: "آیا از حذف این حرکت مطمئن هستید؟",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#7cacbe',
+        confirmButtonText: 'بله، حذف شود',
+        cancelButtonText: 'خیر'
+        }).then((result) => {
+        if (result.value) {
+        $.ajax({
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        type: "POST",
+        url: "/Admin/Exercise/Delete",
+        data: { Id: id },
+        success: function (data) {
+        if (data.isSuccess === true) {
+        Swal.fire({
+        title: 'موفق!',
+        text: data.message,
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false
+        }).then(() => {
+        location.reload();
+        });
+        } else {
+        Swal.fire('هشدار!', data.message, 'warning');
+        }
+        },
+        error: function () {
+        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
+        }
+        });
+        }
+        });
+        }
+    </script>
+}

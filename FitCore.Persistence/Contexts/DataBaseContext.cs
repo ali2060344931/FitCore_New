@@ -52,6 +52,8 @@ namespace FitCore.Persistence.Contexts
 
         //===============NutritionProgram
         public DbSet<Food> Foods { get; set; }
+        public DbSet<FoodUnitConversion> FoodUnitConversions { get; set; }
+
         public DbSet<NutritionUnitType> NutritionUnitTypes { get; set; }
         public DbSet<FoodCategoryType> FoodCategoryTypes { get; set; }
         public DbSet<NutritionMeal> NutritionMeals { get; set; }

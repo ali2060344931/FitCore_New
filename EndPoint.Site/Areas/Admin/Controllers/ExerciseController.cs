@@ -83,8 +83,18 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //====================================================
         // لیست حرکات
         //====================================================
+
+        //====================================================
+        // لیست حرکات
+        //====================================================
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string SearchKey = "")
+        public async Task<IActionResult> Index(
+            string SearchKey,
+            int? MuscleGroupId,
+            int? EquipmentTypeId,
+            bool? isGlobalFilter,
+            int page = 1,
+            int pageSize = 50)
         {
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
 
@@ -94,14 +104,30 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 PageSize = pageSize,
                 SearchKey = SearchKey,
                 GymId = gymId,
-                IsAdmin = isAdmin
+                IsAdmin = isAdmin,
+                MuscleGroupId = MuscleGroupId,
+                EquipmentTypeId = EquipmentTypeId,
+                IsGlobalFilter = isGlobalFilter
             };
 
             var result = await _exerciseFacad.GetExercisesService.Execute(request);
 
+            // پر کردن کمبوباکس‌ها برای فیلتر
+            var muscleGroups = await _context.MuscleGroups
+                .OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
+                .ToListAsync();
+
+            var equipmentTypes = await _context.EquipmentTypes
+                .OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
+                .ToListAsync();
+
+            ViewBag.MuscleGroups = muscleGroups;
+            ViewBag.EquipmentTypes = equipmentTypes;
+
             return View(result.Data);
         }
-
         //====================================================
         // Create - GET
         //====================================================

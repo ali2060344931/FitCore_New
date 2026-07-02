@@ -1,18 +1,14 @@
 ﻿using FitCore.Domain.Entities.Commons;
 using FitCore.Domain.Entities.Gyms;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitCore.Domain.Entities.NutritionProgram.Food
 {
     /// <summary>
     /// ماده غذایی
     /// </summary>
-    public class Food: BaseEntity
+    public class Food : BaseEntity
     {
         /// <summary>
         /// شناسه باشگاه صاحب این غذا.
@@ -67,6 +63,12 @@ namespace FitCore.Domain.Entities.NutritionProgram.Food
         /// فعال است؟
         /// </summary>
         public bool IsActive { get; set; }
+
+
+        /// <summary>
+        /// لیست واحدهای قابل تبدیل برای این ماده غذایی به همراه ضریب آن‌ها
+        /// </summary>
+        public ICollection<FoodUnitConversion> UnitConversions { get; set; }
     }
 
     /// <summary>
@@ -74,7 +76,7 @@ namespace FitCore.Domain.Entities.NutritionProgram.Food
     /// </summary>
     public class NutritionUnitType
     {
-        public int Id {  get; set; }
+        public int Id { get; set; }
         /// <summary>
         /// نام واحد
         /// </summary>
@@ -102,5 +104,45 @@ namespace FitCore.Domain.Entities.NutritionProgram.Food
         /// مواد غذایی این دسته
         /// </summary>
         public ICollection<Food> food { get; set; }
+    }
+
+
+
+    /// <summary>
+    /// جدول واسط برای تعریف ضریب تبدیل واحد اندازه‌گیری مواد غذایی
+    /// </summary>
+    public class FoodUnitConversion : BaseEntity
+    {
+        /// <summary>
+        /// شناسه ماده غذایی
+        /// </summary>
+        public long FoodId { get; set; }
+        /// <summary>
+        /// ماده غذایی
+        /// </summary>
+        public Food Food { get; set; }
+
+        /// <summary>
+        /// شناسه واحد اندازه‌گیری (واحدی که می‌خواهیم به واحد پیش‌فرض تبدیل شود)
+        /// </summary>
+        public int UnitTypeId { get; set; }
+        /// <summary>
+        /// نوع واحد اندازه‌گیری
+        /// </summary>
+        public NutritionUnitType UnitType { get; set; }
+
+        /// <summary>
+        /// ضریب تبدیل: نشان می‌دهد 1 عدد از این واحد (UnitTypeId) معادل چند واحد از واحد پیش‌فرض غذا (DefaultUnitId) است.
+        /// مثال: واحد پیش‌فرض گرم است. واحد انتخابی "پیمانه" است. 1 پیمانه برنج = 180 گرم. پس مقدار این فیلد 180 است.
+        /// </summary>
+        public decimal ConversionFactor { get; set; }
+
+
+        /// <summary>
+        /// شناسه باشگاه. اگر نال باشد یعنی ضریب سراسری است، اگر مقدار داشته باشد مخصوص همان باشگاه است.
+        /// </summary>
+        public long? GymId { get; set; }
+        public Gym Gym { get; set; }
+
     }
 }
