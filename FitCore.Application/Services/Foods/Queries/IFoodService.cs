@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using static FitCore.Application.Services.Foods.Queries.FoodService;
@@ -18,6 +17,7 @@ namespace FitCore.Application.Services.Foods.Queries
         long GetDefaultUnitId(long foodId);
         Task<FoodIndexResultDto> GetFoodsAsync(FoodIndexRequestDto request);
         Task<FoodCreateEditViewModel> GetFoodByIdAsync(long id);
+        List<FoodAllowedUnitDto> GetAllowedUnitsForFood(long foodId);
     }
 
     public class FoodService : IFoodService
@@ -29,7 +29,7 @@ namespace FitCore.Application.Services.Foods.Queries
             _context = context;
         }
 
-        
+
         public async Task<FoodIndexResultDto> GetFoodsAsync(FoodIndexRequestDto request)
         {
             var foods = _context.Foods
@@ -111,6 +111,47 @@ namespace FitCore.Application.Services.Foods.Queries
             return food?.DefaultUnitId ?? 0;
         }
 
+
+
+        public List<FoodAllowedUnitDto> GetAllowedUnitsForFood(long foodId)
+        {
+            var food = _context.Foods
+                .Include(f => f.DefaultUnit)
+                .Include(f => f.UnitConversions)
+                    .ThenInclude(uc => uc.UnitType)
+                .FirstOrDefault(f => f.Id == foodId);
+
+            if (food == null) return new List<FoodAllowedUnitDto>();
+
+            var allowedUnits = new List<FoodAllowedUnitDto>
+    {
+        // همیشه واحد پیش‌فرض اضافه می‌شود
+        new FoodAllowedUnitDto
+        {
+            Id = food.DefaultUnitId,
+            Name = food.DefaultUnit?.Name ?? "واحد پیش‌فرض"
+        }
+    };
+
+            // اضافه کردن واحدهای تبدیل (جلوگیری از تکرار واحد پیش‌فرض)
+            if (food.UnitConversions != null)
+            {
+                foreach (var conv in food.UnitConversions)
+                {
+                    if (conv.UnitTypeId != food.DefaultUnitId && conv.UnitType != null)
+                    {
+                        allowedUnits.Add(new FoodAllowedUnitDto
+                        {
+                            Id = conv.UnitTypeId,
+                            Name = conv.UnitType.Name
+                        });
+                    }
+                }
+            }
+
+            return allowedUnits;
+        }
+
         public class FoodCreateEditViewModel
         {
             public long? Id { get; set; }
@@ -156,6 +197,12 @@ namespace FitCore.Application.Services.Foods.Queries
             public string SearchKey { get; set; }
             public int Page { get; set; } = 1;
             public int PageSize { get; set; } = 20;
+        }
+
+        public class FoodAllowedUnitDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
         }
     }
 }

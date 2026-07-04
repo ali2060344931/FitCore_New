@@ -1,5 +1,4 @@
 ﻿using FitCore.Application.Contexts;
-using FitCore.Common.Dto;
 using FitCore.Domain.Entities.NutritionProgram.NutritionProgram;
 
 using Microsoft.EntityFrameworkCore;
@@ -9,14 +8,8 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FitCore.Application.Services.NutritionProgramReports.Queries
 {
@@ -109,8 +102,8 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                             .Bold()
                             .FontColor(primaryColor).AlignCenter();
 
-                        col.Item().Text($"عضو: {program.Member?. AppUser?. FullName ?? "-"} | نوع برنامه: {program.ProgramType?.Name ?? "-"} | هدف برنامه: {program.GoalType.Name ?? "-"}").AlignCenter();
-                        col.Item().Text($"تاریخ شروع: {program.StartDate} | تاریخ پایان: {program.StartDate }").AlignCenter();
+                        col.Item().Text($"عضو: {program.Member?.AppUser?.FullName ?? "-"} | نوع برنامه: {program.ProgramType?.Name ?? "-"} | هدف برنامه: {program.GoalType.Name ?? "-"}").AlignCenter();
+                        col.Item().Text($"تاریخ شروع: {program.StartDate} | تاریخ پایان: {program.StartDate}").AlignCenter();
                     });
 
                     // بدنه - راست‌چین
@@ -185,15 +178,15 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                                                         table.Cell().Element(CellBody).Text($"{item.Amount:0.##} ");
                                                         table.Cell().Element(CellBodyU).Text($"{item.UnitType?.Name}");
                                                         table.Cell().Element(CellBodyU).Text($"{item.Description}");
-                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal) item.Fat,0).ToString());
-                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Carbohydrate,0).ToString());
-                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Protein,0).ToString());
-                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Calories,0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Fat, 0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Carbohydrate, 0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Protein, 0).ToString());
+                                                        table.Cell().Element(CellBody).Text(Math.Round((decimal)item.Calories, 0).ToString());
                                                         rowNumber++;
                                                     }
 
                                                     table.Cell().ColumnSpan(5).Element(CellStyle).Text("جمع");
-                                                    table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalFat,0).ToString());
+                                                    table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalFat, 0).ToString());
                                                     table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalCarbs, 0).ToString());
                                                     table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalProtein, 0).ToString());
                                                     table.Cell().Element(CellStyle).Text(Math.Round((decimal)totalCalories, 0).ToString());
@@ -213,7 +206,7 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                         text.Span(" از ");
                         text.TotalPages();
 
-                        
+
                     });
                 });
             }).GeneratePdf();

@@ -353,7 +353,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //--------------------------
 
 
-
+        [HttpGet]
+        public IActionResult GetFoodAllowedUnits(long foodId)
+        {
+            var units = _foodService.GetAllowedUnitsForFood(foodId);
+            return Json(units);
+        }
 
 
     }

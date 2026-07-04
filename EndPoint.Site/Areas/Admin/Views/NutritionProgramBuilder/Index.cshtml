@@ -703,7 +703,7 @@
         </div>
     </div>
 
-    @* ---------- افزودن غذا به وعده (multi-add بدون بستن مودال) ---------- *@
+    @* ---------- افزودن غذا به وعده ---------- *@
     <div class="modal fade" id="addMealItemModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content border-0 shadow" style="border-radius:14px;overflow:hidden;">
@@ -762,6 +762,7 @@
                                         }
                                     </select>
                                 </div>
+
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -771,6 +772,7 @@
                                            style="border-radius:8px;" />
                                 </div>
                             </div>
+
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label style="font-size:12px;font-weight:700;color:#4a5568;">واحد</label>
@@ -1146,6 +1148,11 @@
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.js"></script>
+
+
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/select2/js/select2.min.js"></script> *@
+
 
 
     <style>
@@ -2039,6 +2046,73 @@
                 }
             });
         }
+
+        // ------------------------------
+
+                           // ============================================================
+        // بارگذاری واحد پیش‌فرض و واحدهای مجاز هنگام انتخاب غذا
+        // ============================================================
+
+        function loadFoodUnits(foodId) {
+            var $unitSelect = $('#UnitTypeId');
+
+            // 1. نابود کردن Select2 فعلی روی کمبوباکس واحد برای جلوگیری از باگ کش
+            if ($unitSelect.hasClass('select2-hidden-accessible')) {
+                $unitSelect.select2('destroy');
+            }
+
+            // 2. خالی کردن کامل تگ select
+            $unitSelect.empty();
+
+            if (!foodId) {
+                $unitSelect.html('<option value="">ابتدا غذا را انتخاب کنید</option>');
+                initSelect2('#UnitTypeId', '#addMealItemModal');
+                return;
+            }
+
+            // 3. ارسال درخواست به سرور برای دریافت لیست واحدهای مجاز
+            $.ajax({
+                url: '/Admin/NutritionProgramBuilder/GetFoodAllowedUnits',
+                type: 'GET',
+                data: { foodId: foodId },
+                success: function (response) {
+                    var optionsHtml = '<option value="">انتخاب واحد</option>';
+                    var defaultUnitId = 0; // نگهداری آیدی واحد پیش‌فرض
+
+                    if (response && response.length > 0) {
+                        // نکته: فرض بر این است که سرویس شما واحد پیش‌فرض را همیشه اول لیست برمی‌گرداند
+                        if (response.length > 0) {
+                            defaultUnitId = response[0].id; // اولین آیتم همیشه واحد پیش‌فرض است
+                        }
+
+                        $.each(response, function (index, item) {
+                            optionsHtml += '<option value="' + item.id + '">' + item.name + '</option>';
+                        });
+                    } else {
+                        optionsHtml = '<option value="">واحدی برای این غذا تعریف نشده است</option>';
+                    }
+
+                    // 4. تزریق مقادیر جدید به کمبوباکس
+                    $unitSelect.html(optionsHtml);
+
+                    // 5. بازسازی مجدد Select2 (با استفاده از تابع خودتان که dropdownParent دارد)
+                    initSelect2('#UnitTypeId', '#addMealItemModal');
+
+                    // 6. انتخاب خودکار واحد پیش‌فرض (اگر وجود داشت)
+                    if (defaultUnitId > 0) {
+                        $unitSelect.val(defaultUnitId).trigger('change');
+                    }
+                },
+                error: function () {
+                    $unitSelect.html('<option value="">خطا در دریافت واحدها</option>');
+                    initSelect2('#UnitTypeId', '#addMealItemModal');
+                }
+            });
+        }
+
+        // رویدادهای تغییر غذا
+        $(document).on('change', '#FoodId', function () { loadFoodUnits($(this).val()); });
+        $(document).on('select2:select', '#FoodId', function () { loadFoodUnits($(this).val()); });
 
 
     </script>
