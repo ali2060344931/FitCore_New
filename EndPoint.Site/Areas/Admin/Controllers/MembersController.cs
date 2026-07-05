@@ -9,7 +9,8 @@ using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Common;
 
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc; // حتماً مطمئن شوید این Using وجود دارد
 using Microsoft.CodeAnalysis.RulesetToEditorconfig;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,11 @@ using System.Threading.Tasks;
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
+    // ====================================================================
+    // تنها تغییری که نیاز است: اضافه کردن این دو خط برای دسترسی مربیان
+    // ====================================================================
+    [Authorize(Roles = "Admin, Trainer")]
     public class MembersController : Controller
     {
         private readonly IMemberFacad _memberFacad;
@@ -29,6 +35,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IAddNewMemberService _addNewMemberService;
         private readonly IDataBaseContext _context;
         private readonly IBaleMenuService _baleMenuService;
+
         public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext, IDataBaseContext context, IBaleMenuService baleMenuService)
         {
             _memberFacad = memberFacad;
@@ -36,13 +43,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _getMembersByIdService = getMembersByIdService;
             _addNewMemberService = addNewMemberService;
             _context = context;
-            _baleMenuService= baleMenuService;
+            _baleMenuService = baleMenuService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, string SearchKey = "")
         {
-
+            // این متد بدون تغییر باقی می‌ماند. چون AppUserId مربی را می‌گیرد 
+            // و سرویس مربوطه اعضای باشگاه مربی را برمی‌گرداند.
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrWhiteSpace(userIdValue))
@@ -84,18 +92,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(string Id,bool isMemberID=false)
+        public IActionResult Edit(string Id, bool isMemberID = false)
         {
-            // تبدیل رشته به عدد واقعی
             long decryptedId = SecurityUtils.DecryptId(Id);
 
-            if(isMemberID)
+            if (isMemberID)
             {
-                decryptedId= _context.Members.Where(v=>v.Id == decryptedId).FirstOrDefault().AppUserId;
+                decryptedId = _context.Members.Where(v => v.Id == decryptedId).FirstOrDefault().AppUserId;
             }
 
-
-            // فراخوانی سرویس با عدد به دست آمده
             var q = _getMembersByIdService.Execute((int)decryptedId);
 
             if (q.Data == null) return NotFound();
@@ -109,7 +114,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Gender = q.Data.Gender,
                 MembershipStartDate = q.Data.MembershipStartDate,
                 MembershipEndDate = q.Data.MembershipEndDate,
-                // ✅ اضافه شدن مقدار IsActive هنگام ویرایش
                 IsActive = q.Data.IsActive
             };
             return View("CreateEdit", qq);
@@ -119,9 +123,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(RequestEditMemberDto request)
         {
+            // ارسال پیام به ربات هم بدون تغییر باقی می‌ماند و برای مربی هم کار می‌کند
             string msg = "تغییراتی در پنل کاربری از طرف مدیر باشگاه انجام شد\nلطفاً بخش اطلاعات کاربر، موارد ویرایش شده را مشاهده نمائید";
             var result = _memberFacad.EditMemberService.Execute(request);
-            if(result.IsSuccess)
+
+            if (result.IsSuccess)
             {
                 long memberId = result.Data;
 
@@ -141,9 +147,5 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return Json(result);
         }
-
-
-
-
     }
 }

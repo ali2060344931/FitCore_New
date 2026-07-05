@@ -1,0 +1,109 @@
+﻿@model IEnumerable<FitCore.Domain.Entities.Users.AppUser>
+@{
+    ViewData["Title"] = "مدیریت مربیان باشگاه";
+
+    // =======================================================
+    // اصلاح ۳: حتماً نام فایل لایه‌اوت اصلی خودتان را اینجا چک کنید
+    // اگر نام فایل لایه‌اوت شما چیز دیگری است آن را تغییر دهید
+    // =======================================================
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">مربیان باشگاه شما</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>نام و نام خانوادگی</th>
+                    <th>شماره موبایل</th>
+                    <th class="text-center">وضعیت فعالیت</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">
+                            هیچ مربی‌ای در باشگاه شما ثبت نشده است.
+                            <br />
+                            <small class="text-danger">*(اگر مربی ثبت نام کرده اما اینجا نیست، مطمئن شوید که نقش "Trainer" در دیتابیس ایجاد شده است)*</small>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var trainer in Model)
+                    {
+                        <tr id="row_@trainer.Id">
+                            <td>@trainer.FullName</td>
+                            <td>@trainer.PhoneNumber</td>
+                            <td class="text-center">
+                                <div class="custom-control custom-switch custom-switch-success d-inline-block">
+                                    <input type="checkbox"
+                                           class="custom-control-input trainer-toggle"
+                                           id="toggle_@trainer.Id"
+                                           data-id="@trainer.Id"
+                                           @(trainer.IsActive ? "checked" : "")>
+                                    <label class="custom-control-label" for="toggle_@trainer.Id">
+                                        @(trainer.IsActive ? "فعال" : "غیرفعال")
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.trainer-toggle').change(function () {
+                var id = $(this).data('id');
+                var isActive = $(this).is(':checked');
+                var label = $(this).next('label');
+
+                label.text(isActive ? 'در حال فعال کردن...' : 'در حال غیرفعال کردن...');
+                $(this).prop('disabled', true);
+
+                $.ajax({
+                    url: '/Admin/Trainers/ChangeStatus',
+                    type: 'POST',
+                    data: {
+                        trainerUserId: id,
+                        isActive: isActive
+                    },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'موفق',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            label.text(isActive ? 'فعال' : 'غیرفعال');
+                        } else {
+                            Swal.fire('خطا', response.message, 'error');
+                            $('#toggle_' + id).prop('checked', !isActive);
+                            label.text(!isActive ? 'فعال' : 'غیرفعال');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('خطا', 'مشکلی در ارتباط با سرور رخ داد.', 'error');
+                        $('#toggle_' + id).prop('checked', !isActive);
+                        label.text(!isActive ? 'فعال' : 'غیرفعال');
+                    },
+                    complete: function () {
+                        $('#toggle_' + id).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

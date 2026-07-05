@@ -86,7 +86,7 @@ namespace EndPoint.Site.BaleBot.Services
         {
             // ۱. اول از کش بخوان
             var state = _cache.Get<BotState>(chatId.ToString());
-            
+
             if (state != null && state.SelectedUserId.HasValue)
             {
                 var cachedUser = await _db.Users
@@ -184,10 +184,10 @@ namespace EndPoint.Site.BaleBot.Services
         {
             if (roles.Contains(UserRoles.SuperAdmin)) return "سوپر ادمین";
             if (roles.Contains("Admin")) return "مدیر";
+            if (roles.Contains(UserRoles.Trainer)) return "مربی";
             if (roles.Contains(UserRoles.Member)) return "عضو";
             return "کاربر";
         }
-
         #endregion
 
         #region === متدهای اصلی (بروزرسانی‌شده) ===
@@ -318,6 +318,20 @@ namespace EndPoint.Site.BaleBot.Services
                 });
             }
 
+
+
+            bool isTrainer = roles.Contains(UserRoles.Trainer);
+            if (isTrainer)
+            {
+                loggedKeyboardRows.Add(new List<InlineKeyboardButton>
+    {
+        new InlineKeyboardButton { Text = "📋 لیست شاگردان من", CallbackData = "TRAINER_MENU" }
+    });
+            }
+
+
+
+
             // ==========================================================
             // دکمه‌های چند باشگاهی
             // ==========================================================
@@ -357,7 +371,7 @@ namespace EndPoint.Site.BaleBot.Services
             var loggedKeyboard = new InlineKeyboardMarkup { InlineKeyboard = loggedKeyboardRows };
 
             await _baleBotService.SendMessageAsync(chatId, welcomeText, loggedKeyboard);
-        }        
+        }
 
         /// <summary>
         /// بخش ثبت‌نام کاربران (بدون تغییر)
@@ -367,25 +381,34 @@ namespace EndPoint.Site.BaleBot.Services
             var keyboard = new InlineKeyboardMarkup
             {
                 InlineKeyboard = new List<List<InlineKeyboardButton>>
-                {
-                    new List<InlineKeyboardButton>
-                    {
-                        new InlineKeyboardButton { Text = "👥 ثبت‌نام مدیران باشگاه", CallbackData = "REG_MANAGER" }
-                    },
-                    new List<InlineKeyboardButton>
-                    {
-                        new InlineKeyboardButton { Text = "📜♂️ لیست باشگاه‌ها جهت ثبت‌نام اعضاء", CallbackData = "GYM_LIST" }
-                    },
-                    new List<InlineKeyboardButton>
-                    {
-                        new InlineKeyboardButton { Text = "📝♂️ ثبت‌نام اعضاء باشگاه", CallbackData = "REG_MEMBER" }
-                    },
-                    new List<InlineKeyboardButton>
-                    {
-                        new InlineKeyboardButton { Text = minemenu, CallbackData = "MAIN_MENU" }
-                    },
+        {
+            new List<InlineKeyboardButton>
+            {
+                new InlineKeyboardButton { Text = "👥 ثبت‌نام مدیران باشگاه", CallbackData = "REG_MANAGER" }
+            },
 
-                }
+
+            new List<InlineKeyboardButton>
+            {
+                new InlineKeyboardButton { Text = "📜♂️ لیست باشگاه‌ها جهت ثبت‌نام مربیان و اعضاء", CallbackData = "GYM_LIST" }
+            },
+
+
+            new List<InlineKeyboardButton>
+            {
+                new InlineKeyboardButton { Text = "🏋️‍♂️ ثبت‌نام مربیان باشگاه", CallbackData = "REG_TRAINER" }
+            },
+
+            new List<InlineKeyboardButton>
+            {
+                new InlineKeyboardButton { Text = "📝♂️ ثبت‌نام اعضاء باشگاه", CallbackData = "REG_MEMBER" }
+            },
+            new List<InlineKeyboardButton>
+            {
+                new InlineKeyboardButton { Text = minemenu, CallbackData = "MAIN_MENU" }
+            },
+
+        }
             };
 
             await _baleBotService.SendMessageAsync(
@@ -393,6 +416,10 @@ namespace EndPoint.Site.BaleBot.Services
                 $"به سیستم مدیریت باشگاه‌های فیتکور FitCore خوش آمدید {userName} عزیز.\nلطفاً جهت ثبت‌نام در سایت فیتکور یکی از گزینه‌های زیر را انتخاب نمائید:",
                 keyboard);
         }
+
+
+
+
         string minemenu = "🏢 منوی اصلی";
         /// <summary>
         /// منوی ساده (بدون تغییر)
@@ -481,5 +508,16 @@ namespace EndPoint.Site.BaleBot.Services
                 loggedKeyboard);
         }
         #endregion
+
+
+
+
+
+
     }
+
+
+
+
+
 }

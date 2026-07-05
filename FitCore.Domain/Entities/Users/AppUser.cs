@@ -30,6 +30,5 @@ namespace FitCore.Domain.Entities.Users
 
         public long? BaleChatId { get; set; }
 
-        //public Gender? Gender { get; set; }
     }
 }

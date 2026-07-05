@@ -43,7 +43,7 @@
     int difDay_ = 0;
     string gymCode = "";
     // فقط برای ادمین باشگاه (Admin) این کوئری‌ها اجرا شود (سوپر ادمین اینجا وارد نمی‌شود چون IsAdmin برمی‌گرداند False)
-    if (User.IsAdmin())
+    if (User.IsAdmin() || User.IsTrainer())
     {
         // استفاده از FirstOrDefault و Select برای جلوگیری از کرش در صورت نبود دیتا
         var userGymId = _db.Users.Where(o => o.Id == uid).Select(u => u.GymId).FirstOrDefault();
@@ -65,6 +65,7 @@
     }
 }
 
+
 @{
     var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
@@ -74,6 +75,7 @@
         "Admin" => "مدیر باشگاه و سیستم",
         "GymManager" => "مدیر باشگاه",
         "Coach" => "مربی",
+        "Trainer" => "مربی",  // === این خط اضافه شود ===
         "Member" => "عضو",
         _ => "نامشخص"
     };
@@ -145,7 +147,7 @@
         ================================ -->
         <aside class="fc-sidebar" id="fcSidebar">
 
-            @if (User.IsSuperAdmin() || User.IsAdmin())
+            @if (User.IsSuperAdmin() || User.IsAdmin() || User.IsTrainer())
             {
                 <!-- لوگو -->
                 <a href="/admin" class="fc-sidebar-logo">
@@ -158,6 +160,7 @@
                     </div>
                 </a>
             }
+
 
             <!-- دکمه جمع شدن (فقط دسکتاپ) -->
             <div class="fc-sidebar-footer">
@@ -178,7 +181,7 @@
             <nav class="fc-nav">
                 <ul style="list-style:none; padding:0; margin:0;">
 
-                    @if (User.IsSuperAdmin() || User.IsAdmin())
+                    @if (User.IsSuperAdmin() || User.IsAdmin() || User.IsTrainer())
                     {
                         <!-- داشبورد -->
                         <li class="fc-nav-item">
@@ -188,8 +191,10 @@
                             </a>
                         </li>
                     }
-
-                    @if (User.IsSuperAdmin() || User.IsAdmin())
+                    
+                    
+                    
+                    @if (User.IsSuperAdmin() || User.IsAdmin() || User.IsTrainer())
                     {
                         <!-- بخش مدیریت -->
                         <div class="fc-nav-label">مدیریت</div>
@@ -220,12 +225,11 @@
                             </li>
                         }
 
-                        @if (User.IsAdmin())
+
+
+                        @if (User.IsAdmin() || User.IsTrainer())
                         {
-
-
                             @if (isActivGYM)
-
                             {
                                 <li class="fc-nav-item">
                                     <a asp-area="Admin"
@@ -238,13 +242,12 @@
                                         <span class="fc-nav-text">اطلاعات تکمیلی باشگاه</span>
                                     </a>
                                 </li>
-                               
 
 
                                 <li class="fc-nav-item has-sub" id="nav-members">
 
                                     <button class="fc-nav-link" data-title="اعضاء"
-                                            onclick="fcToggleMenu('nav-members')">
+                                    onclick="fcToggleMenu('nav-members')">
                                         <span class="fc-nav-icon"><i class="icon-users"></i></span>
                                         <span class="fc-nav-text">اعضاء باشگاه</span>
                                         <i class="fa fa-angle-left fc-nav-arrow"></i>
@@ -257,6 +260,17 @@
                                                 <span class="fc-nav-sub-dot"></span>لیست اعضاء
                                             </a>
                                         </li>
+
+
+                                        @if (User.IsAdmin())
+                                        {
+                                            <li>
+                                                <a href="/admin/Trainers/index" class="fc-nav-sub-link">
+                                                    <span class="fc-nav-sub-dot"></span>مدیریت مربیان (فعال/غیرفعال)
+                                                </a>
+                                            </li>
+                                        }
+
                                     </ul>
                                 </li>
 
@@ -306,7 +320,7 @@
                                     <span class="fc-nav-text">درخواست‌های برنامه</span>
                                     <span id="nav-pending-badge"
                                           style="display:none;background:#f6ad55;color:#fff;
-                                                                                border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                                                                        border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
                                     </span>
                                 </a>
                             </li>
@@ -325,13 +339,15 @@
 
                                     <span id="nav-bale-broadcast-badge"
                                           style="display:none;background:#f6ad55;color:#fff;
-                                     border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                             border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
                                     </span>
 
                                 </a>
                             </li>
                         }
                     }
+
+
 
                     @if (User.IsMember() && !User.IsAdmin())
                     {
@@ -397,19 +413,19 @@
                         </li>
                     }
 
-                    @if (User.IsInRole("Member") || User.IsInRole("Admin"))
+                    @if (User.IsMember() || User.IsAdmin() || User.IsTrainer())
                     {
                         <li class="fc-nav-item">
                             <a href="/Admin/Ticket" class="fc-nav-link" data-title="تیکت‌ها">
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های پشتیبانی</span>
                                 <span id="ticket-badge" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                                    padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                                        padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
 
-                    @if (User.IsInRole("SuperAdmin"))
+                    @if (User.IsSuperAdmin())
                     {
                         <li class="fc-nav-item">
                             <a href="/Admin/Ticket" class="fc-nav-link" data-title="تیکت مدیران">

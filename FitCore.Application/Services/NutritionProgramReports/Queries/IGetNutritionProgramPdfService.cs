@@ -21,8 +21,6 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
         byte[] Execute(long programId);
     }
 
-
-
     public class GetNutritionProgramPdfService : IGetNutritionProgramPdfService
     {
         private readonly IDataBaseContext _context;
@@ -250,6 +248,4 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                     ; // محتوای سلول‌ها راست‌چین
         }
     }
-
-
 }

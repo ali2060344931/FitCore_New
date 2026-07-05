@@ -314,6 +314,44 @@ namespace EndPoint.Site.BaleBot.Handlers
                 return; // خروج تضمین‌شده
             }
 
+
+
+            // ---------------- ثبت نام مربی ----------------
+            else if (data == "REG_TRAINER")
+            {
+                // توقف لودینگ دکمه
+                await _baleBotService.AnswerCallbackQueryAsync(callbackId);
+
+                var currentUser = await _menuService.GetContextUserAsync(chatId);
+                long? currentGymId = currentUser?.GymId;
+
+                // خواندن باشگاه‌های فعال، به جز باشگاه فعلی کاربر
+                var gyms = await _db.Gyms
+                    .Where(g => g.IsActive && g.Id != currentGymId)
+                    .OrderBy(g => g.Code)
+                    .ToListAsync();
+
+                if (!gyms.Any())
+                {
+                    await _baleBotService.SendMessageAsync(chatId, "❌ باشگاه فعال دیگری در سیستم وجود ندارد.");
+                    return;
+                }
+
+                var rows = gyms.Select(g => new List<InlineKeyboardButton> {
+        new InlineKeyboardButton { Text = "کد باشگاه: " + g.Code, CallbackData = $"GYM_{g.Id}" }
+    }).ToList();
+
+                var gymKeyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
+
+                // ارسال مستقیم پیام و کیبورد
+                await _baleBotService.SendMessageAsync(chatId, "🏋️‍♂️ لطفاً کد باشگاهی که می‌خواهید در آن به عنوان مربی فعالیت کنید را انتخاب کنید:", gymKeyboard);
+
+                // شروع فلو ثبت نام در کش با RegType برابر Trainer
+                _cache.Set(chatId.ToString(), new BotState { Step = "WAITING_FOR_GYM", RegType = "Trainer" });
+                return;
+            }
+
+
             else if (data.StartsWith("GYM_"))
             {
                 // توقف لودینگ دکمه

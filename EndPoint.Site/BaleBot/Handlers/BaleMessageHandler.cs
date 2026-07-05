@@ -98,6 +98,8 @@ namespace EndPoint.Site.BaleBot.Handlers
                         await RegisterMemberDirectly(chatId, standardPhone, state);
                     else if (state.RegType == "Manager")
                         await RegisterManagerDirectly(chatId, standardPhone, state);
+                    else if (state.RegType == "Trainer")
+                        await RegisterTrainerDirectly(chatId, standardPhone, state);
                 }
                 catch (Exception ex)
                 {
@@ -156,6 +158,74 @@ namespace EndPoint.Site.BaleBot.Handlers
             _cache.Remove(chatId.ToString());
             await _menuService.ShowUnauthenticatedMenu(chatId, "کاربر");
         }
+
+
+        /// <summary>
+        /// ثبت نام نهایی مربیان باشگاه‌ها (بدون جدول مجزا - فقط در AppUser)
+        /// </summary>
+        private async Task RegisterTrainerDirectly(long chatId, string phone, BotState state)
+        {
+            if (!state.GymId.HasValue || state.GymId == 0)
+                throw new Exception("GymId is missing");
+
+            // جلوگیری از ثبت نام تکراری مربی با همین شماره در همین باشگاه
+            if (await _db.Users.AnyAsync(u => u.PhoneNumber == phone && u.GymId == state.GymId && u.UserName.Contains("_T_")))
+            {
+                await _menuService.ShowErrorWithMenu(chatId, "❌ شما قبلاً به عنوان مربی در این باشگاه ثبت نام کرده‌اید.");
+                return;
+            }
+
+            // ساخت یوزرنیم یکتا با پسوند _T_ تا با نام کاربری Member تداخلی نداشته باشد
+            var newUser = new AppUser
+            {
+                FullName = state.FullName,
+                UserName = $"{phone}_T_{state.GymId}",
+                PhoneNumber = phone,
+                IsActive = false, // نیاز به تایید مدیر دارد
+                GymId = state.GymId.Value,
+                BaleChatId = chatId
+            };
+
+            var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
+            if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
+
+            // اختصاص نقش مربی
+            await _userManager.AddToRoleAsync(newUser, UserRoles.Trainer);
+
+            // ذخیره تغییرات (بدون هیچ رفرنسی به جدول Trainers)
+            await _db.SaveChangesAsync();
+
+            // تنظیم کنتکست فعلی ربات روی این کاربر جدید
+            _menuService.SetUserContext(chatId, newUser.Id, state.GymId.Value);
+
+            // پیدا کردن مدیر باشگاه جهت اطلاع رسانی
+            var q = _db.UserRoles
+              .Where(r => r.RoleId == 2)
+              .Join(_db.Users,
+                  r => r.UserId,
+                  u => u.Id,
+                  (r, u) => new { r, u })
+              .Where(x => x.u.GymId == state.GymId).FirstOrDefault();
+
+            // ارسال پیام به مدیر باشگاه جهت اطلاع رسانی ثبت نام جدید مربی
+            if (q?.u != null && q.u.BaleChatId > 0)
+            {
+                await _baleBotService.SendMessageAsync((long)q.u.BaleChatId,
+                    "🏋️‍♂️ ثبت نام مربی جدید انجام شد.\n" +
+                    "نام و نام خانوادگی: " + state.FullName + "\n" +
+                    "تلفن همراه: " + phone + "\n\n" +
+                    "⚠️ لطفاً از پنل مدیریت وضعیت او را بررسی و تایید کنید.");
+            }
+
+            // ارسال پیام تاییدیه به خود مربی
+            await _baleBotService.SendMessageAsync(chatId,
+                "✅ ثبت نام شما به عنوان مربی باشگاه با موفقیت انجام شد.\nمنتظر تائید ثبت نام از طرف مدیر باشگاه باشید.");
+
+            // نمایش منوی اصلی
+            await _menuService.ShowMainMenu(chatId, state.FullName);
+        }
+
+
 
         /// <summary>
         /// ثبت نام اعضاء باشگاه

@@ -10,6 +10,7 @@ namespace FitCore.Common
 
         public static bool IsAdmin(this ClaimsPrincipal user) => user.IsInRole(UserRoles.SuperAdmin) || user.IsInRole(UserRoles.Admin);
         public static bool IsMember(this ClaimsPrincipal user) => user.IsInRole(UserRoles.Member) ;
+        public static bool IsTrainer(this ClaimsPrincipal user) => user.IsInRole(UserRoles.Trainer) ;
 
 
         public static bool IsStaff(this ClaimsPrincipal user) => user.IsAdmin() || user.IsInRole(UserRoles.Operator);
