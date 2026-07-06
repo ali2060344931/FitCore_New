@@ -246,13 +246,13 @@ namespace EndPoint.Site.BaleBot.Handlers
                 return;
             }
 
-            var newUser = new AppUser { FullName = state.FullName, UserName = $"{phone}_{state.GymId}", PhoneNumber = phone, IsActive = false, GymId = state.GymId.Value, BaleChatId = chatId };
+            var newUser = new AppUser { FullName = state.FullName, UserName = $"{phone}_{state.GymId}", PhoneNumber = phone, IsActive = true, GymId = state.GymId.Value, BaleChatId = chatId };
             var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
             if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
             await _userManager.AddToRoleAsync(newUser, UserRoles.Member);
             _menuService.SetUserContext(chatId, newUser.Id, state.GymId.Value);
-            _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = true });
+            _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = false });
 
 
             await _db.SaveChangesAsync();

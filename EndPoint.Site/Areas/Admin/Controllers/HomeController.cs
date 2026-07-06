@@ -28,9 +28,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             _context = context;
             _dashboardService = dashboardService;
-            _superAdminDashboardService= superAdminDashboardService;
+            _superAdminDashboardService = superAdminDashboardService;
         }
-
 
         public async Task<IActionResult> Index()
         {
@@ -55,7 +54,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             // پیدا کردن GymId کاربر جاری (فقط برای مدیران باشگاه اجرا می‌شود)
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(userIdValue))
-                return Unauthorized();
+
+                return RedirectToAction("Login", "Auth", new { area = "Admin" });
+
 
             var appUserId = long.Parse(userIdValue);
 
@@ -73,12 +74,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var dashboard = await _dashboardService.Execute(gymId.Value);
 
             return View(dashboard);
+
         }
 
-
-        //====================================================
-        // Helper — دریافت اعضای بحرانی (پایان اشتراک)
-        //====================================================
         private async Task<List<dynamic>> GetCriticalMembersAsync(long gymId)
         {
             var members = await _context.Members

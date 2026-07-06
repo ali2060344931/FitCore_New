@@ -23,10 +23,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 {
     [Area("Admin")]
 
-    // ====================================================================
-    // تنها تغییری که نیاز است: اضافه کردن این دو خط برای دسترسی مربیان
-    // ====================================================================
-    [Authorize(Roles = "Admin, Trainer")]
+    //[Authorize(Roles = "Admin, Trainer, Member")]
     public class MembersController : Controller
     {
         private readonly IMemberFacad _memberFacad;

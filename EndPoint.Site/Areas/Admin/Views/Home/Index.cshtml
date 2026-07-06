@@ -34,7 +34,7 @@
     // ---------------------------------------------------------
     // کد اصلاح شده: کوئری دیتابیس فقط برای ادمین باشگاه اجرا شود
     // ---------------------------------------------------------
-    if (User.IsAdmin() || User.IsTrainer())
+    if (User.IsAdmin() || User.IsTrainer() || User.IsMember())
     {
         var userGymId = _db.Users.Where(o => o.Id == uid).Select(u => u.GymId).FirstOrDefault();
 
