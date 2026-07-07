@@ -18,6 +18,7 @@ using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 using FitCore.Common;
 using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
+using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -183,6 +184,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 }
             }
             // ==================================================================
+
+            // پیدا کردن عضو و پاس دادن آدرس عکس از طریق ViewBag
+            var member = _Context.Members.Where(c => c.Id == memberId).First();
+            ViewBag.MemberProfileImage = member?.ProfileImageUrl;
+
+
+
+
 
             return View(vm);
         }

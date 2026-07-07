@@ -579,8 +579,9 @@ body.sidebar-collapsed .fc-collapse-btn span {
     }
     /* مخفی کردن دکمه جمع‌شدن در موبایل */
     .fc-sidebar-footer {
-        display: none;
+        display: block;
     }
+
     /* تنظیم منوی کشویی کاربر در موبایل */
     .fc-user-dropdown {
         left: auto;

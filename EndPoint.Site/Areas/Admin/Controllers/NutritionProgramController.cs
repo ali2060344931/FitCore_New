@@ -81,7 +81,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 IsTrainer = isTrainer,
                 GymId = gymId
             };
-
             var result = await _nutritionProgramFacad.GetNutritionProgramsService.Execute(request);
             return View(result);
         }

@@ -160,23 +160,24 @@
 
 
             <!-- دکمه جمع شدن (فقط دسکتاپ) -->
-            <div class="fc-sidebar-footer">
+            @* <div class="fc-sidebar-footer">
                 <button class="fc-collapse-btn" id="fcCollapseBtn">
                     <i class="fa fa-angle-double-right"></i>
                     <span>جمع کردن منو</span>
                 </button>
-            </div>
+            </div> *@
 
 
 
 
             <!-- ناوبری -->
-
-
-
-
             <nav class="fc-nav">
                 <ul style="list-style:none; padding:0; margin:0;">
+
+
+
+
+
 
                     @if (User.IsSuperAdmin() || User.IsAdmin() || User.IsTrainer())
                     {
@@ -439,6 +440,14 @@
                 </ul>
             </nav>
 
+            <div class="fc-sidebar-footer">
+                <button class="fc-collapse-btn" id="fcCollapseBtn">
+                    <i class="fa fa-angle-double-right"></i>
+                    <span>جمع کردن منو</span>
+                </button>
+            </div>
+
+
         </aside>
 
         <!-- ================================
@@ -614,6 +623,8 @@
                 // ---- collapse دسکتاپ ----
                 $('#fcCollapseBtn').on('click', function () {
                 $('body').toggleClass('sidebar-collapsed');
+                
+                
                 // ذخیره در localStorage
                 try {
                 localStorage.setItem('fc_sidebar_collapsed',

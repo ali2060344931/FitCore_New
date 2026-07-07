@@ -31,6 +31,49 @@
 
 }
 
+
+<!-- کدهای CSS برای زیباسازی پنجره -->
+<style>
+    .image-modal {
+        display: none; /* به صورت پیش فرض مخفی است */
+        position: fixed;
+        z-index: 9999; /* برای اینکه روی بقیه اجزا باشد */
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.8); /* پس زمینه تیره شیشه ای */
+    }
+
+    .modal-image {
+        margin: auto;
+        display: block;
+        max-width: 80%;
+        max-height: 80vh;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    /* استایل دکمه بستن (چون سایت شما فارسی است دکمه را چپ چین کردم) */
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        left: 30px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #bbb;
+            text-decoration: none;
+        }
+</style>
 <div class="page-content-wrapper builder-wrapper">
 
     <div class="program-header-sticky-wrapper">
@@ -57,8 +100,21 @@
 
                     <div class="program-meta-container d-flex align-items-center gap-2 flex-wrap">
 
+                        @{
+                            string memberImgUrl = ViewBag.MemberProfileImage as string;
+                        }
                         <div class="program-meta-item">
-                            <i class="fa-user meta-icon"></i>
+                            @if (!string.IsNullOrEmpty(memberImgUrl))
+                            {
+                                <!-- نمایش عکس پرسنلی اگر وجود داشت -->
+                                @* <div style="width: 32px; height: 32px; border-radius: 50%; background: url('@memberImgUrl') center/cover no-repeat; border: 2px solid #e2e8f0; flex-shrink: 0;"></div> *@
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: url('@memberImgUrl') center/cover no-repeat; border: 2px solid #e2e8f0; flex-shrink: 0; cursor: pointer;" onclick="openImageModal('@memberImgUrl')"></div>
+                            }
+                            else
+                            {
+                                <!-- نمایش آیکون پیش‌فرض اگر عکسی نبود -->
+                                <i class="fa-user meta-icon"></i>
+                            }
                             <span class="meta-label">عضو:</span>
                             <span class="meta-value-Fullmamu">@program.MemberName</span>
                             @if (Model.MemberAge.HasValue)
@@ -68,6 +124,9 @@
                                     🎂 سن: @Model.MemberAge سال
                                 </span>
                             }
+
+
+
                         </div>
 
                         <div class="program-meta-item">
@@ -1167,8 +1226,16 @@
         </div>
     </div>
 
-
 }
+
+
+
+<!-- پنجره پاپ آپ تصویر (خارج از تمامی div های دیگر باشد) -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal(event)">
+    <span class="modal-close" onclick="closeImageModal()">&times;</span>
+    <img class="modal-image" id="modalImg" src="" alt="تصویر پرسنلی">
+</div>
+
 
 @section Scripts {
 
@@ -2159,6 +2226,25 @@
 
 
 
+        function openImageModal(src) {
+        var modal = document.getElementById("imageModal");
+        var modalImg = document.getElementById("modalImg");
+        modal.style.display = "block";
+        modalImg.src = src;
+        }
 
+        function closeImageModal(event) {
+        // اگر روی خود عکس کلیک شد چیزی اتفاق نیفتد (فقط با کلیک روی علامت X یا پس زمینه بسته شود)
+        if (!event || event.target === document.getElementById("imageModal")) {
+        document.getElementById("imageModal").style.display = "none";
+        }
+        }
+
+        // بسته شدن پنجره با زدن دکمه Escape روی کیبورد
+        document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+        document.getElementById("imageModal").style.display = "none";
+        }
+        });
     </script>
 }
