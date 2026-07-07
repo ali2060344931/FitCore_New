@@ -1,7 +1,6 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Auth.Dto;
-using FitCore.Common;
 using FitCore.Domain.Entities.Users;
 
 using Microsoft.AspNetCore.Authorization;
@@ -73,20 +72,33 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             if (result.IsSuccess)
             {
                 // ==========================================================
-                // بررسی فعال بودن حساب کاربر قبل از ورود به پنل
+                // اصلاح اصلی: اگر نیاز به انتخاب باشگاه است، دقیقاً همون 
+                // دیتوی مدل رو بفرست تا فرانت لیست باشگاه‌ها رو ببینه
                 // ==========================================================
-                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == mobile);
+                //if (result.NeedGymSelection)
+                //{
+                //    return Json(result);
+                //}
 
-                if (user != null && !user.IsActive)
+                // ==========================================================
+                // اگر فقط یک باشگاه بود، لاگین انجام شده و مسیر را مشخص کن
+                // ==========================================================
+                string redirectUrl = "";
+
+                if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                 {
-                    return Json(new
-                    {
-                        isSuccess = false,
-                        message = "⚠️ حساب کاربری شما هنوز توسط مدیر باشگاه تایید نشده است.\nلطفاً پس از دریافت پیامک تاییدیه از طرف مدیر، مجدداً تلاش کنید."
-                    });
+                    redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
+                }
+                else if (User.IsInRole("Member"))
+                {
+                    redirectUrl = Url.Action("Index", "MemberDashboard", new { area = "Admin" });
                 }
 
-                string redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
+                // در صورت نبود نقش مشخص، مسیر پیش‌فرض
+                if (string.IsNullOrEmpty(redirectUrl))
+                {
+                    redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
+                }
 
                 return Json(new
                 {
@@ -98,40 +110,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return Json(result);
         }
 
-
-        //[HttpPost]
-        //public async Task<IActionResult> VerifyOtp(string mobile, string code)
-        //{
-        //    var result = await _verifyOtpService.Execute(mobile, code);
-
-        //    if (result.IsSuccess)
-        //    {
-        //        string redirectUrl = "";
-
-        //        if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsTrainer())
-        //        {
-        //            redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
-        //        }
-        //        else if (User.IsInRole("Member"))
-        //        {
-        //            redirectUrl = Url.Action("Index", "MemberDashboard", new { area = "Admin" });
-        //        }
-
-        //        // در صورت نبود نقش مشخص، مسیر پیش‌فرض
-        //        if (string.IsNullOrEmpty(redirectUrl))
-        //        {
-        //            redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
-        //        }
-
-        //        return Json(new
-        //        {
-        //            isSuccess = true,
-        //            redirectUrl = redirectUrl
-        //        });
-        //    }
-
-        //    return Json(result);
-        //}
 
 
         [HttpPost]
@@ -141,8 +119,17 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                // فقط مسیر پیش‌فرض را بدهید. HomeController خودش بر اساس نقش، کاربر را هدایت می‌کند.
-                string redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
+                // تعیین مسیر هدایت بر اساس نقش کاربر لاگین شده
+                string redirectUrl = Url.Action("Index", "Home", new { area = "Admin" }); // پیش‌فرض
+
+                if (User.IsInRole("Member"))
+                {
+                    redirectUrl = Url.Action("Index", "MemberDashboard", new { area = "Admin" });
+                }
+                else if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                {
+                    redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
+                }
 
                 return Json(new
                 {
@@ -153,37 +140,44 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return Json(result);
         }
+
+
         //[HttpPost]
         //public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
         //{
-        //    var result = await _verifyOtpService.CompleteLogin(request.LoginToken, request.GymId);
+        //    // ---------------------------------------------------------
+        //    // تعیین مسیر هدایت بر اساس نقش کاربر
+        //    // ---------------------------------------------------------
+        //    string redirectUrl = "/"; // مسیر پیش‌فرض
 
-        //    if (result.IsSuccess)
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    if (!string.IsNullOrEmpty(userId))
         //    {
-        //        // تعیین مسیر هدایت بر اساس نقش کاربر لاگین شده
-        //        string redirectUrl = Url.Action("Index", "Home", new { area = "Admin" }); // پیش‌فرض
+        //        // استفاده از await به جای .Result برای جلوگیری از Deadlock
+        //        var user = await _userManager.FindByIdAsync(userId);
+        //        if (user != null)
+        //        {
+        //            var roles = await _userManager.GetRolesAsync(user);
 
-        //        if (User.IsInRole("Member"))
-        //        {
-        //            redirectUrl = Url.Action("Index", "MemberDashboard", new { area = "Admin" });
+        //            if (roles.Contains("Member"))
+        //            {
+        //                redirectUrl = "/Admin/MemberDashboard";
+        //            }
+        //            else if (roles.Contains("SuperAdmin") || roles.Contains("Admin"))
+        //            {
+        //                redirectUrl = "/Admin";
+        //            }
         //        }
-        //        else if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
-        //        {
-        //            redirectUrl = Url.Action("Index", "Home", new { area = "Admin" });
-        //        }
-
-        //        return Json(new
-        //        {
-        //            isSuccess = true,
-        //            redirectUrl = redirectUrl
-        //        });
         //    }
+        //    // ---------------------------------------------------------
 
-        //    return Json(result);
+        //    return Json(new
+        //    {
+        //        isSuccess = true,
+        //        redirectUrl = redirectUrl
+        //    });
         //}
-
-
-
 
         [HttpGet]
         public async Task<IActionResult> Register()
