@@ -567,8 +567,8 @@
     }
 
     /* ==============================
-                               واکنش‌گرایی - تبلت (768px)
-                            ============================== */
+                                   واکنش‌گرایی - تبلت (768px)
+                                ============================== */
     @@media (max-width: 991.98px) {
         .mb-header-card {
             padding: 16px;
@@ -600,8 +600,8 @@
     }
 
     /* ==============================
-                               واکنش‌گرایی - موبایل (576px)
-                            ============================== */
+                                   واکنش‌گرایی - موبایل (576px)
+                                ============================== */
     @@media (max-width: 575.98px) {
         :root {
             --card-padding: 12px;
@@ -838,8 +838,8 @@
     }
 
     /* ==============================
-                               موبایل خیلی کوچک (380px)
-                            ============================== */
+                                   موبایل خیلی کوچک (380px)
+                                ============================== */
     @@media (max-width: 380px) {
         .container-fluid {
             padding-left: 8px;
@@ -904,9 +904,27 @@
     @* ============ هدر خوش‌آمد ============ *@
     <div class="mb-header-card" style="margin-bottom:15px;">
         <div class="mb-header-top">
-            <div class="mb-header-avatar">
-                @(memberName.Length > 0 ? memberName[0].ToString() : "؟")
-            </div>
+
+            <div class="mb-header-top">
+                @{
+                    // بررسی اینکه آیا اصلا عکسی در دیتابیس هست یا خیر
+                    bool hasImage = !string.IsNullOrEmpty(member?.ProfileImageUrl);
+
+                    // تنظیم استایل پس‌زمینه بر اساس وجود یا عدم وجود عکس
+                    string avatarStyle = hasImage
+                    ? $"background: url('{member.ProfileImageUrl}') center/cover no-repeat;"
+                    : "background: linear-gradient(135deg, #00C896, #0fa0d0); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; font-weight: 700;";
+                }
+
+                <div class="mb-header-avatar" style="@avatarStyle">
+                    @* فقط در صورتی که عکس نبود، حرف اول نام نمایش داده شود *@
+                    @if (!hasImage)
+                    {
+                        @(memberName.Length > 0 ? memberName[0].ToString() : "؟")
+                    }
+                </div>
+
+
             <div class="mb-header-info">
                 <div class="mb-header-name">سلام، @memberName 👋 <help key="MD00" /></div>
                 <div class="mb-header-meta">
@@ -971,7 +989,7 @@
 
         string msText = membershipStatus.Status
         switch
-        {   
+        {
             MembershipState.Active => $"عضویت فعال — {membershipStatus.DaysLeft} روز تا پایان",
             MembershipState.ExpiringSoon => $"⚠️ تا {membershipStatus.DaysLeft} روز دیگر منقضی می‌شود",
             MembershipState.Expired => "عضویت منقضی شده — با باشگاه تماس بگیرید",
@@ -1497,16 +1515,16 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-                        Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
-                        Chart.defaults.font.size = 10;
+                            Chart.defaults.font.family = 'Vazir, Tahoma, sans-serif';
+                            Chart.defaults.font.size = 10;
 
-                        var wLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Label).ToList() ?? new List<string>()));
-                        var wData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Value).ToList() ?? new List<decimal?>()));
-                        var fLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Label).ToList() ?? new List<string>()));
-                        var fData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Value).ToList() ?? new List<decimal?>()));
+                            var wLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Label).ToList() ?? new List<string>()));
+                            var wData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.WeightHistory?.Select(w => w.Value).ToList() ?? new List<decimal?>()));
+                            var fLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Label).ToList() ?? new List<string>()));
+                            var fData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(analytics?.FatHistory?.Select(f => f.Value).ToList() ?? new List<decimal?>()));
 
-                        var macroData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            analytics?.Nutrition != null ? new List<int> { analytics.Nutrition.ProteinPercent, analytics.Nutrition.CarbsPercent, analytics.Nutrition.FatPercent } : new List<int>()));
+                            var macroData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            analytics?.Nutrition != null ? new List<int> { analytics.Nutrition.ProteinPercent, analytics.Nutrition.CarbsPercent, analytics.Nutrition.FatPercent } : new List<int>()));
 
     function createGradient(ctx, color1, color2) {
     var gradient = ctx.createLinearGradient(0, 0, 0, 180);
@@ -1515,97 +1533,97 @@
     return gradient;
     }
 
-                        // تنظیمات مشترک نمودار خطی
-                        var lineOptions = {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                        y: { beginAtZero: false, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
-                        x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 } }
-                        },
-                        elements: { point: { radius: 3, hoverRadius: 5 } }
-                        };
+                            // تنظیمات مشترک نمودار خطی
+                            var lineOptions = {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                            y: { beginAtZero: false, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
+                            x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0, maxTicksLimit: 4 } }
+                            },
+                            elements: { point: { radius: 3, hoverRadius: 5 } }
+                            };
 
-                        var weightCtx = document.getElementById('weightChart');
-                        if (weightCtx && wData.length > 1) {
-                        new Chart(weightCtx, {
-                        type: 'line',
-                        data: {
-                        labels: wLabels,
-                        datasets: [{
-                        label: 'وزن (kg)',
-                        data: wData,
-                        borderColor: '#3182ce',
-                        backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(49, 130, 206, 0.2)', 'rgba(49, 130, 206, 0)'); },
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#3182ce',
-                        pointBorderWidth: 2
-                        }]
-                        },
-                        options: lineOptions
-                        });
-                        }
+                            var weightCtx = document.getElementById('weightChart');
+                            if (weightCtx && wData.length > 1) {
+                            new Chart(weightCtx, {
+                            type: 'line',
+                            data: {
+                            labels: wLabels,
+                            datasets: [{
+                            label: 'وزن (kg)',
+                            data: wData,
+                            borderColor: '#3182ce',
+                            backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(49, 130, 206, 0.2)', 'rgba(49, 130, 206, 0)'); },
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#3182ce',
+                            pointBorderWidth: 2
+                            }]
+                            },
+                            options: lineOptions
+                            });
+                            }
 
-                        var fatCtx = document.getElementById('fatChart');
-                        if (fatCtx && fData.length > 1) {
-                        new Chart(fatCtx, {
-                        type: 'line',
-                        data: {
-                        labels: fLabels,
-                        datasets: [{
-                        label: 'چربی (%)',
-                        data: fData,
-                        borderColor: '#9f7aea',
-                        backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(159, 122, 234, 0.2)', 'rgba(159, 122, 234, 0)'); },
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#9f7aea',
-                        pointBorderWidth: 2
-                        }]
-                        },
-                        options: {
-                        ...lineOptions,
-                        scales: {
-                        ...lineOptions.scales,
-                        y: { ...lineOptions.scales.y, ticks: { ...lineOptions.scales.y.ticks, callback: function(v) { return v + '%'; } } }
-                        }
-                        }
-                        });
-                        }
+                            var fatCtx = document.getElementById('fatChart');
+                            if (fatCtx && fData.length > 1) {
+                            new Chart(fatCtx, {
+                            type: 'line',
+                            data: {
+                            labels: fLabels,
+                            datasets: [{
+                            label: 'چربی (%)',
+                            data: fData,
+                            borderColor: '#9f7aea',
+                            backgroundColor: function(ctx) { return createGradient(ctx.chart.ctx, 'rgba(159, 122, 234, 0.2)', 'rgba(159, 122, 234, 0)'); },
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#9f7aea',
+                            pointBorderWidth: 2
+                            }]
+                            },
+                            options: {
+                            ...lineOptions,
+                            scales: {
+                            ...lineOptions.scales,
+                            y: { ...lineOptions.scales.y, ticks: { ...lineOptions.scales.y.ticks, callback: function(v) { return v + '%'; } } }
+                            }
+                            }
+                            });
+                            }
 
-                        var macroCtx = document.getElementById('macroChart');
-                        if (macroCtx && macroData.length > 0) {
-                        new Chart(macroCtx, {
-                        type: 'doughnut',
-                        data: {
-                        labels: ['پروتئین', 'کربوهیدرات', 'چربی'],
-                        datasets: [{
-                        data: macroData,
-                        backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                        }]
-                        },
-                        options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '65%',
-                        plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                        callbacks: {
-                        label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; }
-                        }
-                        }
-                        }
-                        }
-                        });
-                        }
+                            var macroCtx = document.getElementById('macroChart');
+                            if (macroCtx && macroData.length > 0) {
+                            new Chart(macroCtx, {
+                            type: 'doughnut',
+                            data: {
+                            labels: ['پروتئین', 'کربوهیدرات', 'چربی'],
+                            datasets: [{
+                            data: macroData,
+                            backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                            }]
+                            },
+                            options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '65%',
+                            plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                            callbacks: {
+                            label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; }
+                            }
+                            }
+                            }
+                            }
+                            });
+                            }
     </script>
 }

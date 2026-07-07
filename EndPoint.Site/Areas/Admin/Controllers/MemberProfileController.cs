@@ -1,17 +1,13 @@
 ﻿using FitCore.Application.Contexts;
-using FitCore.Application.Services.Foods.Queries;
-using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.Members.Queries.ReportMembers;
 using FitCore.Common;
-using FitCore.Domain.Entities.Members;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -46,8 +42,8 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             _getMemberBodyMeasurementsService = getMemberBodyMeasurementsService;
             _removeBodyMeasurementService = removeBodyMeasurementService;
         }
-        
-        
+
+
         [HttpGet]
         public IActionResult CompleteInfo()
         {
@@ -121,12 +117,12 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> BodyMeasurement(string  Id, string SearchKey, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> BodyMeasurement(string Id, string SearchKey, int page = 1, int pageSize = 10)
         {
             var id = SecurityUtils.DecryptId(Id);
-            
-            var memberId=_context.Members.Where(c=>c.AppUserId == id).FirstOrDefault().Id;
-            
+
+            var memberId = _context.Members.Where(c => c.AppUserId == id).FirstOrDefault().Id;
+
             var request = new RequestGetMemberBodyMeasurementsDto
             {
                 MemberId = memberId,
@@ -136,7 +132,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             };
 
             var result = await _getMemberBodyMeasurementsService.Execute(request);
-            var q= _context.Users.Where(c => c.Id == id).FirstOrDefault();
+            var q = _context.Users.Where(c => c.Id == id).FirstOrDefault();
             ViewBag.FullName_Mobile = q.FullName + " - " + q.PhoneNumber;
             ViewBag.MemberId = memberId;
 
@@ -145,7 +141,13 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 
 
 
-        
+        [HttpPost]
+        public IActionResult DeleteMedia(string mediaType)
+        {
+            var appUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = _addOrUpdateMemberService.DeleteMedia(appUserId, mediaType);
+            return Json(result);
+        }
 
         [HttpGet]
         public IActionResult AddBodyMeasurement(string? memberId)

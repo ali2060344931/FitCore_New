@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 // ---- این ۳ خط فراموش شده بودند و باعث خطا شدند ----
 using ImageMagick;
 using Xabe.FFmpeg;
@@ -70,36 +71,73 @@ namespace FitCore.Application.Services
                 await file.CopyToAsync(stream);
             }
 
-            // روش کاملاً سازگار با تمام نسخه‌های 5 بدون دستکاری مسیر
-            IMediaInfo mediaInfo;
-            try
+            // مسیر دقیق و مستقیم فایل اجرایی در پوشه سایت
+            var ffmpegPath = Path.Combine(_env.WebRootPath, "FFmpeg", "ffmpeg.exe");
+
+            if (!System.IO.File.Exists(ffmpegPath))
             {
-                mediaInfo = await FFmpeg.GetMediaInfo(tempPath);
-            }
-            catch
-            {
-                // اگر خطا داد یعنی فایل اجرایی ffmpeg وجود ندارد، پس در پوشه Temp دانلود می‌کند
-                await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
-                mediaInfo = await FFmpeg.GetMediaInfo(tempPath);
+                if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath);
+                throw new Exception("فایل اجرایی FFmpeg در پوشه wwwroot/FFmpeg پیدا نشد.");
             }
 
-            if (mediaInfo.Duration.TotalSeconds > 60)
+            // 1. استخراج مدت زمان ویدیو برای چک کردن 1 دقیقه
+            var durationCheck = new Process
             {
-                System.IO.File.Delete(tempPath);
-                throw new Exception("مدت زمان ویدیو نباید بیشتر از ۱ دقیقه باشد.");
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = ffmpegPath,
+                    Arguments = $"-i \"{tempPath}\" -hide_banner",
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            durationCheck.Start();
+            string errorOutput = await durationCheck.StandardError.ReadToEndAsync();
+            durationCheck.WaitForExit();
+
+            // پیدا کردن مدت زمان با Regex از خروجی کنسول
+            var match = Regex.Match(errorOutput, @"Duration: (\d{2}):(\d{2}):(\d{2}\.\d{2})");
+            if (match.Success)
+            {
+                int hours = int.Parse(match.Groups[1].Value);
+                int minutes = int.Parse(match.Groups[2].Value);
+                double seconds = double.Parse(match.Groups[3].Value);
+                double totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+                if (totalSeconds > 60)
+                {
+                    if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath);
+                    throw new Exception("مدت زمان ویدیو نباید بیشتر از ۱ دقیقه باشد.");
+                }
             }
 
-            IConversion conversion = FFmpeg.Conversions.New()
-                .AddParameter($"-i \"{tempPath}\"")
-                .AddParameter("-c:v libx264")       // کدک ویدیو H264
-                .AddParameter("-c:a aac")           // کدک صدا AAC
-                .AddParameter("-b:v 500k")          // بیت ریت 500 کیلوبایت بر ثانیه
-                .AddParameter("-vf scale=1280:720") // تغییر رزولوشن به 720p
-                .SetOutput(finalPath)
-                .SetOverwriteOutput(true);
+            // 2. فشرده‌سازی ویدیو با دستورات مستقیم
+            var conversion = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = ffmpegPath,
+                    Arguments = $"-i \"{tempPath}\" -c:v libx264 -c:a aac -b:v 500k -vf scale=1280:720 -y \"{finalPath}\"",
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
 
-            await conversion.Start();
+            conversion.Start();
+            // خواندن خروجی برای جلوگیری از هنگ کردن پردازش
+            await conversion.StandardError.ReadToEndAsync();
+            conversion.WaitForExit();
 
+            if (conversion.ExitCode != 0)
+            {
+                if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath);
+                if (System.IO.File.Exists(finalPath)) System.IO.File.Delete(finalPath);
+                throw new Exception("خطا در فشرده‌سازی ویدیو. فرمت فایل نامعتبر است.");
+            }
+
+            // 3. پاک کردن فایل موقت اصلی
             if (System.IO.File.Exists(tempPath))
             {
                 System.IO.File.Delete(tempPath);
