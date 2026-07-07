@@ -14,8 +14,16 @@ namespace EndPoint.Site.Areas.Admin.Models
 
         public List<SelectListItem> DayTypes { get; set; }
 
-        public List<SelectListItem> Exercises { get; set; }
-        // استفاده از مسیر کامل برای جلوگیری از هرگونه تداخل فضای نام
+
+
+
+
+        //public List<SelectListItem> Exercises { get; set; }
+        public List<ExerciseLookupDto> Exercises { get; set; } = new();
+
+
+
+
         public FitCore.Domain.Entities.Members.Member MemberDetails { get; set; }
         public int? MemberAge { get; set; }
 
@@ -61,5 +69,12 @@ namespace EndPoint.Site.Areas.Admin.Models
         /// اگر false باشد، فقط در باشگاه خود مدیر ثبت می‌شود.
         /// </summary>
         public bool IsGlobal { get; set; } = false;
+    }
+
+    public class ExerciseLookupDto
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+        public int? MuscleGroupId { get; set; }
     }
 }

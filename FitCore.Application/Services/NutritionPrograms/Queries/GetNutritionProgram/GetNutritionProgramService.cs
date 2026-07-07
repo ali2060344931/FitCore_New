@@ -25,16 +25,23 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 _context.NutritionPrograms
                 .Where(c => !c.IsRemoved)
                 .Include(x => x.Member)
-
                 .AsQueryable();
 
 
-            // ✅ فیلتر بر اساس کاربر
-            if (!request.IsAdmin)
+            // ✅ فیلتر قطعی بر اساس باشگاه
+            if (request.IsAdmin || request.IsTrainer)
             {
-                nutritionPrograms =
-                    nutritionPrograms
-                    .Where(x => x.Member.AppUserId == request.AppUserId);
+                if (request.GymId.HasValue && request.GymId.Value > 0)
+                {
+                    // مدیر باشگاه: فقط برنامه‌های باشگاه خودش
+                    nutritionPrograms = nutritionPrograms
+                        .Where(x => x.GymId == request.GymId.Value);
+                }
+                else
+                {
+                    // اگر کاربر ادمین نبود ولی باشگاهی هم نداشت، هیچ چیزی نباید ببیند
+                    nutritionPrograms = nutritionPrograms.Where(x => false);
+                }
             }
 
             // ✅ فیلتر جستجو
@@ -64,7 +71,6 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                     ProgramType = x.ProgramType.Name,
                     MemberName = x.Member.AppUser.FullName,
                     MemberMobile = x.Member.AppUser.PhoneNumber,
-                    
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     IsActive = x.IsActive,
@@ -82,8 +88,6 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 PageSize = request.PageSize
             };
         }
-
-
     }
 
 }

@@ -17,11 +17,14 @@ namespace FitCore.Application.Services.Facads
         private readonly UserManager<AppUser> _userManager;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFileCompressionService _fileService;
+
 
         public MemberFacad(
             IDataBaseContext context,
             UserManager<AppUser> userManager,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IFileCompressionService fileCompressionService)
         {
             _context = context;
 
@@ -29,6 +32,7 @@ namespace FitCore.Application.Services.Facads
 
             _httpContextAccessor =
                 httpContextAccessor;
+            _fileService = fileCompressionService;
         }
 
         private IAddNewMemberService _addNewMemberService;
@@ -41,9 +45,11 @@ namespace FitCore.Application.Services.Facads
                     _addNewMemberService ??
                     new AddNewMemberService(
                         _context,
-                        _userManager);
+                        _userManager, _fileService);
             }
         }
+
+
 
         private IGetMembersService _getMembersService;
 

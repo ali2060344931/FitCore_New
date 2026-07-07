@@ -100,6 +100,40 @@
 
 </div>
 
+
+
+@* +++++++++++++++++++++++++++++++ *@
+
+            <!-- ✅ ردیف فایل ها -->
+            <div class="row mt-3">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label font-weight-bold">عکس پرسنلی</label>
+                    <input type="file" class="form-control" id="ProfileImageFile" name="ProfileImageFile" accept="image/*" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label font-weight-bold">ویدیو معرفی (حداکثر ۱ دقیقه)</label>
+                    <input type="file" class="form-control" id="VideoFile" name="VideoFile" accept="video/*" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label font-weight-bold">عکس بدن ۱ (جلو)</label>
+                    <input type="file" class="form-control" id="BodyImageFile1" name="BodyImageFile1" accept="image/*" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label font-weight-bold">عکس بدن ۲ (پهلو)</label>
+                    <input type="file" class="form-control" id="BodyImageFile2" name="BodyImageFile2" accept="image/*" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label font-weight-bold">عکس بدن ۳ (پشت)</label>
+                    <input type="file" class="form-control" id="BodyImageFile3" name="BodyImageFile3" accept="image/*" />
+                </div>
+            </div>
+@* +++++++++++++++++++++++++++++++ *@
+
+
+
+
             <!-- ✅ اضافه شدن چک‌باکس فعال/غیرفعال -->
             <div class="col-md-2 mb-1 d-flex align-items-end">
                 <div class="form-check form-switch mt-2">
@@ -148,55 +182,65 @@
     <script src="~/lib/persian-datepicker/persian-datepicker.min.js"></script>
 
     <script>
-        $(document).ready(function () {
 
-        const datePickerConfig = {
-        format: 'YYYY/MM/DD',
-        autoClose: true,
-        initialValue: false,
-        observer: true,
-        initialValueType: 'persian',
-        calendar: { persian: { locale: 'en' }
-        }
-        };
+                 $("#MemberForm").on("submit", function (e) {
+            e.preventDefault();
 
-        $("#BirthDate, #MembershipStartDate, #MembershipEndDate").persianDatepicker(datePickerConfig);
+            const isEdit = @(isEdit ? "true" : "false");
+            const url = isEdit ? "/Admin/Members/Edit" : "/Admin/Members/Create";
 
-        $("#MemberForm").on("submit", function (e) {
-        e.preventDefault();
+            // جمع‌آوری فیلدهای متنی
+            var textData = {
+                Id: parseInt($("#Id").val()) || 0,
+                FullName: $("#FullName").val(),
+                Mobile: $("#Mobile").val(),
+                Gender: parseInt($("#Gender").val()),
+                BirthDate: $("#BirthDate").val(),
+                MembershipStartDate: $("#MembershipStartDate").val(),
+                MembershipEndDate: $("#MembershipEndDate").val(),
+                IsActive: $("#IsActive").is(":checked")
+            };
 
-        const isEdit = @(isEdit ? "true" : "false");
-        const url = isEdit ? "/Admin/Members/Edit" : "/Admin/Members/Create";
+            // استفاده از FormData برای ارسال فایل همراه با متن
+            var formData = new FormData();
 
-        const data = {
-        Id: parseInt($("#Id").val()) || 0,
-        FullName: $("#FullName").val(),
-        Mobile: $("#Mobile").val(),
-        Gender: parseInt($("#Gender").val()),
-        BirthDate: $("#BirthDate").val(),
-        MembershipStartDate: $("#MembershipStartDate").val(),
-        MembershipEndDate: $("#MembershipEndDate").val(),
-        // ✅ اضافه شدن مقدار چک‌باکس (دقت کنید که از is(":checked") استفاده شده تا True/False دقیق ارسال شود)
-        IsActive: $("#IsActive").is(":checked")
+            // اضافه کردن داده‌های متنی به FormData
+            for (var key in textData) {
+                formData.append(key, textData[key]);
+            }
 
-        };
+            // اضافه کردن فایل‌ها به FormData (فقط اگر کاربر فایلی انتخاب کرده باشد)
+            var files = ['ProfileImageFile', 'VideoFile', 'BodyImageFile1', 'BodyImageFile2', 'BodyImageFile3'];
+            files.forEach(function(fileId) {
+                var fileInput = document.getElementById(fileId);
+                if (fileInput.files && fileInput.files[0]) {
+                    formData.append(fileId, fileInput.files[0]);
+                }
+            });
 
-        $.ajax({
-        type: "POST", url: url, data: data,
-        success: function (res) {
-        if (res.isSuccess) {
-        Swal.fire({ icon: 'success', title: 'موفق', text: res.message }).then(() => {
-        window.location.href = "/Admin/Members";
+            // نمایش لودینگ (اختیاری)
+            Swal.fire({ title: 'لطفاً صبر کنید...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                contentType: false, // بسیار مهم برای FormData
+                processData: false, // بسیار مهم برای FormData
+                success: function (res) {
+                    if (res.isSuccess) {
+                        Swal.fire({ icon: 'success', title: 'موفق', text: res.message }).then(() => {
+                            window.location.href = "/Admin/Members";
+                        });
+                    } else {
+                        Swal.fire({ icon: 'warning', title: 'خطا', text: res.message });
+                    }
+                },
+                error: function () {
+                    Swal.fire({ icon: 'error', title: 'ارتباط ناموفق', text: 'خطا در ارسال اطلاعات به سرور' });
+                }
+            });
         });
-        } else {
-        Swal.fire({ icon: 'warning', title: 'خطا', text: res.message });
-        }
-        }
-        });
-        });
-        });
-
-
 
     </script>
 }

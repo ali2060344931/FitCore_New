@@ -22,6 +22,7 @@ using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 using System;
@@ -115,6 +116,18 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var lookupResult = _getBuilderLookupService.Execute();
 
+            ViewBag.CategoryTypes = _Context.FoodCategoryTypes
+        .OrderBy(x => x.Name)
+        .Select(x => new SelectListItem
+        {
+            Value = x.Id.ToString(),
+            Text = x.Name
+        })
+        .ToList();
+
+
+
+
             var vm = new NutritionProgramBuilderPageViewModel
             {
                 Program = builderResult.Data,
@@ -197,6 +210,9 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         public JsonResult AddMealItem(AddNutritionMealItemDto request)
         {
             var result = _addNutritionMealItemService.Execute(request);
+
+
+
             return Json(new
             {
                 isSuccess = result.IsSuccess,

@@ -20,6 +20,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
             _context = context;
         }
 
+
         public async Task<ResultDto<GetTrainingProgramsResultDto>> Execute(GetTrainingProgramsRequestDto request)
         {
             var trainingPrograms =
@@ -32,20 +33,26 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                 .AsQueryable();
 
             //====================================
-            // فیلتر بر اساس کاربر
+            // ✅ فیلتر قطعی بر اساس باشگاه
             //====================================
-
-            if (!request.IsAdmin)
+            if (request.IsAdmin || request.IsTriner) // فقط مدیران باشگاه اینجا می‌افتند (مدیر کل خارج می‌شود)
             {
-                trainingPrograms =
-                    trainingPrograms
-                    .Where(x => x.Member.AppUserId == request.AppUserId);
+                if (request.GymId.HasValue && request.GymId.Value > 0)
+                {
+                    // مدیر باشگاه: فقط برنامه‌های متعلق به باشگاه خودش
+                    trainingPrograms = trainingPrograms
+                        .Where(x => x.GymId == request.GymId.Value);
+                }
+                else
+                {
+                    // اگر کاربر باشگاهی نداشت، هیچ چیزی نباید ببیند
+                    trainingPrograms = trainingPrograms.Where(x => false);
+                }
             }
 
             //====================================
             // فیلتر جستجو
             //====================================
-
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
                 trainingPrograms =
@@ -96,5 +103,84 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                 }
             };
         }
+
+
+
+        //public async Task<ResultDto<GetTrainingProgramsResultDto>> Execute(GetTrainingProgramsRequestDto request)
+        //{
+        //    var trainingPrograms =
+        //        _context.TrainingPrograms
+        //        .Where(c => !c.IsRemoved)
+        //        .Include(x => x.Member)
+        //        .Include(x => x.TrainingProgramType)
+        //        .Include(x => x.TrainingGoalType)
+        //        .Include(x => x.Days)
+        //        .AsQueryable();
+
+        //    //====================================
+        //    // فیلتر بر اساس کاربر
+        //    //====================================
+
+        //    if (!request.IsAdmin)
+        //    {
+        //        trainingPrograms =
+        //            trainingPrograms
+        //            .Where(x => x.Member.AppUserId == request.AppUserId);
+        //    }
+
+        //    //====================================
+        //    // فیلتر جستجو
+        //    //====================================
+
+        //    if (!string.IsNullOrWhiteSpace(request.SearchKey))
+        //    {
+        //        trainingPrograms =
+        //            trainingPrograms.Where(x =>
+        //                x.Member.AppUser.PhoneNumber.Contains(request.SearchKey) ||
+        //                x.Member.AppUser.FullName.Contains(request.SearchKey) ||
+        //                x.Title.Contains(request.SearchKey) ||
+        //                x.TrainingProgramType.Name.Contains(request.SearchKey) ||
+        //                x.TrainingGoalType.Name.Contains(request.SearchKey) ||
+        //                x.StartDate.Contains(request.SearchKey) ||
+        //                x.EndDate.Contains(request.SearchKey));
+        //    }
+
+        //    int rowCount = await trainingPrograms.CountAsync();
+
+        //    var result =
+        //        await trainingPrograms
+        //        .OrderByDescending(x => x.Id)
+        //        .Skip((request.Page - 1) * request.PageSize)
+        //        .Take(request.PageSize)
+        //        .Select(x => new GetTrainingProgramsDto
+        //        {
+        //            Id = x.Id,
+        //            Title = x.Title,
+        //            TrainingProgramType = x.TrainingProgramType.Name,
+        //            TrainingGoalType = x.TrainingGoalType.Name,
+        //            MemberName = x.Member.AppUser.FullName,
+        //            MemberMobile = x.Member.AppUser.PhoneNumber,
+        //            BaleChatId = x.Member.AppUser.BaleChatId,
+        //            StartDate = x.StartDate,
+        //            EndDate = x.EndDate,
+        //            SessionsPerWeek = x.SessionsPerWeek,
+        //            IsActive = x.IsActive,
+        //            CountTrainingDays = x.Days.Count(c => !c.IsRemoved)
+        //        })
+        //        .ToListAsync();
+
+        //    return new ResultDto<GetTrainingProgramsResultDto>
+        //    {
+        //        IsSuccess = true,
+        //        Data = new GetTrainingProgramsResultDto
+        //        {
+        //            TrainingPrograms = result,
+        //            CurrentPage = request.Page,
+        //            RowCount = rowCount,
+        //            PageCount = (int)Math.Ceiling((double)rowCount / request.PageSize),
+        //            PageSize = request.PageSize
+        //        }
+        //    };
+        //}
     }
 }

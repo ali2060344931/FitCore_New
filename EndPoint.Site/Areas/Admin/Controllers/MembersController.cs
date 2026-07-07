@@ -4,6 +4,7 @@ using EndPoint.Site.BaleBot.Services;
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IMembers;
+using FitCore.Application.Services;
 using FitCore.Application.Services.Gyms.Commands.EditGym;
 using FitCore.Application.Services.Member.Queries;
 using FitCore.Application.Services.Members.Commands;
@@ -33,7 +34,10 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IDataBaseContext _context;
         private readonly IBaleMenuService _baleMenuService;
 
-        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext, IDataBaseContext context, IBaleMenuService baleMenuService)
+
+        private readonly IFileCompressionService _fileCompressionService;
+
+        public MembersController(IAddNewMemberService addNewMemberService, IGetMembersByIdService getMembersByIdService, IMemberFacad memberFacad, IDataBaseContext dataBaseContext, IDataBaseContext context, IBaleMenuService baleMenuService, IFileCompressionService fileCompressionService)
         {
             _memberFacad = memberFacad;
             _dataBaseContext = dataBaseContext;
@@ -41,6 +45,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _addNewMemberService = addNewMemberService;
             _context = context;
             _baleMenuService = baleMenuService;
+            _fileCompressionService = fileCompressionService;
         }
 
         [HttpGet]
@@ -77,14 +82,29 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return View("CreateEdit", new MemberCreateEditViewModel());
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> Create(RequestAddNewMemberDto request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             request.AppUserId = long.Parse(userId);
+
+            // تمام منطق فشرده‌سازی حالا در لایه Application انجام می‌شود
             var result = await _memberFacad.AddNewMemberService.Execute(request);
             return Json(result);
         }
+
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> Create(RequestAddNewMemberDto request)
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    request.AppUserId = long.Parse(userId);
+        //    var result = await _memberFacad.AddNewMemberService.Execute(request);
+        //    return Json(result);
+        //}
 
 
 

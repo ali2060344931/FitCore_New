@@ -5,6 +5,7 @@ using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
 using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
+using FitCore.Application.Services;
 using FitCore.Application.Services.AI;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Dashboard;
@@ -52,6 +53,7 @@ using GymBot.Services;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -312,6 +314,8 @@ builder.Services.AddScoped<IGetMembersService, GetMembersService>();
 // ===== Auth =====
 
 
+builder.Services.AddTransient<IFileCompressionService, FileCompressionService>();
+
 
 builder.Services.AddScoped<IEditMemberService, EditMemberService>();
 
@@ -340,6 +344,21 @@ builder.Services.AddScoped<
 #region MVC
 
 builder.Services.AddControllersWithViews();
+
+
+
+// افزایش محدودیت حجم آپلود برای IIS و Kestrel
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 104857600; // 100 MB
+});
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 104857600; // 100 MB
+});
+
+
+
 
 var app = builder.Build();
 

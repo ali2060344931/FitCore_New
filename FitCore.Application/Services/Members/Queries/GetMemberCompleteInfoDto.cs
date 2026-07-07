@@ -45,6 +45,15 @@ namespace FitCore.Application.Services.Members.Queries
 
         public decimal? Height { get; set; }
 
+
+
+        // در GetMemberCompleteInfoDto اضافه کنید:
+        public string ProfileImageUrl { get; set; }
+        public string VideoUrl { get; set; }
+        public string BodyImageUrl1 { get; set; }
+        public string BodyImageUrl2 { get; set; }
+        public string BodyImageUrl3 { get; set; }
+
     }
 
 

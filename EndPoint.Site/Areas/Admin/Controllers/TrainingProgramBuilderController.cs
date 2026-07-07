@@ -77,6 +77,18 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             };
 
             ViewBag.EncryptedId = id;
+
+            // ← گروه‌های عضلانی برای فیلتر
+            ViewBag.MuscleGroups = await _context.MuscleGroups
+                .OrderBy(x => x.Name)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                })
+                .ToListAsync();
+
+
             // ==================================================================
             // خواندن اطلاعات عضو و محاسبه سن
             // ==================================================================
@@ -97,26 +109,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 {
                     try
                     {
-                        //string[] parts = vm.MemberDetails.BirthDate.Split(new[] { '/', '-' });
-                        //if (parts.Length >= 3)
-                        //{
-                        //    int y = int.Parse(parts[0]);
-                        //    int m = int.Parse(parts[1]);
-                        //    int d = int.Parse(parts[2]);
-
-                        //    PersianCalendar pc = new PersianCalendar();
-                        //    var birthDate = pc.ToDateTime(y, m, d,0,0,0,0);
-
-                        //    int years = DateTime.Today.Year - birthDate.Year;
-                        //    if (birthDate.Date > DateTime.Today) years--;
-
-                        //    int days = (DateTime.Today - birthDate.AddYears(years)).Days;
-
-                        //    if (years >= 0)
-                        //    {
-                        //        vm.MemberAge = years;
-                        //    }
-                        //}
                         vm.MemberAge = Convert.ToInt32(PersianDateCalse.GetAge(vm.MemberDetails.BirthDate, PersianDateCalse.AgeDisplayMode.Year));
                     }
                     catch { /* در صورت خطای تاریخ، سن محاسبه نمی‌شود */ }
@@ -126,7 +118,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return View(vm);
         }
-
         //====================================================
         // افزودن روز تمرینی
         //====================================================
@@ -237,7 +228,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //====================================================
         // Lookups
         //====================================================
-        private async Task<System.Collections.Generic.List<SelectListItem>> GetDayTypesSelectListAsync()
+        private async Task<List<SelectListItem>> GetDayTypesSelectListAsync()
         {
             var dayTypes = await _context.TrainingDayTypes
                 .OrderBy(x => x.Id)
@@ -251,7 +242,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return dayTypes;
         }
 
-        private async Task<System.Collections.Generic.List<SelectListItem>> GetExercisesSelectListAsync()
+
+        private async Task<List<ExerciseLookupDto>> GetExercisesSelectListAsync()
         {
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
 
@@ -259,7 +251,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Where(x => x.IsActive && !x.IsRemoved)
                 .Include(x => x.PrimaryMuscleGroup)
                 .Include(x => x.EquipmentType)
-
                 .AsQueryable();
 
             //====================================
@@ -267,7 +258,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             // مدیر کل: همه حرکات
             // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری
             //====================================
-
             if (!isAdmin)
             {
                 exercisesQuery = exercisesQuery
@@ -277,16 +267,58 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var exercises = await exercisesQuery
                 .OrderBy(x => x.PrimaryMuscleGroup.Name)
                 .ThenBy(x => x.Name)
-                .Select(x => new SelectListItem
+                .Select(x => new ExerciseLookupDto
                 {
                     Value = x.Id.ToString(),
                     Text = x.PrimaryMuscleGroup.Name + " - " + x.EquipmentType.Name + " - " + x.Name +
-                           (x.GymId == null ? " (عمومی)" : "")
+                           (x.GymId == null ? " (عمومی)" : ""),
+                    MuscleGroupId = x.PrimaryMuscleGroupId
                 })
                 .ToListAsync();
 
             return exercises;
         }
+
+
+        //private async Task<List<SelectListItem>> GetExercisesSelectListAsync()
+        //{
+        //    var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+        //    var exercisesQuery = _context.Exercises
+        //        .Where(x => x.IsActive && !x.IsRemoved)
+        //        .Include(x => x.PrimaryMuscleGroup)
+        //        .Include(x => x.EquipmentType)
+
+        //        .AsQueryable();
+
+        //    //====================================
+        //    // فیلتر باشگاه:
+        //    // مدیر کل: همه حرکات
+        //    // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری
+        //    //====================================
+
+        //    if (!isAdmin)
+        //    {
+        //        exercisesQuery = exercisesQuery
+        //            .Where(x => x.GymId == null || x.GymId == gymId);
+        //    }
+
+        //    var exercises = await exercisesQuery
+        //        .OrderBy(x => x.PrimaryMuscleGroup.Name)
+        //        .ThenBy(x => x.Name)
+        //        .Select(x => new SelectListItem
+        //        {
+        //            Value = x.Id.ToString(),
+        //            Text = x.PrimaryMuscleGroup.Name + " - " + x.EquipmentType.Name + " - " + x.Name +
+        //                   (x.GymId == null ? " (عمومی)" : "")
+        //        })
+        //        .ToListAsync();
+
+        //    return exercises;
+        //}
+
+
+
 
         //====================================================
         // تشخیص باشگاه و سطح دسترسی کاربر جاری

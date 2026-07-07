@@ -48,15 +48,28 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
         {
-
-            var isAdmin =User.IsAdmin() ;
-            
+            var isAdmin = User.IsAdmin();
+            var isTrainer = User.IsTrainer();
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
             if (string.IsNullOrWhiteSpace(userIdValue))
                 return Unauthorized();
 
             var appUserId = long.Parse(userIdValue);
+
+            long? gymId = null;
+
+            // فقط اگر کاربر ادمین کل نبود، شناسه باشگاه را استخراج کن
+            if (isAdmin || isTrainer)
+            {
+                gymId = await _context.Users
+                    .Where(x => x.Id == appUserId)
+                    .Select(x => x.GymId)
+                    .FirstOrDefaultAsync();
+            }
+
+            // ❗ این خط را موقتاً اضافه کنید تا در خروجی پنجره Output ویژوال استودیو ببینید مقادیر چیست
+            System.Diagnostics.Debug.WriteLine($"--- Nutrition List -> IsAdmin: {isAdmin}, GymId: {gymId} ---");
 
             var request = new RequestGetNutritionProgramsDto
             {
@@ -64,14 +77,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Page = page,
                 PageSize = PageSize,
                 SearchKey = SearchKey,
-                IsAdmin = isAdmin
+                IsAdmin = isAdmin,
+                IsTrainer = isTrainer,
+                GymId = gymId
             };
 
             var result = await _nutritionProgramFacad.GetNutritionProgramsService.Execute(request);
             return View(result);
         }
-       
-
 
 
         //====================================================

@@ -30,7 +30,8 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
                 .Select(x => new LookupItemDto
                 {
                     Id = x.Id,
-                    Name = x.Title
+                    Name = x.Title,
+                    CategoryTypeId = x.CategoryTypeId
                 }).OrderBy(c=>c.Name).ToList();
 
             var units = _context.NutritionUnitTypes
@@ -75,5 +76,10 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
     {
         public long Id { get; set; }
         public string Name { get; set; }
+
+        /// <summary>
+        /// فقط برای غذاها استفاده می‌شود — شناسه گروه غذایی
+        /// </summary>
+        public int? CategoryTypeId { get; set; }
     }
 }

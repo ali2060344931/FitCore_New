@@ -1,5 +1,7 @@
 ﻿using FitCore.Domain.Entities.Members;
 
+using Microsoft.AspNetCore.Http;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,11 +18,11 @@ namespace FitCore.Application.Services.Members.Queries.ReportMembers
 
         [Required]
         public long AppUserId { get; set; }
-        
+
         public string FullName { get; set; }
         public string Mobile { get; set; }
 
-                
+
         public Gender Gender { get; set; }
 
         public string BirthDate { get; set; }
@@ -43,9 +45,26 @@ namespace FitCore.Application.Services.Members.Queries.ReportMembers
 
         [MaxLength(500)]
         public string Description { get; set; }
-        
+
         [Range(50, 250)]
         public decimal? Height { get; set; }
+
+
+
+
+
+        // در RequestCompleteMemberInfoDto اضافه کنید:
+        public IFormFile ProfileImageFile { get; set; }
+        public IFormFile VideoFile { get; set; }
+        public IFormFile BodyImageFile1 { get; set; }
+        public IFormFile BodyImageFile2 { get; set; }
+        public IFormFile BodyImageFile3 { get; set; }
+
+        public string ProfileImageUrl { get; set; }
+        public string VideoUrl { get; set; }
+        public string BodyImageUrl1 { get; set; }
+        public string BodyImageUrl2 { get; set; }
+        public string BodyImageUrl3 { get; set; }
 
     }
 }

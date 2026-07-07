@@ -81,6 +81,13 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
                     MedicalConditions = x.MedicalConditions,
                     Height = x.Height,
 
+
+                    ProfileImageUrl = x.ProfileImageUrl,
+                    VideoUrl = x.VideoUrl,
+                    BodyImageUrl1 = x.BodyImageUrl1,
+                    BodyImageUrl2 = x.BodyImageUrl2,
+                    BodyImageUrl3 = x.BodyImageUrl3
+
                 }).FirstOrDefault();
 
             ViewBag.ActivityLevels = _context.activityLevels
@@ -100,14 +107,18 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             return View(member);
         }
 
+
+        // اضافه شدن async و Task
         [HttpPost]
-        public IActionResult CompleteInfo(RequestCompleteMemberInfoDto request)
+        public async Task<IActionResult> CompleteInfo(RequestCompleteMemberInfoDto request)
         {
             request.AppUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var result = _addOrUpdateMemberService.Execute(request);
+
+            // اضافه شدن await
+            var result = await _addOrUpdateMemberService.Execute(request);
+
             return Json(result);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> BodyMeasurement(string  Id, string SearchKey, int page = 1, int pageSize = 10)

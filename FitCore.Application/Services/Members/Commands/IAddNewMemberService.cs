@@ -1,17 +1,18 @@
 ﻿using FitCore.Application.Contexts;
+using FitCore.Application.Services;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Common.Dto;
 using FitCore.Common.Roles;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,15 +28,17 @@ namespace FitCore.Application.Services.Members.Commands
 public class AddNewMemberService : IAddNewMemberService
 {
     private readonly IDataBaseContext _context;
-
+    private readonly IFileCompressionService _fileService;
     private readonly UserManager<AppUser> _userManager;
 
     public AddNewMemberService(
         IDataBaseContext context,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager,
+        IFileCompressionService fileService
+        )
     {
         _context = context;
-
+        _fileService = fileService;
         _userManager = userManager;
     }
 
@@ -44,6 +47,20 @@ public class AddNewMemberService : IAddNewMemberService
     {
         try
         {
+
+
+            // ===== پردازش و فشرده‌سازی فایل‌ها =====
+            var folderPath = "uploads/members";
+
+            request.ProfileImageUrl = await _fileService.SaveAndCompressImageAsync(request.ProfileImageFile, folderPath);
+            request.VideoUrl = await _fileService.SaveAndCompressVideoAsync(request.VideoFile, folderPath);
+            request.BodyImageUrl1 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile1, folderPath);
+            request.BodyImageUrl2 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile2, folderPath);
+            request.BodyImageUrl3 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile3, folderPath);
+            // =========================================
+
+
+
             //==================================================
             // پیدا کردن مدیر باشگاه
             //==================================================
@@ -189,9 +206,17 @@ public class AddNewMemberService : IAddNewMemberService
                 Gender = request.Gender,
 
                 BirthDate = request.BirthDate,
-                MembershipStartDate=request.MembershipStartDate,
-                MembershipEndDate=request.MembershipEndDate,
-                IsActive = request.IsActive
+                MembershipStartDate = request.MembershipStartDate,
+                MembershipEndDate = request.MembershipEndDate,
+                IsActive = request.IsActive,
+
+
+                // ذخیره مسیرها در دیتابیس
+                ProfileImageUrl = request.ProfileImageUrl,
+                VideoUrl = request.VideoUrl,
+                BodyImageUrl1 = request.BodyImageUrl1,
+                BodyImageUrl2 = request.BodyImageUrl2,
+                BodyImageUrl3 = request.BodyImageUrl3
             };
 
             await _context.Members.AddAsync(member);
@@ -254,6 +279,20 @@ public class RequestAddNewMemberDto
     public bool IsActive { get; set; }
 
 
+    // در DTO ها اضافه کنید:
+    // فایل‌های ورودی از فرم
+    public IFormFile ProfileImageFile { get; set; }
+    public IFormFile VideoFile { get; set; }
+    public IFormFile BodyImageFile1 { get; set; }
+    public IFormFile BodyImageFile2 { get; set; }
+    public IFormFile BodyImageFile3 { get; set; }
+
+    // مسیرهایی که بعد از فشرده‌سازی پر می‌شوند
+    public string ProfileImageUrl { get; set; }
+    public string VideoUrl { get; set; }
+    public string BodyImageUrl1 { get; set; }
+    public string BodyImageUrl2 { get; set; }
+    public string BodyImageUrl3 { get; set; }
 }
 
 

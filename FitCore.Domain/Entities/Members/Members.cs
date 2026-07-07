@@ -63,7 +63,32 @@ namespace FitCore.Domain.Entities.Members
         [DisplayName("توضیحات")]
         [MaxLength(500, ErrorMessage = "توضیحات نباید بیشتر از ۵۰۰ کاراکتر باشد.")]
         public string Description { get; set; }
+
+
+
+        // در کلاس Member اضافه کنید:
+        [DisplayName("عکس پرسنلی")]
+        public string ProfileImageUrl { get; set; }
+
+        [DisplayName("ویدیو معرفی")]
+        public string VideoUrl { get; set; }
+
+        [DisplayName("عکس بدن ۱")]
+        public string BodyImageUrl1 { get; set; }
+
+        [DisplayName("عکس بدن ۲")]
+        public string BodyImageUrl2 { get; set; }
+
+        [DisplayName("عکس بدن ۳")]
+        public string BodyImageUrl3 { get; set; }
+
+
+
+
         public ICollection<MemberBodyMeasurement> memberBodyMeasurements { get; set; }
+
+
+
     }
 
     public enum Gender

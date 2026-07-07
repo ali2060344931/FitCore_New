@@ -25,6 +25,10 @@
 
     var program = Model?.Program;
     var lookups = Model?.Lookups;
+
+
+    var categoryTypes = ViewBag.CategoryTypes as List<SelectListItem> ?? new List<SelectListItem>();
+
 }
 
 <div class="page-content-wrapper builder-wrapper">
@@ -59,14 +63,10 @@
                             <span class="meta-value-Fullmamu">@program.MemberName</span>
                             @if (Model.MemberAge.HasValue)
                             {
-                                @* <span class="badge bg-info text-dark px-2 py-1 rounded-pill" style="font-size:11px;">
-                                    🎂 سن: @Model.MemberAge سال
-                                </span> *@
                                 <span class="badge px-2 py-1 rounded-pill"
                                       style="font-size:11px; background-color: #000000; color: #ffffff; border: 1px solid #333;">
                                     🎂 سن: @Model.MemberAge سال
                                 </span>
-
                             }
                         </div>
 
@@ -740,6 +740,35 @@
                 </div>
 
                 <div class="modal-body" style="padding:16px 20px;">
+
+                    @* ======== نوار فیلتر گروه غذایی ======== *@
+                    <div class="food-category-filter-bar mb-3 p-3 rounded-3"
+                         style="background:linear-gradient(135deg,#f0fff4,#ebf8ff);border:1px solid #c6f6d5;">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <div style="font-size:13px;font-weight:700;color:#276749;white-space:nowrap;">
+                                <i class="fa fa-filter me-1"></i> فیلتر گروه غذایی:
+                            </div>
+                            <select class="form-control form-control-sm" id="FoodCategoryFilter"
+                                    style="border-radius:8px;max-width:300px;border:1px solid #9ae6b4;font-size:13px;">
+                                <option value="">همه گروه‌های غذایی</option>
+                                @if (categoryTypes != null && categoryTypes.Count > 0)
+                                {
+                                    foreach (var cat in categoryTypes)
+                                    {
+                                        <option value="@cat.Value">@cat.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span id="foodFilterCount" class="badge rounded-pill"
+                                  style="background:#00C896;color:#fff;font-size:11px;display:none;"></span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    id="btnClearFoodCategoryFilter"
+                                    style="border-radius:8px;font-size:12px;display:none;">
+                                <i class="fa fa-times me-1"></i> حذف فیلتر
+                            </button>
+                        </div>
+                    </div>
+
                     <form id="addMealItemForm">
                         @Html.AntiForgeryToken()
                         <input type="hidden" id="NutritionMealId" name="NutritionMealId" />
@@ -757,25 +786,27 @@
                                         {
                                             foreach (var food in lookups.Foods)
                                             {
-                                                <option value="@food.Id">@food.Name</option>
+                                                <option value="@food.Id" data-category-id="@food.CategoryTypeId">@food.Name</option>
                                             }
                                         }
                                     </select>
                                 </div>
-
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">مقدار</label>
+                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">
+                                        مقدار <span style="color:#e53e3e;">*</span>
+                                    </label>
                                     <input type="number" step="0.01" class="form-control"
                                            id="Amount" name="Amount" placeholder="مقدار"
                                            style="border-radius:8px;" />
                                 </div>
                             </div>
-
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">واحد</label>
+                                    <label style="font-size:12px;font-weight:700;color:#4a5568;">
+                                        واحد <span style="color:#e53e3e;">*</span>
+                                    </label>
                                     <select class="form-control select2" id="UnitTypeId" name="UnitTypeId"
                                             style="width:100%;">
                                         <option value="">انتخاب واحد</option>
@@ -807,7 +838,7 @@
                     </button>
                     <button type="button" id="btnSaveMealItem"
                             style="border-radius:9px;font-size:13px;padding:7px 22px;
-                            background:#00C896;border:none;color:#fff;font-weight:600;min-width:120px;">
+                            background:#00C896;border:none;color:#fff;font-weight:600;min-width:110px;">
                         <i class="fa fa-plus me-1" id="btnSaveMealItemIcon"></i>
                         <span id="btnSaveMealItemText">ثبت غذا</span>
                     </button>
@@ -815,6 +846,7 @@
             </div>
         </div>
     </div>
+
 
     @* ---------- ویرایش غذای وعده ---------- *@
     <div class="modal fade" id="editMealItemModal" tabindex="-1" role="dialog">
@@ -2049,70 +2081,83 @@
 
         // ------------------------------
 
-                           // ============================================================
-        // بارگذاری واحد پیش‌فرض و واحدهای مجاز هنگام انتخاب غذا
-        // ============================================================
+        var _allFoodOptions = [];
 
-        function loadFoodUnits(foodId) {
-            var $unitSelect = $('#UnitTypeId');
-
-            // 1. نابود کردن Select2 فعلی روی کمبوباکس واحد برای جلوگیری از باگ کش
-            if ($unitSelect.hasClass('select2-hidden-accessible')) {
-                $unitSelect.select2('destroy');
-            }
-
-            // 2. خالی کردن کامل تگ select
-            $unitSelect.empty();
-
-            if (!foodId) {
-                $unitSelect.html('<option value="">ابتدا غذا را انتخاب کنید</option>');
-                initSelect2('#UnitTypeId', '#addMealItemModal');
-                return;
-            }
-
-            // 3. ارسال درخواست به سرور برای دریافت لیست واحدهای مجاز
-            $.ajax({
-                url: '/Admin/NutritionProgramBuilder/GetFoodAllowedUnits',
-                type: 'GET',
-                data: { foodId: foodId },
-                success: function (response) {
-                    var optionsHtml = '<option value="">انتخاب واحد</option>';
-                    var defaultUnitId = 0; // نگهداری آیدی واحد پیش‌فرض
-
-                    if (response && response.length > 0) {
-                        // نکته: فرض بر این است که سرویس شما واحد پیش‌فرض را همیشه اول لیست برمی‌گرداند
-                        if (response.length > 0) {
-                            defaultUnitId = response[0].id; // اولین آیتم همیشه واحد پیش‌فرض است
-                        }
-
-                        $.each(response, function (index, item) {
-                            optionsHtml += '<option value="' + item.id + '">' + item.name + '</option>';
-                        });
-                    } else {
-                        optionsHtml = '<option value="">واحدی برای این غذا تعریف نشده است</option>';
-                    }
-
-                    // 4. تزریق مقادیر جدید به کمبوباکس
-                    $unitSelect.html(optionsHtml);
-
-                    // 5. بازسازی مجدد Select2 (با استفاده از تابع خودتان که dropdownParent دارد)
-                    initSelect2('#UnitTypeId', '#addMealItemModal');
-
-                    // 6. انتخاب خودکار واحد پیش‌فرض (اگر وجود داشت)
-                    if (defaultUnitId > 0) {
-                        $unitSelect.val(defaultUnitId).trigger('change');
-                    }
-                },
-                error: function () {
-                    $unitSelect.html('<option value="">خطا در دریافت واحدها</option>');
-                    initSelect2('#UnitTypeId', '#addMealItemModal');
-                }
+         $(document).ready(function () {
+            $('#FoodId option:not(:first)').each(function () {
+                _allFoodOptions.push({
+                    value: $(this).val(),
+                    text: $(this).text(),
+                    categoryId: $(this).attr('data-category-id') || ''
+                });
             });
+        });
+
+        function rebuildFoodOptions(selectedCategoryId) {
+            var $foodSelect = $('#FoodId');
+            var currentVal = $foodSelect.val();
+
+            $foodSelect.find('option:not(:first)').remove();
+
+            var filteredCount = 0;
+            var optionsHtml = '';
+
+            for (var i = 0; i < _allFoodOptions.length; i++) {
+                var opt = _allFoodOptions[i];
+
+                if (!selectedCategoryId || String(opt.categoryId) === String(selectedCategoryId)) {
+                    var selected = (opt.value === currentVal) ? ' selected' : '';
+                    optionsHtml += '<option value="' + opt.value + '" data-category-id="' + opt.categoryId + '"' + selected + '>' + opt.text + '</option>';
+                    filteredCount++;
+                }
+            }
+
+            $foodSelect.append(optionsHtml);
+
+            if (currentVal && !$foodSelect.find('option[value="' + currentVal + '"]').length) {
+                $foodSelect.val('');
+            }
+
+            $foodSelect.trigger('change');
+
+            var $countBadge = $('#foodFilterCount');
+            if (selectedCategoryId) {
+                $countBadge.text(filteredCount + ' غذا');
+                $countBadge.show();
+                $('#btnClearFoodCategoryFilter').show();
+            } else {
+                $countBadge.hide();
+                $('#btnClearFoodCategoryFilter').hide();
+            }
         }
 
-        // رویدادهای تغییر غذا
-        $(document).on('change', '#FoodId', function () { loadFoodUnits($(this).val()); });
-        $(document).on('select2:select', '#FoodId', function () { loadFoodUnits($(this).val()); });
+         $(document).on('change', '#FoodCategoryFilter', function () {
+            rebuildFoodOptions($(this).val());
+        });
+
+         $(document).on('click', '#btnClearFoodCategoryFilter', function () {
+            $('#FoodCategoryFilter').val('');
+            rebuildFoodOptions('');
+        });
+
+         $(document).on('shown.bs.modal', '#addMealItemModal', function () {
+            $('#FoodCategoryFilter').val('');
+            $('#btnClearFoodCategoryFilter').hide();
+            $('#foodFilterCount').hide();
+
+            _allFoodOptions = [];
+            $('#FoodId option:not(:first)').each(function () {
+                _allFoodOptions.push({
+                    value: $(this).val(),
+                    text: $(this).text(),
+                    categoryId: $(this).attr('data-category-id') || ''
+                });
+            });
+
+            rebuildFoodOptions('');
+        });
+
+
 
 
     </script>

@@ -53,5 +53,8 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
         public long AppUserId { get; set; }
 
         public bool IsAdmin { get; set; }
+        public bool IsTriner { get; set; }
+        public long? GymId { get; set; }
+
     }
 }

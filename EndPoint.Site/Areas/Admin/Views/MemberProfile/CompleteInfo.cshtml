@@ -73,6 +73,8 @@
 
 
 
+
+
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel { Id = "ActivityLevelId", Name = "ActivityLevelId", LabelName = "سطح فعالیت بدنی", Col = 3, Items = ViewBag.ActivityLevels, Value = Model?.ActivityLevelId?.ToString() }' />
 
@@ -81,6 +83,62 @@
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel { Id = "Height", Name = "Height", LabelName = "قد (cm)", Col = 2, Value = Model?.Height.ToString() }' />
+
+
+
+
+
+
+                <!-- ردیف فایل های آپلودی -->
+                <fieldset class="custom-groupbox mt-3">
+                    <legend>تصاویر و ویدیوی پروفایل</legend>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label font-weight-bold">عکس پرسنلی</label>
+                            <input type="file" class="form-control" id="ProfileImageFile" name="ProfileImageFile" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model?.ProfileImageUrl))
+                            {
+                                <img src="@Model.ProfileImageUrl" class="mt-2 rounded" style="max-height: 100px;" alt="عکس فعلی" />
+                            }
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label font-weight-bold">ویدیو معرفی (حداکثر ۱ دقیقه)</label>
+                            <input type="file" class="form-control" id="VideoFile" name="VideoFile" accept="video/*" />
+                            @if (!string.IsNullOrEmpty(Model?.VideoUrl))
+                            {
+                                <video controls class="mt-2" style="max-height: 100px; max-width: 100%;">
+                                    <source src="@Model.VideoUrl" type="video/mp4">
+                                </video>
+                            }
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label font-weight-bold">عکس بدن ۱ (جلو)</label>
+                            <input type="file" class="form-control" id="BodyImageFile1" name="BodyImageFile1" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model?.BodyImageUrl1))
+                            {
+                                <img src="@Model.BodyImageUrl1" class="mt-2 rounded" style="max-height: 80px;" alt="عکس بدن ۱" />
+                            }
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label font-weight-bold">عکس بدن ۲ (پهلو)</label>
+                            <input type="file" class="form-control" id="BodyImageFile2" name="BodyImageFile2" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model?.BodyImageUrl2))
+                            {
+                                <img src="@Model.BodyImageUrl2" class="mt-2 rounded" style="max-height: 80px;" alt="عکس بدن ۲" />
+                            }
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label font-weight-bold">عکس بدن ۳ (پشت)</label>
+                            <input type="file" class="form-control" id="BodyImageFile3" name="BodyImageFile3" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model?.BodyImageUrl3))
+                            {
+                                <img src="@Model.BodyImageUrl3" class="mt-2 rounded" style="max-height: 80px;" alt="عکس بدن ۳" />
+                            }
+                        </div>
+                    </div>
+                </fieldset>
 </div>
 
             <fieldset class="custom-groupbox mt-3">
@@ -163,42 +221,88 @@
 
         $("#BirthDate, #MembershipStartDate, #MembershipEndDate").persianDatepicker(datePickerConfig);
 
-        // 2. هندل کردن ارسال فرم
-        $("#CompleteInfoForm").on("submit", function (e) {
-        e.preventDefault();
+        
+        
+        
+            // 2. هندل کردن ارسال فرم
+            $("#CompleteInfoForm").on("submit", function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var btn = form.find("button[type='submit']");
+
+                // جمع‌آوری فیلدهای متنی
+                var textData = {
+                    Id: $("#Id").val(),
+                    FullName: $("#FullName").val(),
+                    Mobile: $("#Mobile").val(),
+                    Gender: parseInt($("#Gender").val()),
+                    BirthDate: $("#BirthDate").val(),
+                    ActivityLevelId: $("#ActivityLevelId").val(),
+                    ExperienceLevelId: $("#ExperienceLevelId").val(),
+                    Height: $("#Height").val(),
+                    FoodAllergies: $("#FoodAllergies").val(),
+                    MedicalConditions: $("#MedicalConditions").val(),
+                    Injuries: $("#Injuries").val(),
+                    Description: $("#Description").val()
+                };
+
+                // استفاده از FormData برای ارسال فایل همراه با متن
+                var formData = new FormData();
+
+                // اضافه کردن داده‌های متنی به FormData
+                for (var key in textData) {
+                    if (textData[key] !== null && textData[key] !== undefined) {
+                        formData.append(key, textData[key]);
+                    }
+                }
+
+                // اضافه کردن فایل‌ها به FormData
+                var files = ['ProfileImageFile', 'VideoFile', 'BodyImageFile1', 'BodyImageFile2', 'BodyImageFile3'];
+                files.forEach(function(fileId) {
+                    var fileInput = document.getElementById(fileId);
+                    if (fileInput.files && fileInput.files[0]) {
+                        formData.append(fileId, fileInput.files[0]);
+                    }
+                });
+
+                $.ajax({
+                    url: '/Admin/MemberProfile/CompleteInfo',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, // بسیار مهم برای FormData
+                    processData: false, // بسیار مهم برای FormData
+                    beforeSend: function () {
+                        btn.prop("disabled", true).text("در حال آپلود و ذخیره...");
+                    },
+                    success: function (result) {
+                        if (result.isSuccess) {
+                            Swal.fire('موفق!', result.message, 'success').then(() => {
+                                window.location.href = '/Admin/MemberDashboard';
+                            });
+                        } else {
+                            Swal.fire('هشدار!', result.message, 'warning');
+                        }
+                    },
 
 
 
-        var form = $(this);
-        var btn = form.find("button[type='submit']");
-        var formData = form.serialize();
+        error: function (xhr, status, error) {
+                           // این خط خطای واقعی سرور را در کنسول مرورگر نشان می‌دهد
+                           console.log("Server Error Details:", xhr.responseText);
+                           Swal.fire('خطا!', 'جزئیات خطا: ' + (xhr.responseText || error), 'error');
+                       },
 
-        $.ajax({
-        url: '/Admin/MemberProfile/CompleteInfo',
-        type: 'POST',
-        data: formData,
-        beforeSend: function () {
-        btn.prop("disabled", true).text("در حال ذخیره...");
-        },
-        success: function (result)
-        {
-        if (result.isSuccess) {
-        Swal.fire('موفق!', result.message, 'success').then(() => {
-        window.location.href = '/Admin/MemberDashboard'; // یا مسیر دلخواه
-        });
-        } else {
-        Swal.fire('هشدار!', result.message, 'warning');
-        }
-        },
-        error: function () {
-        Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داده است', 'error');
-        },
-        complete: function () {
-        btn.prop("disabled", false).text("ذخیره اطلاعات");
-        }
-        });
-        });
-        });
+                    complete: function () {
+                        btn.prop("disabled", false).text("ذخیره اطلاعات");
+                    }
+                });
+            });
+
+
+
+
+    });
 
         // ....................
         function setMembershipValidityStyle(isExpired) {

@@ -1,7 +1,5 @@
 ﻿using FitCore.Application.Services.NutritionProgramBuilder.Queries;
 
-using System.Collections.Generic;
-
 namespace EndPoint.Site.Areas.Admin.Models
 {
     public class NutritionProgramBuilderPageViewModel

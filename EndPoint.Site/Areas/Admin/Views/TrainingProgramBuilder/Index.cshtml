@@ -528,12 +528,14 @@
                         </div>
                     </div>
                     <button type="button" class="close text-white"
-                            data-dismiss="modal" style="opacity:0.7;">&times;</button>
+                            data-dismiss="modal" style="opacity:0.7;">
+                        &times;
+                    </button>
                 </div>
 
                 <div class="modal-body" style="padding:0;">
 
-                    <!-- ناحیه پیام موفقیت (بالای فرم) -->
+                    <!-- ناحیه پیام موفقیت -->
                     <div id="addExerciseSuccessBanner" style="display:none;
                          background:#edfaf5;border-bottom:2px solid #00C896;
                          padding:10px 20px;font-size:13px;color:#276749;">
@@ -558,6 +560,38 @@
 
                     <!-- فرم -->
                     <div style="padding:16px 20px;">
+
+                        @* ======== نوار فیلتر گروه عضلانی ======== *@
+                        @{
+                            var muscleGroups = ViewBag.MuscleGroups as List<SelectListItem>;
+                        }
+                        <div class="exercise-muscle-filter-bar mb-3 p-3 rounded-3"
+                             style="background:linear-gradient(135deg,#ebf8ff,#f0fff4);border:1px solid #bee3f8;">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div style="font-size:13px;font-weight:700;color:#2b6cb0;white-space:nowrap;">
+                                    <i class="fa fa-filter me-1"></i> فیلتر عضله:
+                                </div>
+                                <select class="form-control form-control-sm" id="MuscleGroupFilter"
+                                        style="border-radius:8px;max-width:300px;border:1px solid #90cdf4;font-size:13px;">
+                                    <option value="">همه گروه‌های عضلانی</option>
+                                    @if (muscleGroups != null && muscleGroups.Count > 0)
+                                    {
+                                        foreach (var mg in muscleGroups)
+                                        {
+                                            <option value="@mg.Value">@mg.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span id="exerciseFilterCount" class="badge rounded-pill"
+                                      style="background:#3182ce;color:#fff;font-size:11px;display:none;"></span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        id="btnClearMuscleGroupFilter"
+                                        style="border-radius:8px;font-size:12px;display:none;">
+                                    <i class="fa fa-times me-1"></i> حذف فیلتر
+                                </button>
+                            </div>
+                        </div>
+
                         <form id="addExerciseForm">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="TrainingDayId" id="AddExercise_TrainingDayId" />
@@ -569,9 +603,12 @@
                                 <select class="form-control js-select2-modal"
                                         name="ExerciseId" id="AddExercise_ExerciseId" required>
                                     <option value="">جستجو و انتخاب حرکت...</option>
-                                    @foreach (var ex in Model.Exercises)
+                                    @if (Model.Exercises != null)
                                     {
-                                        <option value="@ex.Value">@ex.Text</option>
+                                        foreach (var ex in Model.Exercises)
+                                        {
+                                            <option value="@ex.Value" data-muscle-id="@ex.MuscleGroupId">@ex.Text</option>
+                                        }
                                     }
                                 </select>
                                 <!-- پیام تکراری -->
@@ -614,8 +651,8 @@
                             <div class="form-group mb-0">
                                 <label style="font-size:12px;font-weight:700;color:#4a5568;">یادداشت مربی</label>
                                 <textarea class="form-control" name="CoachNote"
-                                          id="AddExercise_CoachNote" rows="2"
-                                          placeholder="نکات تکنیکی، تمپو، توجه ویژه..."></textarea>
+                                      id="AddExercise_CoachNote" rows="2"
+                                      placeholder="نکات تکنیکی، تمپو، توجه ویژه..."></textarea>
                             </div>
                         </form>
                     </div>
@@ -644,7 +681,6 @@
             </div>
         </div>
     </div>
-
     <!-- ویرایش حرکت -->
     <div class="modal fade" id="editExerciseModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
@@ -1514,6 +1550,105 @@
                 }
             });
         }
+
+
+
+
+
+
+
+        // ============================================================
+        // فیلتر گروه عضلانی در مودال افزودن حرکت
+        // ============================================================
+        var _allExerciseOptions = [];
+
+         $(document).ready(function () {
+            // جمع‌آوری تمام آپشن‌های حرکت همراه با MuscleGroupId
+            $('#AddExercise_ExerciseId option:not(:first)').each(function () {
+                _allExerciseOptions.push({
+                    value: $(this).val(),
+                    text: $(this).text(),
+                    muscleId: $(this).attr('data-muscle-id') || ''
+                });
+            });
+        });
+
+        // بازسازی لیست حرکات بر اساس فیلتر
+        function rebuildExerciseOptions(selectedMuscleId) {
+            var $exerciseSelect = $('#AddExercise_ExerciseId');
+            var currentVal = $exerciseSelect.val();
+
+            // حذف همه آپشن‌ها به جز placeholder اول
+            $exerciseSelect.find('option:not(:first)').remove();
+
+            var filteredCount = 0;
+            var optionsHtml = '';
+
+            for (var i = 0; i < _allExerciseOptions.length; i++) {
+                var opt = _allExerciseOptions[i];
+
+                // اگر فیلتری انتخاب نشده یا عضله مطابقت دارد
+                if (!selectedMuscleId || String(opt.muscleId) === String(selectedMuscleId)) {
+                    var selected = (opt.value === currentVal) ? ' selected' : '';
+                    optionsHtml += '<option value="' + opt.value + '" data-muscle-id="' + opt.muscleId + '"' + selected + '>' + opt.text + '</option>';
+                    filteredCount++;
+                }
+            }
+
+            $exerciseSelect.append(optionsHtml);
+
+            // اگر مقدار قبلی در لیست فیلترشده نبود، ریست کن
+            if (currentVal && !$exerciseSelect.find('option[value="' + currentVal + '"]').length) {
+                $exerciseSelect.val('');
+            }
+
+            // آپدیت select2
+            $exerciseSelect.trigger('change');
+
+            // نمایش تعداد نتایج
+            var $countBadge = $('#exerciseFilterCount');
+            if (selectedMuscleId) {
+                $countBadge.text(filteredCount + ' حرکت');
+                $countBadge.show();
+                $('#btnClearMuscleGroupFilter').show();
+            } else {
+                $countBadge.hide();
+                $('#btnClearMuscleGroupFilter').hide();
+            }
+        }
+
+        // تغییر فیلتر گروه عضلانی
+         $(document).on('change', '#MuscleGroupFilter', function () {
+            rebuildExerciseOptions($(this).val());
+        });
+
+        // دکمه حذف فیلتر
+         $(document).on('click', '#btnClearMuscleGroupFilter', function () {
+            $('#MuscleGroupFilter').val('');
+            rebuildExerciseOptions('');
+        });
+
+        // ریست کامل فیلتر هنگام باز شدن مودال
+         $(document).on('shown.bs.modal', '#addExerciseModal', function () {
+            $('#MuscleGroupFilter').val('');
+            $('#btnClearMuscleGroupFilter').hide();
+            $('#exerciseFilterCount').hide();
+
+            // بازسازی مجدد آرایه
+            _allExerciseOptions = [];
+            $('#AddExercise_ExerciseId option:not(:first)').each(function () {
+                _allExerciseOptions.push({
+                    value: $(this).val(),
+                    text: $(this).text(),
+                    muscleId: $(this).attr('data-muscle-id') || ''
+                });
+            });
+
+            rebuildExerciseOptions('');
+        });
+
+
+
     </script>
 
     <style>

@@ -40,7 +40,11 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
         {
-            var isAdmin = User.IsAdmin();
+            // ✅ استفاده از IsInRole به جای IsAdmin
+            // چون IsAdmin برای مدیر باشگاه هم true برمی‌گرداند، باید نقش دقیق را چک کنیم
+            // (نام "SuperAdmin" را مطابق با نام نقش مدیر کل در دیتابیس خودتان قرار دهید)
+            bool isAdmin = User.IsAdmin();
+            bool isTrainer = User.IsTrainer();
 
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -49,20 +53,32 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var appUserId = long.Parse(userIdValue);
 
+            long? gymId = null;
+
+            // ✅ فقط اگر کاربر مدیر کل نبود، شناسه باشگاه او را استخراج کن
+            if (isAdmin || isTrainer)
+            {
+                gymId = await _context.Users
+                    .Where(x => x.Id == appUserId)
+                    .Select(x => x.GymId)
+                    .FirstOrDefaultAsync();
+            }
+
             var request = new GetTrainingProgramsRequestDto
             {
                 AppUserId = appUserId,
                 Page = page,
                 PageSize = PageSize,
                 SearchKey = SearchKey,
-                IsAdmin = isAdmin
+                IsAdmin = isAdmin,
+                IsTriner = isTrainer,
+                GymId = gymId
             };
 
             var result = await _trainingProgramFacad.GetTrainingProgramsService.Execute(request);
 
             return View(result.Data);
         }
-
         //====================================================
         // Create - GET
         //====================================================
