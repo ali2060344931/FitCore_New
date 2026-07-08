@@ -236,6 +236,8 @@ namespace FitCore.Application.Services.Member.Queries
 
                     countBodyMeasurement = x.Member != null && measurementCounts.ContainsKey(x.Member.Id)
                                           ? measurementCounts[x.Member.Id] : 0,
+
+                    ProfileImageUrl = x.Member?.ProfileImageUrl,
                 })
                 .ToList();
 

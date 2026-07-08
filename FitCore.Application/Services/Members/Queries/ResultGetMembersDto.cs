@@ -13,5 +13,7 @@ namespace FitCore.Application.Services.Member.Queries
         public int PageSize { get; set; }
         public int Rows { get; set; }
 
+        public string ProfileImageUrl { get; set; }
+
     }
 }

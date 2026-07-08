@@ -1,63 +1,149 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-// ---- این ۳ خط فراموش شده بودند و باعث خطا شدند ----
+﻿using FitCore.Application.Common.Options;
+
 using ImageMagick;
-using Xabe.FFmpeg;
-using Xabe.FFmpeg.Downloader;
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FitCore.Application.Services
 {
     public interface IFileCompressionService
     {
-        Task<string> SaveAndCompressImageAsync(IFormFile file, string folderPath);
-        Task<string> SaveAndCompressVideoAsync(IFormFile file, string folderPath);
+        Task<string> SaveAndCompressImageAsync(
+            IFormFile file,
+            long gymId,
+            StorageFolder folder);
+
+        Task<string> SaveAndCompressVideoAsync(
+            IFormFile file,
+            long gymId,
+            StorageFolder folder);
+
+        Task<string> ReplaceImageAsync(
+            IFormFile newFile,
+            string oldFileUrl,
+            long gymId,
+            StorageFolder folder);
+
+        Task<string> ReplaceVideoAsync(
+            IFormFile newFile,
+            string oldFileUrl,
+            long gymId,
+            StorageFolder folder);
+
+        void DeleteFile(string fileUrl);
+
+        bool FileExists(string fileUrl);
+
+
+    }
+
+    public enum StorageFolder
+    {
+        Members,
+        Trainers,
+        Gyms,
+        Coaches,
+        Foods,
+        Exercises,
+        Documents,
+        Videos,
+        Temp
     }
 
     public class FileCompressionService : IFileCompressionService
     {
         private readonly IWebHostEnvironment _env;
+        private readonly FileStorageOptions _options;
 
-        public FileCompressionService(IWebHostEnvironment env)
+        public FileCompressionService(
+            IWebHostEnvironment env,
+            IOptions<FileStorageOptions> options)
         {
             _env = env;
+            _options = options.Value;
         }
 
-        public async Task<string> SaveAndCompressImageAsync(IFormFile file, string folderPath)
+
+        public async Task<string> SaveAndCompressImageAsync(
+            IFormFile file,
+            long gymId,
+            StorageFolder folder)
+        {
+            try
+            {
+                if (file == null || file.Length == 0) return null;
+
+                //var uploadsFolder = Path.Combine(_env.WebRootPath, folderPath);
+
+
+                System.IO.File.WriteAllText(
+    Path.Combine(AppContext.BaseDirectory, "StoragePath.txt"),
+    _options.RootPath);
+
+                var uploadsFolder = Path.Combine(
+                    _options.RootPath,
+                    $"Gym_{gymId}",
+                    folder.ToString());
+
+
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                    Console.WriteLine(filePath);
+                }
+
+                using (var image = new MagickImage(filePath))
+                {
+                    //if (image.Width > 800) image.Resize(800, 0);
+                    //image.Quality = 80;
+                    //image.Strip();
+
+
+                    await image.WriteAsync(filePath);
+                }
+
+                //return $"/{folderPath}/{uniqueFileName}";
+                return $"/uploads/Gym_{gymId}/{folder}/{uniqueFileName}";
+            }
+            catch (Exception ex)
+            {
+                var logFile = Path.Combine(AppContext.BaseDirectory, "UploadError.txt");
+
+                File.WriteAllText(logFile,
+                    ex.ToString());
+
+                throw;
+            }
+        }
+
+        public async Task<string> SaveAndCompressVideoAsync(
+            IFormFile file,
+            long gymId,
+            StorageFolder folder)
         {
             if (file == null || file.Length == 0) return null;
 
-            var uploadsFolder = Path.Combine(_env.WebRootPath, folderPath);
-            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            //var uploadsFolder = Path.Combine(_env.WebRootPath, folderPath);
 
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            var uploadsFolder = Path.Combine(
+                _options.RootPath,
+                $"Gym_{gymId}",
+                folder.ToString());
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            using (var image = new MagickImage(filePath))
-            {
-                if (image.Width > 800) image.Resize(800, 0);
-                image.Quality = 80;
-                image.Strip();
-                await image.WriteAsync(filePath);
-            }
-
-            return $"/{folderPath}/{uniqueFileName}";
-        }
-
-        public async Task<string> SaveAndCompressVideoAsync(IFormFile file, string folderPath)
-        {
-            if (file == null || file.Length == 0) return null;
-
-            var uploadsFolder = Path.Combine(_env.WebRootPath, folderPath);
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
             var tempFileName = Guid.NewGuid() + "_temp" + Path.GetExtension(file.FileName);
@@ -143,7 +229,114 @@ namespace FitCore.Application.Services
                 System.IO.File.Delete(tempPath);
             }
 
-            return $"/{folderPath}/{finalFileName}";
+            //return $"/{folderPath}/{finalFileName}";
+            return $"/uploads/Gym_{gymId}/{folder}/{finalFileName}";
+        }
+
+
+
+        public void DeleteFile(string fileUrl)
+        {
+            var path = GetPhysicalPath(fileUrl);
+
+            if (path == null)
+                return;
+
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+
+        private string GetPhysicalPath(string fileUrl)
+        {
+            if (string.IsNullOrWhiteSpace(fileUrl))
+                return null;
+
+            var relative = fileUrl
+                .Replace("/uploads/", "")
+                .Replace("/", Path.DirectorySeparatorChar.ToString());
+
+            return Path.Combine(_options.RootPath, relative);
+        }
+
+        public bool FileExists(string fileUrl)
+        {
+            var path = GetPhysicalPath(fileUrl);
+
+            if (path == null)
+                return false;
+
+            return File.Exists(path);
+        }
+
+
+
+
+        public async Task<string> ReplaceImageAsync(
+    IFormFile newFile,
+    string oldFileUrl,
+    long gymId,
+    StorageFolder folder)
+        {
+            if (newFile == null)
+                return oldFileUrl;
+
+            DeleteFile(oldFileUrl);
+
+            return await SaveAndCompressImageAsync(
+                newFile,
+                gymId,
+                folder);
+        }
+
+
+
+        public async Task<string> ReplaceVideoAsync(
+    IFormFile newFile,
+    string oldFileUrl,
+    long gymId,
+    StorageFolder folder)
+        {
+            if (newFile == null)
+                return oldFileUrl;
+
+            DeleteFile(oldFileUrl);
+
+            return await SaveAndCompressVideoAsync(
+                newFile,
+                gymId,
+                folder);
+        }
+
+    }
+
+
+    public static class FileStorageHelper
+    {
+        public static string GetStoragePath(
+            IConfiguration configuration,
+            IWebHostEnvironment env)
+        {
+            var root = configuration["FileStorage:RootPath"];
+
+            if (string.IsNullOrWhiteSpace(root))
+                root = "App_Data";
+
+            if (!Path.IsPathRooted(root))
+            {
+                root = Path.Combine(env.ContentRootPath, root);
+            }
+
+            Directory.CreateDirectory(root);
+
+            return root;
         }
     }
+
+
+
+
+
+
 }

@@ -1,8 +1,10 @@
 ﻿using FitCore.Application.Contexts;
+using FitCore.Application.Services;
 using FitCore.Application.Services.Members.Commands;
 using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.Members.Queries.ReportMembers;
 using FitCore.Common;
+using FitCore.Common.Dto;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -25,6 +27,9 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
         private readonly IGetMemberBodyMeasurementsService _getMemberBodyMeasurementsService;
         private readonly IRemoveBodyMeasurementService _removeBodyMeasurementService;
         private readonly IDataBaseContext _context;
+        private readonly IFileCompressionService _fileService;
+
+
         public MemberProfileController(
             IAddOrUpdateMemberService addOrUpdateMemberService,
             IGetMemberByAppUserIdService getMemberByAppUserIdService,
@@ -32,7 +37,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             IEditMemberBodyMeasurementService editMemberBodyMeasurementService,
             IDataBaseContext context,
             IGetMemberBodyMeasurementsService getMemberBodyMeasurementsService,
-            IRemoveBodyMeasurementService removeBodyMeasurementService)
+            IRemoveBodyMeasurementService removeBodyMeasurementService, IFileCompressionService fileService)
         {
             _addOrUpdateMemberService = addOrUpdateMemberService;
             _getMemberByAppUserIdService = getMemberByAppUserIdService;
@@ -41,6 +46,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             _context = context;
             _getMemberBodyMeasurementsService = getMemberBodyMeasurementsService;
             _removeBodyMeasurementService = removeBodyMeasurementService;
+            _fileService = fileService;
         }
 
 
@@ -141,13 +147,75 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 
 
 
-        [HttpPost]
-        public IActionResult DeleteMedia(string mediaType)
+        public ResultDto DeleteMedia(long appUserId, string mediaType)
         {
-            var appUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var result = _addOrUpdateMemberService.DeleteMedia(appUserId, mediaType);
-            return Json(result);
+            var member = _context.Members
+                .FirstOrDefault(x => x.AppUserId == appUserId);
+
+            if (member == null)
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "عضو یافت نشد"
+                };
+            }
+
+            string fileUrl = null;
+
+            switch (mediaType)
+            {
+                case "ProfileImage":
+                    fileUrl = member.ProfileImageUrl;
+                    member.ProfileImageUrl = null;
+                    break;
+
+                case "Video":
+                    fileUrl = member.VideoUrl;
+                    member.VideoUrl = null;
+                    break;
+
+                case "BodyImage1":
+                    fileUrl = member.BodyImageUrl1;
+                    member.BodyImageUrl1 = null;
+                    break;
+
+                case "BodyImage2":
+                    fileUrl = member.BodyImageUrl2;
+                    member.BodyImageUrl2 = null;
+                    break;
+
+                case "BodyImage3":
+                    fileUrl = member.BodyImageUrl3;
+                    member.BodyImageUrl3 = null;
+                    break;
+
+                default:
+                    return new ResultDto
+                    {
+                        IsSuccess = false,
+                        Message = "نوع فایل نامعتبر است"
+                    };
+            }
+
+            _fileService.DeleteFile(fileUrl);
+
+            _context.SaveChanges();
+
+            return new ResultDto
+            {
+                IsSuccess = true,
+                Message = "فایل با موفقیت حذف شد."
+            };
         }
+
+        //[HttpPost]
+        //public IActionResult DeleteMedia(string mediaType)
+        //{
+        //    var appUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        //    var result = _addOrUpdateMemberService.DeleteMedia(appUserId, mediaType);
+        //    return Json(result);
+        //}
 
         [HttpGet]
         public IActionResult AddBodyMeasurement(string? memberId)

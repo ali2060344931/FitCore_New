@@ -2,6 +2,8 @@ using EndPoint.Site.Areas.Admin.Models;
 
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
+using FitCore.Application.Services.NutritionProgramReports.Queries;
+using FitCore.Application.Services.TrainingProgramReports.Queries;
 using FitCore.Application.Services.TrainingPrograms.Commands.AddTrainingProgram;
 using FitCore.Application.Services.TrainingPrograms.Commands.EditTrainingProgram;
 using FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingPrograms;
@@ -25,13 +27,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly ITrainingProgramFacad _trainingProgramFacad;
         private readonly IDataBaseContext _context;
+        private readonly IGetTrainingProgramPdfService _pdfService;
 
         public TrainingProgramController(
             ITrainingProgramFacad trainingProgramFacad,
-            IDataBaseContext context)
+            IDataBaseContext context,
+            IGetTrainingProgramPdfService pdfService)
         {
             _trainingProgramFacad = trainingProgramFacad;
             _context = context;
+            _pdfService = pdfService;
         }
 
         //====================================================
@@ -313,5 +318,30 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             ViewBag.TrainingGoalTypes = goalTypes;
         }
+
+
+
+
+
+
+
+        [HttpGet]
+        public IActionResult PrintProgram(string id, [FromServices] IGetNutritionProgramPdfService service)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            long Id = SecurityUtils.DecryptId(id);
+
+
+            //var result = service.Execute(Id);
+
+            var pdfBytes = _pdfService.Execute(Id);
+            //if (!result.IsSuccess)
+            //    return NotFound();
+
+            return File(pdfBytes, "application/pdf", "TrainingProgram.pdf");
+        }
+
     }
 }

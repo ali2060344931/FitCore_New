@@ -31,6 +31,15 @@
 
 }
 
+@{
+    string memberImgUrl = ViewBag.MemberProfileImage as string;
+
+    string frontImg = ViewBag.FrontImage as string;
+    string sideImg = ViewBag.SideImage as string;
+    string backImg = ViewBag.BackImage as string;
+}
+
+
 
 <!-- کدهای CSS برای زیباسازی پنجره -->
 <style>
@@ -73,6 +82,33 @@
             color: #bbb;
             text-decoration: none;
         }
+
+
+
+
+
+
+    .body-photo {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background-position: center;
+        background-size: cover;
+        border: 2px solid #e2e8f0;
+        cursor: pointer;
+        transition: .25s;
+        flex-shrink: 0;
+    }
+
+        .body-photo:hover {
+            transform: scale(1.15);
+            border-color: #00C896;
+            box-shadow: 0 0 10px rgba(0,200,150,.35);
+        }
+
+
+
+
 </style>
 <div class="page-content-wrapper builder-wrapper">
 
@@ -100,9 +136,7 @@
 
                     <div class="program-meta-container d-flex align-items-center gap-2 flex-wrap">
 
-                        @{
-                            string memberImgUrl = ViewBag.MemberProfileImage as string;
-                        }
+
                         <div class="program-meta-item">
                             @if (!string.IsNullOrEmpty(memberImgUrl))
                             {
@@ -124,10 +158,10 @@
                                     🎂 سن: @Model.MemberAge سال
                                 </span>
                             }
-
-
-
                         </div>
+
+
+
 
                         <div class="program-meta-item">
                             <span class="meta-label">هدف:</span>
@@ -148,6 +182,39 @@
 
 
                     </div>
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        @if (!string.IsNullOrEmpty(frontImg))
+                        {
+                            <div class="body-photo"
+                                 title="نمای روبرو"
+                                 style="background-image:url('@frontImg')"
+                                 onclick="openImageModal('@frontImg')">
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(sideImg))
+                        {
+                            <div class="body-photo"
+                                 title="نمای پهلو"
+                                 style="background-image:url('@sideImg')"
+                                 onclick="openImageModal('@sideImg')">
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(backImg))
+                        {
+                            <div class="body-photo"
+                                 title="نمای پشت"
+                                 style="background-image:url('@backImg')"
+                                 onclick="openImageModal('@backImg')">
+                            </div>
+                        }
+
+                    </div>
+
+
                 </div>
 
                 <div class="program-toolbar mt-3 pt-3 border-top">
@@ -1993,10 +2060,6 @@
         });
 
 
-
-
-
-
         function openDeleteAllDaysModal(programId) {
         document.getElementById('DeleteAllDays_ProgramId').value = programId;
         document.getElementById('deleteAllDaysMessage').innerHTML = '';
@@ -2052,34 +2115,7 @@
 
 
 
-        // function sendProgramNotificationToUser(programId) {
-        // استفاده از پنجره تایید پیش‌فرض خود مرورگر
-        // var isConfirmed = confirm('آیا از ارسال اطلاع‌رسانی به کاربر در ربات بله مطمئن هستید؟');
 
-        // if (isConfirmed) {
-        // گرفتن توکن امنیتی
-        // var token = $('input[name="__RequestVerificationToken"]').val();
-
-        // $.ajax({
-        // url: '/Admin/NutritionProgramBuilder/SendNotification',
-        // type: 'POST',
-        // data: {
-        // __RequestVerificationToken: token,
-        // programId: programId
-        // },
-        // success: function (response) {
-        // if (response.isSuccess) {
-        // alert('موفق: ' + response.message);
-        // } else {
-        // alert('خطا: ' + response.message);
-        // }
-        // },
-        // error: function (xhr, status, error) {
-        // alert('خطای سرور: درخواست با خطا مواجه شد. (شماره خطا: ' + xhr.status + ')');
-        // }
-        // });
-        // }
-        // }
                 function sendProgramNotificationToUser(programId) {
 
             // ۱. نمایش پنجره تایید با SweetAlert
@@ -2234,17 +2270,20 @@
         }
 
         function closeImageModal(event) {
-        // اگر روی خود عکس کلیک شد چیزی اتفاق نیفتد (فقط با کلیک روی علامت X یا پس زمینه بسته شود)
+
         if (!event || event.target === document.getElementById("imageModal")) {
         document.getElementById("imageModal").style.display = "none";
         }
         }
 
-        // بسته شدن پنجره با زدن دکمه Escape روی کیبورد
         document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
         document.getElementById("imageModal").style.display = "none";
         }
         });
+
+
+
+
     </script>
 }

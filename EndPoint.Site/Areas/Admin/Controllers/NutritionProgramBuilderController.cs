@@ -117,6 +117,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             var lookupResult = _getBuilderLookupService.Execute();
 
+
             ViewBag.CategoryTypes = _Context.FoodCategoryTypes
         .OrderBy(x => x.Name)
         .Select(x => new SelectListItem
@@ -157,26 +158,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 {
                     try
                     {
-                        //string[] parts = vm.MemberDetails.BirthDate.Split(new[] { '/', '-' });
-                        //if (parts.Length >= 3)
-                        //{
-                        //    int y = int.Parse(parts[0]);
-                        //    int m = int.Parse(parts[1]);
-                        //    int d = int.Parse(parts[2]);
-
-                        //    PersianCalendar pc = new PersianCalendar();
-                        //    var birthDate = pc.ToDateTime(y, m, d,0,0,0,0);
-
-                        //    int years = DateTime.Today.Year - birthDate.Year;
-                        //    if (birthDate.Date > DateTime.Today) years--;
-
-                        //    int days = (DateTime.Today - birthDate.AddYears(years)).Days;
-
-                        //    if (years >= 0)
-                        //    {
-                        //        vm.MemberAge = years;
-                        //    }
-                        //}
 
                         vm.MemberAge = Convert.ToInt32(PersianDateCalse.GetAge(vm.MemberDetails.BirthDate, PersianDateCalse.AgeDisplayMode.Year));
                     }
@@ -187,11 +168,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             // پیدا کردن عضو و پاس دادن آدرس عکس از طریق ViewBag
             var member = _Context.Members.Where(c => c.Id == memberId).First();
+            
             ViewBag.MemberProfileImage = member?.ProfileImageUrl;
 
-
-
-
+            ViewBag.FrontImage = member?.BodyImageUrl1;
+            ViewBag.SideImage = member?.BodyImageUrl2;
+            ViewBag.BackImage = member?.BodyImageUrl3;
 
             return View(vm);
         }

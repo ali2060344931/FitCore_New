@@ -49,15 +49,6 @@ public class AddNewMemberService : IAddNewMemberService
         {
 
 
-            // ===== پردازش و فشرده‌سازی فایل‌ها =====
-            var folderPath = "uploads/members";
-
-            request.ProfileImageUrl = await _fileService.SaveAndCompressImageAsync(request.ProfileImageFile, folderPath);
-            request.VideoUrl = await _fileService.SaveAndCompressVideoAsync(request.VideoFile, folderPath);
-            request.BodyImageUrl1 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile1, folderPath);
-            request.BodyImageUrl2 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile2, folderPath);
-            request.BodyImageUrl3 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile3, folderPath);
-            // =========================================
 
 
 
@@ -93,6 +84,20 @@ public class AddNewMemberService : IAddNewMemberService
                     Message = "باشگاه مدیر مشخص نیست"
                 };
             }
+
+
+
+            // ===== پردازش و فشرده‌سازی فایل‌ها =====
+
+            var memberProfileImageUrl = _context.Members.Where(c => c.AppUserId == request.AppUserId).FirstOrDefault();
+
+            request.ProfileImageUrl = await _fileService.ReplaceImageAsync(request.ProfileImageFile, memberProfileImageUrl.ProfileImageUrl, (long) gymId,StorageFolder.Members);
+            request.VideoUrl = await _fileService.ReplaceVideoAsync(request.VideoFile, memberProfileImageUrl.VideoUrl, (long)gymId, StorageFolder.Members);
+            request.BodyImageUrl1 = await _fileService.ReplaceImageAsync(request.BodyImageFile1, memberProfileImageUrl.BodyImageUrl1, (long)gymId, StorageFolder.Members);
+            request.BodyImageUrl2 = await _fileService.ReplaceImageAsync(request.BodyImageFile2, memberProfileImageUrl.BodyImageUrl2, (long)gymId, StorageFolder.Members);
+            request.BodyImageUrl3 = await _fileService.ReplaceImageAsync(request.BodyImageFile3, memberProfileImageUrl.BodyImageUrl3, (long)gymId, StorageFolder.Members);
+            // =========================================
+
 
             //==================================================
             // Trim

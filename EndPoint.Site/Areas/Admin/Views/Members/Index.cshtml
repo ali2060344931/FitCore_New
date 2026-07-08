@@ -168,6 +168,11 @@
         background-color: #fff3cd;
         border: 1px solid #ffecb5;
     }
+
+
+
+
+
 </style>
 <div class="container-fluid mt-4">
 
@@ -233,7 +238,8 @@
 
                         /* اضافه کردن کلاس قرمز در صورت غیرفعال بودن */
                         <tr class="@(item.IsActive == false ? "row-inactive" : "")">
-
+                            
+                            
                             <td>
                                 <i class="fa fa-user text-muted me-1"></i>
                                 <strong>@item.FullName</strong>
@@ -387,3 +393,5 @@
     <partial name="~/Areas/Admin/Views/Shared/Partials/_TableCardEnd.cshtml" />
 
 </div>
+
+

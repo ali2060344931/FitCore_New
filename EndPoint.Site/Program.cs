@@ -1,5 +1,6 @@
 using EndPoint.Site.BaleBot.Handlers;
 
+using FitCore.Application.Common.Options;
 using FitCore.Application.Contexts;
 using FitCore.Application.FacadPatterns;
 using FitCore.Application.Interfaces.IGym;
@@ -52,11 +53,13 @@ using FluentValidation.AspNetCore;
 using GymBot.Services;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 using QuestPDF.Drawing;
@@ -64,7 +67,7 @@ using QuestPDF.Infrastructure;
 
 using System;
 using System.IO;
-
+using System.Threading.Tasks;
 
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
@@ -155,14 +158,56 @@ builder.Services
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-
     options.LoginPath = "/Admin/Auth/Login";
     options.AccessDeniedPath = "/Admin/Auth/Login";
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
 
+    options.Cookie.Name = "FitCore.Auth";
+
     options.Cookie.HttpOnly = true;
+
+    options.Cookie.IsEssential = true;
+
+    options.Cookie.SecurePolicy =
+        CookieSecurePolicy.Always;
+
+    options.Cookie.SameSite =
+        SameSiteMode.Lax;
+
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
 });
+//builder.Services.ConfigureApplicationCookie(options =>
+//{
+
+//    options.LoginPath = "/Admin/Auth/Login";
+//    options.AccessDeniedPath = "/Admin/Auth/Login";
+
+//    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+//    options.SlidingExpiration = true;
+
+//    options.Cookie.Name = "FitCore.Auth";
+
+//    options.Cookie.HttpOnly = true;
+
+//    options.Cookie.IsEssential = true;
+
+//    options.Cookie.SameSite = SameSiteMode.Lax;
+
+//    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+//});
 
 #endregion
 
@@ -178,7 +223,8 @@ builder.Services
 
 #region Dependency Injection
 
-
+//builder.Services.Configure<FileStorageOptions>(
+//    builder.Configuration.GetSection("FileStorage"));
 
 builder.Services.AddAuthorization(options =>
 {
@@ -200,8 +246,13 @@ builder.Services.AddScoped<ISmsService, SmsService>();
 
 builder.Services.AddMemoryCache();
 
+
+
+
 builder.Services.AddSingleton<ILoginTokenStore,
     MemoryLoginTokenStore>();
+
+
 
 // ===== Gym =====
 
@@ -339,7 +390,17 @@ builder.Services.AddScoped<
     IUserClaimsPrincipalFactory<AppUser>,
     CustomClaimsPrincipalFactory>();
 
+
+
+
 #endregion
+
+
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromDays(30);
+});
+
 
 #region MVC
 
@@ -355,6 +416,20 @@ builder.Services.Configure<IISServerOptions>(options =>
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
     options.Limits.MaxRequestBodySize = 104857600; // 100 MB
+});
+
+
+
+
+
+var storagePath =
+    FileStorageHelper.GetStoragePath(
+        builder.Configuration,
+        builder.Environment);
+
+builder.Services.Configure<FileStorageOptions>(options =>
+{
+    options.RootPath = storagePath;
 });
 
 
@@ -401,7 +476,31 @@ FontManager.RegisterFont(File.OpenRead("wwwroot/fonts/Vazir-Regular.ttf"));
 FontManager.RegisterFont(File.OpenRead("wwwroot/fonts/Vazir-Bold.ttf"));
 app.UseHttpsRedirection();
 
+
+
+
+
+//*************
+
+
+
+
 app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(storagePath),
+    RequestPath = "/uploads"
+});
+
+//*************
+
+
+
+
+
+
+
 
 app.UseRouting();
 

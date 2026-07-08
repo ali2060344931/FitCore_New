@@ -51,23 +51,22 @@ namespace FitCore.Application.Services.Members.Commands
             }
 
             // ===== پردازش و فشرده‌سازی فایل‌ها =====
-            var folderPath = "uploads/members";
 
             // تبدیل .Result به await (بسیار مهم برای جلوگیری از قطع سرور)
             if (request.ProfileImageFile != null)
-                request.ProfileImageUrl = await _fileService.SaveAndCompressImageAsync(request.ProfileImageFile, folderPath);
+                request.ProfileImageUrl = await _fileService.ReplaceImageAsync(request.ProfileImageFile,member.ProfileImageUrl, (long)user.GymId,StorageFolder.Members);
 
             if (request.VideoFile != null)
-                request.VideoUrl = await _fileService.SaveAndCompressVideoAsync(request.VideoFile, folderPath);
+                request.VideoUrl = await _fileService.ReplaceVideoAsync(request.VideoFile, member.VideoUrl, (long)user.GymId, StorageFolder.Members);
 
             if (request.BodyImageFile1 != null)
-                request.BodyImageUrl1 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile1, folderPath);
+                request.BodyImageUrl1 = await _fileService.ReplaceImageAsync(request.BodyImageFile1, member.BodyImageUrl1, (long)user.GymId, StorageFolder.Members);
 
             if (request.BodyImageFile2 != null)
-                request.BodyImageUrl2 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile2, folderPath);
+                request.BodyImageUrl2 = await _fileService.ReplaceImageAsync(request.BodyImageFile2, member.BodyImageUrl2, (long)user.GymId, StorageFolder.Members);
 
             if (request.BodyImageFile3 != null)
-                request.BodyImageUrl3 = await _fileService.SaveAndCompressImageAsync(request.BodyImageFile3, folderPath);
+                request.BodyImageUrl3 = await _fileService.ReplaceImageAsync(request.BodyImageFile3, member.BodyImageUrl3, (long)user.GymId, StorageFolder.Members);
             // =========================================================
 
             if (member == null)

@@ -116,6 +116,21 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             }
             // ==================================================================
 
+            // پیدا کردن عضو و پاس دادن آدرس عکس از طریق ViewBag
+            var member = _context.Members.Where(c => c.Id == memberId).First();
+
+            ViewBag.MemberProfileImage = member?.ProfileImageUrl;
+
+            ViewBag.FrontImage = member?.BodyImageUrl1;
+            ViewBag.SideImage = member?.BodyImageUrl2;
+            ViewBag.BackImage = member?.BodyImageUrl3;
+
+
+
+
+
+
+
             return View(vm);
         }
         //====================================================
