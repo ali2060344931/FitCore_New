@@ -62,13 +62,14 @@
 
 <style>
     /* تنظیمات کانتینر اسکرول و هدر ثابت */
-    .custom-table-container {
-        max-height: 80vh; /* ارتفاع جدول تا 80 درصد صفحه */
-        overflow-y: auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
+.custom-table-container {
+    height: calc(100vh - 260px); /* عدد 260 را با توجه به هدر صفحه + سرچ باکس + فواصل تنظیم کن */
+    min-height: 420px;           /* برای مانیتورهای کوچک */
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
 
     /* استایل جدول - کاهش فونت base */
     .compact-table {
@@ -180,14 +181,15 @@
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
                  model='"لیست اعضای باشگاه"' />
 
-        <a asp-area="Admin"
+        @* <a asp-area="Admin"
            asp-controller="Members"
            asp-action="Create"
            class="btn btn-success disabled"
            aria-disabled="true"
            style="pointer-events: none; opacity: 0.65;">
             + ثبت عضو جدید
-        </a>
+        </a> *@
+
     </div>
 
     <partial name="~/Areas/Admin/Views/Shared/Partials/_SearchBox.cshtml"

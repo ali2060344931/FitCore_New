@@ -147,8 +147,23 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 
 
 
-        public ResultDto DeleteMedia(long appUserId, string mediaType)
+        [HttpPost]
+        public ResultDto DeleteMedia(string mediaType)
         {
+            // دریافت AppUserId از کاربر لاگین شده
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdValue))
+            {
+                return new ResultDto
+                {
+                    IsSuccess = false,
+                    Message = "لطفاً مجدداً وارد شوید"
+                };
+            }
+
+            var appUserId = long.Parse(userIdValue);
+
             var member = _context.Members
                 .FirstOrDefault(x => x.AppUserId == appUserId);
 
@@ -198,7 +213,11 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
                     };
             }
 
-            _fileService.DeleteFile(fileUrl);
+            // فقط در صورتی که فایلی وجود داشت حذف شود
+            if (!string.IsNullOrEmpty(fileUrl))
+            {
+                _fileService.DeleteFile(fileUrl);
+            }
 
             _context.SaveChanges();
 
@@ -208,14 +227,6 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
                 Message = "فایل با موفقیت حذف شد."
             };
         }
-
-        //[HttpPost]
-        //public IActionResult DeleteMedia(string mediaType)
-        //{
-        //    var appUserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        //    var result = _addOrUpdateMemberService.DeleteMedia(appUserId, mediaType);
-        //    return Json(result);
-        //}
 
         [HttpGet]
         public IActionResult AddBodyMeasurement(string? memberId)

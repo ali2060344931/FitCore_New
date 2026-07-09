@@ -8,21 +8,56 @@
     Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
 }
 
+<style>
+    /* افزایش z-index مدال برای قرارگیری روی تمام المان‌های صفحه */
+    .modal-backdrop {
+        z-index: 1050;
+    }
+
+    .modal {
+        z-index: 1060;
+    }
+</style>
+
+
+
+
+
 <div class="container-fluid mt-4">
     <div class="fc-form-container">
-       
-        <input type="hidden"
-               id="MembershipEndDate"
-               value="@Model?.MembershipEndDate" />
 
+
+        @* MembershipEndDateHidden *@
+        <input type="hidden" id="MembershipEndDateHidden" value="@Model?.MembershipEndDate" />
 
         <partial name="~/Areas/Admin/Views/Shared/Partials/_PageTitle.cshtml"
-                 model='"تکمیل اطلاعات جسمانی پروفایل"' />
+                 model='"تکمیل اطلاعات پروفایل"' />
 
         <form id="CompleteInfoForm">
-            <input type="hidden" name="Id" value="@Model?.Id" />
+            <input type="hidden" id="Id" name="Id" value="@Model?.Id" />
+
+            <fieldset class="custom-groupbox mb-4">
+                <legend>اطلاعات وضعیت عضویت</legend>
+                <div class="row">
+                    <div class="col-md-3">
+                        <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
+                                 model="Model?.MembershipStartDate"
+                                 view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ شروع عضویت" } }' />
+                    </div>
+                    <div class="col-md-3">
+                        <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
+                                 model="Model?.MembershipEndDate"
+                                 view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ پایان عضویت" } }' />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label font-weight-bold">مدت اعتبار عضویت</label>
+                        <input type="text" id="MembershipValidity" class="form-control bg-light fw-bold text-center" readonly />
+                    </div>
+                </div>
+            </fieldset>
 
             <div class="row">
+
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
                          model='new BaseInputViewModel { Id = "FullName", Name = "FullName", LabelName = Html.DisplayNameFor(m => m.FullName), Col = 3, Value = Model?.FullName, Disabled = false }' />
 
@@ -43,37 +78,10 @@
                              Id = "BirthDate",
                              Name = "BirthDate",
                              LabelName = Html.DisplayNameFor(m => m.BirthDate),
-                             Value = Model.BirthDate, // مقدار فعلی از دیتابیس برای فرم ویرایش
+                             Value = Model.BirthDate,
                              Col = 2,
                              Disabled = true
                          }' />
-
-
-<partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
-         model="Model?.MembershipStartDate"
-         view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ شروع عضویت" } }' />
-
-                <partial name="~/Areas/Admin/Views/Shared/Partials/_DisplayDate.cshtml"
-                         model="Model?.MembershipEndDate"
-                         view-data='new ViewDataDictionary(ViewData) { { "Label", "تاریخ پایان عضویت" } }' />
-
-
-@* <div class="col-md-2 mb-3">
-                    <label class="form-label font-weight-bold">مدت اعتبار عضویت</label>
-                    <input type="text" id="MembershipValidity" class="form-control bg-light fw-bold" readonly />
-                </div> *@
-
-<div class="col-md-2 mb-3">
-                    <label class="form-label font-weight-bold">مدت اعتبار عضویت</label>
-                    <!-- کلاس text-center به اینجا اضافه شد -->
-                    <input type="text" id="MembershipValidity" class="form-control bg-light fw-bold text-center" readonly />
-                </div>
-
-
-
-
-
-
 
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_SelectDropdown.cshtml"
                          model='new BaseInputViewModel { Id = "ActivityLevelId", Name = "ActivityLevelId", LabelName = "سطح فعالیت بدنی", Col = 3, Items = ViewBag.ActivityLevels, Value = Model?.ActivityLevelId?.ToString() }' />
@@ -84,14 +92,10 @@
                 <partial name="~/Areas/Admin/Views/Shared/Partials/_NumberInput.cshtml"
                          model='new BaseInputViewModel { Id = "Height", Name = "Height", LabelName = "قد (cm)", Col = 2, Value = Model?.Height.ToString() }' />
 
-
-
-
-
-
                 <!-- ردیف فایل های آپلودی -->
                 <fieldset class="custom-groupbox mt-3">
                     <legend>تصاویر و ویدیوی پروفایل</legend>
+
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="form-label font-weight-bold">عکس پرسنلی</label>
@@ -99,29 +103,44 @@
                             @if (!string.IsNullOrEmpty(Model?.ProfileImageUrl))
                             {
                                 <div id="preview-ProfileImage" style="position:relative; display:inline-block; margin-top:8px;">
-                                    <img src="@Model.ProfileImageUrl" class="rounded" style="max-height: 100px;" alt="عکس فعلی" />
-                                    <button type="button" class="btn btn-danger btn-sm" style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding: 2px 6px; font-size:10px; line-height:1;" onclick="deleteMedia('ProfileImage', 'preview-ProfileImage')">
+                                    <img src="@Model.ProfileImageUrl"
+                                         class="rounded img-thumbnail preview-img"
+                                         data-src="@Model.ProfileImageUrl"
+                                         style="max-height:100px; cursor:pointer;"
+                                         alt="عکس فعلی" />
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding:2px 6px; font-size:10px; line-height:1;"
+                                            onclick="event.stopPropagation(); deleteMedia('ProfileImage', 'preview-ProfileImage')">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
                             }
                         </div>
+
                         <div class="col-md-3 mb-3">
                             <label class="form-label font-weight-bold">ویدیو معرفی (حداکثر ۱ دقیقه)</label>
                             <input type="file" class="form-control" id="VideoFile" name="VideoFile" accept="video/*" />
                             @if (!string.IsNullOrEmpty(Model?.VideoUrl))
                             {
                                 <div id="preview-Video" style="position:relative; display:inline-block; margin-top:8px;">
-                                    <video controls class="rounded" style="max-height: 100px; max-width: 100%;">
+                                    <video controls class="rounded" style="max-height:100px; max-width:100%;">
                                         <source src="@Model.VideoUrl" type="video/mp4">
+                                        مرورگر شما از ویدیو پشتیبانی نمی‌کند.
                                     </video>
-                                    <button type="button" class="btn btn-danger btn-sm" style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding: 2px 6px; font-size:10px; line-height:1;" onclick="deleteMedia('Video', 'preview-Video')">
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding:2px 6px; font-size:10px; line-height:1;"
+                                            onclick="event.stopPropagation(); deleteMedia('Video', 'preview-Video')">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
                             }
                         </div>
                     </div>
+
                     <div class="row mt-2">
                         <div class="col-md-3 mb-3">
                             <label class="form-label font-weight-bold">عکس بدن ۱ (جلو)</label>
@@ -129,34 +148,60 @@
                             @if (!string.IsNullOrEmpty(Model?.BodyImageUrl1))
                             {
                                 <div id="preview-BodyImage1" style="position:relative; display:inline-block; margin-top:8px;">
-                                    <img src="@Model.BodyImageUrl1" class="rounded" style="max-height: 80px;" alt="عکس بدن ۱" />
-                                    <button type="button" class="btn btn-danger btn-sm" style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding: 2px 6px; font-size:10px; line-height:1;" onclick="deleteMedia('BodyImage1', 'preview-BodyImage1')">
+                                    <img src="@Model.BodyImageUrl1"
+                                         class="rounded img-thumbnail preview-img"
+                                         data-src="@Model.BodyImageUrl1"
+                                         style="max-height:80px; cursor:pointer;"
+                                         alt="عکس بدن ۱" />
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding:2px 6px; font-size:10px; line-height:1;"
+                                            onclick="event.stopPropagation(); deleteMedia('BodyImage1', 'preview-BodyImage1')">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
                             }
                         </div>
+
                         <div class="col-md-3 mb-3">
                             <label class="form-label font-weight-bold">عکس بدن ۲ (پهلو)</label>
                             <input type="file" class="form-control" id="BodyImageFile2" name="BodyImageFile2" accept="image/*" />
                             @if (!string.IsNullOrEmpty(Model?.BodyImageUrl2))
                             {
                                 <div id="preview-BodyImage2" style="position:relative; display:inline-block; margin-top:8px;">
-                                    <img src="@Model.BodyImageUrl2" class="rounded" style="max-height: 80px;" alt="عکس بدن ۲" />
-                                    <button type="button" class="btn btn-danger btn-sm" style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding: 2px 6px; font-size:10px; line-height:1;" onclick="deleteMedia('BodyImage2', 'preview-BodyImage2')">
+                                    <img src="@Model.BodyImageUrl2"
+                                         class="rounded img-thumbnail preview-img"
+                                         data-src="@Model.BodyImageUrl2"
+                                         style="max-height:80px; cursor:pointer;"
+                                         alt="عکس بدن ۲" />
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding:2px 6px; font-size:10px; line-height:1;"
+                                            onclick="event.stopPropagation(); deleteMedia('BodyImage2', 'preview-BodyImage2')">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
                             }
                         </div>
+
                         <div class="col-md-3 mb-3">
                             <label class="form-label font-weight-bold">عکس بدن ۳ (پشت)</label>
                             <input type="file" class="form-control" id="BodyImageFile3" name="BodyImageFile3" accept="image/*" />
                             @if (!string.IsNullOrEmpty(Model?.BodyImageUrl3))
                             {
                                 <div id="preview-BodyImage3" style="position:relative; display:inline-block; margin-top:8px;">
-                                    <img src="@Model.BodyImageUrl3" class="rounded" style="max-height: 80px;" alt="عکس بدن ۳" />
-                                    <button type="button" class="btn btn-danger btn-sm" style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding: 2px 6px; font-size:10px; line-height:1;" onclick="deleteMedia('BodyImage3', 'preview-BodyImage3')">
+                                    <img src="@Model.BodyImageUrl3"
+                                         class="rounded img-thumbnail preview-img"
+                                         data-src="@Model.BodyImageUrl3"
+                                         style="max-height:80px; cursor:pointer;"
+                                         alt="عکس بدن ۳" />
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            style="position:absolute; top:-5px; right:-5px; border-radius:50%; padding:2px 6px; font-size:10px; line-height:1;"
+                                            onclick="event.stopPropagation(); deleteMedia('BodyImage3', 'preview-BodyImage3')">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
@@ -165,10 +210,7 @@
                     </div>
                 </fieldset>
 
-
-
-
-</div>
+            </div>
 
             <fieldset class="custom-groupbox mt-3">
                 <legend>اطلاعات پزشکی و توضیحات</legend>
@@ -185,11 +227,7 @@
                     <partial name="~/Areas/Admin/Views/Shared/Partials/_TextArea.cshtml"
                              model='new BaseInputViewModel { Id = "Description", Name = "Description", LabelName = "توضیحات", Col = 6, Value = Model?.Description }' />
 
-                    @*                     <partial name="~/Areas/Admin/Views/Shared/Partials/_CheckboxInput.cshtml"
-                             model='new BaseInputViewModel { Id = "IsActive", Name = "IsActive", LabelName = "عضویت فعال", Col = 2, Value = Model == null || Model.IsActive ? "true" : "false" }' />
- *@
                     <div class="col-md-3">
-                        @* نکته: آیدی btnSave را به پارشیال اضافه کردیم یا می‌توانید در اسکریپت به دکمه داخل فرم اشاره کنید *@
                         <partial name="~/Areas/Admin/Views/Shared/Partials/_FormButtons.cshtml"
                                  model='new FormButtonsViewModel { SubmitText = "ذخیره اطلاعات", BackUrl = "/Admin/MemberDashboard", BackText = "بازگشت" }' />
                     </div>
@@ -199,68 +237,187 @@
     </div>
 </div>
 
+<!-- Modal نمایش تصویر -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">نمایش تصویر</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid rounded" alt="تصویر بزرگ" />
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    @* <link href="~/lib/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
-    <script src="~/lib/Sweetalert2/sweetalert2.min.js"></script> *@
 
-    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
-
-    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.js"></script>
-
 
     <link href="~/lib/persian-datepicker/persian-datepicker.min.css" rel="stylesheet" />
     <script src="~/lib/persian-datepicker/persian-date.min.js"></script>
     <script src="~/lib/persian-datepicker/persian-datepicker.min.js"></script>
 
     <script>
-
         function convertPersianToGregorian(selector) {
+            var val = $(selector).val();
+            if (!val) return;
 
-        var val = $(selector).val();
-        if (!val) return;
+            var p = new persianDate(val);
+            var g = p.toCalendar('gregorian');
 
+            var date =
+                g.year + "-" +
+                ("0" + g.month).slice(-2) + "-" +
+                ("0" + g.day).slice(-2);
 
-
-        var p = new persianDate(val);
-        var g = p.toCalendar('gregorian');
-
-        var date =
-        g.year + "-" +
-        ("0" + g.month).slice(-2) + "-" +
-        ("0" + g.day).slice(-2);
-
-        $(selector).val(date);
+            $(selector).val(date);
         }
 
+        function setMembershipValidityStyle(isExpired) {
+            var $input = $("#MembershipValidity");
+
+            $input.removeClass("bg-success bg-danger text-white");
+
+            if (isExpired) {
+                $input.addClass("bg-danger text-white");
+            } else {
+                $input.addClass("bg-success text-white");
+            }
+        }
+
+        function calculateMembershipValidity() {
+            var endDateValue = $("#MembershipEndDateHidden").val();
+
+            if (!endDateValue) {
+                $("#MembershipValidity").val("");
+                $("#MembershipValidity").removeClass("bg-success bg-danger text-white");
+                return;
+            }
+
+            var parts = endDateValue.split("/");
+
+            if (parts.length !== 3) {
+                $("#MembershipValidity").val("تاریخ نامعتبر");
+                setMembershipValidityStyle(true);
+                return;
+            }
+
+            var endYear = parseInt(parts[0], 10);
+            var endMonth = parseInt(parts[1], 10);
+            var endDay = parseInt(parts[2], 10);
+
+            if (isNaN(endYear) || isNaN(endMonth) || isNaN(endDay)) {
+                $("#MembershipValidity").val("تاریخ نامعتبر");
+                setMembershipValidityStyle(true);
+                return;
+            }
+
+            var endDate = new persianDate([endYear, endMonth, endDay]);
+            var today = new persianDate();
+
+            var diffMs = endDate.valueOf() - today.valueOf();
+
+            if (diffMs <= 0) {
+                $("#MembershipValidity").val("منقضی شده");
+                setMembershipValidityStyle(true);
+                return;
+            }
+
+            var diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            var years = Math.floor(diffDays / 365);
+            diffDays %= 365;
+
+            var months = Math.floor(diffDays / 30);
+            var days = diffDays % 30;
+
+            var result = "";
+
+            if (years > 0) result += years + " سال ";
+            if (months > 0) result += months + " ماه ";
+            if (days > 0) result += days + " روز";
+
+            result = result.trim();
+
+            $("#MembershipValidity").val(result || "امروز");
+            setMembershipValidityStyle(false);
+        }
+
+        function deleteMedia(mediaType, previewElementId) {
+            Swal.fire({
+                title: 'حذف فایل',
+                text: "آیا از حذف این فایل از سرور اطمینان دارید؟",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'بله، حذف شود',
+                cancelButtonText: 'انصراف'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/MemberProfile/DeleteMedia',
+                        type: 'POST',
+                        data: { mediaType: mediaType },
+                        success: function (res) {
+                            if (res.isSuccess) {
+                                $("#" + previewElementId).fadeOut(300, function () {
+                                    $(this).remove();
+                                });
+                                Swal.fire('حذف شد!', res.message, 'success');
+                            } else {
+                                Swal.fire('خطا!', res.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داد', 'error');
+                        }
+                    });
+                }
+            });
+        }
 
         $(document).ready(function () {
-        // 1. مقداردهی تقویم‌های شمسی
-        const datePickerConfig = {
-        format: 'YYYY/MM/DD',
-        autoClose: true,
-        initialValue: false,
-        observer: true,
-        initialValueType: 'persian',
-        calendar: { persian: { locale: 'en' }
-        }
-        };
+            // مقداردهی تقویم‌های شمسی
+            const datePickerConfig = {
+                format: 'YYYY/MM/DD',
+                autoClose: true,
+                initialValue: false,
+                observer: true,
+                initialValueType: 'persian',
+                calendar: {
+                    persian: {
+                        locale: 'en'
+                    }
+                }
+            };
 
-        $("#BirthDate, #MembershipStartDate, #MembershipEndDate").persianDatepicker(datePickerConfig);
+            $("#BirthDate, #MembershipStartDate, #MembershipEndDate").persianDatepicker(datePickerConfig);
 
-        
-        
-        
-            // 2. هندل کردن ارسال فرم
+            // محاسبه اعتبار عضویت
+            calculateMembershipValidity();
+
+            // نمایش تصویر در مدال
+            $(document).on('click', '.preview-img', function () {
+                var imgSrc = $(this).data('src');
+                $("#modalImage").attr("src", imgSrc);
+
+                var myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+                myModal.show();
+            });
+
+            // ارسال فرم
             $("#CompleteInfoForm").on("submit", function (e) {
                 e.preventDefault();
 
                 var form = $(this);
                 var btn = form.find("button[type='submit']");
 
-                // جمع‌آوری فیلدهای متنی
                 var textData = {
                     Id: $("#Id").val(),
                     FullName: $("#FullName").val(),
@@ -276,19 +433,16 @@
                     Description: $("#Description").val()
                 };
 
-                // استفاده از FormData برای ارسال فایل همراه با متن
                 var formData = new FormData();
 
-                // اضافه کردن داده‌های متنی به FormData
                 for (var key in textData) {
                     if (textData[key] !== null && textData[key] !== undefined) {
                         formData.append(key, textData[key]);
                     }
                 }
 
-                // اضافه کردن فایل‌ها به FormData
                 var files = ['ProfileImageFile', 'VideoFile', 'BodyImageFile1', 'BodyImageFile2', 'BodyImageFile3'];
-                files.forEach(function(fileId) {
+                files.forEach(function (fileId) {
                     var fileInput = document.getElementById(fileId);
                     if (fileInput.files && fileInput.files[0]) {
                         formData.append(fileId, fileInput.files[0]);
@@ -299,8 +453,8 @@
                     url: '/Admin/MemberProfile/CompleteInfo',
                     type: 'POST',
                     data: formData,
-                    contentType: false, // بسیار مهم برای FormData
-                    processData: false, // بسیار مهم برای FormData
+                    contentType: false,
+                    processData: false,
                     beforeSend: function () {
                         btn.prop("disabled", true).text("در حال آپلود و ذخیره...");
                     },
@@ -313,147 +467,15 @@
                             Swal.fire('هشدار!', result.message, 'warning');
                         }
                     },
-
-
-
-        error: function (xhr, status, error) {
-                           // این خط خطای واقعی سرور را در کنسول مرورگر نشان می‌دهد
-                           console.log("Server Error Details:", xhr.responseText);
-                           Swal.fire('خطا!', 'جزئیات خطا: ' + (xhr.responseText || error), 'error');
-                       },
-
+                    error: function (xhr, status, error) {
+                        console.log("Server Error Details:", xhr.responseText);
+                        Swal.fire('خطا!', 'جزئیات خطا: ' + (xhr.responseText || error), 'error');
+                    },
                     complete: function () {
                         btn.prop("disabled", false).text("ذخیره اطلاعات");
                     }
                 });
             });
-
-
-
-
-    });
-
-        // ....................
-        function setMembershipValidityStyle(isExpired) {
-        var $input = $("#MembershipValidity");
-
-        $input.removeClass("bg-success bg-danger text-white");
-
-        if (isExpired) {
-        $input.addClass("bg-danger text-white");
-        } else {
-        $input.addClass("bg-success text-white");
-        }
-        }
-
-        function calculateMembershipValidity() {
-
-        var endDateValue = $("#MembershipEndDate").val();
-
-        if (!endDateValue) {
-        $("#MembershipValidity").val("");
-        $("#MembershipValidity").removeClass("bg-success bg-danger text-white");
-        return;
-        }
-
-        // انتظار فرمت: 1405/12/29
-        var parts = endDateValue.split("/");
-
-        if (parts.length !== 3) {
-        $("#MembershipValidity").val("تاریخ نامعتبر");
-        setMembershipValidityStyle(true);
-        return;
-        }
-
-        var endYear = parseInt(parts[0], 10);
-        var endMonth = parseInt(parts[1], 10);
-        var endDay = parseInt(parts[2], 10);
-
-        if (isNaN(endYear) || isNaN(endMonth) || isNaN(endDay)) {
-        $("#MembershipValidity").val("تاریخ نامعتبر");
-        setMembershipValidityStyle(true);
-        return;
-        }
-
-        // ساخت درست تاریخ شمسی
-        var endDate = new persianDate([endYear, endMonth, endDay]);
-
-        // تاریخ امروز شمسی
-        var today = new persianDate();
-
-        var diffMs = endDate.valueOf() - today.valueOf();
-
-        if (diffMs <= 0) {
-        $("#MembershipValidity").val("منقضی شده");
-        setMembershipValidityStyle(true);
-        return;
-        }
-
-        // اختلاف تقریبی بر حسب روز
-        var diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-        var years = Math.floor(diffDays / 365);
-        diffDays %= 365;
-
-        var months = Math.floor(diffDays / 30);
-        var days = diffDays % 30;
-
-        var result = "";
-
-        if (years > 0) result += years + " سال ";
-        if (months > 0) result += months + " ماه ";
-        if (days > 0) result += days + " روز";
-
-        result = result.trim();
-
-        $("#MembershipValidity").val(result || "امروز");
-        setMembershipValidityStyle(false);
-        }
-
-        $(document).ready(function () {
-        calculateMembershipValidity();
         });
-
-
-
-
-        // -------------------
-                    // تابع حذف فایل های آپلود شده
-            function deleteMedia(mediaType, previewElementId) {
-                Swal.fire({
-                    title: 'حذف فایل',
-                    text: "آیا از حذف این فایل از سرور اطمینان دارید؟",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'بله، حذف شود',
-                    cancelButtonText: 'انصراف'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '/Admin/MemberProfile/DeleteMedia',
-                            type: 'POST',
-                            data: { mediaType: mediaType },
-                            success: function (res) {
-                                if (res.isSuccess) {
-                                    // مخفی کردن کادر تصویر/ویدیو از روی فرم
-                                    $("#" + previewElementId).fadeOut(300, function() {
-                                        $(this).remove();
-                                    });
-                                    Swal.fire('حذف شد!', res.message, 'success');
-                                } else {
-                                    Swal.fire('خطا!', res.message, 'error');
-                                }
-                            },
-                            error: function () {
-                                Swal.fire('خطا!', 'مشکلی در ارتباط با سرور رخ داد', 'error');
-                            }
-                        });
-                    }
-                });
-            }
-
-
     </script>
 }

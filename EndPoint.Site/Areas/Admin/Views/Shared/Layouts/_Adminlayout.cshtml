@@ -160,12 +160,12 @@
 
 
             <!-- دکمه جمع شدن (فقط دسکتاپ) -->
-            @* <div class="fc-sidebar-footer">
+             <div class="fc-sidebar-footer">
                 <button class="fc-collapse-btn" id="fcCollapseBtn">
                     <i class="fa fa-angle-double-right"></i>
                     <span>جمع کردن منو</span>
                 </button>
-            </div> *@
+            </div> 
 
 
 
@@ -349,7 +349,6 @@
 
                     @if (User.IsMember() && !User.IsAdmin())
                     {
-                        <div class="fc-nav-label">پرتال من</div>
 
                         <li class="fc-nav-item">
                             <a href="/Admin/MemberDashboard" class="fc-nav-link" data-title="داشبورد من">
@@ -357,6 +356,19 @@
                                 <span class="fc-nav-text">داشبورد من</span>
                             </a>
                         </li>
+
+                        <div class="fc-nav-label">پروفایل</div>
+
+                        <li class="fc-nav-item">
+                            <a href="/Admin/MemberProfile/CompleteInfo"
+                               class="fc-nav-link" data-title="ویرایش پروفایل">
+                                <span class="fc-nav-icon"><i class="fa fa-user-circle-o"></i></span>
+                                <span class="fc-nav-text">اطلاعات پروفایل</span>
+                            </a>
+                        </li>
+
+                        <div class="fc-nav-label">پرتال من</div>
+
                         @if (isActivMember)
                         {
 
@@ -378,15 +390,8 @@
 
                         }
 
-                        <div class="fc-nav-label">پروفایل</div>
 
-                        <li class="fc-nav-item">
-                            <a href="/Admin/MemberProfile/CompleteInfo"
-                               class="fc-nav-link" data-title="ویرایش پروفایل">
-                                <span class="fc-nav-icon"><i class="fa fa-user-circle-o"></i></span>
-                                <span class="fc-nav-text">اطلاعات جسمانی</span>
-                            </a>
-                        </li>
+                        <div class="fc-nav-label">امکانات</div>
 
                         <li class="fc-nav-item">
                             <a href="/Admin/MemberProfile/BodyMeasurement/@encryptedUserId"
@@ -439,13 +444,6 @@
 
                 </ul>
             </nav>
-
-            <div class="fc-sidebar-footer">
-                <button class="fc-collapse-btn" id="fcCollapseBtn">
-                    <i class="fa fa-angle-double-right"></i>
-                    <span>جمع کردن منو</span>
-                </button>
-            </div>
 
 
         </aside>

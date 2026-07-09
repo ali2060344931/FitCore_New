@@ -1542,5 +1542,14 @@ tfoot tr td {
 
 
 
+.modal-backdrop {
+    z-index: 1050;
+}
+
+.modal {
+    z-index: 1060;
+}
+
+
 
 

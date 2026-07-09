@@ -1,4 +1,5 @@
 using EndPoint.Site.BaleBot.Handlers;
+using Microsoft.AspNetCore.DataProtection;
 
 using FitCore.Application.Common.Options;
 using FitCore.Application.Contexts;
@@ -129,7 +130,27 @@ builder.Services.AddScoped<
     GenerateTrainingProgramAIService>();
 
 
+
+
+
+
+
+
+
+
 //........................
+var keysPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtectionKeys");
+Directory.CreateDirectory(keysPath);
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
+    .SetApplicationName("FitCore");
+
+//........................
+
+
+
+
 
 
 
@@ -138,49 +159,56 @@ builder.Services
     .AddIdentity<AppUser, IdentityRole<long>>(options =>
     {
         options.Password.RequireDigit = true;
-
         options.Password.RequiredLength = 6;
-
         options.Password.RequireUppercase = true;
-
         options.Password.RequireLowercase = true;
-
         options.Password.RequireNonAlphanumeric = true;
 
         options.User.RequireUniqueEmail = false;
-
         options.SignIn.RequireConfirmedPhoneNumber = false;
     })
-
     .AddEntityFrameworkStores<DataBaseContext>()
-
     .AddDefaultTokenProviders();
+
+
+
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromMinutes(30);
+});
+
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Admin/Auth/Login";
     options.AccessDeniedPath = "/Admin/Auth/Login";
 
+    options.Cookie.Name = "FitCore.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
-
-    options.Cookie.Name = "FitCore.Auth";
-
-    options.Cookie.HttpOnly = true;
-
-    options.Cookie.IsEssential = true;
-
-    options.Cookie.SecurePolicy =
-        CookieSecurePolicy.Always;
-
-    options.Cookie.SameSite =
-        SameSiteMode.Lax;
 
     options.Events.OnRedirectToLogin = context =>
     {
         if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
         {
-            context.Response.StatusCode = 401;
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
             return Task.CompletedTask;
         }
 
@@ -188,6 +216,11 @@ builder.Services.ConfigureApplicationCookie(options =>
         return Task.CompletedTask;
     };
 });
+
+
+
+
+
 //builder.Services.ConfigureApplicationCookie(options =>
 //{
 
@@ -504,6 +537,21 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Cache-Control"] =
+        "no-cache, no-store, must-revalidate";
+
+    context.Response.Headers["Pragma"] =
+        "no-cache";
+
+    context.Response.Headers["Expires"] =
+        "0";
+
+    await next();
+});
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -527,19 +575,6 @@ app.MapControllerRoute(
 
 #region No Cache
 
-app.Use(async (context, next) =>
-{
-    context.Response.Headers["Cache-Control"] =
-        "no-cache, no-store, must-revalidate";
-
-    context.Response.Headers["Pragma"] =
-        "no-cache";
-
-    context.Response.Headers["Expires"] =
-        "0";
-
-    await next();
-});
 
 #endregion
 
