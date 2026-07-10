@@ -65,6 +65,15 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
         {
             var primaryColor = Colors.Green.Medium;
             var lightGray = Colors.Grey.Lighten3;
+            
+            var q=_context.NutritionPrograms.Where(c=>c.Id==program.Id).FirstOrDefault();
+
+            if (!q.IsSeen)
+            {
+                q.IsSeen = true;
+                q.SeenAt = DateTime.Now;
+                _context.SaveChanges();
+            }
 
             return QuestPDF.Fluent.Document.Create(container =>
             {

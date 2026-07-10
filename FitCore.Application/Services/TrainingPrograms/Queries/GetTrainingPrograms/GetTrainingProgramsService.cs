@@ -98,6 +98,7 @@ namespace FitCore.Application.Services.TrainingPrograms.Queries.GetTrainingProgr
                     EndDate = x.EndDate,
                     SessionsPerWeek = x.SessionsPerWeek,
                     IsActive = x.IsActive,
+                    IsSeen= x.IsSeen,
                     CountTrainingDays = x.Days.Count(day => !day.IsRemoved)
                 })
                 .ToListAsync();

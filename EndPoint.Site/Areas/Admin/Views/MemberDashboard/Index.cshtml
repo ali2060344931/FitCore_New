@@ -882,6 +882,20 @@
                 font-size: 14px;
             }
     }
+
+    .mb-program-btn.green-soft {
+        background-color: #8fd19e;
+        border-color: #8fd19e;
+        color: #fff;
+    }
+
+        .mb-program-btn.green-soft:hover {
+            background-color: #7ac78b;
+            border-color: #7ac78b;
+            color: #fff;
+        }
+
+
 </style>
 
 
@@ -1319,12 +1333,21 @@
                                     <div class="mb-program-title">@p.ProgramType</div>
                                     <div class="mb-program-meta">
                                         <span><i class="fa fa-calendar-o me-1"></i>@p.StartDate — @p.EndDate</span>
-                                        <span class="badge" style="background:@(p.IsActive ? "#edfaf5" : "#f0f4f8");color:@(p.IsActive ? "#00C896" : "#718096");border:1px solid @(p.IsActive ? "#00C896" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
-                                    </div>
+                                            <span class="badge" style="background:@(p.IsActive ? "#edfaf5" : "#f0f4f8");color:@(p.IsActive ? "#00C896" : "#718096");border:1px solid @(p.IsActive ? "#00C896" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
+                                            @if (!p.IsSeen)
+                                            {
+                                                <span class="badge" style="background:#FFD700;color:#000;border:1px solid #FFD700;font-size:9px;border-radius:5px;">جدید</span>
+                                            }
+                                        </div>
                                 </div>
-                                <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)" target="_blank" class="mb-program-btn">
-                                    <i class="fa fa-print"></i>PDF
-                                </a>
+
+                                    <a href="/Admin/MemberDashboard/PrintNutritionProgram/@SecurityUtils.EncryptId(p.Id)"
+                                       target="_blank"
+                                       class="mb-program-btn"
+                                       style="background-color:#8fd19e;color:#fff;border-color:#8fd19e;"
+                                       onclick="setTimeout(function(){ location.reload(); }, 500);">
+                                        <i class="fa fa-print"></i> PDF
+                                    </a>
                             </div>
                         }
                     }
@@ -1359,11 +1382,22 @@
                                         <span><i class="fa fa-tag me-1"></i>@p.TrainingProgramType</span>
                                         <span><i class="fa fa-calendar-o me-1"></i>@p.StartDate</span>
                                         <span class="badge" style="background:@(p.IsActive ? "#ebf8ff" : "#f0f4f8");color:@(p.IsActive ? "#3182ce" : "#718096");border:1px solid @(p.IsActive ? "#3182ce" : "#e2e8f0");font-size:9px;border-radius:5px;">@(p.IsActive ? "فعال" : "قدیمی")</span>
+                                            @if (!p.IsSeen)
+                                            {
+                                                <span class="badge" style="background:#FFD700;color:#000;border:1px solid #FFD700;font-size:9px;border-radius:5px;">جدید</span>
+                                            }
+
                                     </div>
                                 </div>
-                                <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)" target="_blank" class="mb-program-btn blue">
-                                    <i class="fa fa-print"></i>PDF
-                                </a>
+
+                                    <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)"
+                                       target="_blank"
+                                       class="mb-program-btn"
+                                       style="background-color:#8fd19e;color:#fff;border-color:#8fd19e;"
+                                       onclick="setTimeout(function(){ location.reload(); }, 500);">
+                                        <i class="fa fa-print"></i> PDF
+                                    </a>
+
                             </div>
                         }
                     }

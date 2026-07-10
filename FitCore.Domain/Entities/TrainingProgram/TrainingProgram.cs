@@ -3,6 +3,7 @@ using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.Users;
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -77,6 +78,8 @@ namespace FitCore.Domain.Entities.TrainingProgram
         public Gym Gym { get; set; }
         public Member Member { get; set; }
         public AppUser CreatedByUser { get; set; }
+        public bool IsSeen { get; set; } = false;
+        public DateTime? SeenAt { get; set; }
 
         /// <summary>
         /// روزهای برنامه تمرینی

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionProgram
@@ -78,6 +79,7 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     IsActive = x.IsActive,
+                    IsSeen=x.IsSeen,
                     BaleChatId = x.Member.AppUser.BaleChatId,
                     CountProgramBuilder = _context.NutritionProgramDays.Count(c => c.NutritionProgramId == x.Id)
                 })

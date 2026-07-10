@@ -68,6 +68,9 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionProgram
         /// کاربر ایجادکننده
         /// </summary>
         public AppUser CreatedByUser { get; set; }
+        public bool IsSeen { get; set; } = false;
+        public DateTime? SeenAt { get; set; }
+
         /// <summary>
         /// روزهای برنامه
         /// </summary>

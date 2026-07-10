@@ -78,6 +78,8 @@ namespace EndPoint.Site.BaleBot.Services
             _cache = cache;
         }
 
+        string minemenu = "🏢 منوی اصلی";
+
         #region === متدهای جدید: مدیریت Context چند باشگاهی ===
 
         /// <inheritdoc />
@@ -420,7 +422,6 @@ namespace EndPoint.Site.BaleBot.Services
 
 
 
-        string minemenu = "🏢 منوی اصلی";
         /// <summary>
         /// منوی ساده (بدون تغییر)
         /// </summary>

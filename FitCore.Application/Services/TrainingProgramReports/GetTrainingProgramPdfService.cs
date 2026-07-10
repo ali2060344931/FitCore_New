@@ -57,6 +57,15 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
         {
             var primaryColor = Colors.Green.Medium;
             var lightGray = Colors.Grey.Lighten3;
+            
+            var q = _context.TrainingPrograms.Where(c => c.Id == program.Id).FirstOrDefault();
+
+            if (!q.IsSeen)
+            {
+                q.IsSeen = true;
+                q.SeenAt = DateTime.Now;
+                _context.SaveChanges();
+            }
 
             return Document.Create(container =>
             {
