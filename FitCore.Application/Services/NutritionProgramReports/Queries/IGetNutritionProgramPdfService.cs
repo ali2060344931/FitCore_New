@@ -101,7 +101,7 @@ namespace FitCore.Application.Services.NutritionProgramReports.Queries
                             .FontColor(primaryColor).AlignCenter();
 
                         col.Item().Text($"عضو: {program.Member?.AppUser?.FullName ?? "-"} | نوع برنامه: {program.ProgramType?.Name ?? "-"} | هدف برنامه: {program.GoalType.Name ?? "-"}").AlignCenter();
-                        col.Item().Text($"تاریخ شروع: {program.StartDate} | تاریخ پایان: {program.StartDate}").AlignCenter();
+                        col.Item().Text($"تاریخ شروع: {program.StartDate} | تاریخ پایان: {program.EndDate}").AlignCenter();
                     });
 
                     // بدنه - راست‌چین

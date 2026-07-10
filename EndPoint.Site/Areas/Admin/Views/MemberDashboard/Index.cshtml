@@ -893,7 +893,7 @@
         <div class="mb-profile-alert">
             <i class="fa fa-exclamation-triangle" style="color:#f6ad55;font-size:18px;flex-shrink:0;"></i>
             <div style="flex:1;">
-                <strong>پروفایل شما ناقص است</strong> — لطفاً اطلاعات جسمانی خود را تکمیل کنید.
+                <strong>پروفایل شما ناقص است</strong> — لطفاً اطلاعات پروفایل خود را تکمیل کنید.
             </div>
             <a href="/Admin/MemberProfile/CompleteInfo" class="btn btn-sm btn-warning" style="border-radius:8px;font-size:11px;white-space:nowrap;">
                 <i class="fa fa-edit me-1"></i>تکمیل
@@ -1309,6 +1309,7 @@
                         </div>
                         <a href="/Admin/MemberDashboard/MyNutritionPrograms" class="mb-card-link">مشاهده همه</a>
                     </div>
+                    
                     @if (nutritionList != null && nutritionList.Any())
                     {
                         @foreach (var p in nutritionList.Take(4))

@@ -54,8 +54,6 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionProgram
         /// فعال است؟
         /// </summary>
         public bool IsActive { get; set; }
-
-
         // Navigation
         /// <summary>
         /// باشگاه
@@ -75,6 +73,8 @@ namespace FitCore.Domain.Entities.NutritionProgram.NutritionProgram
         /// </summary>
         public ICollection<NutritionProgramDay.NutritionProgramDay> Days { get; set; }
     }
+
+
 
     /// <summary>
     /// نوع برنامه غذایی

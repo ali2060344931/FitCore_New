@@ -27,24 +27,28 @@ namespace FitCore.Application.Services.NutritionPrograms.Queries.GetNutritionPro
                 .Include(x => x.Member)
                 .AsQueryable();
 
+            // ✅ عضو فقط برنامه‌های خودش را ببیند
+            if (!request.IsAdmin && !request.IsTrainer)
+            {
+                nutritionPrograms = nutritionPrograms
+                    .Where(x => x.Member.AppUserId == request.AppUserId);
+            }
 
-            // ✅ فیلتر قطعی بر اساس باشگاه
+            // ✅ مدیر/مربی فقط برنامه‌های باشگاه خودش را ببیند
             if (request.IsAdmin || request.IsTrainer)
             {
                 if (request.GymId.HasValue && request.GymId.Value > 0)
                 {
-                    // مدیر باشگاه: فقط برنامه‌های باشگاه خودش
                     nutritionPrograms = nutritionPrograms
                         .Where(x => x.GymId == request.GymId.Value);
                 }
                 else
                 {
-                    // اگر کاربر ادمین نبود ولی باشگاهی هم نداشت، هیچ چیزی نباید ببیند
                     nutritionPrograms = nutritionPrograms.Where(x => false);
                 }
             }
 
-            // ✅ فیلتر جستجو
+            // ✅ جستجو
             if (!string.IsNullOrWhiteSpace(request.SearchKey))
             {
                 nutritionPrograms =

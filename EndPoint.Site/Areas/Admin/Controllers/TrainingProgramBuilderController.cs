@@ -11,6 +11,8 @@ using FitCore.Application.Services.TrainingProgramBuilder.Commands.RemoveAllTrai
 using FitCore.Common;
 using FitCore.Domain.Entities.TrainingProgram;
 
+using GymBot.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -383,34 +385,58 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             var program = await _context.TrainingPrograms
                 .Include(p => p.Member)
                     .ThenInclude(m => m.AppUser)
-                    .Include(p => p.TrainingProgramType)
-                    .Include(p => p.TrainingGoalType)
+                .Include(p => p.TrainingProgramType)
+                .Include(p => p.TrainingGoalType)
                 .FirstOrDefaultAsync(p => p.Id == programId);
 
-            var programGymName = _context.Gyms.Where(c => c.Id == program.GymId).First().Name;
-
-            if (program?.Member?.AppUser != null && program.Member.AppUser.BaleChatId.HasValue)
+            if (program == null)
             {
-                string message = $"📋 *برنامه جدید برای شما*\n" +
-                    $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
-                                 $"🏋️ نوع برنامه: برنامه تمرینی\n" +
-                                 $"📑 عنوان برنامه: " + program.TrainingProgramType.Name + '\n' +
-                                 $"🏃‍♂️ هدف برنامه: " + program.TrainingGoalType.Name + '\n' +
-                                 $"🏃‍♂️ تعداد : " + program.SessionsPerWeek + " در هفته" + '\n' +
-                                 $"📅 تاریخ شروع: " + program.StartDate + '\n' +
-                                 $"📅 تاریخ پایان: " + program.EndDate + '\n' +
-
-                                 
-                                 $"🗓️ تاریخ ثبت: " + PersianDateCalse.ToShamsi(program.InsertTime) + '\n' +
-
-                                 $"🔔 لطفاً وارد ربات بله شوید و از بخش «دریافت لیست برنامه‌های من» برنامه خود را دانلود کنید.";
-
-                await _baleBotService.SendMessageAsync(program.Member.AppUser.BaleChatId.Value, message);
-
-                return Json(new { isSuccess = true, message = "پیام با موفقیت در ربات ارسال شد." });
+                return Json(new { isSuccess = false, message = "برنامه تمرینی یافت نشد." });
             }
 
-            return Json(new { isSuccess = false, message = "کاربر در ربات بله ثبت نام نکرده است یا چت آیدی او یافت نشد." });
+            if (program.Member?.AppUser == null || !program.Member.AppUser.BaleChatId.HasValue)
+            {
+                return Json(new { isSuccess = false, message = "کاربر در ربات بله ثبت نام نکرده است یا چت آیدی او یافت نشد." });
+            }
+
+            var programGymName = _context.Gyms
+                .Where(c => c.Id == program.GymId)
+                .Select(c => c.Name)
+                .FirstOrDefault();
+
+            string message =
+                $"📋 *برنامه جدید برای شما*\n" +
+                $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
+                $"🏋️ نوع برنامه: برنامه تمرینی\n" +
+                $"📑 عنوان برنامه: {program.TrainingProgramType?.Name}\n" +
+                $"🏃‍♂️ هدف برنامه: {program.TrainingGoalType?.Name}\n" +
+                $"🏃‍♂️ تعداد: {program.SessionsPerWeek} در هفته\n" +
+                $"📅 تاریخ شروع: {program.StartDate}\n" +
+                $"📅 تاریخ پایان: {program.EndDate}\n" +
+                $"🗓️ تاریخ ثبت: {PersianDateCalse.ToShamsi(program.InsertTime)}\n" +
+                $"🔔 لطفاً برای دانلود برنامه از دکمه زیر استفاده کنید.";
+
+            var keyboard = new InlineKeyboardMarkup
+            {
+                InlineKeyboard = new List<List<InlineKeyboardButton>>
+        {
+            new List<InlineKeyboardButton>
+            {
+                new InlineKeyboardButton
+                {
+                    Text = "📥 دریافت برنامه تمرینی",
+                    CallbackData = $"DL_TRN_{program.Id}"
+                }
+            }
+        }
+            };
+
+            await _baleBotService.SendMessageAsync(
+                program.Member.AppUser.BaleChatId.Value,
+                message,
+                keyboard);
+
+            return Json(new { isSuccess = true, message = "پیام همراه با دکمه دریافت برنامه تمرینی با موفقیت در ربات ارسال شد." });
         }
     }
 }

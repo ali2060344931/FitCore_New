@@ -20,6 +20,8 @@ using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.NutritionProgram.NutritionMeal;
 using FitCore.Domain.Entities.Users;
 
+using GymBot.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +29,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -168,7 +171,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             // پیدا کردن عضو و پاس دادن آدرس عکس از طریق ViewBag
             var member = _Context.Members.Where(c => c.Id == memberId).First();
-            
+
             ViewBag.MemberProfileImage = member?.ProfileImageUrl;
 
             ViewBag.FrontImage = member?.BodyImageUrl1;
@@ -324,36 +327,52 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             var program = await _Context.NutritionPrograms
                 .Include(p => p.Member)
-
-
                     .ThenInclude(m => m.AppUser)
-                    .Include(p => p.GoalType)
-                    .Include(p => p.ProgramType)
+                .Include(p => p.GoalType)
+                .Include(p => p.ProgramType)
                 .FirstOrDefaultAsync(p => p.Id == programId);
 
-            var programGymName = _Context.Gyms.Where(c => c.Id == program.GymId).First().Name;
-
-            if (program?.Member?.AppUser != null && program.Member.AppUser.BaleChatId.HasValue)
+            if (program == null)
             {
-                string message = $"📋 *برنامه جدید برای شما*\n" +
-                    $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
-                                 $"🍔 نوع برنامه: برنامه غذایی\n" +
-                                 $"⏰ عنوان برنامه:" + program.ProgramType.Name + '\n' +
-                                 $"🚴‍♂️ موضوع برنامه: " + program.GoalType.Name + '\n' +
-                                 $"📅 تاریخ شروع: " + program.StartDate + '\n' +
-                                 $"📅 تاریخ پایان: " + program.EndDate + '\n' +
-
-
-                                 $"🗓️ تاریخ ثبت: " + PersianDateCalse.ToShamsi(program.InsertTime) + '\n' +
-                                 $"🔔 لطفاً وارد ربات بله شوید و از بخش «دریافت لیست برنامه‌های من» برنامه خود را دانلود کنید.";
-
-                await _baleBotService.SendMessageAsync(program.Member.AppUser.BaleChatId.Value, message);
-
-                await _menuService.ShowMainMenu(program.Member.AppUser.BaleChatId.Value, "-");
-                return Json(new { isSuccess = true, message = "پیام با موفقیت در ربات ارسال شد." });
+                return Json(new { isSuccess = false, message = "برنامه یافت نشد." });
             }
 
-            return Json(new { isSuccess = false, message = "کاربر در ربات بله ثبت نام نکرده است یا چت آیدی او یافت نشد." });
+            if (program.Member?.AppUser == null || !program.Member.AppUser.BaleChatId.HasValue)
+            {
+                return Json(new { isSuccess = false, message = "کاربر در ربات بله ثبت نام نکرده است یا چت آیدی او یافت نشد." });
+            }
+
+            var programGymName = _Context.Gyms
+                .Where(c => c.Id == program.GymId)
+                .Select(c => c.Name)
+                .FirstOrDefault();
+
+            string message =
+                $"📋 *برنامه جدید برای شما*\n" +
+                $"🏢 باشگاه: {programGymName ?? "نامشخص نیست"}\n" +
+                $"🍔 نوع برنامه: برنامه غذایی\n" +
+                $"⏰ عنوان برنامه: {program.ProgramType?.Name}\n" +
+                $"🚴‍♂️ موضوع برنامه: {program.GoalType?.Name}\n" +
+                $"📅 تاریخ شروع: {program.StartDate}\n" +
+                $"📅 تاریخ پایان: {program.EndDate}\n" +
+                $"🗓️ تاریخ ثبت: {PersianDateCalse.ToShamsi(program.InsertTime)}\n" +
+                $"🔔 لطفاً برای دانلود برنامه از دکمه زیر استفاده کنید.";
+
+            var keyboard = new InlineKeyboardMarkup
+            {
+                InlineKeyboard = new List<List<InlineKeyboardButton>>
+        {
+            new List<InlineKeyboardButton> {new InlineKeyboardButton{Text = "📥 دریافت برنامه",CallbackData = $"DL_NUT_{program.Id}"}}}
+            };
+
+            await _baleBotService.SendMessageAsync(
+                program.Member.AppUser.BaleChatId.Value,
+                message,
+                keyboard);
+
+            await _menuService.ShowMainMenu(program.Member.AppUser.BaleChatId.Value, "-");
+
+            return Json(new { isSuccess = true, message = "پیام با دکمه دریافت برنامه با موفقیت ارسال شد." });
         }
 
 

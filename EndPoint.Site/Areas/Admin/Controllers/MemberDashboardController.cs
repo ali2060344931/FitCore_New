@@ -181,6 +181,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(id)) return BadRequest();
 
             long programId = SecurityUtils.DecryptId(id);
+            
             var appUserId = GetCurrentUserId();
 
             var member = await _context.Members

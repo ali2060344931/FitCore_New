@@ -508,16 +508,5 @@ namespace EndPoint.Site.BaleBot.Services
                 loggedKeyboard);
         }
         #endregion
-
-
-
-
-
-
     }
-
-
-
-
-
 }

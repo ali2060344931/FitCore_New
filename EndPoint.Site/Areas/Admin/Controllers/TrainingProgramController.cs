@@ -39,31 +39,26 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             _pdfService = pdfService;
         }
 
-        //====================================================
-        // لیست برنامه های تمرینی
-        //====================================================
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, int PageSize = 20, string SearchKey = "")
+        public async Task<IActionResult> Index(
+            int page = 1,
+            int PageSize = 20,
+            string SearchKey = "")
         {
-            // ✅ استفاده از IsInRole به جای IsAdmin
-            // چون IsAdmin برای مدیر باشگاه هم true برمی‌گرداند، باید نقش دقیق را چک کنیم
-            // (نام "SuperAdmin" را مطابق با نام نقش مدیر کل در دیتابیس خودتان قرار دهید)
-            bool isAdmin = User.IsAdmin();
-            bool isTrainer = User.IsTrainer();
+            var isAdmin = User.IsAdmin();
+            var isTrainer = User.IsTrainer();
 
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrWhiteSpace(userIdValue))
+            if (!long.TryParse(userIdValue, out var appUserId))
                 return Unauthorized();
-
-            var appUserId = long.Parse(userIdValue);
 
             long? gymId = null;
 
-            // ✅ فقط اگر کاربر مدیر کل نبود، شناسه باشگاه او را استخراج کن
             if (isAdmin || isTrainer)
             {
                 gymId = await _context.Users
+                    .AsNoTracking()
                     .Where(x => x.Id == appUserId)
                     .Select(x => x.GymId)
                     .FirstOrDefaultAsync();
@@ -80,10 +75,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 GymId = gymId
             };
 
-            var result = await _trainingProgramFacad.GetTrainingProgramsService.Execute(request);
+            var result = await _trainingProgramFacad
+                .GetTrainingProgramsService
+                .Execute(request);
 
             return View(result.Data);
         }
+
+
+
+
         //====================================================
         // Create - GET
         //====================================================
