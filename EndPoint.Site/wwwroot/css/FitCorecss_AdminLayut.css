@@ -156,7 +156,7 @@ body {
     margin: 2px 10px;
     font-size: 13.5px;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     transition: background var(--fc-transition), color var(--fc-transition);
     position: relative;
     cursor: pointer;
@@ -165,6 +165,9 @@ body {
     width: calc(100% - 20px);
     text-align: right;
 }
+
+
+
 
     .fc-nav-link:hover {
         background: var(--fc-sidebar-hover);
@@ -477,13 +480,64 @@ body.sidebar-collapsed .fc-nav-arrow {
 }
 
 body.sidebar-collapsed .fc-nav-link {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 12px 0;
+    width: 54px;
+    height: 46px;
+    margin: 4px auto;
+}
+
+
+body.sidebar-collapsed .fc-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    min-width: 22px;
+    font-size: 18px;
+    margin: 0;
+    opacity: 1 !important;
+}
+
+
+body.sidebar-collapsed .fc-nav-text,
+body.sidebar-collapsed .fc-nav-arrow,
+body.sidebar-collapsed .fc-nav-label {
+    display: none;
+}
+
+
+
+body.sidebar-collapsed .fc-nav-icon {
+    margin: 0;
+    width: auto;
+}
+
+
+body.sidebar-collapsed .fc-nav-item {
+    position: relative;
 }
 
 body.sidebar-collapsed .fc-nav-sub {
-    max-height: 0 !important;
+    position: absolute;
+    top: 0;
+    right: 70px;
+    width: 220px;
+    background: #1b2330;
+    border-radius: 12px;
+    display: none;
+    max-height: none !important;
+    padding: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.25);
+    z-index: 9999;
 }
+
+body.sidebar-collapsed .fc-nav-item.open > .fc-nav-sub {
+    display: block;
+}
+
 
 /* تولتیپ برای حالت collapsed */
 body.sidebar-collapsed .fc-nav-link[data-title]:hover::after {
@@ -891,10 +945,15 @@ html {
 .fc-topbar {
     position: fixed;
     top: 0;
-    right: 0;
+    right: var(--fc-sidebar-width);
     left: 0;
     height: 62px;
     z-index: 1100;
+    transition: right .25s;
+}
+
+body.sidebar-collapsed .fc-topbar {
+    right: var(--fc-sidebar-collapsed);
 }
 
 .fc-main {
@@ -948,3 +1007,19 @@ html {
     }
 }
 
+
+/*------------------*/
+.fc-nav-badge {
+    margin-right: auto;
+    background: #ef4444;
+    color: #fff;
+    border-radius: 12px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+}

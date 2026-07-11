@@ -61,7 +61,24 @@
         }
     }
 }
+@{
+    int unseenNutritionCount = 0;
+    int unseenTrainingCount = 0;
+}
 
+@if (User.IsMember())
+{
+    var member = _getMemberByAppUserIdService.Execute(uid);
+
+    if (member != null)
+    {
+        unseenNutritionCount = _db.NutritionPrograms
+            .Count(x => x.MemberId == member.Id && !x.IsSeen);
+
+        unseenTrainingCount = _db.TrainingPrograms
+            .Count(x => x.MemberId == member.Id && !x.IsSeen);
+    }
+}
 
 @{
     var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -200,9 +217,10 @@
                         @if (User.IsSuperAdmin())
                         {
                             <li class="fc-nav-item has-sub" id="nav-gym">
-                                <button class="fc-nav-link" data-title="باشگاه‌ها"
-                                        onclick="fcToggleMenu('nav-gym')">
-                                    <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
+                                <button type="button" class="fc-nav-link" data-title="باشگاه‌ها"
+                                        onclick="return fcToggleMenu('nav-programs', event)">
+                                    
+                                        <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
                                     <span class="fc-nav-text">باشگاه‌ها</span>
                                     <i class="fa fa-angle-left fc-nav-arrow"></i>
                                 </button>
@@ -244,8 +262,9 @@
 
                                 <li class="fc-nav-item has-sub" id="nav-members">
 
-                                    <button class="fc-nav-link" data-title="اعضاء"
-                                    onclick="fcToggleMenu('nav-members')">
+                                    <button type="button" class="fc-nav-link" data-title="اعضاء"
+                                            onclick="return fcToggleMenu('nav-programs', event)">
+
                                         <span class="fc-nav-icon"><i class="icon-users"></i></span>
                                         <span class="fc-nav-text">اعضاء باشگاه</span>
                                         <i class="fa fa-angle-left fc-nav-arrow"></i>
@@ -275,8 +294,8 @@
                                 <div class="fc-nav-label">برنامه‌ها</div>
 
                                 <li class="fc-nav-item has-sub" id="nav-programs">
-                                    <button class="fc-nav-link" data-title="برنامه‌ها"
-                                            onclick="fcToggleMenu('nav-programs')">
+                                    <button type="button" class="fc-nav-link" data-title="برنامه‌ها"
+                                            onclick="return fcToggleMenu('nav-programs', event)">
                                         <span class="fc-nav-icon"><i class="fa fa-list-alt"></i></span>
                                         <span class="fc-nav-text">برنامه‌های اعضاء</span>
                                         <i class="fa fa-angle-left fc-nav-arrow"></i>
@@ -374,17 +393,47 @@
 
                             <li class="fc-nav-item">
                                 <a href="/Admin/MemberDashboard/MyNutritionPrograms"
-                                   class="fc-nav-link" data-title="برنامه غذایی">
-                                    <span class="fc-nav-icon"><i class="fa fa-cutlery"></i></span>
-                                    <span class="fc-nav-text">برنامه غذایی من</span>
+                                   class="fc-nav-link"
+                                   data-title="برنامه غذایی">
+
+                                    <span class="fc-nav-icon">
+                                        <i class="fa fa-cutlery"></i>
+                                    </span>
+
+                                    <span class="fc-nav-text">
+                                        برنامه غذایی من
+                                    </span>
+
+                                    @if (unseenNutritionCount > 0)
+                                    {
+                                        <span class="fc-nav-badge">
+                                            @unseenNutritionCount
+                                        </span>
+                                    }
+
                                 </a>
                             </li>
 
                             <li class="fc-nav-item">
                                 <a href="/Admin/MemberDashboard/MyTrainingPrograms"
-                                   class="fc-nav-link" data-title="برنامه تمرینی">
-                                    <span class="fc-nav-icon"><i class="fa fa-heartbeat"></i></span>
-                                    <span class="fc-nav-text">برنامه تمرینی من</span>
+                                   class="fc-nav-link"
+                                   data-title="برنامه تمرینی">
+
+                                    <span class="fc-nav-icon">
+                                        <i class="fa fa-heartbeat"></i>
+                                    </span>
+
+                                    <span class="fc-nav-text">
+                                        برنامه تمرینی من
+                                    </span>
+
+                                    @if (unseenTrainingCount > 0)
+                                    {
+                                        <span class="fc-nav-badge">
+                                            @unseenTrainingCount
+                                        </span>
+                                    }
+
                                 </a>
                             </li>
 
@@ -569,22 +618,47 @@
                 // ================================
 
                 // باز/بسته کردن زیرمنو
-                function fcToggleMenu(id) {
-                var el = document.getElementById(id);
-                if (!el) return;
-                var isOpen = el.classList.contains('open');
+        function fcToggleMenu(id, e) {
 
-                // بستن همه زیرمنوهای دیگر
-                document.querySelectorAll('.fc-nav-item.has-sub.open').forEach(function(item) {
-                item.classList.remove('open');
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            var el = document.getElementById(id);
+            if (!el) return;
+
+            if (document.body.classList.contains('sidebar-collapsed')) {
+
+                // بستن سایر زیرمنوها
+                document.querySelectorAll('.fc-nav-item.has-sub.open').forEach(function (item) {
+                    if (item !== el)
+                        item.classList.remove('open');
                 });
 
-                if (!isOpen) {
-                el.classList.add('open');
-                }
-                }
+                el.classList.toggle('open');
+                return false;
+            }
 
-                $(document).ready(function () {
+            var isOpen = el.classList.contains('open');
+
+            document.querySelectorAll('.fc-nav-item.has-sub.open').forEach(function (item) {
+                item.classList.remove('open');
+            });
+
+            if (!isOpen) {
+                el.classList.add('open');
+            }
+
+            return false;
+        }
+
+
+
+
+
+
+                        $(document).ready(function () {
 
                 // ---- سایدبار موبایل ----
                 $('#fcMenuToggle').on('click', function (e) {

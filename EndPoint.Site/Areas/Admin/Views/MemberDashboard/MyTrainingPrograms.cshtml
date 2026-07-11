@@ -76,6 +76,14 @@
                                 </span>
                             </td>
                             <td>
+
+                                @if (!item.IsSeen)
+                                {
+                                    <span class="badge"
+                                          style="background:#FFD700;color:#000;border:1px solid #FFD700;font-size:10px;margin-left:6px;">
+                                        جدید
+                                    </span>
+                                }
                                 @if (item.IsActive)
                                 {
                                     <span class="badge bg-success">فعال</span>
@@ -85,13 +93,15 @@
                                     <span class="badge bg-secondary">غیرفعال</span>
                                 }
                             </td>
+                            
                             <td>
                                 <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(item.Id)"
-                                   class="btn btn-sm btn-primary btn-modern"
+                                   class="btn btn-sm btn-success btn-modern"
                                    target="_blank"
                                    title="دانلود PDF">
                                     <i class="fa fa-file-pdf-o me-1"></i> PDF
                                 </a>
+                            
                             </td>
                         </tr>
                     }
@@ -111,6 +121,15 @@
                                 @item.TrainingProgramType — @item.TrainingGoalType
                             </div>
                         </div>
+
+                        @if (!item.IsSeen)
+                        {
+                            <span class="badge"
+                                  style="background:#FFD700;color:#000;border:1px solid #FFD700;font-size:10px;">
+                                جدید
+                            </span>
+                        }
+
                         @if (item.IsActive)
                         {
                             <span class="badge bg-success" style="font-size:11px;">فعال</span>
@@ -133,12 +152,16 @@
                             </span>
                         }
                     </div>
-                    <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(item.Id)"
-                       class="btn btn-primary w-100"
-                       style="border-radius:8px;font-size:13px;"
-                       target="_blank">
-                        <i class="fa fa-print me-1"></i> دانلود / چاپ PDF برنامه تمرینی
-                    </a>
+                    <div class="d-flex align-items-center gap-2">
+
+                        <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(item.Id)"
+                           class="btn btn-success flex-grow-1"
+                           style="border-radius:8px;font-size:13px;"
+                           target="_blank">
+                            <i class="fa fa-print me-1"></i> دانلود / چاپ PDF برنامه غذایی
+                        </a>
+
+                    </div>
                 </div>
             }
         </div>

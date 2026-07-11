@@ -541,9 +541,12 @@ namespace EndPoint.Site.BaleBot.Handlers
                         // اگر هر دو وجود داشتند می‌نویسد: "کاهش وزن - عضله‌سازی"
                         // اگر فقط یکی بود فقط همان را می‌نویسد
                         string title = titleParts.Count > 0 ? string.Join(" - ", titleParts) : "بدون عنوان";
+                        string icon_ = "✴️";
+                        if (n.IsSeen)
+                            icon_ = "";
 
                         rows.Add(new List<InlineKeyboardButton> {
-                            new InlineKeyboardButton { Text = $"🥩 برنامه غذایی: {title}", CallbackData = $"DL_NUT_{n.Id}" }
+                            new InlineKeyboardButton { Text = $"{icon_}🥩 برنامه غذایی: {title}", CallbackData = $"DL_NUT_{n.Id}" }
                         });
                     }
 
@@ -578,9 +581,11 @@ namespace EndPoint.Site.BaleBot.Handlers
                         // برش کردن متن اگر خیلی طولانی شد تا دکمه در بله زشت نشود
                         if (displayTitle.Length > 45)
                             displayTitle = displayTitle.Substring(0, 45) + "...";
-
+                        string icon_ = "✴️";
+                        if (t.IsSeen)
+                            icon_ = "";
                         rows.Add(new List<InlineKeyboardButton> {
-                            new InlineKeyboardButton { Text = $"💪 برنامه تمرینی: {displayTitle}", CallbackData = $"DL_TRN_{t.Id}" }
+                            new InlineKeyboardButton { Text = $"{icon_}💪 برنامه تمرینی: {displayTitle}", CallbackData = $"DL_TRN_{t.Id}" }
                         });
                     }
 

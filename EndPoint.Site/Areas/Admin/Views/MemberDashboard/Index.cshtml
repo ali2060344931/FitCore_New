@@ -1345,7 +1345,7 @@
                                        target="_blank"
                                        class="mb-program-btn"
                                        style="background-color:#8fd19e;color:#fff;border-color:#8fd19e;"
-                                       onclick="setTimeout(function(){ location.reload(); }, 500);">
+                                       onclick="setTimeout(() => window.location.reload(), 1000);">
                                         <i class="fa fa-print"></i> PDF
                                     </a>
                             </div>
@@ -1389,12 +1389,11 @@
 
                                     </div>
                                 </div>
-
                                     <a href="/Admin/MemberDashboard/PrintTrainingProgram/@SecurityUtils.EncryptId(p.Id)"
                                        target="_blank"
                                        class="mb-program-btn"
                                        style="background-color:#8fd19e;color:#fff;border-color:#8fd19e;"
-                                       onclick="setTimeout(function(){ location.reload(); }, 500);">
+                                       onclick="setTimeout(() => window.location.reload(), 1000);">
                                         <i class="fa fa-print"></i> PDF
                                     </a>
 

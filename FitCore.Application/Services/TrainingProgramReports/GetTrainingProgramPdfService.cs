@@ -58,16 +58,8 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
             var primaryColor = Colors.Green.Medium;
             var lightGray = Colors.Grey.Lighten3;
             
-            var q = _context.TrainingPrograms.Where(c => c.Id == program.Id).FirstOrDefault();
 
-            if (!q.IsSeen)
-            {
-                q.IsSeen = true;
-                q.SeenAt = DateTime.Now;
-                _context.SaveChanges();
-            }
-
-            return Document.Create(container =>
+            var pdf= Document.Create(container =>
             {
                 container.Page(page =>
                 {
@@ -242,6 +234,20 @@ namespace FitCore.Application.Services.TrainingProgramReports.Queries
                     });
                 });
             }).GeneratePdf();
+
+
+
+
+            if (!program.IsSeen)
+            {
+                program.IsSeen = true;
+                program.SeenAt = DateTime.Now;
+
+                _context.SaveChanges();
+            }
+
+            return pdf;
+
 
             // استایل‌های کمکی
             IContainer HeaderCell(IContainer c) => c
