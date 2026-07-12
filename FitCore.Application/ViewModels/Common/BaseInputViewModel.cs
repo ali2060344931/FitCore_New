@@ -24,6 +24,16 @@ namespace FitCore.Application.ViewModels.Common
 
         public List<SelectListItem> Items { get; set; }
         public string SelectedValue { get; set; }
+
+
+        public List<string> SelectedValues { get; set; }
+    = new List<string>();
+
+        public bool AllowClear { get; set; } = true;
+
+        public string CssClass { get; set; }
+
+        public string HelpText { get; set; }
     }
 }
 

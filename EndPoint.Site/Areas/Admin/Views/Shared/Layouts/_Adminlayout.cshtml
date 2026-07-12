@@ -149,7 +149,17 @@
     </style>
 </head>
 
+
+
+
+
 <body>
+
+
+
+    <!--  @await Component.InvokeAsync("DashboardAnnouncement") -->
+
+
 
     <!-- اورلی موبایل -->
     <div class="fc-sidebar-overlay" id="fcOverlay"></div>
@@ -177,12 +187,12 @@
 
 
             <!-- دکمه جمع شدن (فقط دسکتاپ) -->
-             <div class="fc-sidebar-footer">
+            <div class="fc-sidebar-footer">
                 <button class="fc-collapse-btn" id="fcCollapseBtn">
                     <i class="fa fa-angle-double-right"></i>
                     <span>جمع کردن منو</span>
                 </button>
-            </div> 
+            </div>
 
 
 
@@ -206,9 +216,9 @@
                             </a>
                         </li>
                     }
-                    
-                    
-                    
+
+
+
                     @if (User.IsSuperAdmin() || User.IsAdmin() || User.IsTrainer())
                     {
                         <!-- بخش مدیریت -->
@@ -219,8 +229,8 @@
                             <li class="fc-nav-item has-sub" id="nav-gym">
                                 <button type="button" class="fc-nav-link" data-title="باشگاه‌ها"
                                         onclick="return fcToggleMenu('nav-programs', event)">
-                                    
-                                        <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
+
+                                    <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
                                     <span class="fc-nav-text">باشگاه‌ها</span>
                                     <i class="fa fa-angle-left fc-nav-arrow"></i>
                                 </button>
@@ -337,7 +347,7 @@
                                     <span class="fc-nav-text">درخواست‌های برنامه</span>
                                     <span id="nav-pending-badge"
                                           style="display:none;background:#f6ad55;color:#fff;
-                                                                                        border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                                                                                border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
                                     </span>
                                 </a>
                             </li>
@@ -356,7 +366,7 @@
 
                                     <span id="nav-bale-broadcast-badge"
                                           style="display:none;background:#f6ad55;color:#fff;
-                                             border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
+                                                     border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;">
                                     </span>
 
                                 </a>
@@ -472,7 +482,7 @@
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های پشتیبانی</span>
                                 <span id="ticket-badge" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                                        padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                                            padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
@@ -484,7 +494,7 @@
                                 <span class="fc-nav-icon"><i class="fa fa-comments"></i></span>
                                 <span class="fc-nav-text">تیکت‌های مدیران باشگاه</span>
                                 <span id="ticket-badge-sa" style="display:none;background:#f56565;color:#fff;border-radius:10px;
-                                                    padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
+                                                        padding:1px 7px;font-size:10px;font-weight:700;margin-right:auto;"></span>
                             </a>
                         </li>
                     }
@@ -695,8 +705,8 @@
                 // ---- collapse دسکتاپ ----
                 $('#fcCollapseBtn').on('click', function () {
                 $('body').toggleClass('sidebar-collapsed');
-                
-                
+
+
                 // ذخیره در localStorage
                 try {
                 localStorage.setItem('fc_sidebar_collapsed',
@@ -807,6 +817,21 @@
 
             });
         }
+
+
+
+
+                document.addEventListener("DOMContentLoaded", function () {
+
+            var modal =
+                document.getElementById('announcementModal');
+
+            if (modal)
+            {
+                new bootstrap.Modal(modal).show();
+            }
+
+        });
 
 
 

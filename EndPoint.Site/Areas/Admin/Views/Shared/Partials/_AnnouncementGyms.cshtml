@@ -1,0 +1,27 @@
+﻿@model EndPoint.Site.Areas.Admin.Models.Announcement.AnnouncementCreateEditViewModel
+
+<div class="form-check mb-3">
+   
+    <input asp-for="IsForAllGyms"
+           class="form-check-input" />
+
+    <label asp-for="IsForAllGyms"
+           class="form-check-label">
+
+        نمایش برای همه باشگاه‌ها
+
+    </label>
+
+</div>
+
+<label>
+
+    باشگاه‌ها
+
+</label>
+
+<select asp-for="SelectedGymIds"
+        asp-items="Model.Gyms"
+        class="form-control js-select2"
+        multiple>
+</select>

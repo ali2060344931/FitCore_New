@@ -33,11 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\Shared\Components\" />
     <Folder Include="Areas\Admin\Views\Shared\EditorTemplates\" />
     <Folder Include="Areas\Admin\Views\Shared\DisplayTemplates\" />
     <Folder Include="Areas\Admin\Views\Shared\Modals\" />
-    <Folder Include="ViewComponents\" />
     <Folder Include="wwwroot\SiteTemplate\assets\images\menu-main\card\" />
     <Folder Include="wwwroot\uploads\members\" />
   </ItemGroup>

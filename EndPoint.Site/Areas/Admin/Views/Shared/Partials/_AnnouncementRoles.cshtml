@@ -1,0 +1,27 @@
+﻿@model EndPoint.Site.Areas.Admin.Models.Announcement.AnnouncementCreateEditViewModel
+
+<div class="form-check mb-3">
+
+    <input asp-for="IsForAllRoles"
+           class="form-check-input" />
+
+    <label asp-for="IsForAllRoles"
+           class="form-check-label">
+
+        نمایش برای همه نقش‌ها
+
+    </label>
+
+</div>
+
+<label>
+
+    نقش‌های مجاز
+
+</label>
+
+<select asp-for="SelectedRoleIds"
+        asp-items="Model.Roles"
+        class="form-control js-select2"
+        multiple>
+</select>

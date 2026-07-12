@@ -1,0 +1,106 @@
+﻿@model EndPoint.Site.Areas.Admin.Models.Announcement.AnnouncementCreateEditViewModel
+
+<div class="container-fluid px-3">
+    <div class="col-md-6">
+
+        <label>
+
+            متن دکمه
+
+        </label>
+
+        <input asp-for="ButtonText"
+               class="form-control" />
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label>
+
+            لینک دکمه
+
+        </label>
+
+        <input asp-for="ButtonUrl"
+               class="form-control" />
+
+    </div>
+
+</div>
+
+<hr />
+
+<div class="container-fluid px-3">
+    <div class="col-md-2">
+
+        <div class="form-check mb-3">
+
+            <input asp-for="IsActive"
+                   class="form-check-input" />
+
+            <label asp-for="IsActive"
+                   class="form-check-label">
+
+                فعال
+
+            </label>
+
+        </div>
+    </div>
+
+    <div class="col-md-2">
+
+        <div class="form-check mb-3">
+
+            <input asp-for="IsPinned"
+                   class="form-check-input" />
+
+            <label asp-for="IsPinned"
+                   class="form-check-label">
+
+                سنجاق شود
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <div class="form-check mb-3">
+
+            <input asp-for="ShowOnce"
+                   class="form-check-input" />
+
+            <label asp-for="ShowOnce"
+                   class="form-check-label">
+
+                فقط یکبار
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="form-check mb-3">
+
+            <input asp-for="CanDismiss"
+                   class="form-check-input" />
+
+            <label asp-for="CanDismiss"
+                   class="form-check-label">
+
+                قابل بستن باشد
+
+            </label>
+
+        </div>
+
+    </div>
+
+</div>

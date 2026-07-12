@@ -1,0 +1,67 @@
+﻿@model EndPoint.Site.Areas.Admin.Models.Announcement.AnnouncementCreateEditViewModel
+
+<div class="container-fluid px-3">
+    <div class="col-md-3">
+
+        <label>نوع اطلاعیه</label>
+
+        <select asp-for="Type"
+                class="form-control"
+                asp-items="Html.GetEnumSelectList<FitCore.Domain.Entities.Announcements.AnnouncementType>()">
+        </select>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <label>اولویت</label>
+
+        <select asp-for="Priority"
+                class="form-control"
+                asp-items="Html.GetEnumSelectList<FitCore.Domain.Entities.Announcements.AnnouncementPriority>()">
+        </select>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <label>ترتیب نمایش</label>
+
+        <input asp-for="DisplayOrder"
+               class="form-control" />
+
+    </div>
+
+    <div class="col-md-3">
+
+        <label>تعداد روز تکرار</label>
+
+        <input asp-for="RepeatAfterDays"
+               class="form-control" />
+
+    </div>
+
+</div>
+
+<br />
+
+<div class="container-fluid px-3">
+    <div class="col-md-6">
+
+        <label>تاریخ شروع</label>
+
+        <input asp-for="StartDate"
+               class="form-control" />
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label>تاریخ پایان</label>
+
+        <input asp-for="EndDate"
+               class="form-control" />
+
+    </div>
+
+</div>

@@ -1,4 +1,5 @@
-﻿using FitCore.Domain.Entities.Gyms;
+﻿using FitCore.Domain.Entities.Announcements;
+using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Help;
 using FitCore.Domain.Entities.Members;
 using FitCore.Domain.Entities.NutritionProgram.Food;
@@ -45,6 +46,15 @@ namespace FitCore.Application.Contexts
         DbSet<IdentityUserRole<long>> UserRoles { get; set; }
 
 
+        DbSet<Announcement> Announcements { get; set; }
+
+        DbSet<AnnouncementRole> AnnouncementRoles { get; set; }
+
+        DbSet<AnnouncementGym> AnnouncementGyms { get; set; }
+
+        DbSet<AnnouncementView> AnnouncementViews { get; set; }
+
+
         //===============NutritionProgram
         public DbSet<Food> Foods { get; set; }
         public DbSet<FoodUnitConversion> FoodUnitConversions { get; set; }
@@ -83,6 +93,13 @@ namespace FitCore.Application.Contexts
         public DbSet<TicketMessage> TicketMessages { get; set; }
 
         //-------------  Ticket End -------------
+
+
+
+
+
+
+
         int SaveChanges();
 
         Task<int> SaveChangesAsync(

@@ -1,0 +1,29 @@
+﻿@model FitCore.Application.ViewModels.Common.CardViewModel
+
+<div class="card shadow-sm mb-4">
+
+    @if (!string.IsNullOrWhiteSpace(Model.Title))
+    {
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">
+
+                @Model.Title
+
+            </h5>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Icon))
+            {
+                <i class="@Model.Icon"></i>
+            }
+
+        </div>
+    }
+
+    <div class="card-body">
+
+        @Html.Raw(Model.Body)
+
+    </div>
+
+</div>

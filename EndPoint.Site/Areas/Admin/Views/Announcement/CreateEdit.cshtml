@@ -1,0 +1,111 @@
+﻿@model EndPoint.Site.Areas.Admin.Models.Announcement.AnnouncementCreateEditViewModel
+
+@{
+    bool isEdit = Model.Id > 0;
+
+    ViewData["Title"] =
+        isEdit
+        ? "ویرایش اطلاعیه"
+        : "ثبت اطلاعیه";
+
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <form asp-action="@(isEdit ? "Edit" : "Create")"
+          method="post"
+          enctype="multipart/form-data">
+
+        @Html.AntiForgeryToken()
+
+        @if (isEdit)
+        {
+            <input asp-for="Id" type="hidden" />
+        }
+
+        <div class="card shadow-sm">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+
+                    <i class="fa fa-bullhorn text-primary"></i>
+
+                    @(isEdit ? "ویرایش اطلاعیه" : "ثبت اطلاعیه جدید")
+
+                </h5>
+
+            </div>
+
+            <div class="card-body px-4 py-3">
+
+                <!-- اطلاعات اصلی -->
+                @await Html.PartialAsync("~/Areas/Admin/Views/Shared/Partials/_AnnouncementMainInfo.cshtml", Model)
+
+                <hr />
+
+                <!-- تنظیمات نمایش -->
+                @await Html.PartialAsync("~/Areas/Admin/Views/Shared/Partials/_AnnouncementDisplay.cshtml", Model)
+
+                <hr />
+
+                <!-- نقش ها -->
+                @await Html.PartialAsync("~/Areas/Admin/Views/Shared/Partials/_AnnouncementRoles.cshtml", Model)
+
+                <hr />
+
+                <!-- باشگاه ها -->
+                @await Html.PartialAsync("~/Areas/Admin/Views/Shared/Partials/_AnnouncementGyms.cshtml", Model)
+
+                <hr />
+
+                <!-- تنظیمات پیشرفته -->
+                @await Html.PartialAsync("~/Areas/Admin/Views/Shared/Partials/_AnnouncementAdvanced.cshtml", Model)
+            </div>
+
+            <div class="card-footer text-center">
+
+                <button type="submit"
+                        class="btn btn-success px-5">
+
+                    <i class="fa fa-save"></i>
+
+                    @(isEdit ? "ویرایش" : "ثبت")
+
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary px-5">
+
+                    <i class="fa fa-arrow-right"></i>
+
+                    بازگشت
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts
+{
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        $('.js-select2').select2({
+
+            width: '100%',
+            dir: 'rtl'
+
+        });
+
+    </script>
+
+}

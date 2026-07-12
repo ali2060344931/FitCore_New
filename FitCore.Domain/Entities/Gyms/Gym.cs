@@ -1,8 +1,6 @@
 ﻿using FitCore.Domain.Entities.Commons;
 using FitCore.Domain.Entities.Provinces;
 using FitCore.Domain.Entities.Users;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,6 @@
 ﻿
 using FitCore.Application.Contexts;
+using FitCore.Domain.Entities.Announcements;
 using FitCore.Domain.Entities.Commons;
 using FitCore.Domain.Entities.Gyms;
 using FitCore.Domain.Entities.Help;
@@ -15,6 +16,7 @@ using FitCore.Domain.Entities.Setings;
 using FitCore.Domain.Entities.Tickets;
 using FitCore.Domain.Entities.TrainingProgram;
 using FitCore.Domain.Entities.Users;
+using FitCore.Persistence.Configurations;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -48,6 +50,19 @@ namespace FitCore.Persistence.Contexts
         public DbSet<Province> Provinces { get; set; }
 
         public DbSet<City> Cities { get; set; }
+
+
+
+
+        public DbSet<Announcement> Announcements { get; set; }
+
+        public DbSet<AnnouncementRole> AnnouncementRoles { get; set; }
+
+        public DbSet<AnnouncementGym> AnnouncementGyms { get; set; }
+
+        public DbSet<AnnouncementView> AnnouncementViews { get; set; }
+
+
 
 
         //===============NutritionProgram
@@ -90,15 +105,14 @@ namespace FitCore.Persistence.Contexts
 
         //-------------  Ticket End -------------
 
+
+
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             ApplyQueryFilter(modelBuilder);
-
-
-
 
 
             modelBuilder.Entity<ProgramRequest>(entity =>
@@ -126,6 +140,22 @@ namespace FitCore.Persistence.Contexts
 
         private void ApplyQueryFilter(ModelBuilder modelBuilder)
         {
+
+
+            modelBuilder.ApplyConfiguration(new AnnouncementConfiguration());
+
+            modelBuilder.ApplyConfiguration(new AnnouncementRoleConfiguration());
+
+            modelBuilder.ApplyConfiguration(new AnnouncementGymConfiguration());
+
+            modelBuilder.ApplyConfiguration(new AnnouncementViewConfiguration());
+
+
+
+
+
+
+
 
             // --- فیلترهای حذف نرم برای جداول تغذیه (اضافه شود) ---
             modelBuilder.Entity<FitCore.Domain.Entities.NutritionProgram.NutritionProgram.NutritionProgram>()

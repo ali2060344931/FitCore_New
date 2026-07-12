@@ -1,0 +1,267 @@
+﻿@using FitCore.Application.Services.Announcements.Queries.GetAnnouncements
+@using EndPoint.Site.Areas.Admin.Models
+
+@model ResultGetAnnouncementsListDto
+
+
+@{
+    ViewData["Title"] = "مدیریت اطلاعیه ها";
+    Layout = "~/Areas/Admin/Views/Shared/Layouts/_AdminLayout.cshtml";
+
+    var pagingVm = new PagingPartialViewModel
+    {
+        RowCount = Model.RowCount,
+        CurrentPage = int.TryParse(
+    Context.Request.Query["page"],
+    out var page)
+    ? page
+    : 1,
+
+        PageSize = 20
+    };
+}
+
+
+
+<div class="card">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h4 class="mb-0">
+            مدیریت اطلاعیه ها
+        </h4>
+
+        <a asp-action="Create"
+           class="btn btn-success">
+
+            <i class="fa fa-plus"></i>
+
+            اطلاعیه جدید
+
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="get">
+
+            <div class="row">
+
+                <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+                         model='new BaseInputViewModel
+                         {
+                             Col = 4,
+                             Id = "searchKey",
+                             Name = "searchKey",
+                             Value = Context.Request.Query["searchKey"],
+                             Placeholder = "عنوان اطلاعیه..."
+                         }' />
+
+                <div class="col-md-2">
+
+                    <button class="btn btn-primary mt-4 w-100">
+
+                        جستجو
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        <hr />
+
+        <table class="table table-bordered table-hover">
+
+            <thead>
+
+                <tr>
+
+                    <th width="60">
+
+                        #
+
+                    </th>
+
+                    <th>
+
+                        عنوان
+
+                    </th>
+
+                    <th width="120">
+
+                        نوع
+
+                    </th>
+
+                    <th width="120">
+
+                        اولویت
+
+                    </th>
+
+                    <th width="100">
+
+                        فعال
+
+                    </th>
+
+                    <th width="100">
+
+                        سنجاق
+
+                    </th>
+
+                    <th width="180">
+
+                        عملیات
+
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (Model.Announcements.Any())
+                {
+                    int row = 1;
+
+                    foreach (var item in Model.Announcements)
+                    {
+                        <tr>
+
+                             <td>
+
+                                @(row++)
+
+                            </td>
+
+                            <td>
+
+                                @item.Title
+
+                            </td>
+
+                             <td>
+
+                                @item.Type
+
+                            </td>
+
+                            <td>
+
+                                @item.Priority
+
+                            </td>
+
+                            <td>
+
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">
+
+                                        فعال
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+
+                                        غیرفعال
+
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td>
+
+                                @(item.IsPinned ? "بله" : "-")
+
+                            </td>
+
+                            <td>
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-warning btn-sm">
+
+                                    ویرایش
+
+                                </a>
+
+                                <button class="btn btn-danger btn-sm btn-delete"
+                                        data-id="@item.Id">
+
+                                    حذف
+
+                                </button>
+
+                            </td> 
+
+                        </tr>
+                    }
+                }
+                else
+                {
+
+                    <tr>
+
+                        <td colspan="7">
+
+                            <partial name="~/Areas/Admin/Views/Shared/Partials/_EmptyState.cshtml"
+                                     model='"هیچ اطلاعیه‌ای برای نمایش وجود ندارد."' />
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody> 
+
+        </table>
+
+        <partial name="~/Areas/Admin/Views/Shared/Partials/_Paging.cshtml"
+                 model="pagingVm" />
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $(".btn-delete").click(function () {
+
+            if (!confirm("آیا حذف شود؟"))
+                return;
+
+            var id=$(this).data("id");
+
+            $.post("/Admin/Announcement/Delete/"+id,function(res){
+
+                if(res.isSuccess){
+
+                    location.reload();
+
+                }
+                else{
+
+                    alert(res.message);
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+}

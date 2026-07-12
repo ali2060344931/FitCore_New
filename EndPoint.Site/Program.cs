@@ -1,5 +1,4 @@
 using EndPoint.Site.BaleBot.Handlers;
-using Microsoft.AspNetCore.DataProtection;
 
 using FitCore.Application.Common.Options;
 using FitCore.Application.Contexts;
@@ -9,6 +8,17 @@ using FitCore.Application.Interfaces.IMembers;
 using FitCore.Application.Interfaces.ISms;
 using FitCore.Application.Services;
 using FitCore.Application.Services.AI;
+using FitCore.Application.Services.Announcements.Commands.AddAnnouncement;
+using FitCore.Application.Services.Announcements.Commands.DeleteAnnouncement;
+using FitCore.Application.Services.Announcements.Commands.EditAnnouncement;
+using FitCore.Application.Services.Announcements.Dashboard.DismissAnnouncement;
+using FitCore.Application.Services.Announcements.Dashboard.RegisterAnnouncementClick;
+using FitCore.Application.Services.Announcements.Dashboard.RegisterAnnouncementView;
+using FitCore.Application.Services.Announcements.Facade;
+using FitCore.Application.Services.Announcements.Queries;
+using FitCore.Application.Services.Announcements.Queries.GetAnnouncementById;
+using FitCore.Application.Services.Announcements.Queries.GetAnnouncements;
+using FitCore.Application.Services.Announcements.Queries.GetRoles;
 using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Dashboard;
 using FitCore.Application.Services.Exercises.ExerciseFacad;
@@ -54,6 +64,7 @@ using FluentValidation.AspNetCore;
 using GymBot.Services;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -376,6 +387,24 @@ builder.Services.AddScoped<IHelp_Service, HelpService>();
 builder.Services.AddScoped<IBaleCallbackHandler, BaleCallbackHandler>();
 builder.Services.AddScoped<IBaleMessageHandler, BaleMessageHandler>();
 //++++++++++++++++
+
+builder.Services.AddScoped<IAnnouncementFacade, AnnouncementFacade>();
+
+
+builder.Services.AddScoped<IAddAnnouncementService, AddAnnouncementService>();
+builder.Services.AddScoped<IEditAnnouncementService, EditAnnouncementService>();
+builder.Services.AddScoped<IDeleteAnnouncementService, DeleteAnnouncementService>();
+builder.Services.AddScoped<IGetAnnouncementsService, GetAnnouncementsService>();
+builder.Services.AddScoped<IGetAnnouncementByIdService, GetAnnouncementByIdService>();
+builder.Services.AddScoped<IRegisterAnnouncementViewService, RegisterAnnouncementViewService>();
+builder.Services.AddScoped<IDismissAnnouncementService, DismissAnnouncementService>();
+builder.Services.AddScoped<IRegisterAnnouncementClickService, RegisterAnnouncementClickService>();
+
+builder.Services.AddScoped<
+    FitCore.Application.Services.Announcements.Queries.GetGyms.IGetGymsService,
+    FitCore.Application.Services.Announcements.Queries.GetGyms.GetGymsService>();
+
+builder.Services.AddScoped<IGetRolesService, GetRolesService>();
 
 //++++++++++++++++
 

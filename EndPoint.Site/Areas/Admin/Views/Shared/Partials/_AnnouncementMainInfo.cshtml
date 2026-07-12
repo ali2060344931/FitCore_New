@@ -1,0 +1,49 @@
+﻿@using FitCore.Application.ViewModels.Common
+@model EndPoint.Site.Areas.Admin.Models.Announcement.AnnouncementCreateEditViewModel
+
+<div class="row">
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+             model='new BaseInputViewModel
+             {
+                 Col = 6,
+                 Id = "Title",
+                 Name = "Title",
+                 LabelName = "عنوان اطلاعیه",
+                 Placeholder = "عنوان اطلاعیه را وارد کنید...",
+                 Value = Model.Title
+             }' />
+
+    <partial name="~/Areas/Admin/Views/Shared/Partials/_TextInput.cshtml"
+             model='new BaseInputViewModel
+             {
+                 Col = 6,
+                 Id = "ImageUrl",
+                 Name = "ImageUrl",
+                 LabelName = "آدرس تصویر",
+                 Placeholder = "https://...",
+                 Value = Model.ImageUrl
+             }' />
+
+</div>
+
+<div class="container-fluid px-4">
+
+    <div class="col-md-12">
+
+        <label class="form-label">
+
+            متن اطلاعیه
+
+        </label>
+
+        <textarea asp-for="Message"
+                  rows="6"
+                  class="form-control"></textarea>
+
+        <span asp-validation-for="Message"
+              class="text-danger"></span>
+
+    </div>
+
+</div>
