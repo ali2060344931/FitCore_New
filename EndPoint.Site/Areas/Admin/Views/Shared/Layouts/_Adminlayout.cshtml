@@ -157,9 +157,8 @@
 
 
 
-    <!--  @await Component.InvokeAsync("DashboardAnnouncement") -->
-
-
+    <!--  await Component.InvokeAsync("DashboardAnnouncement") -->
+    @await Component.InvokeAsync(typeof(EndPoint.Site.ViewComponents.DashboardAnnouncementViewComponent))
 
     <!-- اورلی موبایل -->
     <div class="fc-sidebar-overlay" id="fcOverlay"></div>

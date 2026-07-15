@@ -8,7 +8,8 @@ namespace FitCore.Application.Services.Announcements.Dashboard.GetDashboardAnnou
 
         public long? GymId { get; set; }
 
-        public List<long> RoleIds { get; set; } = new();
-
+        //public List<long> RoleIds { get; set; } = new();
+        public List<long> RoleIds { get; set; }
+                = new List<long>();
     }
 }
