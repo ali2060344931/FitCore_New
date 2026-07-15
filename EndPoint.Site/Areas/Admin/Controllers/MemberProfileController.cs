@@ -5,7 +5,9 @@ using FitCore.Application.Services.Members.Queries;
 using FitCore.Application.Services.Members.Queries.ReportMembers;
 using FitCore.Common;
 using FitCore.Common.Dto;
+using FitCore.Domain.Entities.Users;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
         private readonly IDataBaseContext _context;
         private readonly IFileCompressionService _fileService;
 
+        private readonly SignInManager<AppUser> _signInManager;
 
         public MemberProfileController(
             IAddOrUpdateMemberService addOrUpdateMemberService,
@@ -37,7 +40,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             IEditMemberBodyMeasurementService editMemberBodyMeasurementService,
             IDataBaseContext context,
             IGetMemberBodyMeasurementsService getMemberBodyMeasurementsService,
-            IRemoveBodyMeasurementService removeBodyMeasurementService, IFileCompressionService fileService)
+            IRemoveBodyMeasurementService removeBodyMeasurementService, IFileCompressionService fileService, SignInManager<AppUser> signInManager)
         {
             _addOrUpdateMemberService = addOrUpdateMemberService;
             _getMemberByAppUserIdService = getMemberByAppUserIdService;
@@ -47,24 +50,28 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
             _getMemberBodyMeasurementsService = getMemberBodyMeasurementsService;
             _removeBodyMeasurementService = removeBodyMeasurementService;
             _fileService = fileService;
+            _signInManager = signInManager;
         }
 
 
         [HttpGet]
-        public IActionResult CompleteInfo()
+        public async Task<IActionResult> CompleteInfo()
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrWhiteSpace(userIdValue))
-            {
-                return Unauthorized();
-            }
+            if (string.IsNullOrWhiteSpace(userIdValue)) return Unauthorized();
 
             var appUserId = long.Parse(userIdValue);
-            var memberId = _context.Members.Where(c => c.AppUserId == appUserId).FirstOrDefault().Id;
+            var member = _context.Members.FirstOrDefault(c => c.AppUserId == appUserId);
 
-            var member = _context.Members
-                .Where(x => x.Id == memberId)
+            // اگر کاربر در دیتابیس وجود نداشت، خروج زده و به صفحه لاگین هدایت شود
+            if (member == null)
+            {
+                await _signInManager.SignOutAsync();
+                return RedirectToAction("Login", "Auth", new { area = "Admin" });
+            }
+
+            var memberVm = _context.Members
+                .Where(x => x.Id == member.Id)
                 .Select(x => new GetMemberCompleteInfoDto
                 {
                     Id = x.Id,
@@ -82,32 +89,79 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
                     FoodAllergies = x.FoodAllergies,
                     MedicalConditions = x.MedicalConditions,
                     Height = x.Height,
-
-
                     ProfileImageUrl = x.ProfileImageUrl,
                     VideoUrl = x.VideoUrl,
                     BodyImageUrl1 = x.BodyImageUrl1,
                     BodyImageUrl2 = x.BodyImageUrl2,
                     BodyImageUrl3 = x.BodyImageUrl3
-
                 }).FirstOrDefault();
 
-            ViewBag.ActivityLevels = _context.activityLevels
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList();
+            ViewBag.ActivityLevels = _context.activityLevels.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToList();
+            ViewBag.ExperienceLevels = _context.experiences.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToList();
 
-            ViewBag.ExperienceLevels = _context.experiences
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList();
-
-            return View(member);
+            return View(memberVm);
         }
+
+
+        //[HttpGet]
+        //public IActionResult CompleteInfo()
+        //{
+        //    var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    if (string.IsNullOrWhiteSpace(userIdValue))
+        //    {
+        //        return Unauthorized();
+        //    }
+
+        //    var appUserId = long.Parse(userIdValue);
+
+        //    var memberId = _context.Members.Where(c => c.AppUserId == appUserId).FirstOrDefault().Id;
+
+        //    var member = _context.Members
+        //        .Where(x => x.Id == memberId)
+        //        .Select(x => new GetMemberCompleteInfoDto
+        //        {
+        //            Id = x.Id,
+        //            FullName = x.AppUser.FullName,
+        //            Mobile = x.AppUser.PhoneNumber,
+        //            Gender = x.Gender,
+        //            ActivityLevelId = x.ActivityLevelId,
+        //            ExperienceLevelId = x.ExperienceLevelId,
+        //            MembershipStartDate = x.MembershipStartDate,
+        //            MembershipEndDate = x.MembershipEndDate,
+        //            BirthDate = x.BirthDate,
+        //            Description = x.Description,
+        //            Injuries = x.Injuries,
+        //            IsActive = x.IsActive,
+        //            FoodAllergies = x.FoodAllergies,
+        //            MedicalConditions = x.MedicalConditions,
+        //            Height = x.Height,
+
+
+        //            ProfileImageUrl = x.ProfileImageUrl,
+        //            VideoUrl = x.VideoUrl,
+        //            BodyImageUrl1 = x.BodyImageUrl1,
+        //            BodyImageUrl2 = x.BodyImageUrl2,
+        //            BodyImageUrl3 = x.BodyImageUrl3
+
+        //        }).FirstOrDefault();
+
+        //    ViewBag.ActivityLevels = _context.activityLevels
+        //        .Select(x => new SelectListItem
+        //        {
+        //            Value = x.Id.ToString(),
+        //            Text = x.Name
+        //        }).ToList();
+
+        //    ViewBag.ExperienceLevels = _context.experiences
+        //        .Select(x => new SelectListItem
+        //        {
+        //            Value = x.Id.ToString(),
+        //            Text = x.Name
+        //        }).ToList();
+
+        //    return View(member);
+        //}
 
 
         // اضافه شدن async و Task

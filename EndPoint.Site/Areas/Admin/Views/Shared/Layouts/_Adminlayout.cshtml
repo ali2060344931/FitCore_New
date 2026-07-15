@@ -140,7 +140,10 @@
 
 
 
+    <link href="~/Admin/assets/css/fitcore-announcement.css"
+          rel="stylesheet" />
 
+    <script src="~/Admin/assets/js/fitcore-announcement.js"></script>
     <!-- فقط استایل قفل اسکرول موبایل - بقیه کدهای موبایل در فایل CSS خارجی هستند -->
     <style>
         body.mobile-menu-open {
@@ -155,10 +158,9 @@
 
 <body>
 
-
-
-    <!--  await Component.InvokeAsync("DashboardAnnouncement") -->
     @await Component.InvokeAsync(typeof(EndPoint.Site.ViewComponents.DashboardAnnouncementViewComponent))
+
+
 
     <!-- اورلی موبایل -->
     <div class="fc-sidebar-overlay" id="fcOverlay"></div>
@@ -227,12 +229,12 @@
                         {
                             <li class="fc-nav-item has-sub" id="nav-gym">
                                 <button type="button" class="fc-nav-link" data-title="باشگاه‌ها"
-                                        onclick="return fcToggleMenu('nav-programs', event)">
-
+                                        onclick="return fcToggleMenu('nav-gym', event)">
                                     <span class="fc-nav-icon"><i class="fa fa-building-o"></i></span>
                                     <span class="fc-nav-text">باشگاه‌ها</span>
                                     <i class="fa fa-angle-left fc-nav-arrow"></i>
                                 </button>
+
                                 <ul class="fc-nav-sub">
                                     <li>
                                         <a href="/admin/Gym/index" class="fc-nav-sub-link">
@@ -244,6 +246,12 @@
                                         <a href="/admin/Gym/Create" class="fc-nav-sub-link">
                                             <span class="fc-nav-sub-dot"></span>
                                             ثبت باشگاه جدید
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/admin/Announcement/index" class="fc-nav-sub-link">
+                                            <span class="fc-nav-sub-dot"></span>
+                                            لیست پیام های تبلیغاتی
                                         </a>
                                     </li>
                                 </ul>
@@ -621,6 +629,10 @@
     @RenderSection("Scripts", false)
     @RenderSection("Modals", false)
 
+
+
+
+
     <script>
                 // ================================
                 // FitCore Admin — رفتار UI
@@ -816,21 +828,6 @@
 
             });
         }
-
-
-
-
-                document.addEventListener("DOMContentLoaded", function () {
-
-            var modal =
-                document.getElementById('announcementModal');
-
-            if (modal)
-            {
-                new bootstrap.Modal(modal).show();
-            }
-
-        });
 
 
 

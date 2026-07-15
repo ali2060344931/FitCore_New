@@ -11,7 +11,9 @@ using FitCore.Application.Services.AI;
 using FitCore.Application.Services.Announcements.Commands.AddAnnouncement;
 using FitCore.Application.Services.Announcements.Commands.DeleteAnnouncement;
 using FitCore.Application.Services.Announcements.Commands.EditAnnouncement;
+using FitCore.Application.Services.Announcements.Dashboard;
 using FitCore.Application.Services.Announcements.Dashboard.DismissAnnouncement;
+using FitCore.Application.Services.Announcements.Dashboard.GetDashboardAnnouncements;
 using FitCore.Application.Services.Announcements.Dashboard.RegisterAnnouncementClick;
 using FitCore.Application.Services.Announcements.Dashboard.RegisterAnnouncementView;
 using FitCore.Application.Services.Announcements.Facade;
@@ -453,7 +455,8 @@ builder.Services.AddScoped<
     CustomClaimsPrincipalFactory>();
 
 
-
+builder.Services.AddScoped<IGetDashboardAnnouncementsService,
+                   GetDashboardAnnouncementsService>();
 
 #endregion
 

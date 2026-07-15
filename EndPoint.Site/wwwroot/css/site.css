@@ -235,3 +235,100 @@ body {
         font-size: 14px;
     }
 
+/*    -------------------------*/
+#announcementModal .modal-dialog {
+    max-width: 750px;
+}
+
+#announcementModal .modal-content {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#announcementModal .modal-header {
+    padding: 18px 25px;
+}
+
+#announcementModal .modal-body {
+    padding: 35px;
+}
+
+#announcementModal .modal-footer {
+    border-top: none;
+    padding-bottom: 25px;
+}
+
+#announcementModal .btn-primary {
+    min-width: 180px;
+}
+
+/**********************/
+.announcement-modal {
+    border-radius: 18px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 25px 70px rgba(0,0,0,.35);
+}
+
+.announcement-header {
+    background: linear-gradient(90deg,#4f46e5,#6366f1);
+    color: white;
+    padding: 18px 25px;
+    border: none;
+}
+
+    .announcement-header h4 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+.announcement-image {
+    max-height: 280px;
+    border-radius: 15px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.announcement-message {
+    font-size: 18px;
+    line-height: 2.2;
+    color: #444;
+    text-align: right;
+    padding: 10px 5px;
+}
+
+.announcement-modal .modal-footer {
+    border: none;
+    padding: 20px;
+}
+
+.announcement-modal .btn-primary {
+    border-radius: 12px;
+    min-width: 180px;
+}
+
+.modal-backdrop.show {
+    opacity: .65;
+    backdrop-filter: blur(5px);
+}
+
+.announcement-Info {
+    background: #0ea5e9;
+}
+
+.announcement-Warning {
+    background: #f59e0b;
+}
+
+.announcement-Danger {
+    background: #ef4444;
+}
+
+.announcement-Success {
+    background: #16a34a;
+}
+
+.announcement-Promotion {
+    background: #7c3aed;
+}

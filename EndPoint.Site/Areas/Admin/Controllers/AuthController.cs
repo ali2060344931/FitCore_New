@@ -3,14 +3,12 @@ using FitCore.Application.Services.Auth;
 using FitCore.Application.Services.Auth.Dto;
 using FitCore.Domain.Entities.Users;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
@@ -140,44 +138,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return Json(result);
         }
-
-
-        //[HttpPost]
-        //public async Task<IActionResult> CompleteLogin(CompleteLoginRequestDto request)
-        //{
-        //    // ---------------------------------------------------------
-        //    // تعیین مسیر هدایت بر اساس نقش کاربر
-        //    // ---------------------------------------------------------
-        //    string redirectUrl = "/"; // مسیر پیش‌فرض
-
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        //    if (!string.IsNullOrEmpty(userId))
-        //    {
-        //        // استفاده از await به جای .Result برای جلوگیری از Deadlock
-        //        var user = await _userManager.FindByIdAsync(userId);
-        //        if (user != null)
-        //        {
-        //            var roles = await _userManager.GetRolesAsync(user);
-
-        //            if (roles.Contains("Member"))
-        //            {
-        //                redirectUrl = "/Admin/MemberDashboard";
-        //            }
-        //            else if (roles.Contains("SuperAdmin") || roles.Contains("Admin"))
-        //            {
-        //                redirectUrl = "/Admin";
-        //            }
-        //        }
-        //    }
-        //    // ---------------------------------------------------------
-
-        //    return Json(new
-        //    {
-        //        isSuccess = true,
-        //        redirectUrl = redirectUrl
-        //    });
-        //}
 
         [HttpGet]
         public async Task<IActionResult> Register()

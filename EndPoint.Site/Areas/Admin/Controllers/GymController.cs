@@ -1,26 +1,17 @@
 ﻿using FitCore.Application.Contexts;
 using FitCore.Application.Interfaces.IGym;
-using FitCore.Application.Services.Gyms.Commands;
-using FitCore.Application.Services.Gyms.Commands.AddGym;
 using FitCore.Application.Services.Gyms.Commands.EditGym;
 using FitCore.Application.Services.Gyms.Commands.EditGym.FitCore.Application.ViewModels.Gyms;
 using FitCore.Application.ViewModels.Gyms;
-using FitCore.Common.Dto;
 using FitCore.Common.Roles;
-
-using Humanizer;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -210,14 +201,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             if (gym.CitiesId != null)
             {
-                
+
 
                 provinceId = _dataBaseContext.Cities
                     .Where(c => c.Id == gym.CitiesId)
                     .Select(c => c.ProvincesId)
                     .FirstOrDefault();
 
-               
+
                 model.ProvincesId = provinceId;
 
             }

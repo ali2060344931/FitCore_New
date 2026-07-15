@@ -1,0 +1,76 @@
+﻿@model FitCore.Application.Services.Announcements.Dashboard.GetDashboardAnnouncements.ResultGetDashboardAnnouncementDto
+
+@if (Model != null)
+{
+    <div id="fcAnnouncement"
+         class="fc-announcement"
+         data-id="@Model.Id"
+         data-candismiss="@Model.CanDismiss.ToString().ToLower()">
+
+        <div class="fc-announcement-overlay"></div>
+
+        <div class="fc-announcement-popup">
+
+            <div class="fc-header">
+
+
+                <div class="fc-progress">
+
+                    <div class="fc-progress-bar"></div>
+
+                </div>
+
+
+
+                <div class="fc-title">
+
+                    <i class="fa fa-bullhorn"></i>
+
+                    @Model.Title
+
+                </div>
+
+                @if (Model.CanDismiss)
+                {
+                    <button class="fc-close">
+
+                        <i class="fa fa-times"></i>
+
+                    </button>
+                }
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+                <div class="fc-image">
+
+                    <img src="@Model.ImageUrl">
+
+                </div>
+            }
+
+            <div class="fc-body">
+
+                @Html.Raw(Model.Message)
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ButtonText))
+            {
+                <div class="fc-footer">
+
+                    <a href="/Admin/Announcement/Click/@Model.Id"
+                       class="fc-btn">
+
+                        @Model.ButtonText
+
+                    </a>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+}
