@@ -202,7 +202,7 @@ namespace FitCore.EndPoint.Site.Areas.MemberPanel.Controllers
 
 
         [HttpPost]
-        public ResultDto DeleteMedia(string mediaType)
+        public ResultDto DeleteMedia(string mediaType)//mediaType
         {
             // دریافت AppUserId از کاربر لاگین شده
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
