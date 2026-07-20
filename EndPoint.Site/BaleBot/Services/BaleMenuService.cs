@@ -65,17 +65,19 @@ namespace EndPoint.Site.BaleBot.Services
         private readonly IDataBaseContext _db;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMemoryCache _cache;
+        private readonly IBaleBotClient _botClient;
 
         public BaleMenuService(
             IBaleBotService baleBotService,
             IDataBaseContext db,
             UserManager<AppUser> userManager,
-            IMemoryCache cache)
+            IMemoryCache cache, IBaleBotClient botClient)
         {
             _baleBotService = baleBotService;
             _db = db;
             _userManager = userManager;
             _cache = cache;
+            _botClient = botClient;
         }
 
         string minemenu = "🏢 منوی اصلی";
@@ -166,6 +168,7 @@ namespace EndPoint.Site.BaleBot.Services
             string message = title ?? "🏢 شما در چند باشگاه عضو هستید.\nلطفاً باشگاهی که می‌خواهید در آن فعالیت کنید را انتخاب کنید:";
 
             await _baleBotService.SendMessageAsync(chatId, message, keyboard);
+
         }
         /// <inheritdoc />
         public async Task<bool> HasMultipleGymsAsync(long chatId)
@@ -456,7 +459,7 @@ namespace EndPoint.Site.BaleBot.Services
                     }
                 }
             };
-            await _baleBotService.SendMessageAsync(chatId, errorMessage, keyboard);
+            await _botClient.SendMessageAsync(chatId, errorMessage, keyboard);
         }
 
         /// <summary>

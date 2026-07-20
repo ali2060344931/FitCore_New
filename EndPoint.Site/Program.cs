@@ -1,3 +1,4 @@
+using EndPoint.Site.BaleBot.Client;
 using EndPoint.Site.BaleBot.Handlers;
 
 using FitCore.Application.Common.Options;
@@ -83,6 +84,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
+using BaleBotClient = GymBot.Services.BaleBotClient;
+using IBaleBotClient = FitCore.Application.Services.Auth.IBaleBotClient;
 using SendOtpService =
     FitCore.Application.Services.Auth.SendOtpService;
 using VerifyOtpService =
@@ -401,6 +404,15 @@ builder.Services.AddScoped<IGetAnnouncementByIdService, GetAnnouncementByIdServi
 builder.Services.AddScoped<IRegisterAnnouncementViewService, RegisterAnnouncementViewService>();
 builder.Services.AddScoped<IDismissAnnouncementService, DismissAnnouncementService>();
 builder.Services.AddScoped<IRegisterAnnouncementClickService, RegisterAnnouncementClickService>();
+
+
+//builder.Services.AddHttpClient<IBaleBotClient, BaleBotClient>();
+
+// ثبت Client اصلی ارتباط با API بله
+builder.Services.AddHttpClient<IBaleBotClient, BaleBotClient>();
+
+// ثبت سرویس سازگار با کدهای فعلی پروژه
+builder.Services.AddScoped<IBaleBotService, BaleBotService>();
 
 builder.Services.AddScoped<
     FitCore.Application.Services.Announcements.Queries.GetGyms.IGetGymsService,
