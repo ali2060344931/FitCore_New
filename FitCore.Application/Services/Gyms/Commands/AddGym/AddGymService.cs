@@ -37,8 +37,7 @@ namespace FitCore.Application.Services.Gyms.Commands.AddGym
                 request.Name =
                     request.Name?.Trim();
 
-                request.Code =
-                    request.Code?.Trim();
+                request.Code =request.Code;
 
                 request.MobileNumber =
                     request.MobileNumber?.Trim();

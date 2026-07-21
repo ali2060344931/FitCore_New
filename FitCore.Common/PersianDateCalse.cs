@@ -146,5 +146,21 @@ public static class PersianDateCalse
 
 
 
+    /// <summary>
+    /// تعداد روزهای یک ماه شمسی
+    /// </summary>
+    public static int GetDaysInMonth(int year, int month)
+    {
+        PersianCalendar pc = new PersianCalendar();
+        return pc.GetDaysInMonth(year, month);
+    }
 
+    /// <summary>
+    /// آیا سال شمسی کبیسه است؟
+    /// </summary>
+    public static bool IsLeapYear(int year)
+    {
+        PersianCalendar pc = new PersianCalendar();
+        return pc.IsLeapYear(year);
+    }
 }

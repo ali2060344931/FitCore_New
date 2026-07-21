@@ -19,7 +19,7 @@ namespace FitCore.Application.ViewModels.Gyms
         [Display(Name = "کد یکتای باشگاه")]
         [Required(ErrorMessage = "کد باشگاه الزامی است")]
         [MaxLength(50)]
-        public string Code { get; set; }
+        public int Code { get; set; }
 
 
         [Display(Name = "توضیحات")]

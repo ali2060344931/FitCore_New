@@ -7,7 +7,7 @@ namespace FitCore.Application.Services.Gyms.Commands.AddGym
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Code { get; set; }
+        public int Code { get; set; }
         public string SubDomain { get; set; }
         public string BrandName { get; set; }
         public string Description { get; set; }

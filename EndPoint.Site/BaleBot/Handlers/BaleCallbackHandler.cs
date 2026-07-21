@@ -301,7 +301,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                 }
 
                 var rows = gyms.Select(g => new List<InlineKeyboardButton> {
-                    new InlineKeyboardButton { Text = "کد باشگاه: " + g.Code, CallbackData = $"GYM_{g.Id}" }
+                    new InlineKeyboardButton { Text = "کد: " + g.Code+"-"+g.Name, CallbackData = $"GYM_{g.Id}" }
                 }).ToList();
 
                 var gymKeyboard = new InlineKeyboardMarkup { InlineKeyboard = rows };
@@ -743,14 +743,14 @@ namespace EndPoint.Site.BaleBot.Handlers
                                         ;
 
 
-                    int day = PersianDateCalse.GetDaysDifference(existingUser.Gym.SubscriptionExpireDate,PersianDateCalse.ToShamsi(DateTime.Now));
-                    
+                    int day = PersianDateCalse.GetDaysDifference(existingUser.Gym.SubscriptionExpireDate, PersianDateCalse.ToShamsi(DateTime.Now));
+
                     if (existingUser.IsActive)
                     {
-                        welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(day>0 ? "✅فعال" : "❌غیرفعال")}\n" +
+                        welcomeText += $"\n\n🗓️ وضعیت عضویت شما: {(day > 0 ? "✅فعال" : "❌غیرفعال")}\n" +
                             $"مدت زمان اعتبار: {(day > 0 ? day + " روز باقیمانده" : day + " روز منقضی شده")}\n" +
                $"📅 تا تاریخ: {existingUser.Gym.SubscriptionExpireDate}\n" +
-               
+
                $"📅 تعداد عضوهای فعال باشگاه: {activeMembers}\n" +
                $"📅 تعداد عضوهای غیرفعال باشگاه: {inactiveMembers}\n" +
                "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
@@ -785,7 +785,7 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
 
             //لیست درخواست ها
-            else if (data== "Program_Request")
+            else if (data == "Program_Request")
             {
 
 
@@ -794,14 +794,14 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
 
             //تیکت ها
-            else if (data== "Tickets")
+            else if (data == "Tickets")
             {
                 await _baleBotService.SendMessageAsync(chatId, "لیست تیکت ها");
 
             }
 
             //لیست اعضاء
-            else if (data== "Member_List")
+            else if (data == "Member_List")
             {
                 await _baleBotService.SendMessageAsync(chatId, "لیست اعضاء باشگاه");
 

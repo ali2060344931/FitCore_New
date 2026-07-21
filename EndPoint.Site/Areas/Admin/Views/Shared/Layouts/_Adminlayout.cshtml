@@ -38,7 +38,7 @@
 @{
     bool isActivGYM = false;
     int difDay_ = 0;
-    string gymCode = "";
+    int gymCode = 0;
     // فقط برای ادمین باشگاه (Admin) این کوئری‌ها اجرا شود (سوپر ادمین اینجا وارد نمی‌شود چون IsAdmin برمی‌گرداند False)
     if (User.IsAdmin() || User.IsTrainer())
     {

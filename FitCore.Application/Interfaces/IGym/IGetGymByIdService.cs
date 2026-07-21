@@ -4,6 +4,6 @@ namespace FitCore.Application.Interfaces.IGym
 {
     public interface IGetGymByIdService
     {
-        GymDto GetById(string code);
+        GymDto GetById(int code);
     }
 }

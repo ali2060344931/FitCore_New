@@ -25,13 +25,27 @@ namespace GymBot.Models
     public class BaleCallbackQuery
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } // آیدی خود کلیک برای تایید
+        public string Id { get; set; }
 
         [JsonPropertyName("from")]
         public BaleUser From { get; set; }
 
         [JsonPropertyName("data")]
-        public string Data { get; set; } // متنی که در CallbackData دکمه گذاشتیم (مثل SRV_Survey1)
+        public string Data { get; set; }
+
+        [JsonPropertyName("message")]
+        public BaleCallbackMessage Message { get; set; }
+    }
+
+
+
+    public class BaleCallbackMessage
+    {
+        [JsonPropertyName("message_id")]
+        public long MessageId { get; set; }
+
+        [JsonPropertyName("chat")]
+        public BaleChat Chat { get; set; }
     }
 
 

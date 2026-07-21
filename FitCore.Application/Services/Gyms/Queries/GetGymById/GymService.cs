@@ -16,7 +16,7 @@ namespace FitCore.Application.Services.Gyms.Commands
             _context = context;
         }
 
-        public GymDto GetById(string code)
+        public GymDto GetById(int code)
         {
             var x = _context.Gyms.FirstOrDefault(x => x.Code == code);
 

@@ -22,7 +22,7 @@ namespace FitCore.Application.Services.Dashboard
     {
         // اطلاعات باشگاه
         public string GymName { get; set; }
-        public string GymCode { get; set; }
+        public int GymCode { get; set; }
         public string GymPhone { get; set; }
         public string GymMobile { get; set; }
         public string GymEmail { get; set; }

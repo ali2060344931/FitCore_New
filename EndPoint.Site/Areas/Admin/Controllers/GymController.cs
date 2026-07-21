@@ -53,9 +53,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
                     x.Name.Contains(SearchKey) ||
 
-                    x.Code.Contains(SearchKey) ||
-
-                    x.MobileNumber.Contains(SearchKey)
+                                      x.MobileNumber.Contains(SearchKey)
 
                 ).ToList();
             }
@@ -98,7 +96,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(string code)
+        public IActionResult Edit(int code)
         {
             var gym = _getGymByIdService.GetById(code);
             if (gym == null) return NotFound();
@@ -144,7 +142,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult CompleteGymInfo(string code)
+        public IActionResult CompleteGymInfo(int code)
         {
             var gym = _getGymByIdService.GetById(code);
 

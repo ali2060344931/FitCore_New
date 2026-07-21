@@ -51,47 +51,45 @@ namespace FitCore.Application.Services.Auth
                 // 2. ایجاد باشگاه جدید (مطابق با Entity شما)
                 // 2. ایجاد باشگاه جدید (مطابق با Entity شما)
 
-                string uniqueGymCode = string.Empty;
-                bool isUnique = false;
-                Random rnd = new Random();
-                int maxRetries = 10; // برای جلوگیری از لوپ بی‌نهایت در صورت پر بودن دیتابیس
+                //string uniqueGymCode = string.Empty;
+                //bool isUnique = false;
+                //Random rnd = new Random();
+                //int maxRetries = 10; // برای جلوگیری از لوپ بی‌نهایت در صورت پر بودن دیتابیس
 
-                // تولید کد یکتا با چک کردن در دیتابیس
-                while (!isUnique && maxRetries > 0)
-                {
-                    // تغییر از 4 رقمی به 6 رقمی برای جلوگیری از تکراری شدن
-                    uniqueGymCode = rnd.Next(100000, 999999).ToString();
+                //// تولید کد یکتا با چک کردن در دیتابیس
+                //while (!isUnique && maxRetries > 0)
+                //{
+                //    // تغییر از 4 رقمی به 6 رقمی برای جلوگیری از تکراری شدن
+                //    uniqueGymCode = rnd.Next(100000, 999999).ToString();
 
-                    // آیا این کد قبلاً در دیتابیس ثبت شده است؟
-                    var exists = await _context.Gyms.AnyAsync(g => g.Code == uniqueGymCode);
+                //    // آیا این کد قبلاً در دیتابیس ثبت شده است؟
+                //    var exists = await _context.Gyms.AnyAsync(g => g.Code == uniqueGymCode);
 
-                    if (!exists)
-                    {
-                        isUnique = true; // کد یافت شد، از حلقه خارج می‌شویم
-                    }
+                //    if (!exists)
+                //    {
+                //        isUnique = true; // کد یافت شد، از حلقه خارج می‌شویم
+                //    }
 
-                    maxRetries--;
-                }
+                //    maxRetries--;
+                //}
 
-                // اگر به هر دلیلی بعد از 10 بار هم کد یکتا پیدا نشد (بسیار نادر)، از زمان حال سیستم استفاده می‌کنیم
-                if (!isUnique)
-                {
-                    uniqueGymCode = DateTime.Now.ToString("HHmmss"); // مثلا 145230
-                }
+                //// اگر به هر دلیلی بعد از 10 بار هم کد یکتا پیدا نشد (بسیار نادر)، از زمان حال سیستم استفاده می‌کنیم
+                //if (!isUnique)
+                //{
+                //    uniqueGymCode = DateTime.Now.ToString("HHmmss"); // مثلا 145230
+                //}
 
                 var newGym = new Gym
                 {
                     Name = request.GymName,
                     CitiesId = request.CitiesId,
                     MobileNumber = request.Mobile,
-
-                    // استفاده از کد یکتای تولید شده
-                    Code = uniqueGymCode,
-
                     IsActive = false
                 };
+
                 _context.Gyms.Add(newGym);
                 await _context.SaveChangesAsync();
+
 
                 // 3. ساخت کاربر مدیر
                 AppUser newUser = new AppUser()

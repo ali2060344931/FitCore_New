@@ -115,6 +115,12 @@ namespace FitCore.Persistence.Contexts
             ApplyQueryFilter(modelBuilder);
 
 
+
+            modelBuilder.HasSequence<int>("GymCodeSequence")
+            .StartsAt(100)
+            .IncrementsBy(1);
+
+
             modelBuilder.Entity<ProgramRequest>(entity =>
             {
                 entity.HasQueryFilter(x => !x.IsRemoved);
@@ -175,8 +181,16 @@ namespace FitCore.Persistence.Contexts
 
 
 
-            modelBuilder.Entity<Gym>()
-                .HasQueryFilter(x => !x.IsRemoved);
+            modelBuilder.Entity<Gym>(entity =>
+            {
+                entity.HasQueryFilter(x => !x.IsRemoved);
+
+                entity.HasIndex(e => e.Code)
+                      .IsUnique();
+
+                entity.Property(e => e.Code)
+                      .HasDefaultValueSql("NEXT VALUE FOR GymCodeSequence");
+            });
 
             modelBuilder.Entity<Member>()
                 .HasQueryFilter(x => !x.IsRemoved);
@@ -187,14 +201,16 @@ namespace FitCore.Persistence.Contexts
                 .HasForeignKey<Member>(m => m.AppUserId)
                 .OnDelete(DeleteBehavior.NoAction);
             // ================= اضافه کردن ایندکس یکتا برای کد باشگاه =================
+            modelBuilder.Entity<Gym>()
+                .HasQueryFilter(x => !x.IsRemoved);
+
             modelBuilder.Entity<Gym>(entity =>
             {
                 entity.HasIndex(e => e.Code)
                       .IsUnique();
-            });
-            // =======================================================================
-            
-            
+            });            // =======================================================================
+
+
             //NutritionProgram
 
 

@@ -277,8 +277,8 @@ namespace EndPoint.Site.BaleBot.Handlers
 
 
             await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.'\n' منتظر تائید ثبت نام از طرف مدیر باشگاه باشید");
-            
-            
+
+
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
 
@@ -298,30 +298,45 @@ namespace EndPoint.Site.BaleBot.Handlers
                 return;
             }
 
-            Random rnd = new Random();
-            string uniqueGymCode = rnd.Next(100000, 999999).ToString();
-            while (await _db.Gyms.AnyAsync(g => g.Code == uniqueGymCode))
-                uniqueGymCode = rnd.Next(100000, 999999).ToString();
+            // ابتدا باشگاه را بدون Code ایجاد می‌کنیم
+            var newGym = new Gym
+            {
+                Name = state.GymName,
+                CitiesId = state.CityId,
+                MobileNumber = phone,
+                IsActive = false
 
-            var newGym = new Gym { Name = state.GymName, CitiesId = state.CityId, MobileNumber = phone, Code = uniqueGymCode, IsActive = false };
+            };
             _db.Gyms.Add(newGym);
+
+            // با این دستور Id توسط SQL Server تولید می‌شود
             await _db.SaveChangesAsync();
 
-            var newUser = new AppUser { FullName = state.FullName, UserName = $"{phone}_{newGym.Id}", PhoneNumber = phone, IsActive = true, GymId = newGym.Id, BaleChatId = chatId };
+            var newUser = new AppUser
+            {
+                FullName = state.FullName,
+                UserName = $"{phone}_{newGym.Id}",
+                PhoneNumber = phone,
+                IsActive = true,
+                GymId = newGym.Id,
+                BaleChatId = chatId
+            };
+
             var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
-            if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
-
+            if (!createUser.Succeeded)
+                throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
             await _userManager.AddToRoleAsync(newUser, "Admin");
+
             _menuService.SetUserContext(chatId, newUser.Id, newGym.Id);
-            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان مدیر باشگاه انجام شد.\nحساب شما توسط ادمین سیستم بررسی و تایید نهایی می‌شود.");
-            
-            
-            
+
+            await _baleBotService.SendMessageAsync(
+                chatId,
+                "✅ ثبت نام شما به عنوان مدیر باشگاه انجام شد.\nحساب شما توسط ادمین سیستم بررسی و تایید نهایی می‌شود.");
+
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
-
         private string NormalizePhoneNumber(string rawPhone)
         {
             if (string.IsNullOrEmpty(rawPhone)) return rawPhone;

@@ -20,7 +20,7 @@ namespace FitCore.Application.Services.Dashboard
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Code { get; set; }
+        public int Code { get; set; }
         public bool IsActive { get; set; }
         public string SubscriptionExpireDate { get; set; }
         public int MembersCount { get; set; }
