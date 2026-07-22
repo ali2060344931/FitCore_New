@@ -15,8 +15,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,34 +62,175 @@ namespace EndPoint.Site.BaleBot.Handlers
 
             if (state != null)
             {
+                // ==========================================
+                // مرحله ثبت نام مدیر: دریافت نام باشگاه
+                // ==========================================
                 if (state.Step == "WAITING_FOR_GYM_NAME")
                 {
                     state.GymName = text;
                     state.Step = "WAITING_FOR_NAME";
-                    _cache.Set(chatId.ToString(), state);
-                    await _baleBotService.SendMessageAsync(chatId, "نام باشگاه ثبت شد.\n لطفاً نام و نام خانوادگی خود را تایپ کنید:");
+                    _cache.Set(chatId.ToString(), state, TimeSpan.FromMinutes(10));
+
+                    // ===== جدید: اگر مدیر بود، دکمه اصلاح شهر را نشان بده =====
+                    if (state.RegType == "Manager")
+                    {
+                        var backKeyboard = new InlineKeyboardMarkup
+                        {
+                            InlineKeyboard = new List<List<InlineKeyboardButton>>
+                        {
+                            new List<InlineKeyboardButton>
+                            {
+                                new InlineKeyboardButton { Text = "🔙 اصلاح شهر", CallbackData = "BACK_TO_CITIES" }
+                            }
+                        }
+                        };
+                        await _baleBotService.SendMessageAsync(chatId, "نام باشگاه ثبت شد.\n لطفاً نام و نام خانوادگی خود را تایپ کنید:", backKeyboard);
+                    }
+                    else
+                    {
+                        await _baleBotService.SendMessageAsync(chatId, "نام باشگاه ثبت شد.\n لطفاً نام و نام خانوادگی خود را تایپ کنید:");
+                    }
                     return;
                 }
 
+                // ==========================================
+                // مرحله دریافت نام و نام خانوادگی
+                // ==========================================
                 if (state.Step == "WAITING_FOR_NAME")
                 {
                     state.FullName = text;
-                    state.Step = "WAITING_FOR_PHONE";
-                    _cache.Set(chatId.ToString(), state);
-                    await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "نام شما ثبت شد.\nلطفاً دکمه «ارسال شماره موبایل» را بزنید:");
+
+                    // برای اعضاء → انتخاب جنسیت (همراه با دکمه اصلاح نام - پیشنهاد 2)
+                    if (state.RegType == "Member")
+                    {
+                        state.Step = "WAITING_FOR_GENDER";
+                        _cache.Set(chatId.ToString(), state, TimeSpan.FromMinutes(10));
+
+                        var genderKeyboard = new InlineKeyboardMarkup
+                        {
+                            InlineKeyboard = new List<List<InlineKeyboardButton>>
+                    {
+                        new List<InlineKeyboardButton>
+                        {
+                            new InlineKeyboardButton { Text = "👨 مرد", CallbackData = "GENDER_MALE" }
+                        },
+                        new List<InlineKeyboardButton>
+                        {
+                            new InlineKeyboardButton { Text = "👩 زن", CallbackData = "GENDER_FEMALE" }
+                        },
+                        new List<InlineKeyboardButton>
+                        {
+                            new InlineKeyboardButton { Text = "🔙 اصلاح نام", CallbackData = "EDIT_NAME" }
+                        }
+                    }
+                        };
+
+                        await _baleBotService.SendMessageAsync(chatId,
+                            "نام شما ثبت شد.\n👤 لطفاً جنسیت خود را انتخاب کنید:",
+                            genderKeyboard);
+                        return;
+                    }
+                    else
+                    {
+                        state.Step = "WAITING_FOR_PHONE";
+                        _cache.Set(chatId.ToString(), state, TimeSpan.FromMinutes(10));
+                        await _baleBotService.SendMessageWithContactKeyboardAsync(chatId, "نام شما ثبت شد.\nلطفاً دکمه «ارسال شماره موبایل» را بزنید:");
+                        return;
+                    }
+                }
+
+                // ==========================================
+                // دریافت قد
+                // ==========================================
+                if (state.Step == "WAITING_FOR_HEIGHT")
+                {
+                    string normalized = NormalizePersianNumbers(text);
+
+                    if (decimal.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal height)
+                        && height >= 50 && height <= 250)
+                    {
+                        state.Height = height;
+                        state.Step = "WAITING_FOR_WEIGHT";
+                        _cache.Set(chatId.ToString(), state, TimeSpan.FromMinutes(10));
+                        await _baleBotService.SendMessageAsync(chatId, "✅ قد ثبت شد.\n⚖️ لطفاً وزن خود را به کیلوگرم ارسال کنید (مثلاً 70.5):");
+                    }
+                    else
+                    {
+                        await _baleBotService.SendMessageAsync(chatId, "❌ قد باید یک عدد بین ۵۰ تا ۲۵۰ باشد (مثلاً ۱۷۵).\nلطفاً دوباره وارد کنید:");
+                    }
+                    return;
+                }
+
+                // ==========================================
+                // دریافت وزن و ثبت نهایی
+                // ==========================================
+                if (state.Step == "WAITING_FOR_WEIGHT")
+                {
+                    string normalized = NormalizePersianNumbers(text);
+
+                    if (decimal.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal weight)
+                        && weight >= 20 && weight <= 300)
+                    {
+                        state.Weight = weight;
+                        state.Step = "WAITING_FOR_CONFIRM"; // تغییر استپ به انتظار برای تایید
+                        _cache.Set(chatId.ToString(), state, TimeSpan.FromMinutes(10));
+
+                        // ===== ساخت کارت تایید نهایی =====
+                        string birthDate = $"{state.BirthYear}/{state.BirthMonth.Value:D2}/{state.BirthDay.Value:D2}";
+                        string genderText = state.Gender == Gender.Male ? "👨 مرد" : "👩 زن";
+
+                        string summary = "📋 *لطفاً اطلاعات خود را بررسی کنید:*\n\n" +
+                                         $"👤 نام: {state.FullName}\n" +
+                                         $"👥 جنسیت: {genderText}\n" + // در بله از این ایموجی پشتیبانی می‌شود
+                                         $"📅 تاریخ تولد: {birthDate}\n" +
+                                         $"📏 قد: {state.Height} سانتی‌متر\n" +
+                                         $"⚖️ وزن: {state.Weight} کیلوگرم\n\n" +
+                                         $"آیا اطلاعات فوق صحیح است؟";
+
+                        var confirmKeyboard = new InlineKeyboardMarkup
+                        {
+                            InlineKeyboard = new List<List<InlineKeyboardButton>>
+                        {
+                            new List<InlineKeyboardButton>
+                            {
+                                new InlineKeyboardButton { Text = "✅ بله، ثبت‌نام نهایی شود", CallbackData = "CONFIRM_MEMBER_REG" }
+                            },
+                            new List<InlineKeyboardButton>
+                            {
+                                new InlineKeyboardButton { Text = "❌ خیر، انصراف و شروع مجدد", CallbackData = "CANCEL_MEMBER_REG" }
+                            }
+                        }
+                        };
+
+                        await _baleBotService.SendMessageAsync(chatId, summary, confirmKeyboard);
+                    }
+                    else
+                    {
+                        await _baleBotService.SendMessageAsync(chatId, "❌ وزن باید یک عدد بین ۲۰ تا ۳۰۰ باشد (مثلاً ۷۰/۵).\nلطفاً دوباره وارد کنید:");
+                    }
+                    return;
+                }
+
+                // ==========================================
+                // جلوگیری از ارسال متن در مراحل دکمه‌ای
+                // ==========================================
+                if (state.Step == "WAITING_FOR_GENDER" ||
+                    state.Step == "WAITING_FOR_BIRTH_YEAR" ||
+                    state.Step == "WAITING_FOR_BIRTH_MONTH" ||
+                    state.Step == "WAITING_FOR_BIRTH_DAY")
+                {
+                    await _baleBotService.SendMessageAsync(chatId, "⚠️ لطفاً از دکمه‌های شیشه‌ای زیر پیام قبلی استفاده کنید.");
+                    return;
                 }
             }
-            else
-            {
-                await _menuService.ShowErrorWithMenu(chatId, "❌ متوجه نشدم. لطفاً از منوی اصلی اقدام کنید.");
-            }
+
+            await _menuService.ShowErrorWithMenu(chatId, "❌ متوجه نشدم. لطفاً از منوی اصلی اقدام کنید.");
         }
 
         public async Task HandleContactAsync(long chatId, string rawPhone)
         {
             var state = _cache.Get<BotState>(chatId.ToString());
             string standardPhone = NormalizePhoneNumber(rawPhone);
-
             // ==============================================================
             // حالت ۱: در مرحله ثبت‌نام است
             // ==============================================================
@@ -94,8 +238,15 @@ namespace EndPoint.Site.BaleBot.Handlers
             {
                 try
                 {
+                    // ===== تغییر: اعضاء ابتدا قد و وزن را وارد می‌کنند =====
                     if (state.RegType == "Member")
-                        await RegisterMemberDirectly(chatId, standardPhone, state);
+                    {
+                        state.PhoneNumber = standardPhone;
+                        state.Step = "WAITING_FOR_HEIGHT";
+                        _cache.Set(chatId.ToString(), state, TimeSpan.FromMinutes(10));
+                        await _baleBotService.SendMessageAsync(chatId, "📏 لطفاً قد خود را به سانتی‌متر ارسال کنید (مثلاً 175):");
+                        return;
+                    }
                     else if (state.RegType == "Manager")
                         await RegisterManagerDirectly(chatId, standardPhone, state);
                     else if (state.RegType == "Trainer")
@@ -109,7 +260,8 @@ namespace EndPoint.Site.BaleBot.Handlers
                 }
                 return;
             }
-
+            
+            
             // ==============================================================
             // حالت ۲: اتصال اکانت قبلی (WAITING_FOR_LINK_PHONE)
             // ==============================================================
@@ -226,6 +378,29 @@ namespace EndPoint.Site.BaleBot.Handlers
         }
 
 
+        /// <summary>
+        /// تبدیل اعداد فارسی و عربی به انگلیسی و نرمال‌سازی جداکننده اعشار
+        /// </summary>
+        private string NormalizePersianNumbers(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            char[] persianDigits = { '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹' };
+            char[] arabicDigits = { '٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩' };
+
+            for (int i = 0; i < 10; i++)
+            {
+                input = input.Replace(persianDigits[i], (char)('0' + i));
+                input = input.Replace(arabicDigits[i], (char)('0' + i));
+            }
+
+            // جایگزینی جداکننده‌های اعشار رایج در ایران با نقطه
+            input = input.Replace('٬', '.').Replace(',', '.').Replace('/', '.');
+
+            return input.Trim();
+        }
+
+
 
         /// <summary>
         /// ثبت نام اعضاء باشگاه
@@ -235,6 +410,8 @@ namespace EndPoint.Site.BaleBot.Handlers
         /// <param name="state"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// <summary>
+
         private async Task RegisterMemberDirectly(long chatId, string phone, BotState state)
         {
             if (!state.GymId.HasValue || state.GymId == 0)
@@ -246,42 +423,90 @@ namespace EndPoint.Site.BaleBot.Handlers
                 return;
             }
 
-            var newUser = new AppUser { FullName = state.FullName, UserName = $"{phone}_{state.GymId}", PhoneNumber = phone, IsActive = true, GymId = state.GymId.Value, BaleChatId = chatId };
+            var newUser = new AppUser
+            {
+                FullName = state.FullName,
+                UserName = $"{phone}_{state.GymId}",
+                PhoneNumber = phone,
+                IsActive = true,
+                GymId = state.GymId.Value,
+                BaleChatId = chatId
+            };
+
             var createUser = await _userManager.CreateAsync(newUser, "FitCore@123");
-            if (!createUser.Succeeded) throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
+            if (!createUser.Succeeded)
+                throw new Exception(string.Join("\n", createUser.Errors.Select(e => e.Description)));
 
             await _userManager.AddToRoleAsync(newUser, UserRoles.Member);
             _menuService.SetUserContext(chatId, newUser.Id, state.GymId.Value);
-            _db.Members.Add(new Member { AppUserId = newUser.Id, IsActive = false });
 
+            // ===== ساخت تاریخ تولد شمسی =====
+            string birthDate = "";
+            if (state.BirthYear.HasValue && state.BirthMonth.HasValue && state.BirthDay.HasValue)
+            {
+                birthDate = $"{state.BirthYear}/{state.BirthMonth.Value:D2}/{state.BirthDay.Value:D2}";
+            }
 
-            await _db.SaveChangesAsync();
+            // ===== ذخیره اطلاعات عضو (شامل قد) =====
+            var member = new Member
+            {
+                AppUserId = newUser.Id,
+                IsActive = false,
+                BirthDate = birthDate,
+                Gender = state.Gender.GetValueOrDefault(),
+                Height = state.Height // ذخیره قد
+            };
+            _db.Members.Add(member);
+            await _db.SaveChangesAsync(); // ذخیره تا آیدی عضو تولید شود
+
+            // ===== ذخیره وزن در جدول اندازه گیری ها =====
+            if (state.Weight.HasValue)
+            {
+                string todayShamsi = PersianDateCalse.ToShamsi(DateTime.Now);
+                _db.memberBodyMeasurements.Add(new MemberBodyMeasurement
+                {
+                    MemberId = member.Id, // آیدی تولید شده
+                    RecordDate = todayShamsi,
+                    Weight = state.Weight
+                });
+                await _db.SaveChangesAsync();
+            }
 
             _menuService.SetUserContext(chatId, newUser.Id, state.GymId.Value);
 
+            // ===== پیدا کردن مدیر و ارسال پیام =====
             var q = _db.UserRoles
-  .Where(r => r.RoleId == 2)
-  .Join(_db.Users,
-      r => r.UserId,
-      u => u.Id,
-      (r, u) => new { r, u })
-  .Where(x => x.u.GymId == state.GymId).FirstOrDefault();
+                .Where(r => r.RoleId == 2)
+                .Join(_db.Users,
+                    r => r.UserId,
+                    u => u.Id,
+                    (r, u) => new { r, u })
+                .Where(x => x.u.GymId == state.GymId).FirstOrDefault();
 
-
-
-            //ارسال پیام به مدیر باشگاه جهت اطلاع رسانی ثبت نام جدید ورزشکار
             if (q?.u != null && q.u.BaleChatId > 0)
             {
-                await _baleBotService.SendMessageAsync((long)q.u.BaleChatId, "🙋‍♂️ ثبت نام جدید انجام شد.\nنام و نام خانوادگی: " + state.FullName + "\nتلفن همراه: " + phone);
+                string genderText = state.Gender.HasValue
+                    ? (state.Gender == Gender.Male ? "\nجنسیت: مرد" : "\nجنسیت: زن")
+                    : "";
+                string birthText = !string.IsNullOrEmpty(birthDate) ? $"\nتاریخ تولد: {birthDate}" : "";
+                string heightText = state.Height.HasValue ? $"\nقد: {state.Height} سانتی‌متر" : "";
+                string weightText = state.Weight.HasValue ? $"\nوزن: {state.Weight} کیلوگرم" : "";
+
+                await _baleBotService.SendMessageAsync((long)q.u.BaleChatId,
+                    "🙋‍♂️ ثبت نام جدید انجام شد.\n" +
+                    "نام و نام خانوادگی: " + state.FullName + "\n" +
+                    "تلفن همراه: " + phone +
+                    genderText +
+                    birthText +
+                    heightText +
+                    weightText);
             }
 
-
-            await _baleBotService.SendMessageAsync(chatId, "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.'\n' منتظر تائید ثبت نام از طرف مدیر باشگاه باشید");
-
+            await _baleBotService.SendMessageAsync(chatId,
+                "✅ ثبت نام شما به عنوان عضو باشگاه با موفقیت انجام شد.\nمنتظر تائید ثبت نام از طرف مدیر باشگاه باشید.");
 
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
-
         /// <summary>
         /// ثبت نام نهایی مدیران باشگاها
         /// </summary>
@@ -337,6 +562,9 @@ namespace EndPoint.Site.BaleBot.Handlers
 
             await _menuService.ShowMainMenu(chatId, state.FullName);
         }
+       
+        
+        
         private string NormalizePhoneNumber(string rawPhone)
         {
             if (string.IsNullOrEmpty(rawPhone)) return rawPhone;

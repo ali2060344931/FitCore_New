@@ -7,9 +7,28 @@ namespace FitCore.Application.Services.Auth
     public interface IBaleBotService
     {
         Task<bool> SendMessageAsync(long chatId, string text, InlineKeyboardMarkup replyMarkup = null);
-        Task AnswerCallbackQueryAsync(string callbackQueryId, string text = "");
+
+
+
+        Task AnswerCallbackQueryAsync(string callbackQueryId, string text = "", bool showAlert = false);
+
+
         Task<bool> SendMessageWithContactKeyboardAsync(long chatId, string text);
         Task<bool> SendDocumentAsync(long chatId, string fileUrl, string caption = "");
         Task<bool> SendDocumentAsync(long chatId, byte[] fileBytes, string fileName, string caption = "");
+
+
+        Task<bool> EditMessageTextAsync(
+    long chatId,
+    long messageId,
+    string text,
+    InlineKeyboardMarkup? replyMarkup = null);
+
+        Task<bool> DeleteMessageAsync(
+            long chatId,
+            long messageId);
+
+
+        Task SendChatActionAsync(long chatId, string action = "typing");
     }
 }

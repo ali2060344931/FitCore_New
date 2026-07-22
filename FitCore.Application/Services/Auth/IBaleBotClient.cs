@@ -15,9 +15,7 @@ public interface IBaleBotClient
         long chatId,
         string text);
 
-    Task AnswerCallbackQueryAsync(
-        string callbackQueryId,
-        string text = "");
+    Task AnswerCallbackQueryAsync(string callbackQueryId, string text = "", bool showAlert = false);
 
     Task<bool> SendDocumentAsync(
         long chatId,
@@ -43,4 +41,7 @@ public interface IBaleBotClient
     Task<bool> DeleteMessageAsync(
         long chatId,
         long messageId);
+
+    Task SendChatActionAsync(long chatId, string action = "typing");
+
 }

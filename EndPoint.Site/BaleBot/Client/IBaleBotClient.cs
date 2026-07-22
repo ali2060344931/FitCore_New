@@ -28,5 +28,6 @@ namespace EndPoint.Site.BaleBot.Client
             string callbackQueryId,
             string? text = null,
             bool showAlert = false);
+
     }
 }

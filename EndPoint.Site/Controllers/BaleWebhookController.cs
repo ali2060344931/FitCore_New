@@ -56,8 +56,13 @@ namespace EndPoint.Site.Controllers
                 chatId = callback.From.Id;
                 userText = callback.Data ?? "";
                 userName = callback.From?.Name ?? "کاربر";
-            }
 
+                // ===== جدید: استخراج آیدی پیامی که دکمه در آن قرار دارد =====
+                long? callbackMessageId = callback.Message?.MessageId;
+
+                await _callbackHandler.HandleAsync(chatId, userText, callback.Id, userName, callbackMessageId);
+                return Ok();
+            }
             if (chatId == 0) return Ok();
 
             // 3. هدایت درخواست به پردازشگرهای مربوطه

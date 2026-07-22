@@ -85,14 +85,16 @@ public class BaleBotClient : IBaleBotClient
 
     public async Task AnswerCallbackQueryAsync(
         string callbackQueryId,
-        string text = "")
+        string text = "",
+        bool showAlert = false)
     {
         var url = $"https://tapi.bale.ai/bot{_token}/answerCallbackQuery";
 
         var payload = new
         {
             callback_query_id = callbackQueryId,
-            text
+            text,
+            show_alert = showAlert // ارسال پرچم پاپ آپ به سرور بله
         };
 
         var json = JsonSerializer.Serialize(payload);
@@ -101,6 +103,9 @@ public class BaleBotClient : IBaleBotClient
             url,
             new StringContent(json, Encoding.UTF8, "application/json"));
     }
+
+
+
 
     public async Task<bool> SendDocumentAsync(
         long chatId,
@@ -195,5 +200,24 @@ public class BaleBotClient : IBaleBotClient
             new StringContent(json, Encoding.UTF8, "application/json"));
 
         return response.IsSuccessStatusCode;
+    }
+
+
+    public async Task SendChatActionAsync(long chatId, string action = "typing")
+    {
+        var url = $"https://tapi.bale.ai/bot{_token}/sendChatAction";
+
+        var payload = new
+        {
+            chat_id = chatId,
+            action // مقادیر مجاز: typing, upload_photo, upload_document
+        };
+
+        var json = JsonSerializer.Serialize(payload);
+
+        // نیازی به بررسی موفقیت آمیز بودن نیست، فقط آپدیت استیت چت است
+        await _httpClient.PostAsync(
+            url,
+            new StringContent(json, Encoding.UTF8, "application/json"));
     }
 }
