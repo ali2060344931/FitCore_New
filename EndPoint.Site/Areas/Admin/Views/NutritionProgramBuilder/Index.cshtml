@@ -830,6 +830,7 @@
     </div>
 
     @* ---------- افزودن غذا به وعده ---------- *@
+    @* ---------- افزودن غذا به وعده ---------- *@
     <div class="modal fade" id="addMealItemModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content border-0 shadow" style="border-radius:14px;overflow:hidden;">
@@ -867,16 +868,17 @@
 
                 <div class="modal-body" style="padding:16px 20px;">
 
-                    @* ======== نوار فیلتر گروه غذایی ======== *@
+                    @* ======== نوار فیلتر گروه غذایی و مالکیت ======== *@
                     <div class="food-category-filter-bar mb-3 p-3 rounded-3"
                          style="background:linear-gradient(135deg,#f0fff4,#ebf8ff);border:1px solid #c6f6d5;">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
+
                             <div style="font-size:13px;font-weight:700;color:#276749;white-space:nowrap;">
                                 <i class="fa fa-filter me-1"></i> فیلتر گروه غذایی:
                             </div>
                             <select class="form-control form-control-sm" id="FoodCategoryFilter"
-                                    style="border-radius:8px;max-width:300px;border:1px solid #9ae6b4;font-size:13px;">
-                                <option value="">همه گروه‌های غذایی</option>
+                                    style="border-radius:8px;max-width:250px;border:1px solid #9ae6b4;font-size:13px;">
+                                <option value="">همه گروه‌ها</option>
                                 @if (categoryTypes != null && categoryTypes.Count > 0)
                                 {
                                     foreach (var cat in categoryTypes)
@@ -885,12 +887,25 @@
                                     }
                                 }
                             </select>
+
+                            <div style="width:1px;height:25px;background:#cbd5e0;margin:0 5px;"></div>
+
+                            <div style="font-size:13px;font-weight:700;color:#2b6cb0;white-space:nowrap;">
+                                <i class="fa fa-building-o me-1"></i> مالکیت:
+                            </div>
+                            <select class="form-control form-control-sm" id="FoodOwnershipFilter"
+                                    style="border-radius:8px;max-width:200px;border:1px solid #90cdf4;font-size:13px;">
+                                <option value="">همه</option>
+                                <option value="true">عمومی (سراسری)</option>
+                                <option value="false">متعلق به باشگاه</option>
+                            </select>
+
                             <span id="foodFilterCount" class="badge rounded-pill"
                                   style="background:#00C896;color:#fff;font-size:11px;display:none;"></span>
                             <button type="button" class="btn btn-sm btn-outline-secondary"
                                     id="btnClearFoodCategoryFilter"
                                     style="border-radius:8px;font-size:12px;display:none;">
-                                <i class="fa fa-times me-1"></i> حذف فیلتر
+                                <i class="fa fa-times me-1"></i> حذف فیلترها
                             </button>
                         </div>
                     </div>
@@ -912,7 +927,11 @@
                                         {
                                             foreach (var food in lookups.Foods)
                                             {
-                                                <option value="@food.Id" data-category-id="@food.CategoryTypeId">@food.Name</option>
+                                                <option value="@food.Id"
+                                                        data-category-id="@food.CategoryTypeId"
+                                                        data-is-global="@food.IsGlobal.ToString().ToLower()">
+                                                    @food.Name
+                                                </option>
                                             }
                                         }
                                     </select>
@@ -972,7 +991,6 @@
             </div>
         </div>
     </div>
-
 
     @* ---------- ویرایش غذای وعده ---------- *@
     <div class="modal fade" id="editMealItemModal" tabindex="-1" role="dialog">
@@ -2182,21 +2200,35 @@
             });
         }
 
-        // ------------------------------
 
+
+                // ============================================================
+        // فیلتر گروه غذایی و مالکیت در مودال افزودن غذا
+        // ============================================================
         var _allFoodOptions = [];
 
          $(document).ready(function () {
+            collectFoodOptions();
+        });
+
+        // جمع‌آوری تمام آپشن‌ها
+        function collectFoodOptions() {
+            _allFoodOptions = [];
             $('#FoodId option:not(:first)').each(function () {
                 _allFoodOptions.push({
                     value: $(this).val(),
                     text: $(this).text(),
-                    categoryId: $(this).attr('data-category-id') || ''
+                    categoryId: $(this).attr('data-category-id') || '',
+                    isGlobal: $(this).attr('data-is-global') === 'true'
                 });
             });
-        });
+        }
 
-        function rebuildFoodOptions(selectedCategoryId) {
+        // بازسازی لیست غذاها بر اساس هر دو فیلتر
+        function rebuildFoodOptions() {
+            var selectedCategoryId = $('#FoodCategoryFilter').val();
+            var selectedOwnership = $('#FoodOwnershipFilter').val(); // مقادیر: '', 'true', 'false'
+
             var $foodSelect = $('#FoodId');
             var currentVal = $foodSelect.val();
 
@@ -2208,9 +2240,21 @@
             for (var i = 0; i < _allFoodOptions.length; i++) {
                 var opt = _allFoodOptions[i];
 
-                if (!selectedCategoryId || String(opt.categoryId) === String(selectedCategoryId)) {
+                // بررسی تطابق گروه غذایی
+                var matchCategory = !selectedCategoryId || String(opt.categoryId) === String(selectedCategoryId);
+
+                // بررسی تطابق مالکیت
+                var matchOwnership = true;
+                if (selectedOwnership === 'true') {
+                    matchOwnership = opt.isGlobal === true;
+                } else if (selectedOwnership === 'false') {
+                    matchOwnership = opt.isGlobal === false;
+                }
+
+                // اگر هر دو شرط برقرار بود
+                if (matchCategory && matchOwnership) {
                     var selected = (opt.value === currentVal) ? ' selected' : '';
-                    optionsHtml += '<option value="' + opt.value + '" data-category-id="' + opt.categoryId + '"' + selected + '>' + opt.text + '</option>';
+                    optionsHtml += '<option value="' + opt.value + '" data-category-id="' + opt.categoryId + '" data-is-global="' + opt.isGlobal + '"' + selected + '>' + opt.text + '</option>';
                     filteredCount++;
                 }
             }
@@ -2223,8 +2267,11 @@
 
             $foodSelect.trigger('change');
 
+            // نمایش بَج شمارنده و دکمه حذف فیلترها
+            var isFiltered = selectedCategoryId || selectedOwnership;
             var $countBadge = $('#foodFilterCount');
-            if (selectedCategoryId) {
+
+            if (isFiltered) {
                 $countBadge.text(filteredCount + ' غذا');
                 $countBadge.show();
                 $('#btnClearFoodCategoryFilter').show();
@@ -2234,35 +2281,44 @@
             }
         }
 
+        // رویداد تغییر فیلتر گروه غذایی
          $(document).on('change', '#FoodCategoryFilter', function () {
-            rebuildFoodOptions($(this).val());
+            rebuildFoodOptions();
         });
 
+        // رویداد تغییر فیلتر مالکیت
+         $(document).on('change', '#FoodOwnershipFilter', function () {
+            rebuildFoodOptions();
+        });
+
+        // دکمه حذف فیلترها (هر دو را با هم ریست می‌کند)
          $(document).on('click', '#btnClearFoodCategoryFilter', function () {
             $('#FoodCategoryFilter').val('');
-            rebuildFoodOptions('');
+            $('#FoodOwnershipFilter').val('');
+            rebuildFoodOptions();
         });
 
+        // ریست کامل فیلترها هنگام باز شدن مودال
          $(document).on('shown.bs.modal', '#addMealItemModal', function () {
             $('#FoodCategoryFilter').val('');
+            $('#FoodOwnershipFilter').val('');
             $('#btnClearFoodCategoryFilter').hide();
             $('#foodFilterCount').hide();
 
-            _allFoodOptions = [];
-            $('#FoodId option:not(:first)').each(function () {
-                _allFoodOptions.push({
-                    value: $(this).val(),
-                    text: $(this).text(),
-                    categoryId: $(this).attr('data-category-id') || ''
-                });
-            });
-
-            rebuildFoodOptions('');
+            collectFoodOptions();
+            rebuildFoodOptions();
         });
 
 
 
-        function openImageModal(src) {
+
+
+
+
+
+
+
+                function openImageModal(src) {
         var modal = document.getElementById("imageModal");
         var modalImg = document.getElementById("modalImg");
         modal.style.display = "block";
@@ -2281,6 +2337,110 @@
         document.getElementById("imageModal").style.display = "none";
         }
         });
+
+
+
+
+
+        // ------------------------------
+
+        // var _allFoodOptions = [];
+
+        //  $(document).ready(function () {
+        //     $('#FoodId option:not(:first)').each(function () {
+        //         _allFoodOptions.push({
+        //             value: $(this).val(),
+        //             text: $(this).text(),
+        //             categoryId: $(this).attr('data-category-id') || ''
+        //         });
+        //     });
+        // });
+
+        // function rebuildFoodOptions(selectedCategoryId) {
+        //     var $foodSelect = $('#FoodId');
+        //     var currentVal = $foodSelect.val();
+
+        //     $foodSelect.find('option:not(:first)').remove();
+
+        //     var filteredCount = 0;
+        //     var optionsHtml = '';
+
+        //     for (var i = 0; i < _allFoodOptions.length; i++) {
+        //         var opt = _allFoodOptions[i];
+
+        //         if (!selectedCategoryId || String(opt.categoryId) === String(selectedCategoryId)) {
+        //             var selected = (opt.value === currentVal) ? ' selected' : '';
+        //             optionsHtml += '<option value="' + opt.value + '" data-category-id="' + opt.categoryId + '"' + selected + '>' + opt.text + '</option>';
+        //             filteredCount++;
+        //         }
+        //     }
+
+        //     $foodSelect.append(optionsHtml);
+
+        //     if (currentVal && !$foodSelect.find('option[value="' + currentVal + '"]').length) {
+        //         $foodSelect.val('');
+        //     }
+
+        //     $foodSelect.trigger('change');
+
+        //     var $countBadge = $('#foodFilterCount');
+        //     if (selectedCategoryId) {
+        //         $countBadge.text(filteredCount + ' غذا');
+        //         $countBadge.show();
+        //         $('#btnClearFoodCategoryFilter').show();
+        //     } else {
+        //         $countBadge.hide();
+        //         $('#btnClearFoodCategoryFilter').hide();
+        //     }
+        // }
+
+        //  $(document).on('change', '#FoodCategoryFilter', function () {
+        //     rebuildFoodOptions($(this).val());
+        // });
+
+        //  $(document).on('click', '#btnClearFoodCategoryFilter', function () {
+        //     $('#FoodCategoryFilter').val('');
+        //     rebuildFoodOptions('');
+        // });
+
+        //  $(document).on('shown.bs.modal', '#addMealItemModal', function () {
+        //     $('#FoodCategoryFilter').val('');
+        //     $('#btnClearFoodCategoryFilter').hide();
+        //     $('#foodFilterCount').hide();
+
+        //     _allFoodOptions = [];
+        //     $('#FoodId option:not(:first)').each(function () {
+        //         _allFoodOptions.push({
+        //             value: $(this).val(),
+        //             text: $(this).text(),
+        //             categoryId: $(this).attr('data-category-id') || ''
+        //         });
+        //     });
+
+        //     rebuildFoodOptions('');
+        // });
+
+
+
+        // function openImageModal(src) {
+        // var modal = document.getElementById("imageModal");
+        // var modalImg = document.getElementById("modalImg");
+        // modal.style.display = "block";
+        // modalImg.src = src;
+        // }
+
+        // function closeImageModal(event) {
+
+        // if (!event || event.target === document.getElementById("imageModal")) {
+        // document.getElementById("imageModal").style.display = "none";
+        // }
+        // }
+
+        // document.addEventListener('keydown', function (event) {
+        // if (event.key === 'Escape') {
+        // document.getElementById("imageModal").style.display = "none";
+        // }
+        // });
 
 
 

@@ -76,5 +76,10 @@ namespace EndPoint.Site.Areas.Admin.Models
         public string Value { get; set; }
         public string Text { get; set; }
         public int? MuscleGroupId { get; set; }
+
+        /// <summary>
+        /// اگر true باشد یعنی حرکت عمومی (سراسری) است
+        /// </summary>
+        public bool IsGlobal { get; set; }
     }
 }

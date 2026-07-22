@@ -259,7 +259,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return dayTypes;
         }
 
-
         private async Task<List<ExerciseLookupDto>> GetExercisesSelectListAsync()
         {
             var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
@@ -270,11 +269,6 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 .Include(x => x.EquipmentType)
                 .AsQueryable();
 
-            //====================================
-            // فیلتر باشگاه:
-            // مدیر کل: همه حرکات
-            // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری
-            //====================================
             if (!isAdmin)
             {
                 exercisesQuery = exercisesQuery
@@ -289,12 +283,52 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                     Value = x.Id.ToString(),
                     Text = x.PrimaryMuscleGroup.Name + " - " + x.EquipmentType.Name + " - " + x.Name +
                            (x.GymId == null ? " (عمومی)" : ""),
-                    MuscleGroupId = x.PrimaryMuscleGroupId
+                    MuscleGroupId = x.PrimaryMuscleGroupId,
+                    IsGlobal = x.GymId == null   // ← اضافه شد
                 })
                 .ToListAsync();
 
             return exercises;
         }
+
+
+
+
+        //private async Task<List<ExerciseLookupDto>> GetExercisesSelectListAsync()
+        //{
+        //    var (gymId, isAdmin) = await GetCurrentUserGymContextAsync();
+
+        //    var exercisesQuery = _context.Exercises
+        //        .Where(x => x.IsActive && !x.IsRemoved)
+        //        .Include(x => x.PrimaryMuscleGroup)
+        //        .Include(x => x.EquipmentType)
+        //        .AsQueryable();
+
+        //    //====================================
+        //    // فیلتر باشگاه:
+        //    // مدیر کل: همه حرکات
+        //    // مدیر باشگاه: فقط حرکات باشگاه خودش + حرکات سراسری
+        //    //====================================
+        //    if (!isAdmin)
+        //    {
+        //        exercisesQuery = exercisesQuery
+        //            .Where(x => x.GymId == null || x.GymId == gymId);
+        //    }
+
+        //    var exercises = await exercisesQuery
+        //        .OrderBy(x => x.PrimaryMuscleGroup.Name)
+        //        .ThenBy(x => x.Name)
+        //        .Select(x => new ExerciseLookupDto
+        //        {
+        //            Value = x.Id.ToString(),
+        //            Text = x.PrimaryMuscleGroup.Name + " - " + x.EquipmentType.Name + " - " + x.Name +
+        //                   (x.GymId == null ? " (عمومی)" : ""),
+        //            MuscleGroupId = x.PrimaryMuscleGroupId
+        //        })
+        //        .ToListAsync();
+
+        //    return exercises;
+        //}
 
 
         //private async Task<List<SelectListItem>> GetExercisesSelectListAsync()

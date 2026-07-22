@@ -26,20 +26,33 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
 
         public ResultDto<BuilderLookupDto> Execute()
         {
+            //var foods = _context.Foods
+            //    .Select(x => new LookupItemDto
+            //    {
+            //        Id = x.Id,
+            //        Name = x.Title,
+            //        CategoryTypeId = x.CategoryTypeId
+            //    }).OrderBy(c=>c.Name).ToList();
+
             var foods = _context.Foods
-                .Select(x => new LookupItemDto
-                {
-                    Id = x.Id,
-                    Name = x.Title,
-                    CategoryTypeId = x.CategoryTypeId
-                }).OrderBy(c=>c.Name).ToList();
+    .Select(x => new LookupItemDto
+    {
+        Id = x.Id,
+        Name = x.Title,
+        CategoryTypeId = x.CategoryTypeId,
+        IsGlobal = x.GymId == null   // ← اضافه شد
+    })
+    .OrderBy(c => c.Name)
+    .ToList();
+
+
 
             var units = _context.NutritionUnitTypes
                 .Select(x => new LookupItemDto
                 {
                     Id = x.Id,
                     Name = x.Name
-                }).OrderBy(c=>c.Name).ToList();
+                }).OrderBy(c => c.Name).ToList();
 
 
             var mealTypes = _context.MealTypes
@@ -81,5 +94,10 @@ namespace FitCore.Application.Services.NutritionProgramBuilder.Queries
         /// فقط برای غذاها استفاده می‌شود — شناسه گروه غذایی
         /// </summary>
         public int? CategoryTypeId { get; set; }
+
+        /// <summary>
+        /// اگر null باشد یعنی غذا عمومی (سراسری) است
+        /// </summary>
+        public bool IsGlobal { get; set; }
     }
 }
