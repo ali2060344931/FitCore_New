@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -566,7 +567,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                     rows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت به انتخاب سال", CallbackData = "BACK_TO_YEARS" } });
 
                     await SendOrEditAsync(chatId, callbackMessageId, $"📅 سال {year} انتخاب شد.\n🔹 تاریخ انتخابی: {year}/??/??\nلطفاً ماه تولد را انتخاب کنید:", new InlineKeyboardMarkup { InlineKeyboard = rows });
-                    
+
                     return;
                 }
 
@@ -591,7 +592,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                     rows.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🔙 بازگشت به جنسیت", CallbackData = "BACK_TO_GENDER" } });
 
                     await SendOrEditAsync(chatId, callbackMessageId, "📅 لطفاً سال تولد خود را انتخاب کنید:\n🔹 فرمت: ????/??/??", new InlineKeyboardMarkup { InlineKeyboard = rows });
-                    
+
                     return;
                 }
 
@@ -874,7 +875,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                         try
                         {
                             //if (isMember)
-                                long? AdminChatId = 0;
+                            long? AdminChatId = 0;
 
 
                             AdminChatId = _db.UserRoles
@@ -1111,7 +1112,7 @@ namespace EndPoint.Site.BaleBot.Handlers
                         }
                         else
                         {//⛔🚫
-                            welcomeText += "\n\nℹ️ وضعیت عضویت: 🚫در انتظار تائید. هنوز دوره عضویتی برای شما تعریف نشده است.\n\n"+
+                            welcomeText += "\n\nℹ️ وضعیت عضویت: 🚫در انتظار تائید. هنوز دوره عضویتی برای شما تعریف نشده است.\n\n" +
                                 "👈[برای ورود به سایت فیتکور FitCore: کلیک نمائید](https://www.fitcoreapp.ir/Admin/Auth/Login)";
                         }
 
@@ -1183,18 +1184,99 @@ namespace EndPoint.Site.BaleBot.Handlers
 
                     }
                 }
-
+                //دانلود برنامه های غذایی و تمرینی
                 else if (data.StartsWith("DL_NUT_") || data.StartsWith("DL_TRN_"))
                 {
                     await _baleBotService.AnswerCallbackQueryAsync(callbackId, "در حال ساخت فایل PDF...");
+                    await _baleBotService.SendChatActionAsync(chatId, "upload_document");
+
                     bool isNutrition = data.StartsWith("DL_NUT_");
                     int planId = int.Parse(data.Split('_')[2]);
+
                     try
                     {
-                        if (isNutrition) { var plan = await _db.NutritionPrograms.FirstOrDefaultAsync(n => n.Id == planId); if (plan == null) throw new Exception("برنامه یافت نشد"); string title = plan.ProgramType?.Name ?? "بدون عنوان"; byte[] pdfBytes = _nutritionPdfService.Execute(planId); await _baleBotService.SendDocumentAsync(chatId, pdfBytes, $"Nutrition_{title}.pdf", $"📄 برنامه غذایی شما: {title}"); }
-                        else { var plan = await _db.TrainingPrograms.FirstOrDefaultAsync(t => t.Id == planId); if (plan == null) throw new Exception("برنامه یافت نشد"); byte[] pdfBytes = _trainingPdfService.Execute(planId); await _baleBotService.SendDocumentAsync(chatId, pdfBytes, $"Training_{plan.Title}.pdf", $"📄 برنامه تمرینی شما: {plan.Title}"); }
+                        if (isNutrition)
+                        {
+                            var plan = await _db.NutritionPrograms
+                                .Include(n => n.ProgramType)
+                                .Include(n => n.GoalType)
+                                .FirstOrDefaultAsync(n => n.Id == planId);
+
+                            if (plan == null) throw new Exception("برنامه یافت نشد");
+
+                            // ===== شماره‌گذاری هوشمند: محاسبه ترتیب فقط برای این کاربر و فقط برای برنامه‌های غذایی =====
+                            int planNumber = await _db.NutritionPrograms
+                                .Where(n => n.MemberId == plan.MemberId && n.Id <= plan.Id)
+                                .CountAsync();
+
+                            byte[] pdfBytes = _nutritionPdfService.Execute(planId);
+
+                            // ===== ساخت نام فایل با ترتیب دقیق =====
+                            var details = new List<string>();
+                            if (!string.IsNullOrEmpty(plan.GoalType?.Name)) details.Add(plan.GoalType.Name);
+                            if (!string.IsNullOrEmpty(plan.ProgramType?.Name)) details.Add(plan.ProgramType.Name);
+
+                            string detailsStr = string.Join("_", details);
+
+                            // فرمت نهایی: برنامه_غذایی_شماره_01_کاهش_وزن_رژیم.pdf
+                            string fileName = !string.IsNullOrWhiteSpace(detailsStr)
+                                ? $"برنامه_غذایی_شماره_{planNumber:D2}_{detailsStr}.pdf"
+                                : $"برنامه_غذایی_شماره_{planNumber:D2}.pdf";
+
+                            fileName = SanitizeFileName(fileName);
+
+                            // ===== ساخت کپشن خوانا و منظم =====
+                            string caption = $"📄 *برنامه غذایی شما (نسخه {planNumber})*\n\n";
+                            if (!string.IsNullOrEmpty(plan.GoalType?.Name)) caption += $"🎯 هدف: {plan.GoalType.Name}\n";
+                            if (!string.IsNullOrEmpty(plan.ProgramType?.Name)) caption += $"📋 نوع برنامه: {plan.ProgramType.Name}\n";
+                            caption += "\n📥 فایل پیوست آماده دانلود است.";
+
+                            await _baleBotService.SendDocumentAsync(chatId, pdfBytes, fileName, caption);
+                        }
+                        else
+                        {
+                            var plan = await _db.TrainingPrograms
+                                .Include(t => t.TrainingProgramType)
+                                .Include(t => t.TrainingGoalType)
+                                .FirstOrDefaultAsync(t => t.Id == planId);
+
+                            if (plan == null) throw new Exception("برنامه یافت نشد");
+
+                            // ===== شماره‌گذاری هوشمند: محاسبه ترتیب فقط برای این کاربر و فقط برای برنامه‌های تمرینی =====
+                            int planNumber = await _db.TrainingPrograms
+                                .Where(t => t.MemberId == plan.MemberId && t.Id <= plan.Id)
+                                .CountAsync();
+
+                            byte[] pdfBytes = _trainingPdfService.Execute(planId);
+
+                            // ===== ساخت نام فایل با ترتیب دقیق =====
+                            var details = new List<string>();
+                            if (!string.IsNullOrEmpty(plan.TrainingGoalType?.Name)) details.Add(plan.TrainingGoalType.Name);
+                            if (!string.IsNullOrEmpty(plan.TrainingProgramType?.Name)) details.Add(plan.TrainingProgramType.Name);
+
+                            string detailsStr = string.Join("_", details);
+                            string baseTitle = !string.IsNullOrWhiteSpace(plan.Title) ? SanitizeFileName(plan.Title) : "برنامه_تمرینی";
+
+                            // فرمت نهایی: برنامه_تمرینی_شماره_01_قدرتی_افزایش_حجم.pdf
+                            string fileName = !string.IsNullOrWhiteSpace(detailsStr)
+                                ? $"{baseTitle}_شماره_{planNumber:D2}_{detailsStr}.pdf"
+                                : $"{baseTitle}_شماره_{planNumber:D2}.pdf";
+
+                            // ===== ساخت کپشن خوانا و منظم =====
+                            string caption = $"📄 *برنامه تمرینی شما (نسخه {planNumber})*\n\n";
+                            if (!string.IsNullOrWhiteSpace(plan.Title)) caption += $"🏆 عنوان: {plan.Title}\n";
+                            if (!string.IsNullOrEmpty(plan.TrainingGoalType?.Name)) caption += $"🎯 هدف: {plan.TrainingGoalType.Name}\n";
+                            if (!string.IsNullOrEmpty(plan.TrainingProgramType?.Name)) caption += $"📋 نوع برنامه: {plan.TrainingProgramType.Name}\n";
+                            caption += "\n📥 فایل پیوست آماده دانلود است.";
+
+                            await _baleBotService.SendDocumentAsync(chatId, pdfBytes, fileName, caption);
+                        }
                     }
-                    catch (Exception ex) { _logger.LogError(ex, "Error generating or sending PDF for Bale"); await _baleBotService.SendMessageAsync(chatId, "❌ خطایی در ساخت یا ارسال فایل PDF رخ داد."); }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error generating or sending PDF for Bale");
+                        await _baleBotService.SendMessageAsync(chatId, "❌ خطایی در ساخت یا ارسال فایل PDF رخ داد.");
+                    }
                     return;
                 }
 
@@ -1239,7 +1321,20 @@ namespace EndPoint.Site.BaleBot.Handlers
             }
         }
 
+        /// <summary>
+        /// پاکسازی کاراکترهای غیرمجاز در نام فایل برای جلوگیری از ارور در دانلود موبایل
+        /// </summary>
+        private string SanitizeFileName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "file.pdf";
 
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                name = name.Replace(c, '_');
+            }
+            return name;
+        }
 
         /// <summary>
         /// پیشنهاد 5: اگر پیام آیدی وجود داشت پیام قبلی را ادیت می‌کند، در غیر این صورت پیام جدید می‌فرستد
